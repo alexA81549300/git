@@ -37,18 +37,18 @@ test_expect_success "don't clobber .git repo" '
 	test_grep ".git is not a file" err
 '
 
-test_corrupt_gitfile () {
-	butcher=$1 &&
-	problem=$2 &&
-	repairdir=${3:-.} &&
-	test_when_finished 'rm -rf corrupt && git worktree prune' &&
-	git worktree add --detach corrupt &&
-	git -C corrupt rev-parse --absolute-git-dir >expect &&
-	eval "$butcher" &&
-	git -C "$repairdir" worktree repair 2>err &&
-	test_grep "$problem" err &&
-	git -C corrupt rev-parse --absolute-git-dir >actual &&
-	test_cmp expect actual
+test_corrupt_gitfile() {
+  butcher=$1 \
+    && problem=$2 \
+    && repairdir=${3:-.} \
+    && test_when_finished 'rm -rf corrupt && git worktree prune' \
+    && git worktree add --detach corrupt \
+    && git -C corrupt rev-parse --absolute-git-dir >expect \
+    && eval "$butcher" \
+    && git -C "$repairdir" worktree repair 2>err \
+    && test_grep "$problem" err \
+    && git -C corrupt rev-parse --absolute-git-dir >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'repair missing .git file' '

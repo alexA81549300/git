@@ -17,9 +17,8 @@ test_expect_success 'Initialize test directory' '
 	git commit -m "add normal files"
 '
 
-if test_have_prereq !FUNNYNAMES
-then
-	say 'Your filesystem does not allow tabs in filenames.'
+if test_have_prereq !FUNNYNAMES; then
+  say 'Your filesystem does not allow tabs in filenames.'
 fi
 
 test_expect_success FUNNYNAMES 'add files with funny names' '
@@ -244,15 +243,14 @@ test_expect_success 'refresh index before checking if it is up-to-date' '
 '
 
 choke_git_rm_setup() {
-	git reset -q --hard &&
-	test_when_finished "rm -f .git/index.lock && git reset -q --hard" &&
-	i=0 &&
-	hash=$(test_oid deadbeef) &&
-	while test $i -lt 12000
-	do
-		echo "100644 $hash 0	some-file-$i"
-		i=$(( $i + 1 ))
-	done | git update-index --index-info
+  git reset -q --hard \
+    && test_when_finished "rm -f .git/index.lock && git reset -q --hard" \
+    && i=0 \
+    && hash=$(test_oid deadbeef) \
+    && while test $i -lt 12000; do
+      echo "100644 $hash 0	some-file-$i"
+      i=$(($i + 1))
+    done | git update-index --index-info
 }
 
 test_expect_success 'choking "git rm" should not let it die with cruft (induce SIGPIPE)' '
@@ -261,7 +259,6 @@ test_expect_success 'choking "git rm" should not let it die with cruft (induce S
 	git rm -n "some-file-*" | : &&
 	test_path_is_missing .git/index.lock
 '
-
 
 test_expect_success !MINGW 'choking "git rm" should not let it die with cruft (induce and check SIGPIPE)' '
 	choke_git_rm_setup &&
@@ -309,7 +306,7 @@ cat >expect.cached <<EOF
 D  submod
 EOF
 
-cat >expect.both_deleted<<EOF
+cat >expect.both_deleted <<EOF
 D  .gitmodules
 D  submod
 EOF

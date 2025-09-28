@@ -85,20 +85,19 @@ test_expect_success 'error out early upon -C<n> or --whitespace=<bad>' '
 	test_grep "Invalid whitespace option" err
 '
 
-write_reflog_expect () {
-	if test $mode = --apply
-	then
-		sed 's/(continue)/(pick)/'
-	else
-		cat
-	fi >expect
+write_reflog_expect() {
+  if test $mode = --apply; then
+    sed 's/(continue)/(pick)/'
+  else
+    cat
+  fi >expect
 }
 
-test_reflog () {
-	mode=$1
-	reflog_action="$2"
+test_reflog() {
+  mode=$1
+  reflog_action="$2"
 
-	test_expect_success "rebase $mode reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
+  test_expect_success "rebase $mode reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
 	git checkout conflicts &&
 	test_when_finished "git reset --hard Q" &&
 
@@ -134,7 +133,7 @@ test_reflog () {
 	test_cmp_rev conflicts@{1} Q
 	'
 
-	test_expect_success "rebase $mode fast-forward reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
+  test_expect_success "rebase $mode fast-forward reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
 	git checkout fast-forward &&
 	test_when_finished "git reset --hard X" &&
 
@@ -164,7 +163,7 @@ test_reflog () {
 	test_cmp_rev fast-forward@{1} X
 	'
 
-	test_expect_success "rebase $mode --skip reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
+  test_expect_success "rebase $mode --skip reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
 	git checkout conflicts &&
 	test_when_finished "git reset --hard Q" &&
 
@@ -188,7 +187,7 @@ test_reflog () {
 	test_cmp expect actual
 	'
 
-	test_expect_success "rebase $mode --abort reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
+  test_expect_success "rebase $mode --abort reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
 	git checkout conflicts &&
 	test_when_finished "git reset --hard Q" &&
 
@@ -216,7 +215,7 @@ test_reflog () {
 	test_cmp branch-expect branch-actual
 	'
 
-	test_expect_success "rebase $mode --abort detached HEAD reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
+  test_expect_success "rebase $mode --abort detached HEAD reflog${reflog_action:+ GIT_REFLOG_ACTION=$reflog_action}" '
 	git checkout Q &&
 	test_when_finished "git reset --hard Q" &&
 

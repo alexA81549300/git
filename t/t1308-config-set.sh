@@ -6,20 +6,18 @@ test_description='Test git config-set API in different settings'
 
 # 'check_config get_* section.key value' verifies that the entry for
 # section.key is 'value'
-check_config () {
-	if test "$1" = expect_code
-	then
-		expect_code="$2" && shift && shift
-	else
-		expect_code=0
-	fi &&
-	op=$1 key=$2 && shift && shift &&
-	if test $# != 0
-	then
-		printf "%s\n" "$@"
-	fi >expect &&
-	test_expect_code $expect_code test-tool config "$op" "$key" >actual &&
-	test_cmp expect actual
+check_config() {
+  if test "$1" = expect_code; then
+    expect_code="$2" && shift && shift
+  else
+    expect_code=0
+  fi \
+    && op=$1 key=$2 && shift && shift \
+    && if test $# != 0; then
+      printf "%s\n" "$@"
+    fi >expect \
+    && test_expect_code $expect_code test-tool config "$op" "$key" >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'setup default config' '
@@ -195,11 +193,10 @@ test_expect_success 'find multiple values' '
 	check_config get_value_multi case.baz sam bat hask
 '
 
-test_NULL_in_multi () {
-	local op="$1" &&
-	local file="$2" &&
-
-	test_expect_success "$op: NULL value in config${file:+ in $file}" '
+test_NULL_in_multi() {
+  local op="$1" \
+    && local file="$2" \
+    && test_expect_success "$op: NULL value in config${file:+ in $file}" '
 		config="$file" &&
 		if test -z "$config"
 		then

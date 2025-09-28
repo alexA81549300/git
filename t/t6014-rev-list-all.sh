@@ -4,12 +4,11 @@ test_description='--all includes detached HEADs'
 
 . ./test-lib.sh
 
-
-commit () {
-	test_tick &&
-	echo $1 > foo &&
-	git add foo &&
-	git commit -m "$1"
+commit() {
+  test_tick \
+    && echo $1 >foo \
+    && git add foo \
+    && git commit -m "$1"
 }
 
 test_expect_success 'setup' '

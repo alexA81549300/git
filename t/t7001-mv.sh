@@ -5,8 +5,8 @@ test_description='git mv in subdirs'
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-diff-data.sh
 
-index_at_path () {
-	git ls-files --format='%(objectmode) %(objectname) %(stage)' "$@"
+index_at_path() {
+  git ls-files --format='%(objectmode) %(objectname) %(stage)' "$@"
 }
 
 test_expect_success 'mv -f refreshes updated index entry' '
@@ -99,8 +99,8 @@ test_expect_success 'checking -f on untracked file with existing target' '
 
 # clean up the mess in case bad things happen
 rm -f idontexist untracked1 untracked2 \
-     path0/idontexist path0/untracked1 path0/untracked2 \
-     .git/index.lock
+  path0/idontexist path0/untracked1 path0/untracked2 \
+  .git/index.lock
 rmdir path1
 
 test_expect_success 'moving to absent target with trailing slash' '

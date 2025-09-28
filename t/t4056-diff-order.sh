@@ -7,13 +7,13 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-create_files () {
-	echo "$1" >a.h &&
-	echo "$1" >b.c &&
-	echo "$1" >c/Makefile &&
-	echo "$1" >d.txt &&
-	git add a.h b.c c/Makefile d.txt &&
-	git commit -m"$1"
+create_files() {
+  echo "$1" >a.h \
+    && echo "$1" >b.c \
+    && echo "$1" >c/Makefile \
+    && echo "$1" >d.txt \
+    && git add a.h b.c c/Makefile d.txt \
+    && git commit -m"$1"
 }
 
 test_expect_success 'setup' '
@@ -77,14 +77,13 @@ test_expect_success "orderfile using option from subdir with --output" '
 	test_cmp expect_1 actual
 '
 
-for i in 1 2
-do
-	test_expect_success "orderfile using option ($i)" '
+for i in 1 2; do
+  test_expect_success "orderfile using option ($i)" '
 		git diff -Oorder_file_$i --name-only HEAD^..HEAD >actual &&
 		test_cmp expect_$i actual
 	'
 
-	test_expect_success PIPE "orderfile is fifo ($i)" '
+  test_expect_success PIPE "orderfile is fifo ($i)" '
 		rm -f order_fifo &&
 		mkfifo order_fifo &&
 		{
@@ -95,12 +94,12 @@ do
 		test_cmp expect_$i actual
 	'
 
-	test_expect_success "orderfile using config ($i)" '
+  test_expect_success "orderfile using config ($i)" '
 		git -c diff.orderfile=order_file_$i diff --name-only HEAD^..HEAD >actual &&
 		test_cmp expect_$i actual
 	'
 
-	test_expect_success "cancelling configured orderfile ($i)" '
+  test_expect_success "cancelling configured orderfile ($i)" '
 		git -c diff.orderfile=order_file_$i diff -O/dev/null --name-only HEAD^..HEAD >actual &&
 		test_cmp expect_none actual
 	'
@@ -119,9 +118,8 @@ test_expect_success "combine-diff: no order (=tree object order)" '
 	test_cmp expect_none actual
 '
 
-for i in 1 2
-do
-	test_expect_success "combine-diff: orderfile using option ($i)" '
+for i in 1 2; do
+  test_expect_success "combine-diff: orderfile using option ($i)" '
 		git diff -Oorder_file_$i --name-only HEAD HEAD^ HEAD^2 >actual &&
 		test_cmp expect_$i actual
 	'

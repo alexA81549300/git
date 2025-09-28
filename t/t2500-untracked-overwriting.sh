@@ -4,20 +4,17 @@ test_description='Test handling of overwriting untracked files'
 
 . ./test-lib.sh
 
-test_setup_reset () {
-	git init reset_$1 &&
-	(
-		cd reset_$1 &&
-		test_commit init &&
-
-		git branch stable &&
-		git branch work &&
-
-		git checkout work &&
-		test_commit foo &&
-
-		git checkout stable
-	)
+test_setup_reset() {
+  git init reset_$1 \
+    && (
+      cd reset_$1 \
+        && test_commit init \
+        && git branch stable \
+        && git branch work \
+        && git checkout work \
+        && test_commit foo \
+        && git checkout stable
+    )
 }
 
 test_expect_success 'reset --hard will nuke untracked files/dirs' '
@@ -70,26 +67,22 @@ test_expect_success 'reset --keep will preserve untracked files/dirs' '
 	)
 '
 
-test_setup_checkout_m () {
-	git init checkout &&
-	(
-		cd checkout &&
-		test_commit init &&
-
-		test_write_lines file has some >filler &&
-		git add filler &&
-		git commit -m filler &&
-
-		git branch stable &&
-
-		git switch -c work &&
-		echo stuff >notes.txt &&
-		test_write_lines file has some words >filler &&
-		git add notes.txt filler &&
-		git commit -m filler &&
-
-		git checkout stable
-	)
+test_setup_checkout_m() {
+  git init checkout \
+    && (
+      cd checkout \
+        && test_commit init \
+        && test_write_lines file has some >filler \
+        && git add filler \
+        && git commit -m filler \
+        && git branch stable \
+        && git switch -c work \
+        && echo stuff >notes.txt \
+        && test_write_lines file has some words >filler \
+        && git add notes.txt filler \
+        && git commit -m filler \
+        && git checkout stable
+    )
 }
 
 test_expect_success 'checkout -m does not nuke untracked file' '
@@ -108,34 +101,29 @@ test_expect_success 'checkout -m does not nuke untracked file' '
 	)
 '
 
-test_setup_sequencing () {
-	git init sequencing_$1 &&
-	(
-		cd sequencing_$1 &&
-		test_commit init &&
-
-		test_write_lines this file has some words >filler &&
-		git add filler &&
-		git commit -m filler &&
-
-		mkdir -p foo/bar &&
-		test_commit foo/bar/baz &&
-
-		git branch simple &&
-		git branch fooey &&
-
-		git checkout fooey &&
-		git rm foo/bar/baz.t &&
-		echo stuff >>filler &&
-		git add -u &&
-		git commit -m "changes" &&
-
-		git checkout simple &&
-		echo items >>filler &&
-		echo newstuff >>newfile &&
-		git add filler newfile &&
-		git commit -m another
-	)
+test_setup_sequencing() {
+  git init sequencing_$1 \
+    && (
+      cd sequencing_$1 \
+        && test_commit init \
+        && test_write_lines this file has some words >filler \
+        && git add filler \
+        && git commit -m filler \
+        && mkdir -p foo/bar \
+        && test_commit foo/bar/baz \
+        && git branch simple \
+        && git branch fooey \
+        && git checkout fooey \
+        && git rm foo/bar/baz.t \
+        && echo stuff >>filler \
+        && git add -u \
+        && git commit -m "changes" \
+        && git checkout simple \
+        && echo items >>filler \
+        && echo newstuff >>newfile \
+        && git add filler newfile \
+        && git commit -m another
+    )
 }
 
 test_expect_success 'git rebase --abort and untracked files' '

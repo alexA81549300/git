@@ -7,12 +7,12 @@ Testing merge when using a custom message for the merge commit.'
 . ./test-lib.sh
 
 create_merge_msgs() {
-	echo >exp.subject "custom message"
+  echo >exp.subject "custom message"
 
-	cp exp.subject exp.log &&
-	echo >>exp.log "" &&
-	echo >>exp.log "* tag 'c2':" &&
-	echo >>exp.log "  c2"
+  cp exp.subject exp.log \
+    && echo >>exp.log "" \
+    && echo >>exp.log "* tag 'c2':" \
+    && echo >>exp.log "  c2"
 }
 
 test_expect_success 'setup' '
@@ -31,7 +31,6 @@ test_expect_success 'setup' '
 	git tag c2 &&
 	create_merge_msgs
 '
-
 
 test_expect_success 'merge c2 with a custom message' '
 	git reset --hard c1 &&
@@ -54,7 +53,7 @@ mesg_with_comment_and_newlines='
 
 '
 
-test_expect_success 'prepare file with comment line and trailing newlines'  '
+test_expect_success 'prepare file with comment line and trailing newlines' '
 	printf "%s" "$mesg_with_comment_and_newlines" >expect
 '
 

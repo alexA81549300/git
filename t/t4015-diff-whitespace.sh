@@ -11,20 +11,19 @@ test_description='Test special whitespace in diff engine.
 . "$TEST_DIRECTORY"/lib-diff.sh
 
 for opt_res in --patch --quiet -s --stat --shortstat --dirstat=lines \
-	       --raw! --name-only! --name-status!
-do
-	opts=${opt_res%!} expect_failure=
-	test "$opts" = "$opt_res" ||
-		expect_failure="test_expect_code 1"
+  --raw! --name-only! --name-status!; do
+  opts=${opt_res%!} expect_failure=
+  test "$opts" = "$opt_res" \
+    || expect_failure="test_expect_code 1"
 
-	test_expect_success "status with $opts (different)" '
+  test_expect_success "status with $opts (different)" '
 		echo foo >x &&
 		git add x &&
 		echo bar >x &&
 		test_expect_code 1 git diff -w $opts --exit-code x
 	'
 
-	test_expect_success POSIXPERM "status with $opts (mode differs)" '
+  test_expect_success POSIXPERM "status with $opts (mode differs)" '
 		test_when_finished "git update-index --chmod=-x x" &&
 		echo foo >x &&
 		git add x &&
@@ -32,14 +31,14 @@ do
 		test_expect_code 1 git diff -w $opts --exit-code x
 	'
 
-	test_expect_success "status with $opts (removing an empty file)" '
+  test_expect_success "status with $opts (removing an empty file)" '
 		: >x &&
 		git add x &&
 		rm x &&
 		test_expect_code 1 git diff -w $opts --exit-code -- x
 	'
 
-	test_expect_success "status with $opts (different but equivalent)" '
+  test_expect_success "status with $opts (different but equivalent)" '
 		echo foo >x &&
 		git add x &&
 		echo " foo" >x &&

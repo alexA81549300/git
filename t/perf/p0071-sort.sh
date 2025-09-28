@@ -19,32 +19,29 @@ test_expect_success 'reverse' '
 	sort -r <unsorted >reversed
 '
 
-for file in sorted reversed
-do
-	test_perf "sort(1) $file" "
+for file in sorted reversed; do
+  test_perf "sort(1) $file" "
 		sort <$file >actual
 	"
 done
 
-for file in unsorted sorted reversed
-do
+for file in unsorted sorted reversed; do
 
-	test_perf "string_list_sort() $file" "
+  test_perf "string_list_sort() $file" "
 		test-tool string-list sort <$file >actual
 	"
 
-	test_expect_success "string_list_sort() $file sorts like sort(1)" "
+  test_expect_success "string_list_sort() $file sorts like sort(1)" "
 		test_cmp_bin sorted actual
 	"
 done
 
-for file in unsorted sorted reversed
-do
-	test_perf "DEFINE_LIST_SORT $file" "
+for file in unsorted sorted reversed; do
+  test_perf "DEFINE_LIST_SORT $file" "
 		test-tool mergesort sort <$file >actual
 	"
 
-	test_expect_success "DEFINE_LIST_SORT $file sorts like sort(1)" "
+  test_expect_success "DEFINE_LIST_SORT $file sorts like sort(1)" "
 		test_cmp_bin sorted actual
 	"
 done

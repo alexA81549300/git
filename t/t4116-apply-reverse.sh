@@ -7,7 +7,6 @@ test_description='git apply in reverse
 
 '
 
-
 . ./test-lib.sh
 
 test_expect_success setup '

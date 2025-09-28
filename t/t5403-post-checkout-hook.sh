@@ -48,9 +48,9 @@ test_expect_success 'post-checkout receives the right args when not switching br
 	test $old = $new && test $flag = 0
 '
 
-test_rebase () {
-	args="$*" &&
-	test_expect_success "post-checkout is triggered on rebase $args" '
+test_rebase() {
+  args="$*" \
+    && test_expect_success "post-checkout is triggered on rebase $args" '
 		test_when_finished "rm -f .git/post-checkout.args" &&
 		git checkout -B rebase-test main &&
 		rm -f .git/post-checkout.args &&
@@ -61,7 +61,7 @@ test_rebase () {
 		test $flag = 1
 	'
 
-	test_expect_success "post-checkout is triggered on rebase $args with fast-forward" '
+  test_expect_success "post-checkout is triggered on rebase $args with fast-forward" '
 		test_when_finished "rm -f .git/post-checkout.args" &&
 		git checkout -B ff-rebase-test rebase-on-me^ &&
 		rm -f .git/post-checkout.args &&
@@ -72,7 +72,7 @@ test_rebase () {
 		test $flag = 1
 	'
 
-	test_expect_success "rebase $args fast-forward branch checkout runs post-checkout hook" '
+  test_expect_success "rebase $args fast-forward branch checkout runs post-checkout hook" '
 		test_when_finished "test_might_fail git rebase --abort" &&
 		test_when_finished "rm -f .git/post-checkout.args" &&
 		git update-ref refs/heads/rebase-fast-forward three &&
@@ -85,7 +85,7 @@ test_rebase () {
 		test $flag = 1
 	'
 
-	test_expect_success "rebase $args checkout does not remove untracked files" '
+  test_expect_success "rebase $args checkout does not remove untracked files" '
 		test_when_finished "test_might_fail git rebase --abort" &&
 		test_when_finished "rm -f .git/post-checkout.args" &&
 		git update-ref refs/heads/rebase-fast-forward three &&
@@ -100,8 +100,8 @@ test_rebase () {
 '
 }
 
-test_rebase --apply &&
-test_rebase --merge
+test_rebase --apply \
+  && test_rebase --merge
 
 test_expect_success 'post-checkout hook is triggered by clone' '
 	mkdir -p templates/hooks &&

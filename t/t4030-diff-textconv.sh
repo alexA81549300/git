@@ -5,7 +5,7 @@ test_description='diff.*.textconv tests'
 . ./test-lib.sh
 
 find_diff() {
-	sed '1,/^index /d' | sed '/^-- $/,$d'
+  sed '1,/^index /d' | sed '/^-- $/,$d'
 }
 
 cat >expect.binary <<'EOF'

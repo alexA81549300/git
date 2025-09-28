@@ -17,11 +17,11 @@ test_description='Test cherry-pick continuation features
 # Repeat first match 10 times
 _r10='\1\1\1\1\1\1\1\1\1\1'
 
-pristine_detach () {
-	git cherry-pick --quit &&
-	git checkout -f "$1^0" &&
-	git read-tree -u --reset HEAD &&
-	git clean -d -f -f -q -x
+pristine_detach() {
+  git cherry-pick --quit \
+    && git checkout -f "$1^0" \
+    && git read-tree -u --reset HEAD \
+    && git clean -d -f -f -q -x
 }
 
 test_expect_success setup '

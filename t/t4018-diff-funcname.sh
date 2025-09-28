@@ -47,16 +47,15 @@ diffpatterns="
 	$(cat custom-drivers)
 "
 
-for p in $diffpatterns
-do
-	test_expect_success "builtin $p pattern compiles" '
+for p in $diffpatterns; do
+  test_expect_success "builtin $p pattern compiles" '
 		echo "*.java diff=$p" >.gitattributes &&
 		test_expect_code 1 git diff --no-index \
 			A.java B.java 2>msg &&
 		test_grep ! fatal msg &&
 		test_grep ! error msg
 	'
-	test_expect_success "builtin $p wordRegex pattern compiles" '
+  test_expect_success "builtin $p wordRegex pattern compiles" '
 		echo "*.java diff=$p" >.gitattributes &&
 		test_expect_code 1 git diff --no-index --word-diff \
 			A.java B.java 2>msg &&
@@ -64,7 +63,7 @@ do
 		test_grep ! error msg
 	'
 
-	test_expect_success "builtin $p pattern compiles on bare repo with --attr-source" '
+  test_expect_success "builtin $p pattern compiles on bare repo with --attr-source" '
 		test_when_finished "rm -rf bare.git" &&
 		git checkout -B master &&
 		git add . &&
@@ -111,9 +110,8 @@ test_expect_success 'setup hunk header tests' '
 '
 
 # check each individual file
-for i in $(git ls-files)
-do
-	test_expect_success "hunk header: $i" "
+for i in $(git ls-files); do
+  test_expect_success "hunk header: $i" "
 		git diff -U1 $i >actual &&
 		grep '@@ .* @@.*RIGHT' actual
 	"

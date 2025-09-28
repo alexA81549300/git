@@ -7,8 +7,8 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./lib-cvs.sh
 
 if ! test_have_prereq NOT_ROOT; then
-	skip_all='When cvs is compiled with CVS_BADROOT commits as root fail'
-	test_done
+  skip_all='When cvs is compiled with CVS_BADROOT commits as root fail'
+  test_done
 fi
 
 test_expect_success PERL 'setup cvsroot environment' '

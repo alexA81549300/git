@@ -4,11 +4,11 @@ test_description='Test cherry-pick -x and -s'
 
 . ./test-lib.sh
 
-pristine_detach () {
-	git cherry-pick --quit &&
-	git checkout -f "$1^0" &&
-	git read-tree -u --reset HEAD &&
-	git clean -d -f -f -q -x
+pristine_detach() {
+  git cherry-pick --quit \
+    && git checkout -f "$1^0" \
+    && git read-tree -u --reset HEAD \
+    && git clean -d -f -f -q -x
 }
 
 mesg_one_line='base: commit message'

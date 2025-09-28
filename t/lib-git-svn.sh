@@ -1,13 +1,12 @@
 . ./test-lib.sh
 
-if test -n "$NO_SVN_TESTS"
-then
-	skip_all='skipping git svn tests, NO_SVN_TESTS defined'
-	test_done
+if test -n "$NO_SVN_TESTS"; then
+  skip_all='skipping git svn tests, NO_SVN_TESTS defined'
+  test_done
 fi
 if ! test_have_prereq PERL; then
-	skip_all='skipping git svn tests, perl not available'
-	test_done
+  skip_all='skipping git svn tests, perl not available'
+  test_done
 fi
 
 GIT_DIR=$PWD/.git
@@ -16,10 +15,9 @@ SVN_TREE=$GIT_SVN_DIR/svn-tree
 test_set_port SVNSERVE_PORT
 
 svn >/dev/null 2>&1
-if test $? -ne 1
-then
-	skip_all='skipping git svn tests, svn not found'
-	test_done
+if test $? -ne 1; then
+  skip_all='skipping git svn tests, svn not found'
+  test_done
 fi
 
 svnrepo=$PWD/svnrepo
@@ -34,51 +32,50 @@ use SVN::Repos;
 system(qw/svnadmin create --fs-type fsfs/, \$ENV{svnrepo}) == 0 or exit(41);
 " >&3 2>&4
 x=$?
-if test $x -ne 0
-then
-	if test $x -eq 42; then
-		skip_all='Perl SVN libraries must be >= 1.1.0'
-	elif test $x -eq 41; then
-		skip_all='svnadmin failed to create fsfs repository'
-	else
-		skip_all='Perl SVN libraries not found or unusable'
-	fi
-	test_done
+if test $x -ne 0; then
+  if test $x -eq 42; then
+    skip_all='Perl SVN libraries must be >= 1.1.0'
+  elif test $x -eq 41; then
+    skip_all='svnadmin failed to create fsfs repository'
+  else
+    skip_all='Perl SVN libraries not found or unusable'
+  fi
+  test_done
 fi
 
 rawsvnrepo="$svnrepo"
 svnrepo="file://$svnrepo"
 
 poke() {
-	test-tool chmtime +1 "$1"
+  test-tool chmtime +1 "$1"
 }
 
 # We need this, because we should pass empty configuration directory to
 # the 'svn commit' to avoid automated property changes and other stuff
 # that could be set from user's configuration files in ~/.subversion.
-svn_cmd () {
-	[ -d "$svnconf" ] || mkdir "$svnconf"
-	orig_svncmd="$1"; shift
-	if [ -z "$orig_svncmd" ]; then
-		svn
-		return
-	fi
-	svn "$orig_svncmd" --config-dir "$svnconf" "$@"
+svn_cmd() {
+  [ -d "$svnconf" ] || mkdir "$svnconf"
+  orig_svncmd="$1"
+  shift
+  if [ -z "$orig_svncmd" ]; then
+    svn
+    return
+  fi
+  svn "$orig_svncmd" --config-dir "$svnconf" "$@"
 }
 
-maybe_start_httpd () {
-	loc=${1-svn}
+maybe_start_httpd() {
+  loc=${1-svn}
 
-	if test_bool_env GIT_TEST_SVN_HTTPD false
-	then
-		. "$TEST_DIRECTORY"/lib-httpd.sh
-		LIB_HTTPD_SVN="$loc"
-		start_httpd
-	fi
+  if test_bool_env GIT_TEST_SVN_HTTPD false; then
+    . "$TEST_DIRECTORY"/lib-httpd.sh
+    LIB_HTTPD_SVN="$loc"
+    start_httpd
+  fi
 }
 
-convert_to_rev_db () {
-	perl -w -- - "$(test_oid rawsz)" "$@" <<\EOF
+convert_to_rev_db() {
+  perl -w -- - "$(test_oid rawsz)" "$@" <<\EOF
 use strict;
 my $oidlen = shift;
 @ARGV == 2 or die "usage: convert_to_rev_db <input> <output>";
@@ -106,40 +103,37 @@ close $rd or die $!;
 EOF
 }
 
-require_svnserve () {
-	if ! test_bool_env GIT_TEST_SVNSERVE false
-	then
-		skip_all='skipping svnserve test. (set $GIT_TEST_SVNSERVE to enable)'
-		test_done
-	fi
+require_svnserve() {
+  if ! test_bool_env GIT_TEST_SVNSERVE false; then
+    skip_all='skipping svnserve test. (set $GIT_TEST_SVNSERVE to enable)'
+    test_done
+  fi
 }
 
-start_svnserve () {
-	svnserve --listen-port $SVNSERVE_PORT \
-		 --root "$rawsvnrepo" \
-		 --listen-once \
-		 --listen-host 127.0.0.1 &
+start_svnserve() {
+  svnserve --listen-port $SVNSERVE_PORT \
+    --root "$rawsvnrepo" \
+    --listen-once \
+    --listen-host 127.0.0.1 &
 }
 
-prepare_utf8_locale () {
-	if test -z "$GIT_TEST_UTF8_LOCALE"
-	then
-		case "${LC_ALL:-$LANG}" in
-		*.[Uu][Tt][Ff]8 | *.[Uu][Tt][Ff]-8)
-			GIT_TEST_UTF8_LOCALE="${LC_ALL:-$LANG}"
-			;;
-		*)
-			GIT_TEST_UTF8_LOCALE=$(locale -a | sed -n '/\.[uU][tT][fF]-*8$/{
+prepare_utf8_locale() {
+  if test -z "$GIT_TEST_UTF8_LOCALE"; then
+    case "${LC_ALL:-$LANG}" in
+      *.[Uu][Tt][Ff]8 | *.[Uu][Tt][Ff]-8)
+        GIT_TEST_UTF8_LOCALE="${LC_ALL:-$LANG}"
+        ;;
+      *)
+        GIT_TEST_UTF8_LOCALE=$(locale -a | sed -n '/\.[uU][tT][fF]-*8$/{
 				p
 				q
 			}')
-			;;
-		esac
-	fi
-	if test -n "$GIT_TEST_UTF8_LOCALE"
-	then
-		test_set_prereq UTF8
-	else
-		say "# UTF-8 locale not available, some tests are skipped"
-	fi
+        ;;
+    esac
+  fi
+  if test -n "$GIT_TEST_UTF8_LOCALE"; then
+    test_set_prereq UTF8
+  else
+    say "# UTF-8 locale not available, some tests are skipped"
+  fi
 }

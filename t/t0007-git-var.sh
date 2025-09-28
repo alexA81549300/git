@@ -4,10 +4,10 @@ test_description='basic sanity checks for git var'
 
 . ./test-lib.sh
 
-sane_unset_all_editors () {
-	sane_unset GIT_EDITOR &&
-	sane_unset VISUAL &&
-	sane_unset EDITOR
+sane_unset_all_editors() {
+  sane_unset GIT_EDITOR \
+    && sane_unset VISUAL \
+    && sane_unset EDITOR
 }
 
 test_expect_success 'get GIT_AUTHOR_IDENT' '

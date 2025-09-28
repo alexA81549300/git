@@ -9,11 +9,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-log_with_names () {
-	git rev-list --topo-order --parents --pretty="tformat:%s" HEAD |
-	git name-rev --annotate-stdin --name-only --refs=refs/heads/$1
+log_with_names() {
+  git rev-list --topo-order --parents --pretty="tformat:%s" HEAD \
+    | git name-rev --annotate-stdin --name-only --refs=refs/heads/$1
 }
-
 
 test_expect_success 'prepare repository' '
 	test_commit 1 A &&
@@ -35,7 +34,7 @@ test_expect_success 'setup pre-rebase hook' '
 	echo "$1,$2" >.git/PRE-REBASE-INPUT
 	EOF
 '
-cat > expect <<EOF
+cat >expect <<EOF
 4
 3
 2
@@ -94,7 +93,7 @@ test_expect_success 'set up merge history' '
 	git merge side
 '
 
-cat > expect-side <<'EOF'
+cat >expect-side <<'EOF'
 commit work6 work6~1 work6^2
 Merge branch 'side' into other
 commit work6^2 work6~2
@@ -118,7 +117,7 @@ test_expect_success 'set up second root and merge' '
 	git merge --allow-unrelated-histories third
 '
 
-cat > expect-third <<'EOF'
+cat >expect-third <<'EOF'
 commit work7 work7~1 work7^2
 Merge branch 'third' into other
 commit work7^2 work7~4
@@ -179,7 +178,7 @@ test_expect_success 'fix the conflict' '
 	git add B
 '
 
-cat > expect-conflict <<EOF
+cat >expect-conflict <<EOF
 6
 5
 4

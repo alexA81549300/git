@@ -46,12 +46,11 @@ test_expect_success 'validate --ignore-revs-file' '
 	git blame --ignore-revs-file ignore_x file
 '
 
-for I in X XT
-do
-	# Ignore X (or XT), make sure A is blamed for line 1 and B for line 2.
-	# Giving X (i.e. commit) and XT (i.e. annotated tag to commit) should
-	# produce the same result.
-	test_expect_success "ignore_rev_changing_lines ($I)" '
+for I in X XT; do
+  # Ignore X (or XT), make sure A is blamed for line 1 and B for line 2.
+  # Giving X (i.e. commit) and XT (i.e. annotated tag to commit) should
+  # produce the same result.
+  test_expect_success "ignore_rev_changing_lines ($I)" '
 		git blame --line-porcelain --ignore-rev $I file >blame_raw &&
 
 		sed -ne "/^[0-9a-f][0-9a-f]* [0-9][0-9]* 1/s/ .*//p" blame_raw >actual &&

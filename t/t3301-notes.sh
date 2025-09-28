@@ -262,14 +262,13 @@ test_expect_success 'git format-patch --show-notes does show notes' '
 '
 
 for pretty in \
-	"" --pretty --pretty=raw --pretty=short --pretty=medium \
-	--pretty=full --pretty=fuller --pretty=format:%s --oneline
-do
-	case "$pretty" in
-	"") p= not= negate="" ;;
-	?*) p="$pretty" not=" not" negate="!" ;;
-	esac
-	test_expect_success "git show $pretty does$not show notes" '
+  "" --pretty --pretty=raw --pretty=short --pretty=medium \
+  --pretty=full --pretty=fuller --pretty=format:%s --oneline; do
+  case "$pretty" in
+    "") p= not= negate="" ;;
+    ?*) p="$pretty" not=" not" negate="!" ;;
+  esac
+  test_expect_success "git show $pretty does$not show notes" '
 		git show $p >actual &&
 		eval "$negate grep xyzzy actual"
 	'
@@ -1516,15 +1515,14 @@ test_expect_success 'setup testing of empty notes' '
 	echo "$empty_blob" >expect_empty
 '
 
-while read cmd
-do
-	test_expect_success "'git notes $cmd' removes empty note" "
+while read cmd; do
+  test_expect_success "'git notes $cmd' removes empty note" "
 		test_might_fail git notes remove HEAD &&
 		MSG= git notes $cmd &&
 		test_must_fail git notes list HEAD
 	"
 
-	test_expect_success "'git notes $cmd --allow-empty' stores empty note" "
+  test_expect_success "'git notes $cmd --allow-empty' stores empty note" "
 		test_might_fail git notes remove HEAD &&
 		MSG= git notes $cmd --allow-empty &&
 		git notes list HEAD >actual &&

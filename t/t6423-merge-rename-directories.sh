@@ -28,7 +28,6 @@ test_description="recursive merge with directory renames"
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-merge.sh
 
-
 ###########################################################################
 # SECTION 1: Basic cases we should be able to handle
 ###########################################################################
@@ -39,35 +38,31 @@ test_description="recursive merge with directory renames"
 #   Commit B: z/{b,c,d,e/f}
 #   Expected: y/{b,c,d,e/f}
 
-test_setup_1a () {
-	git init 1a &&
-	(
-		cd 1a &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo d >z/d &&
-		mkdir z/e &&
-		echo f >z/e/f &&
-		git add z/d z/e/f &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_1a() {
+  git init 1a \
+    && (
+      cd 1a \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo d >z/d \
+        && mkdir z/e \
+        && echo f >z/e/f \
+        && git add z/d z/e/f \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '1a: Simple directory rename detection' '
@@ -105,37 +100,33 @@ test_expect_success '1a: Simple directory rename detection' '
 #   Commit B: y/{b,c,d}
 #   Expected: y/{b,c,d,e}
 
-test_setup_1b () {
-	git init 1b &&
-	(
-		cd 1b &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir y &&
-		echo d >y/d &&
-		git add z y &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		echo e >z/e &&
-		git add z/e &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv z/b y &&
-		git mv z/c y &&
-		rmdir z &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_1b() {
+  git init 1b \
+    && (
+      cd 1b \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir y \
+        && echo d >y/d \
+        && git add z y \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && echo e >z/e \
+        && git add z/e \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv z/b y \
+        && git mv z/c y \
+        && rmdir z \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '1b: Merge a directory with another' '
@@ -168,34 +159,30 @@ test_expect_success '1b: Merge a directory with another' '
 #   Commit B: z/{b,c,d}
 #   Expected: y/{b,c,d}  (because x/d -> z/d -> y/d)
 
-test_setup_1c () {
-	git init 1c &&
-	(
-		cd 1c &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir x &&
-		echo d >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/d z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_1c() {
+  git init 1c \
+    && (
+      cd 1c \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir x \
+        && echo d >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/d z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '1c: Transitive renaming' '
@@ -231,41 +218,37 @@ test_expect_success '1c: Transitive renaming' '
 #   Note: y/m & z/n should definitely move into x.  By the same token, both
 #         y/wham_1 & z/wham_2 should too...giving us a conflict.
 
-test_setup_1d () {
-	git init 1d &&
-	(
-		cd 1d &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir y &&
-		echo d >y/d &&
-		echo e >y/e &&
-		git add z y &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z x &&
-		echo m >y/m &&
-		echo wham1 >y/wham &&
-		git add y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv y x &&
-		echo n >z/n &&
-		echo wham2 >z/wham &&
-		git add z &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_1d() {
+  git init 1d \
+    && (
+      cd 1d \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir y \
+        && echo d >y/d \
+        && echo e >y/e \
+        && git add z y \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z x \
+        && echo m >y/m \
+        && echo wham1 >y/wham \
+        && git add y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv y x \
+        && echo n >z/n \
+        && echo wham2 >z/wham \
+        && git add z \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '1d: Directory renames cause a rename/rename(2to1) conflict' '
@@ -327,35 +310,31 @@ test_expect_success '1d: Directory renames cause a rename/rename(2to1) conflict'
 #   Commit B: z/{oldb,oldc,d}
 #   Expected: y/{newb,newc,d}
 
-test_setup_1e () {
-	git init 1e &&
-	(
-		cd 1e &&
-
-		mkdir z &&
-		echo b >z/oldb &&
-		echo c >z/oldc &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir y &&
-		git mv z/oldb y/newb &&
-		git mv z/oldc y/newc &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo d >z/d &&
-		git add z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_1e() {
+  git init 1e \
+    && (
+      cd 1e \
+        && mkdir z \
+        && echo b >z/oldb \
+        && echo c >z/oldc \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir y \
+        && git mv z/oldb y/newb \
+        && git mv z/oldc y/newc \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo d >z/d \
+        && git add z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '1e: Renamed directory, with all files being renamed too' '
@@ -386,43 +365,39 @@ test_expect_success '1e: Renamed directory, with all files being renamed too' '
 #   Commit B: y/{b,c}, x/{d,e,f}
 #   Expected: y/{b,c}, x/{d,e,f,g}
 
-test_setup_1f () {
-	git init 1f &&
-	(
-		cd 1f &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo d >z/d &&
-		echo e >z/e &&
-		echo f >z/f &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		echo g >z/g &&
-		git add z/g &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		mkdir y &&
-		mkdir x &&
-		git mv z/b y/ &&
-		git mv z/c y/ &&
-		git mv z/d x/ &&
-		git mv z/e x/ &&
-		git mv z/f x/ &&
-		rmdir z &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_1f() {
+  git init 1f \
+    && (
+      cd 1f \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo d >z/d \
+        && echo e >z/e \
+        && echo f >z/f \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && echo g >z/g \
+        && git add z/g \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && mkdir y \
+        && mkdir x \
+        && git mv z/b y/ \
+        && git mv z/c y/ \
+        && git mv z/d x/ \
+        && git mv z/e x/ \
+        && git mv z/f x/ \
+        && rmdir z \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '1f: Split a directory into two other directories' '
@@ -458,7 +433,6 @@ test_expect_success '1f: Split a directory into two other directories' '
 #   in section 2, plus testcases 3a and 4a.
 ###########################################################################
 
-
 ###########################################################################
 # SECTION 2: Split into multiple directories, with equal number of paths
 #
@@ -475,36 +449,32 @@ test_expect_success '1f: Split a directory into two other directories' '
 #   Commit A: y/b, w/c
 #   Commit B: z/{b,c,d}
 #   Expected: y/b, w/c, z/d, with warning about z/ -> (y/ vs. w/) conflict
-test_setup_2a () {
-	git init 2a &&
-	(
-		cd 2a &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir y &&
-		mkdir w &&
-		git mv z/b y/ &&
-		git mv z/c w/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo d >z/d &&
-		git add z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_2a() {
+  git init 2a \
+    && (
+      cd 2a \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir y \
+        && mkdir w \
+        && git mv z/b y/ \
+        && git mv z/c w/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo d >z/d \
+        && git add z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '2a: Directory split into two on one side, with equal numbers of paths' '
@@ -537,37 +507,33 @@ test_expect_success '2a: Directory split into two on one side, with equal number
 #   Commit A: y/b, w/c
 #   Commit B: z/{b,c}, x/d
 #   Expected: y/b, w/c, x/d; No warning about z/ -> (y/ vs. w/) conflict
-test_setup_2b () {
-	git init 2b &&
-	(
-		cd 2b &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir y &&
-		mkdir w &&
-		git mv z/b y/ &&
-		git mv z/c w/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		mkdir x &&
-		echo d >x/d &&
-		git add x/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_2b() {
+  git init 2b \
+    && (
+      cd 2b \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir y \
+        && mkdir w \
+        && git mv z/b y/ \
+        && git mv z/c w/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && mkdir x \
+        && echo d >x/d \
+        && git add x/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '2b: Directory split into two on one side, with equal numbers of paths' '
@@ -603,7 +569,6 @@ test_expect_success '2b: Directory split into two on one side, with equal number
 #   messages are handled correctly.
 ###########################################################################
 
-
 ###########################################################################
 # SECTION 3: Path in question is the source path for some rename already
 #
@@ -619,37 +584,33 @@ test_expect_success '2b: Directory split into two on one side, with equal number
 #   Commit A: z/{b,c,d} (no change)
 #   Commit B: y/{b,c}, x/d
 #   Expected: y/{b,c}, x/d
-test_setup_3a () {
-	git init 3a &&
-	(
-		cd 3a &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo d >z/d &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_tick &&
-		git commit --allow-empty -m "A" &&
-
-		git checkout B &&
-		mkdir y &&
-		mkdir x &&
-		git mv z/b y/ &&
-		git mv z/c y/ &&
-		git mv z/d x/ &&
-		rmdir z &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_3a() {
+  git init 3a \
+    && (
+      cd 3a \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo d >z/d \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_tick \
+        && git commit --allow-empty -m "A" \
+        && git checkout B \
+        && mkdir y \
+        && mkdir x \
+        && git mv z/b y/ \
+        && git mv z/c y/ \
+        && git mv z/d x/ \
+        && rmdir z \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '3a: Avoid implicit rename if involved as source on other side' '
@@ -683,39 +644,35 @@ test_expect_success '3a: Avoid implicit rename if involved as source on other si
 #         get it involved in directory rename detection.  If it were, we might
 #         end up with CONFLICT:(z/d -> y/d vs. x/d vs. w/d), i.e. a
 #         rename/rename/rename(1to3) conflict, which is just weird.
-test_setup_3b () {
-	git init 3b &&
-	(
-		cd 3b &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo d >z/d &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir y &&
-		mkdir x &&
-		git mv z/b y/ &&
-		git mv z/c y/ &&
-		git mv z/d x/ &&
-		rmdir z &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		mkdir w &&
-		git mv z/d w/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_3b() {
+  git init 3b \
+    && (
+      cd 3b \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo d >z/d \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir y \
+        && mkdir x \
+        && git mv z/b y/ \
+        && git mv z/c y/ \
+        && git mv z/d x/ \
+        && rmdir z \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && mkdir w \
+        && git mv z/d w/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '3b: Avoid implicit rename if involved as source on current side' '
@@ -757,7 +714,6 @@ test_expect_success '3b: Avoid implicit rename if involved as source on current 
 #   Avoid directory-rename-detection for a path, if that path is the source
 #   of a rename on either side of a merge.
 ###########################################################################
-
 
 ###########################################################################
 # SECTION 4: Partially renamed directory; still exists on both sides of merge
@@ -806,38 +762,34 @@ test_expect_success '3b: Avoid implicit rename if involved as source on current 
 #   Expected: y/{b,c,d}, z/{e,f}
 #   NOTE: Even though most files from z moved to y, we don't want f to follow.
 
-test_setup_4a () {
-	git init 4a &&
-	(
-		cd 4a &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo d >z/d &&
-		echo e >z/e &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir y &&
-		git mv z/b y/ &&
-		git mv z/c y/ &&
-		git mv z/d y/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo f >z/f &&
-		git add z/f &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_4a() {
+  git init 4a \
+    && (
+      cd 4a \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo d >z/d \
+        && echo e >z/e \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir y \
+        && git mv z/b y/ \
+        && git mv z/c y/ \
+        && git mv z/d y/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo f >z/f \
+        && git add z/f \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '4a: Directory split, with original directory still present' '
@@ -874,7 +826,6 @@ test_expect_success '4a: Directory split, with original directory still present'
 #   detection.)  But, sadly, see testcase 8b.
 ###########################################################################
 
-
 ###########################################################################
 # SECTION 5: Files/directories in the way of subset of to-be-renamed paths
 #
@@ -895,39 +846,35 @@ test_expect_success '4a: Directory split, with original directory still present'
 #         of history, giving us no way to represent this conflict in the
 #         index.
 
-test_setup_5a () {
-	git init 5a &&
-	(
-		cd 5a &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir y &&
-		echo d >y/d &&
-		git add z y &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		echo e1 >z/e &&
-		echo f >z/f &&
-		echo e2 >y/e &&
-		git add z/e z/f y/e &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv z/b y/ &&
-		git mv z/c y/ &&
-		rmdir z &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_5a() {
+  git init 5a \
+    && (
+      cd 5a \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir y \
+        && echo d >y/d \
+        && git add z y \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && echo e1 >z/e \
+        && echo f >z/f \
+        && echo e2 >y/e \
+        && git add z/e z/f y/e \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv z/b y/ \
+        && git mv z/c y/ \
+        && rmdir z \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '5a: Merge directories, other side adds files to original and target' '
@@ -970,39 +917,35 @@ test_expect_success '5a: Merge directories, other side adds files to original an
 #         cause us to bail on directory rename detection for that path, falling
 #         back to git behavior without the directory rename detection.
 
-test_setup_5b () {
-	git init 5b &&
-	(
-		cd 5b &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo d1 >z/d &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git rm z/d &&
-		git mv z y &&
-		echo d2 >y/d &&
-		git add y/d &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		mkdir y &&
-		echo d3 >y/d &&
-		echo e >z/e &&
-		git add y/d z/e &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_5b() {
+  git init 5b \
+    && (
+      cd 5b \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo d1 >z/d \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git rm z/d \
+        && git mv z y \
+        && echo d2 >y/d \
+        && git add y/d \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && mkdir y \
+        && echo d3 >y/d \
+        && echo e >z/e \
+        && git add y/d z/e \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '5b: Rename/delete in order to get add/add/add conflict' '
@@ -1047,43 +990,39 @@ test_expect_success '5b: Rename/delete in order to get add/add/add conflict' '
 #             y/d are y/d_2 and y/d_4.  We still do the move from z/e to y/e,
 #             though, because it doesn't have anything in the way.
 
-test_setup_5c () {
-	git init 5c &&
-	(
-		cd 5c &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir x &&
-		echo d1 >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		echo d2 >y/d &&
-		git add y/d &&
-		git mv x w &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/d z/ &&
-		mkdir w &&
-		mkdir y &&
-		echo d3 >w/d &&
-		echo d4 >y/d &&
-		echo e >z/e &&
-		git add w/ y/ z/e &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_5c() {
+  git init 5c \
+    && (
+      cd 5c \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir x \
+        && echo d1 >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && echo d2 >y/d \
+        && git add y/d \
+        && git mv x w \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/d z/ \
+        && mkdir w \
+        && mkdir y \
+        && echo d3 >w/d \
+        && echo d4 >y/d \
+        && echo e >z/e \
+        && git add w/ y/ z/e \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '5c: Transitive rename would cause rename/rename/rename/add/add/add' '
@@ -1137,38 +1076,34 @@ test_expect_success '5c: Transitive rename would cause rename/rename/rename/add/
 #         detection for z/d_2, but that doesn't prevent us from applying the
 #         directory rename detection for z/f -> y/f.
 
-test_setup_5d () {
-	git init 5d &&
-	(
-		cd 5d &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		echo d1 >y/d &&
-		git add y/d &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		mkdir -p y/d &&
-		echo e >y/d/e &&
-		echo d2 >z/d &&
-		echo f >z/f &&
-		git add y/d/e z/d z/f &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_5d() {
+  git init 5d \
+    && (
+      cd 5d \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && echo d1 >y/d \
+        && git add y/d \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && mkdir -p y/d \
+        && echo e >y/d/e \
+        && echo d2 >z/d \
+        && echo f >z/f \
+        && git add y/d/e z/d z/f \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '5d: Directory/file/file conflict due to directory rename' '
@@ -1216,7 +1151,6 @@ test_expect_success '5d: Directory/file/file conflict due to directory rename' '
 #   back to old handling.  But, sadly, see testcases 8a and 8b.
 ###########################################################################
 
-
 ###########################################################################
 # SECTION 6: Same side of the merge was the one that did the rename
 #
@@ -1238,36 +1172,32 @@ test_expect_success '5d: Directory/file/file conflict due to directory rename' '
 #         them under y/ doesn't accidentally catch z/d and make it look like
 #         it is also involved in a rename/delete conflict.
 
-test_setup_6a () {
-	git init 6a &&
-	(
-		cd 6a &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo d >z/d &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git rm z/c &&
-		git rm z/d &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		mkdir y &&
-		git mv z/b y/ &&
-		git mv z/c y/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_6a() {
+  git init 6a \
+    && (
+      cd 6a \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo d >z/d \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git rm z/c \
+        && git rm z/d \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && mkdir y \
+        && git mv z/b y/ \
+        && git mv z/c y/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '6a: Tricky rename/delete' '
@@ -1336,40 +1266,36 @@ test_expect_success '6a: Tricky rename/delete' '
 #         harder for them to predict.  As such, we modified the rule, changed
 #         the behavior on testcases 6b2 and 8e, and introduced this 6b1 testcase.
 
-test_setup_6b1 () {
-	git init 6b1 &&
-	(
-		cd 6b1 &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo d >z/d &&
-		echo e >z/e &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		mkdir x &&
-		git mv y/e x/e &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv z y &&
-		mkdir z &&
-		git mv y/e z/e &&
-		echo f >z/f &&
-		git add z/f &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_6b1() {
+  git init 6b1 \
+    && (
+      cd 6b1 \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo d >z/d \
+        && echo e >z/e \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && mkdir x \
+        && git mv y/e x/e \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv z y \
+        && mkdir z \
+        && git mv y/e z/e \
+        && echo f >z/f \
+        && git add z/f \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_merge_algorithm failure success '6b1: Same renames done on both sides, plus another rename' '
@@ -1414,35 +1340,31 @@ test_expect_merge_algorithm failure success '6b1: Same renames done on both side
 #         z/d to x/d.  That seems more surprising and uglier than allowing
 #         the z/ -> y/ rename.
 
-test_setup_6b2 () {
-	git init 6b2 &&
-	(
-		cd 6b2 &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv z y &&
-		mkdir z &&
-		echo d >z/d &&
-		git add z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_6b2() {
+  git init 6b2 \
+    && (
+      cd 6b2 \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv z y \
+        && mkdir z \
+        && echo d >z/d \
+        && git add z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_merge_algorithm failure success '6b2: Same rename done on both sides' '
@@ -1478,34 +1400,30 @@ test_expect_merge_algorithm failure success '6b2: Same rename done on both sides
 #   NOTE: Seems obvious, but just checking that the implementation doesn't
 #         "accidentally detect a rename" and give us y/{b,c,d}.
 
-test_setup_6c () {
-	git init 6c &&
-	(
-		cd 6c &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_tick &&
-		git commit --allow-empty -m "A" &&
-
-		git checkout B &&
-		git mv z y &&
-		mkdir z &&
-		echo d >z/d &&
-		git add z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_6c() {
+  git init 6c \
+    && (
+      cd 6c \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_tick \
+        && git commit --allow-empty -m "A" \
+        && git checkout B \
+        && git mv z y \
+        && mkdir z \
+        && echo d >z/d \
+        && git add z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '6c: Rename only done on same side' '
@@ -1541,34 +1459,30 @@ test_expect_success '6c: Rename only done on same side' '
 #   NOTE: Again, this seems obvious but just checking that the implementation
 #         doesn't "accidentally detect a rename" and give us y/{b,c,d}.
 
-test_setup_6d () {
-	git init 6d &&
-	(
-		cd 6d &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir x &&
-		echo d >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_tick &&
-		git commit --allow-empty -m "A" &&
-
-		git checkout B &&
-		git mv z y &&
-		git mv x z &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_6d() {
+  git init 6d \
+    && (
+      cd 6d \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir x \
+        && echo d >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_tick \
+        && git commit --allow-empty -m "A" \
+        && git checkout B \
+        && git mv z y \
+        && git mv x z \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '6d: We do not always want transitive renaming' '
@@ -1604,35 +1518,31 @@ test_expect_success '6d: We do not always want transitive renaming' '
 #         doesn't "accidentally detect a rename" and give us y/{b,c} +
 #         add/add conflict on y/d_1 vs y/d_2.
 
-test_setup_6e () {
-	git init 6e &&
-	(
-		cd 6e &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_tick &&
-		git commit --allow-empty -m "A" &&
-
-		git checkout B &&
-		git mv z y &&
-		echo d1 > y/d &&
-		mkdir z &&
-		echo d2 > z/d &&
-		git add y/d z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_6e() {
+  git init 6e \
+    && (
+      cd 6e \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_tick \
+        && git commit --allow-empty -m "A" \
+        && git checkout B \
+        && git mv z y \
+        && echo d1 >y/d \
+        && mkdir z \
+        && echo d2 >z/d \
+        && git add y/d z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '6e: Add/add from one side' '
@@ -1666,7 +1576,6 @@ test_expect_success '6e: Add/add from one side' '
 #   side of history is the one doing the renaming.
 ###########################################################################
 
-
 ###########################################################################
 # SECTION 7: More involved Edge/Corner cases
 #
@@ -1699,37 +1608,33 @@ test_expect_success '6e: Add/add from one side' '
 #   Expected: y/d, CONFLICT(rename/rename for both z/b and z/c)
 #   NOTE: There's a rename of z/ here, y/ has more renames, so z/d -> y/d.
 
-test_setup_7a () {
-	git init 7a &&
-	(
-		cd 7a &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		mkdir w &&
-		mkdir x &&
-		git mv z/b w/ &&
-		git mv z/c x/ &&
-		echo d > z/d &&
-		git add z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_7a() {
+  git init 7a \
+    && (
+      cd 7a \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && mkdir w \
+        && mkdir x \
+        && git mv z/b w/ \
+        && git mv z/c x/ \
+        && echo d >z/d \
+        && git add z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '7a: rename-dir vs. rename-dir (NOT split evenly) PLUS add-other-file' '
@@ -1771,38 +1676,34 @@ test_expect_success '7a: rename-dir vs. rename-dir (NOT split evenly) PLUS add-o
 #   Commit B: z/{b,c,d_1},        w/d_2
 #   Expected: y/{b,c}, CONFLICT(rename/rename(2to1): x/d_1, w/d_2 -> y_d)
 
-test_setup_7b () {
-	git init 7b &&
-	(
-		cd 7b &&
-
-		mkdir z &&
-		mkdir x &&
-		mkdir w &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo d1 > x/d &&
-		echo d2 > w/d &&
-		git add z x w &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		git mv w/d y/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/d z/ &&
-		rmdir x &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_7b() {
+  git init 7b \
+    && (
+      cd 7b \
+        && mkdir z \
+        && mkdir x \
+        && mkdir w \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo d1 >x/d \
+        && echo d2 >w/d \
+        && git add z x w \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && git mv w/d y/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/d z/ \
+        && rmdir x \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '7b: rename/rename(2to1), but only due to transitive rename' '
@@ -1860,36 +1761,32 @@ test_expect_success '7b: rename/rename(2to1), but only due to transitive rename'
 #         neither CONFLICT(x/d -> w/d vs. z/d)
 #         nor CONFLiCT x/d -> w/d vs. y/d vs. z/d)
 
-test_setup_7c () {
-	git init 7c &&
-	(
-		cd 7c &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir x &&
-		echo d >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		git mv x w &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/d z/ &&
-		rmdir x &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_7c() {
+  git init 7c \
+    && (
+      cd 7c \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir x \
+        && echo d >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && git mv x w \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/d z/ \
+        && rmdir x \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '7c: rename/rename(1to...2or3); transitive rename may add complexity' '
@@ -1925,36 +1822,32 @@ test_expect_success '7c: rename/rename(1to...2or3); transitive rename may add co
 #   Expected: y/{b,c}, CONFLICT(delete x/d vs rename to y/d)
 #   NOTE: z->y so NOT CONFLICT(delete x/d vs rename to z/d)
 
-test_setup_7d () {
-	git init 7d &&
-	(
-		cd 7d &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir x &&
-		echo d >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		git rm -rf x &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/d z/ &&
-		rmdir x &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_7d() {
+  git init 7d \
+    && (
+      cd 7d \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir x \
+        && echo d >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && git rm -rf x \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/d z/ \
+        && rmdir x \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '7d: transitive rename involved in rename/delete; how is it reported?' '
@@ -2026,41 +1919,37 @@ test_expect_success '7d: transitive rename involved in rename/delete; how is it 
 #         see testcases 9c and 9d for further discussion of this issue and
 #         how it's resolved.
 
-test_setup_7e () {
-	git init 7e &&
-	(
-		cd 7e &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir x &&
-		echo d1 >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		git rm x/d &&
-		mkdir -p x/d &&
-		mkdir -p y/d &&
-		echo f >x/d/f &&
-		echo g >y/d/g &&
-		git add x/d/f y/d/g &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/d z/ &&
-		rmdir x &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_7e() {
+  git init 7e \
+    && (
+      cd 7e \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir x \
+        && echo d1 >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && git rm x/d \
+        && mkdir -p x/d \
+        && mkdir -p y/d \
+        && echo f >x/d/f \
+        && echo g >y/d/g \
+        && git add x/d/f y/d/g \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/d z/ \
+        && rmdir x \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '7e: transitive rename in rename/delete AND dirs in the way' '
@@ -2136,38 +2025,34 @@ test_expect_success '7e: transitive rename in rename/delete AND dirs in the way'
 # simple rule from section 5 prevents me from handling this as optimally as
 # we potentially could.
 
-test_setup_8a () {
-	git init 8a &&
-	(
-		cd 8a &&
-
-		mkdir x &&
-		mkdir y &&
-		echo a >x/a &&
-		echo b >x/b &&
-		echo c >y/c &&
-		echo d >y/d &&
-		git add x y &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		echo e >x/e &&
-		echo f >y/f &&
-		git add x/e y/f &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv y z &&
-		git mv x y &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_8a() {
+  git init 8a \
+    && (
+      cd 8a \
+        && mkdir x \
+        && mkdir y \
+        && echo a >x/a \
+        && echo b >x/b \
+        && echo c >y/c \
+        && echo d >y/d \
+        && git add x y \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && echo e >x/e \
+        && echo f >y/f \
+        && git add x/e y/f \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv y z \
+        && git mv x y \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '8a: Dual-directory rename, one into the others way' '
@@ -2215,38 +2100,34 @@ test_expect_success '8a: Dual-directory rename, one into the others way' '
 # making us fall back to pre-directory-rename-detection behavior for both
 # e_1 and e_2.
 
-test_setup_8b () {
-	git init 8b &&
-	(
-		cd 8b &&
-
-		mkdir x &&
-		mkdir y &&
-		echo a1 >x/a &&
-		echo b1 >x/b &&
-		echo a2 >y/a &&
-		echo b2 >y/b &&
-		git add x y &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		echo e1 >x/e &&
-		echo e2 >y/e &&
-		git add x/e y/e &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv y z &&
-		git mv x y &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_8b() {
+  git init 8b \
+    && (
+      cd 8b \
+        && mkdir x \
+        && mkdir y \
+        && echo a1 >x/a \
+        && echo b1 >x/b \
+        && echo a2 >y/a \
+        && echo b2 >y/b \
+        && git add x y \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && echo e1 >x/e \
+        && echo e2 >y/e \
+        && git add x/e y/e \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv y z \
+        && git mv x y \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '8b: Dual-directory rename, one into the others way, with conflicting filenames' '
@@ -2289,37 +2170,33 @@ test_expect_success '8b: Dual-directory rename, one into the others way, with co
 #         rename/rename(1to2) conflicts -- see testcase 9h.  See also
 #         notes in 8d.
 
-test_setup_8c () {
-	git init 8c &&
-	(
-		cd 8c &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		test_seq 1 10 >z/d &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git rm z/d &&
-		git mv z y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo 11 >z/d &&
-		test_chmod +x z/d &&
-		echo e >z/e &&
-		git add z/d z/e &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_8c() {
+  git init 8c \
+    && (
+      cd 8c \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && test_seq 1 10 >z/d \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git rm z/d \
+        && git mv z y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo 11 >z/d \
+        && test_chmod +x z/d \
+        && echo e >z/e \
+        && git add z/d z/e \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '8c: modify/delete or rename+modify/delete' '
@@ -2369,35 +2246,31 @@ test_expect_success '8c: modify/delete or rename+modify/delete' '
 #   during merging are supposed to be about opposite sides doing things
 #   differently.
 
-test_setup_8d () {
-	git init 8d &&
-	(
-		cd 8d &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		test_seq 1 10 >z/d &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git rm z/d &&
-		git mv z y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo e >z/e &&
-		git add z/e &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_8d() {
+  git init 8d \
+    && (
+      cd 8d \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && test_seq 1 10 >z/d \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git rm z/d \
+        && git mv z y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo e >z/e \
+        && git add z/e \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '8d: rename/delete...or not?' '
@@ -2452,35 +2325,31 @@ test_expect_success '8d: rename/delete...or not?' '
 #        on both sides) which thus means users are better able to predict
 #        the behavior, and predict it without computing as many details.
 
-test_setup_8e () {
-	git init 8e &&
-	(
-		cd 8e &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv z w &&
-		mkdir z &&
-		echo d >z/d &&
-		git add z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_8e() {
+  git init 8e \
+    && (
+      cd 8e \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv z w \
+        && mkdir z \
+        && echo d >z/d \
+        && git add z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '8e: Both sides rename, one side adds to original directory' '
@@ -2536,39 +2405,35 @@ test_expect_success '8e: Both sides rename, one side adds to original directory'
 #         of which one had the most paths going to it.  A naive implementation
 #         of that could take the new file in commit B at z/i to x/w/i or x/i.
 
-test_setup_9a () {
-	git init 9a &&
-	(
-		cd 9a &&
-
-		mkdir -p z/d &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo e >z/d/e &&
-		echo f >z/d/f &&
-		echo g >z/d/g &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir x &&
-		git mv z/d x/w &&
-		git mv z y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo h >z/d/h &&
-		echo i >z/i &&
-		git add z &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_9a() {
+  git init 9a \
+    && (
+      cd 9a \
+        && mkdir -p z/d \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo e >z/d/e \
+        && echo f >z/d/f \
+        && echo g >z/d/g \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir x \
+        && git mv z/d x/w \
+        && git mv z y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo h >z/d/h \
+        && echo i >z/i \
+        && git add z \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '9a: Inner renamed directory within outer renamed directory' '
@@ -2608,38 +2473,34 @@ test_expect_success '9a: Inner renamed directory within outer renamed directory'
 #   Commit B: z/{b,c,d_3}
 #   Expected: y/{b,c,d_merged}
 
-test_setup_9b () {
-	git init 9b &&
-	(
-		cd 9b &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir x &&
-		test_seq 1 10 >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		test_seq 1 11 >x/d &&
-		git add x/d &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		test_seq 0 10 >x/d &&
-		git mv x/d z/d &&
-		git add z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_9b() {
+  git init 9b \
+    && (
+      cd 9b \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir x \
+        && test_seq 1 10 >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && test_seq 1 11 >x/d \
+        && git add x/d \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && test_seq 0 10 >x/d \
+        && git mv x/d z/d \
+        && git add z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '9b: Transitive rename with content merge' '
@@ -2696,41 +2557,37 @@ test_expect_success '9b: Transitive rename with content merge' '
 #         away, then ignore that particular rename from the other side of
 #         history for any implicit directory renames.
 
-test_setup_9c () {
-	git init 9c &&
-	(
-		cd 9c &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		mkdir x &&
-		echo d >x/d &&
-		echo e >x/e &&
-		mkdir w &&
-		echo f >w/f &&
-		git add z x w &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		git mv w/f x/ &&
-		echo g >x/g &&
-		git add x/g &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/d z/d &&
-		git mv x/e z/e &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_9c() {
+  git init 9c \
+    && (
+      cd 9c \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && mkdir x \
+        && echo d >x/d \
+        && echo e >x/e \
+        && mkdir w \
+        && echo f >w/f \
+        && git add z x w \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && git mv w/f x/ \
+        && echo g >x/g \
+        && git add x/g \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/d z/d \
+        && git mv x/e z/e \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '9c: Doubly transitive rename?' '
@@ -2785,41 +2642,37 @@ test_expect_success '9c: Doubly transitive rename?' '
 #   simple rules that are consistent with what we need for all the other
 #   testcases and simplifies things for the user.
 
-test_setup_9d () {
-	git init 9d &&
-	(
-		cd 9d &&
-
-		mkdir z y x w v u &&
-		echo a >z/a &&
-		echo b >y/b &&
-		echo c >x/c &&
-		echo d >w/d &&
-		echo e >v/e &&
-		echo f >u/f &&
-		git add z y x w v u &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z/a y/ &&
-		git mv x/c w/ &&
-		git mv v/e u/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo t >z/t &&
-		git mv y/b x/ &&
-		git mv w/d v/ &&
-		git add z/t &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_9d() {
+  git init 9d \
+    && (
+      cd 9d \
+        && mkdir z y x w v u \
+        && echo a >z/a \
+        && echo b >y/b \
+        && echo c >x/c \
+        && echo d >w/d \
+        && echo e >v/e \
+        && echo f >u/f \
+        && git add z y x w v u \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z/a y/ \
+        && git mv x/c w/ \
+        && git mv v/e u/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo t >z/t \
+        && git mv y/b x/ \
+        && git mv w/d v/ \
+        && git add z/t \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '9d: N-way transitive rename?' '
@@ -2860,49 +2713,45 @@ test_expect_success '9d: N-way transitive rename?' '
 #   Expected: combined/{a,b,c,d,e,f,g,h,i,j,k,l}, CONFLICT(Nto1) warnings,
 #             dir1/yo, dir2/yo, dir3/yo, dirN/yo
 
-test_setup_9e () {
-	git init 9e &&
-	(
-		cd 9e &&
-
-		mkdir dir1 dir2 dir3 dirN &&
-		echo a >dir1/a &&
-		echo b >dir1/b &&
-		echo d >dir2/d &&
-		echo e >dir2/e &&
-		echo g >dir3/g &&
-		echo h >dir3/h &&
-		echo j >dirN/j &&
-		echo k >dirN/k &&
-		git add dir* &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		echo c  >dir1/c &&
-		echo yo >dir1/yo &&
-		echo f  >dir2/f &&
-		echo yo >dir2/yo &&
-		echo i  >dir3/i &&
-		echo yo >dir3/yo &&
-		echo l  >dirN/l &&
-		echo yo >dirN/yo &&
-		git add dir* &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv dir1 combined &&
-		git mv dir2/* combined/ &&
-		git mv dir3/* combined/ &&
-		git mv dirN/* combined/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_9e() {
+  git init 9e \
+    && (
+      cd 9e \
+        && mkdir dir1 dir2 dir3 dirN \
+        && echo a >dir1/a \
+        && echo b >dir1/b \
+        && echo d >dir2/d \
+        && echo e >dir2/e \
+        && echo g >dir3/g \
+        && echo h >dir3/h \
+        && echo j >dirN/j \
+        && echo k >dirN/k \
+        && git add dir* \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && echo c >dir1/c \
+        && echo yo >dir1/yo \
+        && echo f >dir2/f \
+        && echo yo >dir2/yo \
+        && echo i >dir3/i \
+        && echo yo >dir3/yo \
+        && echo l >dirN/l \
+        && echo yo >dirN/yo \
+        && git add dir* \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv dir1 combined \
+        && git mv dir2/* combined/ \
+        && git mv dir3/* combined/ \
+        && git mv dirN/* combined/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '9e: N-to-1 whammo' '
@@ -2953,35 +2802,31 @@ test_expect_success '9e: N-to-1 whammo' '
 #   Commit B: goal/{a,b}/$more_files, goal/c
 #   Expected: priority/{a,b}/$more_files, priority/c
 
-test_setup_9f () {
-	git init 9f &&
-	(
-		cd 9f &&
-
-		mkdir -p goal/a &&
-		mkdir -p goal/b &&
-		echo foo >goal/a/foo &&
-		echo bar >goal/b/bar &&
-		echo baz >goal/b/baz &&
-		git add goal &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv goal/ priority &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo c >goal/c &&
-		git add goal/c &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_9f() {
+  git init 9f \
+    && (
+      cd 9f \
+        && mkdir -p goal/a \
+        && mkdir -p goal/b \
+        && echo foo >goal/a/foo \
+        && echo bar >goal/b/bar \
+        && echo baz >goal/b/baz \
+        && git add goal \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv goal/ priority \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo c >goal/c \
+        && git add goal/c \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '9f: Renamed directory that only contained immediate subdirs' '
@@ -3026,38 +2871,34 @@ test_expect_success '9f: Renamed directory that only contained immediate subdirs
 # and "b" != "bravo".  But I'm not sure it's really a failure given that
 # viewpoint...
 
-test_setup_9g () {
-	git init 9g &&
-	(
-		cd 9g &&
-
-		mkdir -p goal/a &&
-		mkdir -p goal/b &&
-		echo foo >goal/a/foo &&
-		echo bar >goal/b/bar &&
-		echo baz >goal/b/baz &&
-		git add goal &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir priority &&
-		git mv goal/a/ priority/alpha &&
-		git mv goal/b/ priority/beta &&
-		rmdir goal/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo c >goal/c &&
-		git add goal/c &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_9g() {
+  git init 9g \
+    && (
+      cd 9g \
+        && mkdir -p goal/a \
+        && mkdir -p goal/b \
+        && echo foo >goal/a/foo \
+        && echo bar >goal/b/bar \
+        && echo baz >goal/b/baz \
+        && git add goal \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir priority \
+        && git mv goal/a/ priority/alpha \
+        && git mv goal/b/ priority/beta \
+        && rmdir goal/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo c >goal/c \
+        && git add goal/c \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_failure '9g: Renamed directory that only contained immediate subdirs, immediate subdirs renamed' '
@@ -3095,39 +2936,35 @@ test_expect_failure '9g: Renamed directory that only contained immediate subdirs
 #   Expected: y/{b,c}, x/d_2
 #   NOTE: If we applied the z/ -> y/ rename to z/d, then we'd end up with
 #         a rename/rename(1to2) conflict (z/d -> y/d vs. x/d)
-test_setup_9h () {
-	git init 9h &&
-	(
-		cd 9h &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		printf "1\n2\n3\n4\n5\n6\n7\n8\nd\n" >z/d &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_tick &&
-		echo more >>z/d &&
-		git add z/d &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		mkdir y &&
-		mkdir x &&
-		git mv z/b y/ &&
-		git mv z/c y/ &&
-		git mv z/d x/ &&
-		rmdir z &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_9h() {
+  git init 9h \
+    && (
+      cd 9h \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && printf "1\n2\n3\n4\n5\n6\n7\n8\nd\n" >z/d \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_tick \
+        && echo more >>z/d \
+        && git add z/d \
+        && git commit -m "A" \
+        && git checkout B \
+        && mkdir y \
+        && mkdir x \
+        && git mv z/b y/ \
+        && git mv z/c y/ \
+        && git mv z/d x/ \
+        && rmdir z \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '9h: Avoid dir rename on merely modified path' '
@@ -3176,32 +3013,28 @@ test_expect_success '9h: Avoid dir rename on merely modified path' '
 #   Expected: Aborted Merge +
 #       ERROR_MSG(untracked working tree files would be overwritten by merge)
 
-test_setup_10a () {
-	git init 10a &&
-	(
-		cd 10a &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git rm z/c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv z/c z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_10a() {
+  git init 10a \
+    && (
+      cd 10a \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git rm z/c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv z/c z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '10a: Overwrite untracked with normal rename/delete' '
@@ -3242,35 +3075,31 @@ test_expect_success '10a: Overwrite untracked with normal rename/delete' '
 #             z/c_1 -> z/d_1 rename recorded at stage 3 for y/d +
 #       ERROR_MSG(refusing to lose untracked file at 'y/d')
 
-test_setup_10b () {
-	git init 10b &&
-	(
-		cd 10b &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git rm z/c &&
-		git mv z/ y/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv z/c z/d &&
-		echo e >z/e &&
-		git add z/e &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_10b() {
+  git init 10b \
+    && (
+      cd 10b \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git rm z/c \
+        && git mv z/ y/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv z/c z/d \
+        && echo e >z/e \
+        && git add z/e \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '10b: Overwrite untracked with dir rename + delete' '
@@ -3333,36 +3162,32 @@ test_expect_success '10b: Overwrite untracked with dir rename + delete' '
 #             y/c~B^0 +
 #             ERROR_MSG(Refusing to lose untracked file at y/c)
 
-test_setup_10c () {
-	git init 10c_$1 &&
-	(
-		cd 10c_$1 &&
-
-		mkdir z x &&
-		echo a >z/a &&
-		echo b >z/b &&
-		echo c >x/c &&
-		echo d >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir w &&
-		git mv x/c w/c &&
-		git mv z/ y/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/c z/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_10c() {
+  git init 10c_$1 \
+    && (
+      cd 10c_$1 \
+        && mkdir z x \
+        && echo a >z/a \
+        && echo b >z/b \
+        && echo c >x/c \
+        && echo d >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir w \
+        && git mv x/c w/c \
+        && git mv z/ y/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/c z/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '10c1: Overwrite untracked with dir rename/rename(1to2)' '
@@ -3471,38 +3296,34 @@ test_expect_success '10c2: Overwrite untracked with dir rename/rename(1to2), oth
 #             CONFLICT(rename/rename) z/c_1 vs x/f_2 -> y/wham
 #             ERROR_MSG(Refusing to lose untracked file at y/wham)
 
-test_setup_10d () {
-	git init 10d &&
-	(
-		cd 10d &&
-
-		mkdir z x &&
-		echo a >z/a &&
-		echo b >z/b &&
-		echo c >z/c &&
-		echo d >x/d &&
-		echo e >x/e &&
-		echo f >x/f &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z/c x/wham &&
-		git mv z/ y/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/f z/wham &&
-		git mv x/ y/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_10d() {
+  git init 10d \
+    && (
+      cd 10d \
+        && mkdir z x \
+        && echo a >z/a \
+        && echo b >z/b \
+        && echo c >z/c \
+        && echo d >x/d \
+        && echo e >x/e \
+        && echo f >x/f \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z/c x/wham \
+        && git mv z/ y/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/f z/wham \
+        && git mv x/ y/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '10d: Delete untracked with dir rename/rename(2to1)' '
@@ -3567,33 +3388,29 @@ test_expect_success '10d: Delete untracked with dir rename/rename(2to1)' '
 #   Commit B: z/{a,b,c}
 #   Expected: y/{a,b,c} + untracked z/c
 
-test_setup_10e () {
-	git init 10e &&
-	(
-		cd 10e &&
-
-		mkdir z &&
-		echo a >z/a &&
-		echo b >z/b &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z/ y/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo c >z/c &&
-		git add z/c &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_10e() {
+  git init 10e \
+    && (
+      cd 10e \
+        && mkdir z \
+        && echo a >z/a \
+        && echo b >z/b \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z/ y/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo c >z/c \
+        && git add z/c \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_merge_algorithm failure success '10e: Does git complain about untracked file that is not really in the way?' '
@@ -3649,33 +3466,29 @@ test_expect_merge_algorithm failure success '10e: Does git complain about untrac
 #             z/c~HEAD with contents of B:z/b_v2,
 #             z/c with uncommitted mods on top of A:z/c_v1
 
-test_setup_11a () {
-	git init 11a &&
-	(
-		cd 11a &&
-
-		mkdir z &&
-		echo a >z/a &&
-		test_seq 1 10 >z/b &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z/b z/c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo 11 >>z/b &&
-		git add z/b &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_11a() {
+  git init 11a \
+    && (
+      cd 11a \
+        && mkdir z \
+        && echo a >z/a \
+        && test_seq 1 10 >z/b \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z/b z/c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo 11 >>z/b \
+        && git add z/b \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '11a: Avoid losing dirty contents with simple rename' '
@@ -3726,36 +3539,31 @@ test_expect_success '11a: Avoid losing dirty contents with simple rename' '
 #   Expected: y/{a,c_v2}, x/b, z/c_v1 with uncommitted mods untracked,
 #             ERROR_MSG(Refusing to lose dirty file at z/c)
 
-
-test_setup_11b () {
-	git init 11b &&
-	(
-		cd 11b &&
-
-		mkdir z x &&
-		echo a >z/a &&
-		echo b >x/b &&
-		test_seq 1 10 >x/c &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv x/c z/c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv z y &&
-		echo 11 >>x/c &&
-		git add x/c &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_11b() {
+  git init 11b \
+    && (
+      cd 11b \
+        && mkdir z x \
+        && echo a >z/a \
+        && echo b >x/b \
+        && test_seq 1 10 >x/c \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv x/c z/c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv z y \
+        && echo 11 >>x/c \
+        && git add x/c \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '11b: Avoid losing dirty file involved in directory rename' '
@@ -3809,36 +3617,32 @@ test_expect_success '11b: Avoid losing dirty file involved in directory rename' 
 #   Expected: Abort_msg("following files would be overwritten by merge") +
 #             y/c left untouched (still has uncommitted mods)
 
-test_setup_11c () {
-	git init 11c &&
-	(
-		cd 11c &&
-
-		mkdir y x &&
-		echo a >y/a &&
-		echo b >x/b &&
-		test_seq 1 10 >x/c &&
-		git add y x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv x/c y/c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		mkdir y/c &&
-		echo d >y/c/d &&
-		echo 11 >>x/c &&
-		git add x/c y/c/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_11c() {
+  git init 11c \
+    && (
+      cd 11c \
+        && mkdir y x \
+        && echo a >y/a \
+        && echo b >x/b \
+        && test_seq 1 10 >x/c \
+        && git add y x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv x/c y/c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && mkdir y/c \
+        && echo d >y/c/d \
+        && echo 11 >>x/c \
+        && git add x/c y/c/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '11c: Avoid losing not-uptodate with rename + D/F conflict' '
@@ -3882,37 +3686,33 @@ test_expect_success '11c: Avoid losing not-uptodate with rename + D/F conflict' 
 #             Warning_Msg("Refusing to lose dirty file at z/c) +
 #             y/{a,c~HEAD,c/d}, x/b, now-untracked z/c_v1 with uncommitted mods
 
-test_setup_11d () {
-	git init 11d &&
-	(
-		cd 11d &&
-
-		mkdir z x &&
-		echo a >z/a &&
-		echo b >x/b &&
-		test_seq 1 10 >x/c &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv x/c z/c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv z y &&
-		mkdir y/c &&
-		echo d >y/c/d &&
-		echo 11 >>x/c &&
-		git add x/c y/c/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_11d() {
+  git init 11d \
+    && (
+      cd 11d \
+        && mkdir z x \
+        && echo a >z/a \
+        && echo b >x/b \
+        && test_seq 1 10 >x/c \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv x/c z/c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv z y \
+        && mkdir y/c \
+        && echo d >y/c/d \
+        && echo 11 >>x/c \
+        && git add x/c y/c/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '11d: Avoid losing not-uptodate with rename + D/F conflict' '
@@ -3967,38 +3767,34 @@ test_expect_success '11d: Avoid losing not-uptodate with rename + D/F conflict' 
 #             y/c~HEAD has A:y/c_2 contents
 #             y/c has dirty file from before merge
 
-test_setup_11e () {
-	git init 11e &&
-	(
-		cd 11e &&
-
-		mkdir z x &&
-		echo a >z/a &&
-		echo b >z/b &&
-		echo c >x/c &&
-		echo d >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z/ y/ &&
-		echo different >y/c &&
-		mkdir w &&
-		git mv x/c w/ &&
-		git add y/c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/c z/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_11e() {
+  git init 11e \
+    && (
+      cd 11e \
+        && mkdir z x \
+        && echo a >z/a \
+        && echo b >z/b \
+        && echo c >x/c \
+        && echo d >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z/ y/ \
+        && echo different >y/c \
+        && mkdir w \
+        && git mv x/c w/ \
+        && git add y/c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/c z/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '11e: Avoid deleting not-uptodate with dir rename/rename(1to2)/add' '
@@ -4059,35 +3855,31 @@ test_expect_success '11e: Avoid deleting not-uptodate with dir rename/rename(1to
 #             CONFLICT(rename/rename) x/c vs x/d -> y/wham
 #             ERROR_MSG(Refusing to lose dirty file at y/wham)
 
-test_setup_11f () {
-	git init 11f &&
-	(
-		cd 11f &&
-
-		mkdir z x &&
-		echo a >z/a &&
-		echo b >z/b &&
-		test_seq 1 10 >x/c &&
-		echo d >x/d &&
-		git add z x &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z/ y/ &&
-		git mv x/c y/wham &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/d z/wham &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_11f() {
+  git init 11f \
+    && (
+      cd 11f \
+        && mkdir z x \
+        && echo a >z/a \
+        && echo b >z/b \
+        && test_seq 1 10 >x/c \
+        && echo d >x/d \
+        && git add z x \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z/ y/ \
+        && git mv x/c y/wham \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/d z/wham \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '11f: Avoid deleting not-uptodate with dir rename/rename(2to1)' '
@@ -4154,36 +3946,32 @@ test_expect_success '11f: Avoid deleting not-uptodate with dir rename/rename(2to
 #   Commit B: node1/{leaf1,leaf2,leaf5}, node2/{leaf3,leaf4,leaf6}
 #   Expected: node1/{leaf1,leaf2,leaf5,node2/{leaf3,leaf4,leaf6}}
 
-test_setup_12a () {
-	git init 12a &&
-	(
-		cd 12a &&
-
-		mkdir -p node1 node2 &&
-		echo leaf1 >node1/leaf1 &&
-		echo leaf2 >node1/leaf2 &&
-		echo leaf3 >node2/leaf3 &&
-		echo leaf4 >node2/leaf4 &&
-		git add node1 node2 &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv node2/ node1/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo leaf5 >node1/leaf5 &&
-		echo leaf6 >node2/leaf6 &&
-		git add node1 node2 &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_12a() {
+  git init 12a \
+    && (
+      cd 12a \
+        && mkdir -p node1 node2 \
+        && echo leaf1 >node1/leaf1 \
+        && echo leaf2 >node1/leaf2 \
+        && echo leaf3 >node2/leaf3 \
+        && echo leaf4 >node2/leaf4 \
+        && git add node1 node2 \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv node2/ node1/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo leaf5 >node1/leaf5 \
+        && echo leaf6 >node2/leaf6 \
+        && git add node1 node2 \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '12a: Moving one directory hierarchy into another' '
@@ -4237,34 +4025,30 @@ test_expect_success '12a: Moving one directory hierarchy into another' '
 #             node1/node2/{leaf3, leaf4}
 #             node2/node1/{leaf1, leaf2}
 
-test_setup_12b1 () {
-	git init 12b1 &&
-	(
-		cd 12b1 &&
-
-		mkdir -p node1 node2 &&
-		echo leaf1 >node1/leaf1 &&
-		echo leaf2 >node1/leaf2 &&
-		echo leaf3 >node2/leaf3 &&
-		echo leaf4 >node2/leaf4 &&
-		git add node1 node2 &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv node2/ node1/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv node1/ node2/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_12b1() {
+  git init 12b1 \
+    && (
+      cd 12b1 \
+        && mkdir -p node1 node2 \
+        && echo leaf1 >node1/leaf1 \
+        && echo leaf2 >node1/leaf2 \
+        && echo leaf3 >node2/leaf3 \
+        && echo leaf4 >node2/leaf4 \
+        && git add node1 node2 \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv node2/ node1/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv node1/ node2/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_merge_algorithm failure success '12b1: Moving two directory hierarchies into each other' '
@@ -4326,38 +4110,34 @@ test_expect_merge_algorithm failure success '12b1: Moving two directory hierarch
 #         To which, I can do no more than shrug my shoulders and say that
 #         even simple rules give weird results when given weird inputs.
 
-test_setup_12b2 () {
-	git init 12b2 &&
-	(
-		cd 12b2 &&
-
-		mkdir -p node1 node2 &&
-		echo leaf1 >node1/leaf1 &&
-		echo leaf2 >node1/leaf2 &&
-		echo leaf3 >node2/leaf3 &&
-		echo leaf4 >node2/leaf4 &&
-		git add node1 node2 &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv node2/ node1/ &&
-		echo leaf5 >node1/leaf5 &&
-		git add node1/leaf5 &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv node1/ node2/ &&
-		echo leaf6 >node2/leaf6 &&
-		git add node2/leaf6 &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_12b2() {
+  git init 12b2 \
+    && (
+      cd 12b2 \
+        && mkdir -p node1 node2 \
+        && echo leaf1 >node1/leaf1 \
+        && echo leaf2 >node1/leaf2 \
+        && echo leaf3 >node2/leaf3 \
+        && echo leaf4 >node2/leaf4 \
+        && git add node1 node2 \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv node2/ node1/ \
+        && echo leaf5 >node1/leaf5 \
+        && git add node1/leaf5 \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv node1/ node2/ \
+        && echo leaf6 >node2/leaf6 \
+        && git add node2/leaf6 \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '12b2: Moving two directory hierarchies into each other' '
@@ -4401,38 +4181,34 @@ test_expect_success '12b2: Moving two directory hierarchies into each other' '
 #   NOTE: This is *exactly* like 12b1, except that every path is modified on
 #         each side of the merge.
 
-test_setup_12c1 () {
-	git init 12c1 &&
-	(
-		cd 12c1 &&
-
-		mkdir -p node1 node2 &&
-		printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf1\n" >node1/leaf1 &&
-		printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf2\n" >node1/leaf2 &&
-		printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf3\n" >node2/leaf3 &&
-		printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf4\n" >node2/leaf4 &&
-		git add node1 node2 &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv node2/ node1/ &&
-		for i in $(git ls-files); do echo side A >>$i; done &&
-		git add -u &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv node1/ node2/ &&
-		for i in $(git ls-files); do echo side B >>$i; done &&
-		git add -u &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_12c1() {
+  git init 12c1 \
+    && (
+      cd 12c1 \
+        && mkdir -p node1 node2 \
+        && printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf1\n" >node1/leaf1 \
+        && printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf2\n" >node1/leaf2 \
+        && printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf3\n" >node2/leaf3 \
+        && printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf4\n" >node2/leaf4 \
+        && git add node1 node2 \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv node2/ node1/ \
+        && for i in $(git ls-files); do echo side A >>$i; done \
+        && git add -u \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv node1/ node2/ \
+        && for i in $(git ls-files); do echo side B >>$i; done \
+        && git add -u \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_merge_algorithm failure success '12c1: Moving one directory hierarchy into another w/ content merge' '
@@ -4491,42 +4267,38 @@ test_expect_merge_algorithm failure success '12c1: Moving one directory hierarch
 #   NOTE: This is *exactly* like 12b2, except that every path from O is modified
 #         on each side of the merge.
 
-test_setup_12c2 () {
-	git init 12c2 &&
-	(
-		cd 12c2 &&
-
-		mkdir -p node1 node2 &&
-		printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf1\n" >node1/leaf1 &&
-		printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf2\n" >node1/leaf2 &&
-		printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf3\n" >node2/leaf3 &&
-		printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf4\n" >node2/leaf4 &&
-		git add node1 node2 &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv node2/ node1/ &&
-		for i in $(git ls-files); do echo side A >>$i; done &&
-		git add -u &&
-		echo leaf5 >node1/leaf5 &&
-		git add node1/leaf5 &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv node1/ node2/ &&
-		for i in $(git ls-files); do echo side B >>$i; done &&
-		git add -u &&
-		echo leaf6 >node2/leaf6 &&
-		git add node2/leaf6 &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_12c2() {
+  git init 12c2 \
+    && (
+      cd 12c2 \
+        && mkdir -p node1 node2 \
+        && printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf1\n" >node1/leaf1 \
+        && printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf2\n" >node1/leaf2 \
+        && printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf3\n" >node2/leaf3 \
+        && printf "1\n2\n3\n4\n5\n6\n7\n8\nleaf4\n" >node2/leaf4 \
+        && git add node1 node2 \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv node2/ node1/ \
+        && for i in $(git ls-files); do echo side A >>$i; done \
+        && git add -u \
+        && echo leaf5 >node1/leaf5 \
+        && git add node1/leaf5 \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv node1/ node2/ \
+        && for i in $(git ls-files); do echo side B >>$i; done \
+        && git add -u \
+        && echo leaf6 >node2/leaf6 \
+        && git add node2/leaf6 \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '12c2: Moving one directory hierarchy into another w/ content merge' '
@@ -4583,27 +4355,23 @@ test_expect_success '12c2: Moving one directory hierarchy into another w/ conten
 #   Commit B: a/b/subdir/foo, a/b/bar
 #   Expected: subdir/foo, bar
 
-test_setup_12d () {
-	git init 12d &&
-	(
-		cd 12d &&
-
-		mkdir -p a/b/subdir &&
-		test_commit a/b/subdir/foo &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir subdir &&
-		git mv a/b/subdir/foo.t subdir/foo.t &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		test_commit a/b/bar
-	)
+test_setup_12d() {
+  git init 12d \
+    && (
+      cd 12d \
+        && mkdir -p a/b/subdir \
+        && test_commit a/b/subdir/foo \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir subdir \
+        && git mv a/b/subdir/foo.t subdir/foo.t \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && test_commit a/b/bar
+    )
 }
 
 test_expect_success '12d: Rename/merge subdir into the root, variant 1' '
@@ -4641,27 +4409,23 @@ test_expect_success '12d: Rename/merge subdir into the root, variant 1' '
 #   Commit B: a/b/foo, a/b/bar
 #   Expected: foo, bar
 
-test_setup_12e () {
-	git init 12e &&
-	(
-		cd 12e &&
-
-		mkdir -p a/b &&
-		test_commit a/b/foo &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		mkdir subdir &&
-		git mv a/b/foo.t foo.t &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		test_commit a/b/bar
-	)
+test_setup_12e() {
+  git init 12e \
+    && (
+      cd 12e \
+        && mkdir -p a/b \
+        && test_commit a/b/foo \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && mkdir subdir \
+        && git mv a/b/foo.t foo.t \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && test_commit a/b/bar
+    )
 }
 
 test_expect_success '12e: Rename/merge subdir into the root, variant 2' '
@@ -4742,59 +4506,54 @@ test_expect_success '12e: Rename/merge subdir into the root, variant 2' '
 #   3. Exercising the codepaths for caching renames and deletes from one cherry
 #      pick and re-applying them in the subsequent one.
 
-test_setup_12f () {
-	git init 12f &&
-	(
-		cd 12f &&
-
-		mkdir -p dir/unchanged &&
-		mkdir -p dir/subdir/tweaked &&
-		echo a >dir/subdir/a &&
-		echo b >dir/subdir/b &&
-		echo c >dir/subdir/c &&
-		echo d >dir/subdir/d &&
-		test_seq 1 10 >dir/subdir/e &&
-		test_seq 10 20 >dir/subdir/Makefile &&
-		echo f >dir/subdir/tweaked/f &&
-		echo g >dir/subdir/tweaked/g &&
-		echo h >dir/subdir/tweaked/h &&
-		test_seq 20 30 >dir/subdir/tweaked/Makefile &&
-		for i in $(test_seq 1 88); do
-			echo content $i >dir/unchanged/file_$i
-		done &&
-		git add . &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git switch A &&
-		git rm dir/subdir/tweaked/f dir/subdir/tweaked/g &&
-		test_seq 2 10 >dir/subdir/e &&
-		test_seq 11 20 >dir/subdir/Makefile &&
-		test_seq 21 30 >dir/subdir/tweaked/Makefile &&
-		mkdir dir/subdir/newsubdir &&
-		git mv dir/subdir/e dir/subdir/newsubdir/ &&
-		git mv dir folder &&
-		git add . &&
-		git commit -m "A" &&
-
-		git switch B &&
-		mkdir dir/subdir/newsubdir/ &&
-		echo c code >dir/subdir/newfile.c &&
-		echo python code >dir/subdir/newsubdir/newfile.py &&
-		test_seq 1 11 >dir/subdir/e &&
-		test_seq 10 21 >dir/subdir/Makefile &&
-		test_seq 20 31 >dir/subdir/tweaked/Makefile &&
-		git add . &&
-		git commit -m "B1" &&
-
-		echo rust code >dir/subdir/newfile.rs &&
-		test_seq 1 12 >dir/subdir/e &&
-		git add . &&
-		git commit -m "B2"
-	)
+test_setup_12f() {
+  git init 12f \
+    && (
+      cd 12f \
+        && mkdir -p dir/unchanged \
+        && mkdir -p dir/subdir/tweaked \
+        && echo a >dir/subdir/a \
+        && echo b >dir/subdir/b \
+        && echo c >dir/subdir/c \
+        && echo d >dir/subdir/d \
+        && test_seq 1 10 >dir/subdir/e \
+        && test_seq 10 20 >dir/subdir/Makefile \
+        && echo f >dir/subdir/tweaked/f \
+        && echo g >dir/subdir/tweaked/g \
+        && echo h >dir/subdir/tweaked/h \
+        && test_seq 20 30 >dir/subdir/tweaked/Makefile \
+        && for i in $(test_seq 1 88); do
+          echo content $i >dir/unchanged/file_$i
+        done \
+        && git add . \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git switch A \
+        && git rm dir/subdir/tweaked/f dir/subdir/tweaked/g \
+        && test_seq 2 10 >dir/subdir/e \
+        && test_seq 11 20 >dir/subdir/Makefile \
+        && test_seq 21 30 >dir/subdir/tweaked/Makefile \
+        && mkdir dir/subdir/newsubdir \
+        && git mv dir/subdir/e dir/subdir/newsubdir/ \
+        && git mv dir folder \
+        && git add . \
+        && git commit -m "A" \
+        && git switch B \
+        && mkdir dir/subdir/newsubdir/ \
+        && echo c code >dir/subdir/newfile.c \
+        && echo python code >dir/subdir/newsubdir/newfile.py \
+        && test_seq 1 11 >dir/subdir/e \
+        && test_seq 10 21 >dir/subdir/Makefile \
+        && test_seq 20 31 >dir/subdir/tweaked/Makefile \
+        && git add . \
+        && git commit -m "B1" \
+        && echo rust code >dir/subdir/newfile.rs \
+        && test_seq 1 12 >dir/subdir/e \
+        && git add . \
+        && git commit -m "B2"
+    )
 }
 
 test_expect_merge_algorithm failure success '12f: Trivial directory resolve, caching, all kinds of fun' '
@@ -4901,40 +4660,36 @@ test_expect_merge_algorithm failure success '12f: Trivial directory resolve, cac
 #   Commit B: newfile_B,  newdir/{a_B,b_B}
 #   Expected: newfile_{merged}, newdir/{a_B,b_B,c_A}
 
-test_setup_12g () {
-	git init 12g &&
-	(
-		cd 12g &&
-
-		mkdir -p subdir &&
-		test_write_lines upon a time there was a >somefile &&
-		test_write_lines 1 2 3 4 5 6 7 8 9 10 >subdir/a &&
-		test_write_lines one two three four five six >subdir/b &&
-		git add . &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git switch A &&
-		test_write_lines once upon a time there was a >somefile &&
-		> subdir/c &&
-		git add somefile subdir/c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv somefile newfile &&
-		git mv subdir newdir &&
-		echo repo >>newfile &&
-		test_write_lines 1 2 3 4 5 6 7 8 9 10 11 >newdir/a &&
-		test_write_lines one two three four five six seven >newdir/b &&
-		git add newfile newdir &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_12g() {
+  git init 12g \
+    && (
+      cd 12g \
+        && mkdir -p subdir \
+        && test_write_lines upon a time there was a >somefile \
+        && test_write_lines 1 2 3 4 5 6 7 8 9 10 >subdir/a \
+        && test_write_lines one two three four five six >subdir/b \
+        && git add . \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git switch A \
+        && test_write_lines once upon a time there was a >somefile \
+        && >subdir/c \
+        && git add somefile subdir/c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv somefile newfile \
+        && git mv subdir newdir \
+        && echo repo >>newfile \
+        && test_write_lines 1 2 3 4 5 6 7 8 9 10 11 >newdir/a \
+        && test_write_lines one two three four five six seven >newdir/b \
+        && git add newfile newdir \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '12g: Testcase with two kinds of "relevant" renames' '
@@ -4972,32 +4727,27 @@ test_expect_success '12g: Testcase with two kinds of "relevant" renames' '
 #   Commit B: olddir/{alpha_1, b}
 #   Expected: newdir/{alpha_2, b}
 
-test_setup_12h () {
-	git init 12h &&
-	(
-		cd 12h &&
-
-		mkdir olddir &&
-		test_seq 3 8 >olddir/a &&
-		>olddir/b &&
-		git add olddir &&
-		git commit -m orig &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git switch A &&
-		test_seq 3 10 >olddir/a &&
-		git add olddir/a &&
-		git mv olddir newdir &&
-		git commit -m A &&
-
-		git switch B &&
-
-		git mv olddir/a olddir/alpha &&
-		git commit -m B
-	)
+test_setup_12h() {
+  git init 12h \
+    && (
+      cd 12h \
+        && mkdir olddir \
+        && test_seq 3 8 >olddir/a \
+        && >olddir/b \
+        && git add olddir \
+        && git commit -m orig \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git switch A \
+        && test_seq 3 10 >olddir/a \
+        && git add olddir/a \
+        && git mv olddir newdir \
+        && git commit -m A \
+        && git switch B \
+        && git mv olddir/a olddir/alpha \
+        && git commit -m B
+    )
 }
 
 test_expect_failure '12h: renaming a file within a renamed directory' '
@@ -5031,31 +4781,27 @@ test_expect_failure '12h: renaming a file within a renamed directory' '
 #   Expected: source/{foo, bar, baz_2}, with conflicts on
 #                source/bar vs. source/subdir/bar
 
-test_setup_12i () {
-	git init 12i &&
-	(
-		cd 12i &&
-
-		mkdir -p source/subdir &&
-		echo foo >source/subdir/foo &&
-		echo bar >source/bar &&
-		echo baz >source/baz &&
-		git add source &&
-		git commit -m orig &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git switch A &&
-		git mv source/subdir/foo source/foo &&
-		git commit -m A &&
-
-		git switch B &&
-		git mv source/bar source/subdir/bar &&
-		echo more baz >>source/baz &&
-		git commit -m B
-	)
+test_setup_12i() {
+  git init 12i \
+    && (
+      cd 12i \
+        && mkdir -p source/subdir \
+        && echo foo >source/subdir/foo \
+        && echo bar >source/bar \
+        && echo baz >source/baz \
+        && git add source \
+        && git commit -m orig \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git switch A \
+        && git mv source/subdir/foo source/foo \
+        && git commit -m A \
+        && git switch B \
+        && git mv source/bar source/subdir/bar \
+        && echo more baz >>source/baz \
+        && git commit -m B
+    )
 }
 
 test_expect_success '12i: Directory rename causes rename-to-self' '
@@ -5090,31 +4836,27 @@ test_expect_success '12i: Directory rename causes rename-to-self' '
 #   Commit B: {subdir/{foo, bar}, baz_2}
 #   Expected: {foo, bar, baz_2}, with conflicts on bar vs. subdir/bar
 
-test_setup_12j () {
-	git init 12j &&
-	(
-		cd 12j &&
-
-		mkdir -p subdir &&
-		echo foo >subdir/foo &&
-		echo bar >bar &&
-		echo baz >baz &&
-		git add . &&
-		git commit -m orig &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git switch A &&
-		git mv subdir/foo foo &&
-		git commit -m A &&
-
-		git switch B &&
-		git mv bar subdir/bar &&
-		echo more baz >>baz &&
-		git commit -m B
-	)
+test_setup_12j() {
+  git init 12j \
+    && (
+      cd 12j \
+        && mkdir -p subdir \
+        && echo foo >subdir/foo \
+        && echo bar >bar \
+        && echo baz >baz \
+        && git add . \
+        && git commit -m orig \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git switch A \
+        && git mv subdir/foo foo \
+        && git commit -m A \
+        && git switch B \
+        && git mv bar subdir/bar \
+        && echo more baz >>baz \
+        && git commit -m B
+    )
 }
 
 test_expect_success '12j: Directory rename to root causes rename-to-self' '
@@ -5149,31 +4891,27 @@ test_expect_success '12j: Directory rename to root causes rename-to-self' '
 #   Commit B: dirB/{foo, bar}, dirA/baz_2
 #   Expected: dirA/{foo, bar, baz_2}, with conflicts on dirA/bar vs. dirB/bar
 
-test_setup_12k () {
-	git init 12k &&
-	(
-		cd 12k &&
-
-		mkdir dirA dirB &&
-		echo foo >dirB/foo &&
-		echo bar >dirA/bar &&
-		echo baz >dirA/baz &&
-		git add . &&
-		git commit -m orig &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git switch A &&
-		git mv dirB/* dirA/ &&
-		git commit -m A &&
-
-		git switch B &&
-		git mv dirA/bar dirB/bar &&
-		echo more baz >>dirA/baz &&
-		git commit -m B
-	)
+test_setup_12k() {
+  git init 12k \
+    && (
+      cd 12k \
+        && mkdir dirA dirB \
+        && echo foo >dirB/foo \
+        && echo bar >dirA/bar \
+        && echo baz >dirA/baz \
+        && git add . \
+        && git commit -m orig \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git switch A \
+        && git mv dirB/* dirA/ \
+        && git commit -m A \
+        && git switch B \
+        && git mv dirA/bar dirB/bar \
+        && echo more baz >>dirA/baz \
+        && git commit -m B
+    )
 }
 
 test_expect_success '12k: Directory rename with sibling causes rename-to-self' '
@@ -5220,37 +4958,33 @@ test_expect_success '12k: Directory rename with sibling causes rename-to-self' '
 #   had a new file added on the opposite side of history.  So sub1/newfile
 #   is needed for there to be a sub1/ -> sub3/ rename.
 
-test_setup_12l () {
-	git init 12l_$1 &&
-	(
-		cd 12l_$1 &&
-
-		mkdir sub1 sub2
-		echo file >sub1/file &&
-		echo other >sub2/other &&
-		git add sub1 sub2 &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv sub1 sub3 &&
-		echo conflicting >sub2/new_add_add_file &&
-		git add sub2 &&
-		test_tick &&
-		git add -u &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo dissimilar >sub2/new_add_add_file &&
-		echo brand >sub1/newfile &&
-		git add sub1 sub2 &&
-		git mv sub2 sub1 &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_12l() {
+  git init 12l_$1 \
+    && (
+      cd 12l_$1 \
+        && mkdir sub1 sub2
+      echo file >sub1/file \
+        && echo other >sub2/other \
+        && git add sub1 sub2 \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv sub1 sub3 \
+        && echo conflicting >sub2/new_add_add_file \
+        && git add sub2 \
+        && test_tick \
+        && git add -u \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo dissimilar >sub2/new_add_add_file \
+        && echo brand >sub1/newfile \
+        && git add sub1 sub2 \
+        && git mv sub2 sub1 \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_merge_algorithm failure success '12l (B into A): Rename into each other + add/add conflict' '
@@ -5320,32 +5054,28 @@ test_expect_merge_algorithm failure success '12l (A into B): Rename into each ot
 #             CONFLICT (directory/file): renamed-dir/subdir symlink has
 #                                        renamed-dir/subdir in the way
 
-test_setup_12m () {
-	git init 12m &&
-	(
-		cd 12m &&
-
-		mkdir -p dir/subdir &&
-		echo 1 >dir/subdir/file &&
-		git add . &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git switch A &&
-		git mv dir/ renamed-dir/ &&
-		git add . &&
-		git commit -m "A" &&
-
-		git switch B &&
-		git rm dir/subdir/file &&
-		mkdir dir &&
-		ln -s /dev/null dir/subdir &&
-		git add . &&
-		git commit -m "B"
-	)
+test_setup_12m() {
+  git init 12m \
+    && (
+      cd 12m \
+        && mkdir -p dir/subdir \
+        && echo 1 >dir/subdir/file \
+        && git add . \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git switch A \
+        && git mv dir/ renamed-dir/ \
+        && git add . \
+        && git commit -m "A" \
+        && git switch B \
+        && git rm dir/subdir/file \
+        && mkdir dir \
+        && ln -s /dev/null dir/subdir \
+        && git add . \
+        && git commit -m "B"
+    )
 }
 
 test_expect_merge_algorithm failure success '12m: Change parent of renamed-dir to symlink on other side' '
@@ -5380,35 +5110,31 @@ test_expect_merge_algorithm failure success '12m: Change parent of renamed-dir t
 #   Commit B: z/{b,c,d,e/f}
 #   Expected: y/{b,c,d,e/f}, with notices/conflicts for both y/d and y/e/f
 
-test_setup_13a () {
-	git init 13a_$1 &&
-	(
-		cd 13a_$1 &&
-
-		mkdir z &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo d >z/d &&
-		mkdir z/e &&
-		echo f >z/e/f &&
-		git add z/d z/e/f &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_13a() {
+  git init 13a_$1 \
+    && (
+      cd 13a_$1 \
+        && mkdir z \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo d >z/d \
+        && mkdir z/e \
+        && echo f >z/e/f \
+        && git add z/d z/e/f \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '13a(conflict): messages for newly added files' '
@@ -5467,38 +5193,34 @@ test_expect_success '13a(info): messages for newly added files' '
 #   Expected: y/{b,c,d_merged}, with two conflict messages for y/d,
 #             one about content, and one about file location
 
-test_setup_13b () {
-	git init 13b_$1 &&
-	(
-		cd 13b_$1 &&
-
-		mkdir x &&
-		mkdir z &&
-		test_seq 1 10 >x/d &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add x z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		echo 11 >>x/d &&
-		git add x/d &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo eleven >>x/d &&
-		git mv x/d z/d &&
-		git add z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_13b() {
+  git init 13b_$1 \
+    && (
+      cd 13b_$1 \
+        && mkdir x \
+        && mkdir z \
+        && test_seq 1 10 >x/d \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add x z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && echo 11 >>x/d \
+        && git add x/d \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo eleven >>x/d \
+        && git mv x/d z/d \
+        && git add z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '13b(conflict): messages for transitive rename with conflicted content' '
@@ -5554,37 +5276,33 @@ test_expect_success '13b(info): messages for transitive rename with conflicted c
 #             d and B had full knowledge, but that's a slippery slope as
 #             shown in testcase 13d.
 
-test_setup_13c () {
-	git init 13c_$1 &&
-	(
-		cd 13c_$1 &&
-
-		mkdir x &&
-		mkdir z &&
-		test_seq 1 10 >x/d &&
-		echo e >x/e &&
-		echo b >z/b &&
-		echo c >z/c &&
-		git add x z &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv z y &&
-		git mv x/d y/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv x/d z/d &&
-		git add z/d &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_13c() {
+  git init 13c_$1 \
+    && (
+      cd 13c_$1 \
+        && mkdir x \
+        && mkdir z \
+        && test_seq 1 10 >x/d \
+        && echo e >x/e \
+        && echo b >z/b \
+        && echo c >z/c \
+        && git add x z \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv z y \
+        && git mv x/d y/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv x/d z/d \
+        && git add z/d \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '13c(conflict): messages for rename/rename(1to1) via transitive rename' '
@@ -5642,38 +5360,34 @@ test_expect_success '13c(info): messages for rename/rename(1to1) via transitive 
 #               * B renames a/y to c/y, and A renames c/->d/ => a/y -> d/y
 #               No conflict in where a/y ends up, so put it in d/y.
 
-test_setup_13d () {
-	git init 13d_$1 &&
-	(
-		cd 13d_$1 &&
-
-		mkdir a &&
-		mkdir b &&
-		mkdir c &&
-		echo z >a/z &&
-		echo y >a/y &&
-		echo x >b/x &&
-		echo w >c/w &&
-		git add a b c &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv a/y b/ &&
-		git mv c/ d/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv a/y c/ &&
-		git mv b/ d/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_13d() {
+  git init 13d_$1 \
+    && (
+      cd 13d_$1 \
+        && mkdir a \
+        && mkdir b \
+        && mkdir c \
+        && echo z >a/z \
+        && echo y >a/y \
+        && echo x >b/x \
+        && echo w >c/w \
+        && git add a b c \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv a/y b/ \
+        && git mv c/ d/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv a/y c/ \
+        && git mv b/ d/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '13d(conflict): messages for rename/rename(1to1) via dual transitive rename' '
@@ -5768,51 +5482,43 @@ test_expect_success '13d(info): messages for rename/rename(1to1) via dual transi
 #          in the outer merge for this special kind of setup, but it at
 #          least avoids hitting a BUG().
 #
-test_setup_13e () {
-	git init 13e &&
-	(
-		cd 13e &&
-
-		mkdir a &&
-		echo z >a/z &&
-		echo y >a/y &&
-		git add a &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv a/ b/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo x >a/x &&
-		git add a &&
-		test_tick &&
-		git commit -m "B" &&
-
-		git branch C A &&
-		git branch D B &&
-
-		git checkout C &&
-		test_must_fail git -c merge.directoryRenames=conflict merge B &&
-		git add b/x &&
-		test_tick &&
-		git commit -m "C" &&
-
-
-		git checkout D &&
-		test_must_fail git -c merge.directoryRenames=conflict merge A &&
-		git add b/x &&
-		mkdir a &&
-		git mv b/x a/x &&
-		test_tick &&
-		git commit -m "D"
-	)
+test_setup_13e() {
+  git init 13e \
+    && (
+      cd 13e \
+        && mkdir a \
+        && echo z >a/z \
+        && echo y >a/y \
+        && git add a \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv a/ b/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo x >a/x \
+        && git add a \
+        && test_tick \
+        && git commit -m "B" \
+        && git branch C A \
+        && git branch D B \
+        && git checkout C \
+        && test_must_fail git -c merge.directoryRenames=conflict merge B \
+        && git add b/x \
+        && test_tick \
+        && git commit -m "C" \
+        && git checkout D \
+        && test_must_fail git -c merge.directoryRenames=conflict merge A \
+        && git add b/x \
+        && mkdir a \
+        && git mv b/x a/x \
+        && test_tick \
+        && git commit -m "D"
+    )
 }
 
 test_expect_success '13e: directory rename detection in recursive case' '

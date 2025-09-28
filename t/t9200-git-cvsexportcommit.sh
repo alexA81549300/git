@@ -7,20 +7,19 @@ test_description='Test export of commits to CVS'
 . ./test-lib.sh
 
 if ! test_have_prereq PERL; then
-	skip_all='skipping git cvsexportcommit tests, perl not available'
-	test_done
+  skip_all='skipping git cvsexportcommit tests, perl not available'
+  test_done
 fi
 
 cvs >/dev/null 2>&1
-if test $? -ne 1
-then
-    skip_all='skipping git cvsexportcommit tests, cvs not found'
-    test_done
+if test $? -ne 1; then
+  skip_all='skipping git cvsexportcommit tests, cvs not found'
+  test_done
 fi
 
 if ! test_have_prereq NOT_ROOT; then
-	skip_all='When cvs is compiled with CVS_BADROOT commits as root fail'
-	test_done
+  skip_all='When cvs is compiled with CVS_BADROOT commits as root fail'
+  test_done
 fi
 
 CVSROOT=$PWD/tmpcvsroot
@@ -30,24 +29,23 @@ export CVSROOT CVSWORK GIT_DIR
 
 rm -rf "$CVSROOT" "$CVSWORK"
 
-cvs init &&
-test -d "$CVSROOT" &&
-cvs -Q co -d "$CVSWORK" . &&
-echo >empty &&
-git add empty &&
-git commit -q -a -m "Initial" 2>/dev/null ||
-exit 1
+cvs init \
+  && test -d "$CVSROOT" \
+  && cvs -Q co -d "$CVSWORK" . \
+  && echo >empty \
+  && git add empty \
+  && git commit -q -a -m "Initial" 2>/dev/null \
+  || exit 1
 
-check_entries () {
-	# $1 == directory, $2 == expected
-	sed -ne '/^\//p' "$1/CVS/Entries" | sort | cut -d/ -f2,3,5 >actual
-	if test -z "$2"
-	then
-		test_must_be_empty actual
-	else
-		printf '%s\n' "$2" | tr '|' '\012' >expected
-		test_cmp expected actual
-	fi
+check_entries() {
+  # $1 == directory, $2 == expected
+  sed -ne '/^\//p' "$1/CVS/Entries" | sort | cut -d/ -f2,3,5 >actual
+  if test -z "$2"; then
+    test_must_be_empty actual
+  else
+    printf '%s\n' "$2" | tr '|' '\012' >expected
+    test_cmp expected actual
+  fi
 }
 
 test_expect_success 'New file' '
@@ -103,8 +101,8 @@ test_expect_success 'Remove two files, add two and update two' '
 
 # Should fail (but only on the git cvsexportcommit stage)
 test_expect_success \
-    'Fail to change binary more than one generation old' \
-    'cat F/newfile6.png >>D/newfile4.png &&
+  'Fail to change binary more than one generation old' \
+  'cat F/newfile6.png >>D/newfile4.png &&
      git commit -a -m "generatiion 1" &&
      cat F/newfile6.png >>D/newfile4.png &&
      git commit -a -m "generation 2" &&
@@ -193,16 +191,15 @@ test_expect_success 'Update file with spaces in file name' '
 
 # Some filesystems mangle pathnames with UTF-8 characters --
 # check and skip
-if p="Å/goo/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/å/ä/ö" &&
-	mkdir -p "tst/$p" &&
-	date >"tst/$p/day" &&
-	found=$(find tst -type f -print) &&
-	test "z$found" = "ztst/$p/day" &&
-	rm -fr tst
-then
+if p="Å/goo/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/å/ä/ö" \
+  && mkdir -p "tst/$p" \
+  && date >"tst/$p/day" \
+  && found=$(find tst -type f -print) \
+  && test "z$found" = "ztst/$p/day" \
+  && rm -fr tst; then
 
-# This test contains UTF-8 characters
-test_expect_success !MINGW 'File with non-ascii file name' '
+  # This test contains UTF-8 characters
+  test_expect_success !MINGW 'File with non-ascii file name' '
 	mkdir -p Å/goo/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/å/ä/ö &&
 	echo Foo >Å/goo/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/å/ä/ö/gårdetsågårdet.txt &&
 	git add Å/goo/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/å/ä/ö/gårdetsågårdet.txt &&

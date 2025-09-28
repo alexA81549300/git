@@ -9,30 +9,27 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-merge.sh
 
-test_setup_rename_delete_untracked () {
-	git init rename-delete-untracked &&
-	(
-		cd rename-delete-untracked &&
-
-		echo "A pretty inscription" >ring &&
-		git add ring &&
-		test_tick &&
-		git commit -m beginning &&
-
-		git branch people &&
-		git checkout -b rename-the-ring &&
-		git mv ring one-ring-to-rule-them-all &&
-		test_tick &&
-		git commit -m fullname &&
-
-		git checkout people &&
-		git rm ring &&
-		echo gollum >owner &&
-		git add owner &&
-		test_tick &&
-		git commit -m track-people-instead-of-objects &&
-		echo "Myyy PRECIOUSSS" >ring
-	)
+test_setup_rename_delete_untracked() {
+  git init rename-delete-untracked \
+    && (
+      cd rename-delete-untracked \
+        && echo "A pretty inscription" >ring \
+        && git add ring \
+        && test_tick \
+        && git commit -m beginning \
+        && git branch people \
+        && git checkout -b rename-the-ring \
+        && git mv ring one-ring-to-rule-them-all \
+        && test_tick \
+        && git commit -m fullname \
+        && git checkout people \
+        && git rm ring \
+        && echo gollum >owner \
+        && git add owner \
+        && test_tick \
+        && git commit -m track-people-instead-of-objects \
+        && echo "Myyy PRECIOUSSS" >ring
+    )
 }
 
 test_expect_success "Does git preserve Gollum's precious artifact?" '
@@ -54,27 +51,24 @@ test_expect_success "Does git preserve Gollum's precious artifact?" '
 #
 # We should be able to merge B & C cleanly
 
-test_setup_rename_modify_add_source () {
-	git init rename-modify-add-source &&
-	(
-		cd rename-modify-add-source &&
-
-		printf "1\n2\n3\n4\n5\n6\n7\n" >a &&
-		git add a &&
-		git commit -m A &&
-		git tag A &&
-
-		git checkout -b B A &&
-		echo 8 >>a &&
-		git add a &&
-		git commit -m B &&
-
-		git checkout -b C A &&
-		git mv a b &&
-		echo something completely different >a &&
-		git add a &&
-		git commit -m C
-	)
+test_setup_rename_modify_add_source() {
+  git init rename-modify-add-source \
+    && (
+      cd rename-modify-add-source \
+        && printf "1\n2\n3\n4\n5\n6\n7\n" >a \
+        && git add a \
+        && git commit -m A \
+        && git tag A \
+        && git checkout -b B A \
+        && echo 8 >>a \
+        && git add a \
+        && git commit -m B \
+        && git checkout -b C A \
+        && git mv a b \
+        && echo something completely different >a \
+        && git add a \
+        && git commit -m C
+    )
 }
 
 test_expect_failure 'rename/modify/add-source conflict resolvable' '
@@ -94,28 +88,25 @@ test_expect_failure 'rename/modify/add-source conflict resolvable' '
 	)
 '
 
-test_setup_break_detection_1 () {
-	git init break-detection-1 &&
-	(
-		cd break-detection-1 &&
-
-		printf "1\n2\n3\n4\n5\n" >a &&
-		echo foo >b &&
-		git add a b &&
-		git commit -m A &&
-		git tag A &&
-
-		git checkout -b B A &&
-		git mv a c &&
-		echo "Completely different content" >a &&
-		git add a &&
-		git commit -m B &&
-
-		git checkout -b C A &&
-		echo 6 >>a &&
-		git add a &&
-		git commit -m C
-	)
+test_setup_break_detection_1() {
+  git init break-detection-1 \
+    && (
+      cd break-detection-1 \
+        && printf "1\n2\n3\n4\n5\n" >a \
+        && echo foo >b \
+        && git add a b \
+        && git commit -m A \
+        && git tag A \
+        && git checkout -b B A \
+        && git mv a c \
+        && echo "Completely different content" >a \
+        && git add a \
+        && git commit -m B \
+        && git checkout -b C A \
+        && echo 6 >>a \
+        && git add a \
+        && git commit -m C
+    )
 }
 
 test_expect_failure 'conflict caused if rename not detected' '
@@ -142,31 +133,28 @@ test_expect_failure 'conflict caused if rename not detected' '
 	)
 '
 
-test_setup_break_detection_2 () {
-	git init break-detection-2 &&
-	(
-		cd break-detection-2 &&
-
-		printf "1\n2\n3\n4\n5\n" >a &&
-		echo foo >b &&
-		git add a b &&
-		git commit -m A &&
-		git tag A &&
-
-		git checkout -b D A &&
-		echo 7 >>a &&
-		git add a &&
-		git mv a c &&
-		echo "Completely different content" >a &&
-		git add a &&
-		git commit -m D &&
-
-		git checkout -b E A &&
-		git rm a &&
-		echo "Completely different content" >>a &&
-		git add a &&
-		git commit -m E
-	)
+test_setup_break_detection_2() {
+  git init break-detection-2 \
+    && (
+      cd break-detection-2 \
+        && printf "1\n2\n3\n4\n5\n" >a \
+        && echo foo >b \
+        && git add a b \
+        && git commit -m A \
+        && git tag A \
+        && git checkout -b D A \
+        && echo 7 >>a \
+        && git add a \
+        && git mv a c \
+        && echo "Completely different content" >a \
+        && git add a \
+        && git commit -m D \
+        && git checkout -b E A \
+        && git rm a \
+        && echo "Completely different content" >>a \
+        && git add a \
+        && git commit -m E
+    )
 }
 
 test_expect_failure 'missed conflict if rename not detected' '
@@ -190,26 +178,23 @@ test_expect_failure 'missed conflict if rename not detected' '
 #   Commit B: rename a->b
 #   Commit C: rename a->b, add unrelated a
 
-test_setup_break_detection_3 () {
-	git init break-detection-3 &&
-	(
-		cd break-detection-3 &&
-
-		printf "1\n2\n3\n4\n5\n" >a &&
-		git add a &&
-		git commit -m A &&
-		git tag A &&
-
-		git checkout -b B A &&
-		git mv a b &&
-		git commit -m B &&
-
-		git checkout -b C A &&
-		git mv a b &&
-		echo foobar >a &&
-		git add a &&
-		git commit -m C
-	)
+test_setup_break_detection_3() {
+  git init break-detection-3 \
+    && (
+      cd break-detection-3 \
+        && printf "1\n2\n3\n4\n5\n" >a \
+        && git add a \
+        && git commit -m A \
+        && git tag A \
+        && git checkout -b B A \
+        && git mv a b \
+        && git commit -m B \
+        && git checkout -b C A \
+        && git mv a b \
+        && echo foobar >a \
+        && git add a \
+        && git commit -m C
+    )
 }
 
 test_expect_failure 'detect rename/add-source and preserve all data' '
@@ -266,40 +251,36 @@ test_expect_failure 'detect rename/add-source and preserve all data, merge other
 	)
 '
 
-test_setup_rename_directory () {
-	git init rename-directory-$1 &&
-	(
-		cd rename-directory-$1 &&
-
-		printf "1\n2\n3\n4\n5\n6\n" >file &&
-		git add file &&
-		test_tick &&
-		git commit -m base &&
-		git tag base &&
-
-		git checkout -b right &&
-		echo 7 >>file &&
-		mkdir newfile &&
-		echo junk >newfile/realfile &&
-		git add file newfile/realfile &&
-		test_tick &&
-		git commit -m right &&
-
-		git checkout -b left-conflict base &&
-		echo 8 >>file &&
-		git add file &&
-		git mv file newfile &&
-		test_tick &&
-		git commit -m left &&
-
-		git checkout -b left-clean base &&
-		echo 0 >newfile &&
-		cat file >>newfile &&
-		git add newfile &&
-		git rm file &&
-		test_tick &&
-		git commit -m left
-	)
+test_setup_rename_directory() {
+  git init rename-directory-$1 \
+    && (
+      cd rename-directory-$1 \
+        && printf "1\n2\n3\n4\n5\n6\n" >file \
+        && git add file \
+        && test_tick \
+        && git commit -m base \
+        && git tag base \
+        && git checkout -b right \
+        && echo 7 >>file \
+        && mkdir newfile \
+        && echo junk >newfile/realfile \
+        && git add file newfile/realfile \
+        && test_tick \
+        && git commit -m right \
+        && git checkout -b left-conflict base \
+        && echo 8 >>file \
+        && git add file \
+        && git mv file newfile \
+        && test_tick \
+        && git commit -m left \
+        && git checkout -b left-clean base \
+        && echo 0 >newfile \
+        && cat file >>newfile \
+        && git add newfile \
+        && git rm file \
+        && test_tick \
+        && git commit -m left
+    )
 }
 
 test_expect_success 'rename/directory conflict + clean content merge' '
@@ -384,33 +365,30 @@ test_expect_success 'rename/directory conflict + content merge conflict' '
 	)
 '
 
-test_setup_rename_directory_2 () {
-	git init rename-directory-2 &&
-	(
-		cd rename-directory-2 &&
-
-		mkdir sub &&
-		printf "1\n2\n3\n4\n5\n6\n" >sub/file &&
-		git add sub/file &&
-		test_tick &&
-		git commit -m base &&
-		git tag base &&
-
-		git checkout -b right &&
-		echo 7 >>sub/file &&
-		git add sub/file &&
-		test_tick &&
-		git commit -m right &&
-
-		git checkout -b left base &&
-		echo 0 >newfile &&
-		cat sub/file >>newfile &&
-		git rm sub/file &&
-		mv newfile sub &&
-		git add sub &&
-		test_tick &&
-		git commit -m left
-	)
+test_setup_rename_directory_2() {
+  git init rename-directory-2 \
+    && (
+      cd rename-directory-2 \
+        && mkdir sub \
+        && printf "1\n2\n3\n4\n5\n6\n" >sub/file \
+        && git add sub/file \
+        && test_tick \
+        && git commit -m base \
+        && git tag base \
+        && git checkout -b right \
+        && echo 7 >>sub/file \
+        && git add sub/file \
+        && test_tick \
+        && git commit -m right \
+        && git checkout -b left base \
+        && echo 0 >newfile \
+        && cat sub/file >>newfile \
+        && git rm sub/file \
+        && mv newfile sub \
+        && git add sub \
+        && test_tick \
+        && git commit -m left
+    )
 }
 
 test_expect_success 'disappearing dir in rename/directory conflict handled' '
@@ -443,28 +421,25 @@ test_expect_success 'disappearing dir in rename/directory conflict handled' '
 #   Commit A: rename a->b, modifying b too
 #   Commit B: modify a, add different b
 
-test_setup_rename_with_content_merge_and_add () {
-	git init rename-with-content-merge-and-add-$1 &&
-	(
-		cd rename-with-content-merge-and-add-$1 &&
-
-		test_seq 1 5 >a &&
-		git add a &&
-		git commit -m O &&
-		git tag O &&
-
-		git checkout -b A O &&
-		git mv a b &&
-		test_seq 0 5 >b &&
-		git add b &&
-		git commit -m A &&
-
-		git checkout -b B O &&
-		echo 6 >>a &&
-		echo hello world >b &&
-		git add a b &&
-		git commit -m B
-	)
+test_setup_rename_with_content_merge_and_add() {
+  git init rename-with-content-merge-and-add-$1 \
+    && (
+      cd rename-with-content-merge-and-add-$1 \
+        && test_seq 1 5 >a \
+        && git add a \
+        && git commit -m O \
+        && git tag O \
+        && git checkout -b A O \
+        && git mv a b \
+        && test_seq 0 5 >b \
+        && git add b \
+        && git commit -m A \
+        && git checkout -b B O \
+        && echo 6 >>a \
+        && echo hello world >b \
+        && git add a b \
+        && git commit -m B
+    )
 }
 
 test_expect_success 'handle rename-with-content-merge vs. add' '
@@ -568,29 +543,26 @@ test_expect_success 'handle rename-with-content-merge vs. add, merge other way' 
 #   * The working copy should have two files, both of form c~<unique>; does it?
 #   * Nothing else should be present.  Is anything?
 
-test_setup_rename_rename_2to1 () {
-	git init rename-rename-2to1 &&
-	(
-		cd rename-rename-2to1 &&
-
-		printf "1\n2\n3\n4\n5\n" >a &&
-		printf "5\n4\n3\n2\n1\n" >b &&
-		git add a b &&
-		git commit -m A &&
-		git tag A &&
-
-		git checkout -b B A &&
-		git mv a c &&
-		echo 0 >>b &&
-		git add b &&
-		git commit -m B &&
-
-		git checkout -b C A &&
-		git mv b c &&
-		echo 6 >>a &&
-		git add a &&
-		git commit -m C
-	)
+test_setup_rename_rename_2to1() {
+  git init rename-rename-2to1 \
+    && (
+      cd rename-rename-2to1 \
+        && printf "1\n2\n3\n4\n5\n" >a \
+        && printf "5\n4\n3\n2\n1\n" >b \
+        && git add a b \
+        && git commit -m A \
+        && git tag A \
+        && git checkout -b B A \
+        && git mv a c \
+        && echo 0 >>b \
+        && git add b \
+        && git commit -m B \
+        && git checkout -b C A \
+        && git mv b c \
+        && echo 6 >>a \
+        && git add a \
+        && git commit -m C
+    )
 }
 
 test_expect_success 'handle rename/rename (2to1) conflict correctly' '
@@ -640,27 +612,24 @@ test_expect_success 'handle rename/rename (2to1) conflict correctly' '
 #   Commit A: new file: a
 #   Commit B: rename a->b
 #   Commit C: rename a->c
-test_setup_rename_rename_1to2 () {
-	git init rename-rename-1to2 &&
-	(
-		cd rename-rename-1to2 &&
-
-		echo stuff >a &&
-		git add a &&
-		test_tick &&
-		git commit -m A &&
-		git tag A &&
-
-		git checkout -b B A &&
-		git mv a b &&
-		test_tick &&
-		git commit -m B &&
-
-		git checkout -b C A &&
-		git mv a c &&
-		test_tick &&
-		git commit -m C
-	)
+test_setup_rename_rename_1to2() {
+  git init rename-rename-1to2 \
+    && (
+      cd rename-rename-1to2 \
+        && echo stuff >a \
+        && git add a \
+        && test_tick \
+        && git commit -m A \
+        && git tag A \
+        && git checkout -b B A \
+        && git mv a b \
+        && test_tick \
+        && git commit -m B \
+        && git checkout -b C A \
+        && git mv a c \
+        && test_tick \
+        && git commit -m C
+    )
 }
 
 test_expect_success 'merge has correct working tree contents' '
@@ -698,26 +667,23 @@ test_expect_success 'merge has correct working tree contents' '
 #
 # Merging of B & C should NOT be clean; there's a rename/rename conflict
 
-test_setup_rename_rename_1to2_add_source_1 () {
-	git init rename-rename-1to2-add-source-1 &&
-	(
-		cd rename-rename-1to2-add-source-1 &&
-
-		printf "1\n2\n3\n4\n5\n6\n7\n" >a &&
-		git add a &&
-		git commit -m A &&
-		git tag A &&
-
-		git checkout -b B A &&
-		git mv a b &&
-		git commit -m B &&
-
-		git checkout -b C A &&
-		git mv a c &&
-		echo something completely different >a &&
-		git add a &&
-		git commit -m C
-	)
+test_setup_rename_rename_1to2_add_source_1() {
+  git init rename-rename-1to2-add-source-1 \
+    && (
+      cd rename-rename-1to2-add-source-1 \
+        && printf "1\n2\n3\n4\n5\n6\n7\n" >a \
+        && git add a \
+        && git commit -m A \
+        && git tag A \
+        && git checkout -b B A \
+        && git mv a b \
+        && git commit -m B \
+        && git checkout -b C A \
+        && git mv a c \
+        && echo something completely different >a \
+        && git add a \
+        && git commit -m C
+    )
 }
 
 test_expect_failure 'detect conflict with rename/rename(1to2)/add-source merge' '
@@ -746,29 +712,26 @@ test_expect_failure 'detect conflict with rename/rename(1to2)/add-source merge' 
 	)
 '
 
-test_setup_rename_rename_1to2_add_source_2 () {
-	git init rename-rename-1to2-add-source-2 &&
-	(
-		cd rename-rename-1to2-add-source-2 &&
-
-		>a &&
-		git add a &&
-		test_tick &&
-		git commit -m base &&
-		git tag A &&
-
-		git checkout -b B A &&
-		git mv a b &&
-		test_tick &&
-		git commit -m one &&
-
-		git checkout -b C A &&
-		git mv a b &&
-		echo important-info >a &&
-		git add a &&
-		test_tick &&
-		git commit -m two
-	)
+test_setup_rename_rename_1to2_add_source_2() {
+  git init rename-rename-1to2-add-source-2 \
+    && (
+      cd rename-rename-1to2-add-source-2 \
+        && >a \
+        && git add a \
+        && test_tick \
+        && git commit -m base \
+        && git tag A \
+        && git checkout -b B A \
+        && git mv a b \
+        && test_tick \
+        && git commit -m one \
+        && git checkout -b C A \
+        && git mv a b \
+        && echo important-info >a \
+        && git add a \
+        && test_tick \
+        && git commit -m two
+    )
 }
 
 test_expect_failure 'rename/rename/add-source still tracks new a file' '
@@ -792,31 +755,28 @@ test_expect_failure 'rename/rename/add-source still tracks new a file' '
 	)
 '
 
-test_setup_rename_rename_1to2_add_dest () {
-	git init rename-rename-1to2-add-dest &&
-	(
-		cd rename-rename-1to2-add-dest &&
-
-		echo stuff >a &&
-		git add a &&
-		test_tick &&
-		git commit -m base &&
-		git tag A &&
-
-		git checkout -b B A &&
-		git mv a b &&
-		echo precious-data >c &&
-		git add c &&
-		test_tick &&
-		git commit -m one &&
-
-		git checkout -b C A &&
-		git mv a c &&
-		echo important-info >b &&
-		git add b &&
-		test_tick &&
-		git commit -m two
-	)
+test_setup_rename_rename_1to2_add_dest() {
+  git init rename-rename-1to2-add-dest \
+    && (
+      cd rename-rename-1to2-add-dest \
+        && echo stuff >a \
+        && git add a \
+        && test_tick \
+        && git commit -m base \
+        && git tag A \
+        && git checkout -b B A \
+        && git mv a b \
+        && echo precious-data >c \
+        && git add c \
+        && test_tick \
+        && git commit -m one \
+        && git checkout -b C A \
+        && git mv a c \
+        && echo important-info >b \
+        && git add b \
+        && test_tick \
+        && git commit -m two
+    )
 }
 
 test_expect_success 'rename/rename/add-dest merge still knows about conflicting file versions' '
@@ -872,28 +832,25 @@ test_expect_success 'rename/rename/add-dest merge still knows about conflicting 
 #   Commit B: rename foo->bar
 #   Expected: CONFLICT (rename/add/delete), two-way merged bar
 
-test_setup_rad () {
-	git init rad &&
-	(
-		cd rad &&
-		echo "original file" >foo &&
-		git add foo &&
-		git commit -m "original" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git rm foo &&
-		echo "different file" >bar &&
-		git add bar &&
-		git commit -m "Remove foo, add bar" &&
-
-		git checkout B &&
-		git mv foo bar &&
-		git commit -m "rename foo to bar"
-	)
+test_setup_rad() {
+  git init rad \
+    && (
+      cd rad \
+        && echo "original file" >foo \
+        && git add foo \
+        && git commit -m "original" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git rm foo \
+        && echo "different file" >bar \
+        && git add bar \
+        && git commit -m "Remove foo, add bar" \
+        && git checkout B \
+        && git mv foo bar \
+        && git commit -m "rename foo to bar"
+    )
 }
 
 test_expect_merge_algorithm failure success 'rad-check: rename/add/delete conflict' '
@@ -944,29 +901,26 @@ test_expect_merge_algorithm failure success 'rad-check: rename/add/delete confli
 #   Commit B: rename bar->baz, rm foo
 #   Expected: CONFLICT (rename/rename/delete/delete), two-way merged baz
 
-test_setup_rrdd () {
-	git init rrdd &&
-	(
-		cd rrdd &&
-		echo foo >foo &&
-		echo bar >bar &&
-		git add foo bar &&
-		git commit -m O &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv foo baz &&
-		git rm bar &&
-		git commit -m "Rename foo, remove bar" &&
-
-		git checkout B &&
-		git mv bar baz &&
-		git rm foo &&
-		git commit -m "Rename bar, remove foo"
-	)
+test_setup_rrdd() {
+  git init rrdd \
+    && (
+      cd rrdd \
+        && echo foo >foo \
+        && echo bar >bar \
+        && git add foo bar \
+        && git commit -m O \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv foo baz \
+        && git rm bar \
+        && git commit -m "Rename foo, remove bar" \
+        && git checkout B \
+        && git mv bar baz \
+        && git rm foo \
+        && git commit -m "Rename bar, remove foo"
+    )
 }
 
 test_expect_merge_algorithm failure success 'rrdd-check: rename/rename(2to1)/delete/delete conflict' '
@@ -1020,42 +974,39 @@ test_expect_merge_algorithm failure success 'rrdd-check: rename/rename(2to1)/del
 #   Expected: six CONFLICT(rename/rename) messages, each path in two of the
 #             multi-way merged contents found in two, four, six
 
-test_setup_mod6 () {
-	git init mod6 &&
-	(
-		cd mod6 &&
-		test_seq 11 19 >one &&
-		test_seq 31 39 >three &&
-		test_seq 51 59 >five &&
-		git add . &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_seq 10 19 >one &&
-		echo 40        >>three &&
-		git add one three &&
-		git mv  one   two  &&
-		git mv  three four &&
-		git mv  five  six  &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		echo 20    >>one       &&
-		echo forty >>three     &&
-		echo 60    >>five      &&
-		git add one three five &&
-		git mv  one   six  &&
-		git mv  three two  &&
-		git mv  five  four &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_mod6() {
+  git init mod6 \
+    && (
+      cd mod6 \
+        && test_seq 11 19 >one \
+        && test_seq 31 39 >three \
+        && test_seq 51 59 >five \
+        && git add . \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_seq 10 19 >one \
+        && echo 40 >>three \
+        && git add one three \
+        && git mv one two \
+        && git mv three four \
+        && git mv five six \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && echo 20 >>one \
+        && echo forty >>three \
+        && echo 60 >>five \
+        && git add one three five \
+        && git mv one six \
+        && git mv three two \
+        && git mv five four \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_merge_algorithm failure success 'mod6-check: chains of rename/rename(1to2) and rename/rename(2to1)' '
@@ -1127,116 +1078,107 @@ test_expect_merge_algorithm failure success 'mod6-check: chains of rename/rename
 '
 
 test_conflicts_with_adds_and_renames() {
-	sideL=$1
-	sideR=$2
+  sideL=$1
+  sideR=$2
 
-	# Setup:
-	#          L
-	#         / \
-	#     main   ?
-	#         \ /
-	#          R
-	#
-	# Where:
-	#   Both L and R have files named 'three' which collide.  Each of
-	#   the colliding files could have been involved in a rename, in
-	#   which case there was a file named 'one' or 'two' that was
-	#   modified on the opposite side of history and renamed into the
-	#   collision on this side of history.
-	#
-	# Questions:
-	#   1) The index should contain both a stage 2 and stage 3 entry
-	#      for the colliding file.  Does it?
-	#   2) When renames are involved, the content merges are clean, so
-	#      the index should reflect the content merges, not merely the
-	#      version of the colliding file from the prior commit.  Does
-	#      it?
-	#   3) There should be a file in the worktree named 'three'
-	#      containing the two-way merged contents of the content-merged
-	#      versions of 'three' from each of the two colliding
-	#      files.  Is it present?
-	#   4) There should not be any three~* files in the working
-	#      tree
-	test_setup_collision_conflict () {
-		git init simple_${sideL}_${sideR} &&
-		(
-			cd simple_${sideL}_${sideR} &&
+  # Setup:
+  #          L
+  #         / \
+  #     main   ?
+  #         \ /
+  #          R
+  #
+  # Where:
+  #   Both L and R have files named 'three' which collide.  Each of
+  #   the colliding files could have been involved in a rename, in
+  #   which case there was a file named 'one' or 'two' that was
+  #   modified on the opposite side of history and renamed into the
+  #   collision on this side of history.
+  #
+  # Questions:
+  #   1) The index should contain both a stage 2 and stage 3 entry
+  #      for the colliding file.  Does it?
+  #   2) When renames are involved, the content merges are clean, so
+  #      the index should reflect the content merges, not merely the
+  #      version of the colliding file from the prior commit.  Does
+  #      it?
+  #   3) There should be a file in the worktree named 'three'
+  #      containing the two-way merged contents of the content-merged
+  #      versions of 'three' from each of the two colliding
+  #      files.  Is it present?
+  #   4) There should not be any three~* files in the working
+  #      tree
+  test_setup_collision_conflict() {
+    git init simple_${sideL}_${sideR} \
+      && (
+        cd simple_${sideL}_${sideR} \
+          &&
+          # Create some related files now
+          for i in $(test_seq 1 10); do
+            echo Random base content line $i
+          done >file_v1 \
+          && cp file_v1 file_v2 \
+          && echo modification >>file_v2 \
+          && cp file_v1 file_v3 \
+          && echo more stuff >>file_v3 \
+          && cp file_v3 file_v4 \
+          && echo yet more stuff >>file_v4 \
+          &&
+          # Use a tag to record both these files for simple
+          # access, and clean out these untracked files
+          git tag file_v1 $(git hash-object -w file_v1) \
+          && git tag file_v2 $(git hash-object -w file_v2) \
+          && git tag file_v3 $(git hash-object -w file_v3) \
+          && git tag file_v4 $(git hash-object -w file_v4) \
+          && git clean -f \
+          &&
+          # Setup original commit (or merge-base), consisting of
+          # files named "one" and "two" if renames were involved.
+          touch irrelevant_file \
+          && git add irrelevant_file \
+          && if [ $sideL = "rename" ]; then
+            git show file_v1 >one \
+              && git add one
+          fi \
+          && if [ $sideR = "rename" ]; then
+            git show file_v3 >two \
+              && git add two
+          fi \
+          && test_tick && git commit -m initial \
+          && git branch L \
+          && git branch R \
+          &&
+          # Handle the left side
+          git checkout L \
+          && if [ $sideL = "rename" ]; then
+            git mv one three
+          else
+            git show file_v2 >three \
+              && git add three
+          fi \
+          && if [ $sideR = "rename" ]; then
+            git show file_v4 >two \
+              && git add two
+          fi \
+          && test_tick && git commit -m L \
+          &&
+          # Handle the right side
+          git checkout R \
+          && if [ $sideL = "rename" ]; then
+            git show file_v2 >one \
+              && git add one
+          fi \
+          && if [ $sideR = "rename" ]; then
+            git mv two three
+          else
+            git show file_v4 >three \
+              && git add three
+          fi \
+          && test_tick && git commit -m R
+      )
+  }
 
-			# Create some related files now
-			for i in $(test_seq 1 10)
-			do
-				echo Random base content line $i
-			done >file_v1 &&
-			cp file_v1 file_v2 &&
-			echo modification >>file_v2 &&
-
-			cp file_v1 file_v3 &&
-			echo more stuff >>file_v3 &&
-			cp file_v3 file_v4 &&
-			echo yet more stuff >>file_v4 &&
-
-			# Use a tag to record both these files for simple
-			# access, and clean out these untracked files
-			git tag file_v1 $(git hash-object -w file_v1) &&
-			git tag file_v2 $(git hash-object -w file_v2) &&
-			git tag file_v3 $(git hash-object -w file_v3) &&
-			git tag file_v4 $(git hash-object -w file_v4) &&
-			git clean -f &&
-
-			# Setup original commit (or merge-base), consisting of
-			# files named "one" and "two" if renames were involved.
-			touch irrelevant_file &&
-			git add irrelevant_file &&
-			if [ $sideL = "rename" ]
-			then
-				git show file_v1 >one &&
-				git add one
-			fi &&
-			if [ $sideR = "rename" ]
-			then
-				git show file_v3 >two &&
-				git add two
-			fi &&
-			test_tick && git commit -m initial &&
-
-			git branch L &&
-			git branch R &&
-
-			# Handle the left side
-			git checkout L &&
-			if [ $sideL = "rename" ]
-			then
-				git mv one three
-			else
-				git show file_v2 >three &&
-				git add three
-			fi &&
-			if [ $sideR = "rename" ]
-			then
-				git show file_v4 >two &&
-				git add two
-			fi &&
-			test_tick && git commit -m L &&
-
-			# Handle the right side
-			git checkout R &&
-			if [ $sideL = "rename" ]
-			then
-				git show file_v2 >one &&
-				git add one
-			fi &&
-			if [ $sideR = "rename" ]
-			then
-				git mv two three
-			else
-				git show file_v4 >three &&
-				git add three
-			fi &&
-			test_tick && git commit -m R
-		)
-	}
-
-	test_expect_success "check simple $sideL/$sideR conflict" '
+  test_expect_success "check simple $sideL/$sideR conflict" '
 		test_setup_collision_conflict &&
 		(
 			cd simple_${sideL}_${sideR} &&
@@ -1285,8 +1227,8 @@ test_conflicts_with_adds_and_renames() {
 
 test_conflicts_with_adds_and_renames rename rename
 test_conflicts_with_adds_and_renames rename add
-test_conflicts_with_adds_and_renames add    rename
-test_conflicts_with_adds_and_renames add    add
+test_conflicts_with_adds_and_renames add rename
+test_conflicts_with_adds_and_renames add add
 
 # Setup:
 #          L
@@ -1304,57 +1246,52 @@ test_conflicts_with_adds_and_renames add    add
 #
 #   So, we have four different conflicting files that all end up at path
 #   'three'.
-test_setup_nested_conflicts_from_rename_rename () {
-	git init nested_conflicts_from_rename_rename &&
-	(
-		cd nested_conflicts_from_rename_rename &&
-
-		# Create some related files now
-		for i in $(test_seq 1 10)
-		do
-			echo Random base content line $i
-		done >file_v1 &&
-
-		cp file_v1 file_v2 &&
-		cp file_v1 file_v3 &&
-		cp file_v1 file_v4 &&
-		cp file_v1 file_v5 &&
-		cp file_v1 file_v6 &&
-
-		echo one  >>file_v1 &&
-		echo uno  >>file_v2 &&
-		echo eins >>file_v3 &&
-
-		echo two  >>file_v4 &&
-		echo dos  >>file_v5 &&
-		echo zwei >>file_v6 &&
-
-		# Setup original commit (or merge-base), consisting of
-		# files named "one" and "two".
-		mv file_v1 one &&
-		mv file_v4 two &&
-		git add one two &&
-		test_tick && git commit -m english &&
-
-		git branch L &&
-		git branch R &&
-
-		# Handle the left side
-		git checkout L &&
-		git rm one two &&
-		mv -f file_v2 three &&
-		mv -f file_v5 two &&
-		git add two three &&
-		test_tick && git commit -m spanish &&
-
-		# Handle the right side
-		git checkout R &&
-		git rm one two &&
-		mv -f file_v3 one &&
-		mv -f file_v6 three &&
-		git add one three &&
-		test_tick && git commit -m german
-	)
+test_setup_nested_conflicts_from_rename_rename() {
+  git init nested_conflicts_from_rename_rename \
+    && (
+      cd nested_conflicts_from_rename_rename \
+        &&
+        # Create some related files now
+        for i in $(test_seq 1 10); do
+          echo Random base content line $i
+        done >file_v1 \
+        && cp file_v1 file_v2 \
+        && cp file_v1 file_v3 \
+        && cp file_v1 file_v4 \
+        && cp file_v1 file_v5 \
+        && cp file_v1 file_v6 \
+        && echo one >>file_v1 \
+        && echo uno >>file_v2 \
+        && echo eins >>file_v3 \
+        && echo two >>file_v4 \
+        && echo dos >>file_v5 \
+        && echo zwei >>file_v6 \
+        &&
+        # Setup original commit (or merge-base), consisting of
+        # files named "one" and "two".
+        mv file_v1 one \
+        && mv file_v4 two \
+        && git add one two \
+        && test_tick && git commit -m english \
+        && git branch L \
+        && git branch R \
+        &&
+        # Handle the left side
+        git checkout L \
+        && git rm one two \
+        && mv -f file_v2 three \
+        && mv -f file_v5 two \
+        && git add two three \
+        && test_tick && git commit -m spanish \
+        &&
+        # Handle the right side
+        git checkout R \
+        && git rm one two \
+        && mv -f file_v3 one \
+        && mv -f file_v6 three \
+        && git add one three \
+        && test_tick && git commit -m german
+    )
 }
 
 test_expect_success 'check nested conflicts from rename/rename(2to1)' '
@@ -1413,34 +1350,29 @@ test_expect_success 'check nested conflicts from rename/rename(2to1)' '
 #   Commit B: orig-B
 #   Expected: CONFLICT(rename/rename) message, three unstaged entries in the
 #             index, and contents of orig-[AB] at path orig-[AB]
-test_setup_rename_rename_1_to_2_binary () {
-	git init rename_rename_1_to_2_binary &&
-	(
-		cd rename_rename_1_to_2_binary &&
+test_setup_rename_rename_1_to_2_binary() {
+  git init rename_rename_1_to_2_binary \
+    && (
+      cd rename_rename_1_to_2_binary \
+        && echo '* binary' >.gitattributes \
+        && git add .gitattributes \
+        && test_seq 1 10 >orig \
+        && git add orig \
+        && git commit -m orig \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv orig orig-A \
+        && test_seq 1 11 >orig-A \
+        && git add orig-A \
+        && git commit -m orig-A \
+        && git checkout B \
+        && git mv orig orig-B \
+        && test_seq 0 10 >orig-B \
+        && git add orig-B \
+        && git commit -m orig-B
 
-		echo '* binary' >.gitattributes &&
-		git add .gitattributes &&
-
-		test_seq 1 10 >orig &&
-		git add orig &&
-		git commit -m orig &&
-
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv orig orig-A &&
-		test_seq 1 11 >orig-A &&
-		git add orig-A &&
-		git commit -m orig-A &&
-
-		git checkout B &&
-		git mv orig orig-B &&
-		test_seq 0 10 >orig-B &&
-		git add orig-B &&
-		git commit -m orig-B
-
-	)
+    )
 }
 
 test_expect_success 'rename/rename(1to2) with a binary file' '

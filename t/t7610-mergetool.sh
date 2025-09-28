@@ -336,7 +336,7 @@ test_expect_success 'mergetool skips resolved paths when rerere is active' '
 	test "$output" = "No files need merging"
 '
 
-test_expect_success 'conflicted stash sets up rerere'  '
+test_expect_success 'conflicted stash sets up rerere' '
 	test_when_finished "git reset --hard" &&
 	test_config rerere.enabled true &&
 	git checkout stash1 &&

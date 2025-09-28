@@ -4,18 +4,17 @@ test_description='compression setting of fast-import utility'
 
 . ./test-lib.sh
 
-import_large () {
-	(
-		echo blob
-		echo "data <<EOD"
-		printf "%2000000s\n" "$*"
-		echo EOD
-	) | git "$@" fast-import
+import_large() {
+  (
+    echo blob
+    echo "data <<EOD"
+    printf "%2000000s\n" "$*"
+    echo EOD
+  ) | git "$@" fast-import
 }
 
-while read expect config
-do
-	test_expect_success "fast-import (packed) with $config" '
+while read expect config; do
+  test_expect_success "fast-import (packed) with $config" '
 		test_when_finished "rm -f .git/objects/pack/pack-*.*" &&
 		test_when_finished "rm -rf .git/objects/??" &&
 		import_large -c fastimport.unpacklimit=0 $config &&
@@ -36,9 +35,8 @@ large -c pack.compression=0
 small -c pack.compression=9
 EOF
 
-while read expect config
-do
-	test_expect_success "fast-import (loose) with $config" '
+while read expect config; do
+  test_expect_success "fast-import (loose) with $config" '
 		test_when_finished "rm -f .git/objects/pack/pack-*.*" &&
 		test_when_finished "rm -rf .git/objects/??" &&
 		import_large -c fastimport.unpacklimit=9 $config &&

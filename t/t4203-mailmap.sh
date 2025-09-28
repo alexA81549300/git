@@ -557,7 +557,6 @@ test_expect_success 'gitmailmap(5) example output: example #3' '
 	test_cmp expect actual
 '
 
-
 test_expect_success 'Shortlog output (complex mapping)' '
 	test_config mailmap.file complex.map &&
 	cat >complex.map <<-EOF &&

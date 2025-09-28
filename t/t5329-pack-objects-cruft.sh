@@ -7,10 +7,10 @@ test_description='cruft pack related pack-objects tests'
 objdir=.git/objects
 packdir=$objdir/pack
 
-basic_cruft_pack_tests () {
-	expire="$1"
+basic_cruft_pack_tests() {
+  expire="$1"
 
-	test_expect_success "unreachable loose objects are packed (expire $expire)" '
+  test_expect_success "unreachable loose objects are packed (expire $expire)" '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -45,7 +45,7 @@ basic_cruft_pack_tests () {
 		)
 	'
 
-	test_expect_success "unreachable packed objects are packed (expire $expire)" '
+  test_expect_success "unreachable packed objects are packed (expire $expire)" '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -76,7 +76,7 @@ basic_cruft_pack_tests () {
 		)
 	'
 
-	test_expect_success "unreachable cruft objects are repacked (expire $expire)" '
+  test_expect_success "unreachable cruft objects are repacked (expire $expire)" '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -107,7 +107,7 @@ basic_cruft_pack_tests () {
 		)
 	'
 
-	test_expect_success "multiple cruft packs (expire $expire)" '
+  test_expect_success "multiple cruft packs (expire $expire)" '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -162,7 +162,7 @@ basic_cruft_pack_tests () {
 		)
 	'
 
-	test_expect_success "cruft packs tolerate missing trees (expire $expire)" '
+  test_expect_success "cruft packs tolerate missing trees (expire $expire)" '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -188,7 +188,7 @@ basic_cruft_pack_tests () {
 		)
 	'
 
-	test_expect_success "cruft packs tolerate missing blobs (expire $expire)" '
+  test_expect_success "cruft packs tolerate missing blobs (expire $expire)" '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -574,20 +574,18 @@ test_expect_success 'cruft repack with no reachable objects' '
 	)
 '
 
-write_blob () {
-	test-tool genrandom "$@" >in &&
-	git hash-object -w -t blob in
+write_blob() {
+  test-tool genrandom "$@" >in \
+    && git hash-object -w -t blob in
 }
 
-find_pack () {
-	for idx in $(ls $packdir/pack-*.idx)
-	do
-		git show-index <$idx >out &&
-		if grep -q "$1" out
-		then
-			echo $idx
-		fi || return 1
-	done
+find_pack() {
+  for idx in $(ls $packdir/pack-*.idx); do
+    git show-index <$idx >out \
+      && if grep -q "$1" out; then
+        echo $idx
+      fi || return 1
+  done
 }
 
 test_expect_success 'cruft repack with --max-pack-size' '

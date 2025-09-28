@@ -21,9 +21,9 @@ modification *should* take notice and update the test vectors here.
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-subtest.sh
 
-try_local_xy () {
-	local x="local" y="alsolocal" &&
-	echo "$x $y"
+try_local_xy() {
+  local x="local" y="alsolocal" \
+    && echo "$x $y"
 }
 
 # Check whether the shell supports the "local" keyword. "local" is not
@@ -1105,7 +1105,6 @@ test_expect_success 'writing this tree without --missing-ok' '
 test_expect_success 'writing this tree with --missing-ok' '
 	git write-tree --missing-ok
 '
-
 
 ################################################################
 test_expect_success 'git read-tree followed by write-tree should be idempotent' '

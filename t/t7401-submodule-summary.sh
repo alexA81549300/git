@@ -19,27 +19,27 @@ This test script tries to verify the sanity of summary subcommand of git submodu
 
 . ./test-lib.sh
 
-add_file () {
-	sm=$1
-	shift
-	owd=$(pwd)
-	cd "$sm"
-	for name; do
-		echo "$name" >"$name" &&
-		git add "$name" &&
-		test_tick &&
-		git commit -m "Add $name"
-	done >/dev/null
-	git rev-parse --short HEAD
-	cd "$owd"
+add_file() {
+  sm=$1
+  shift
+  owd=$(pwd)
+  cd "$sm"
+  for name; do
+    echo "$name" >"$name" \
+      && git add "$name" \
+      && test_tick \
+      && git commit -m "Add $name"
+  done >/dev/null
+  git rev-parse --short HEAD
+  cd "$owd"
 }
-commit_file () {
-	test_tick &&
-	git commit "$@" -m "Commit $*" >/dev/null
+commit_file() {
+  test_tick \
+    && git commit "$@" -m "Commit $*" >/dev/null
 }
 
-test_create_repo sm1 &&
-add_file . foo >/dev/null
+test_create_repo sm1 \
+  && add_file . foo >/dev/null
 
 head1=$(add_file sm1 foo1 foo2)
 
@@ -89,8 +89,8 @@ test_expect_success 'added submodule (subdirectory with explicit path)' "
 	test_cmp expected actual
 "
 
-commit_file sm1 &&
-head2=$(add_file sm1 foo3)
+commit_file sm1 \
+  && head2=$(add_file sm1 foo3)
 
 test_expect_success 'modified submodule(forward)' "
 	git submodule summary >actual &&
@@ -129,13 +129,12 @@ test_expect_success 'no ignore=all setting has any effect' "
 	git config -f .gitmodules --remove-section submodule.sm1
 "
 
-
-commit_file sm1 &&
-head3=$(
-	cd sm1 &&
-	git reset --hard HEAD~2 >/dev/null &&
-	git rev-parse --short HEAD
-)
+commit_file sm1 \
+  && head3=$(
+    cd sm1 \
+      && git reset --hard HEAD~2 >/dev/null \
+      && git rev-parse --short HEAD
+  )
 
 test_expect_success 'modified submodule(backward)' "
 	git submodule summary >actual &&
@@ -148,8 +147,8 @@ test_expect_success 'modified submodule(backward)' "
 	test_cmp expected actual
 "
 
-head4=$(add_file sm1 foo4 foo5) &&
-head4_full=$(GIT_DIR=sm1/.git git rev-parse --verify HEAD)
+head4=$(add_file sm1 foo4 foo5) \
+  && head4_full=$(GIT_DIR=sm1/.git git rev-parse --verify HEAD)
 test_expect_success 'modified submodule(backward and forward)' "
 	git submodule summary >actual &&
 	cat >expected <<-EOF &&
@@ -175,13 +174,13 @@ test_expect_success '--summary-limit' "
 	test_cmp expected actual
 "
 
-commit_file sm1 &&
-mv sm1 sm1-bak &&
-echo sm1 >sm1 &&
-head5=$(git hash-object sm1 | cut -c1-7) &&
-git add sm1 &&
-rm -f sm1 &&
-mv sm1-bak sm1
+commit_file sm1 \
+  && mv sm1 sm1-bak \
+  && echo sm1 >sm1 \
+  && head5=$(git hash-object sm1 | cut -c1-7) \
+  && git add sm1 \
+  && rm -f sm1 \
+  && mv sm1-bak sm1
 
 test_expect_success 'typechanged submodule(submodule->blob), --cached' "
 	git submodule summary --cached >actual &&
@@ -203,8 +202,8 @@ test_expect_success 'typechanged submodule(submodule->blob), --files' "
 	test_cmp expected actual
 "
 
-rm -rf sm1 &&
-git checkout-index sm1
+rm -rf sm1 \
+  && git checkout-index sm1
 test_expect_success 'typechanged submodule(submodule->blob)' "
 	git submodule summary >actual &&
 	cat >expected <<-EOF &&
@@ -214,9 +213,9 @@ test_expect_success 'typechanged submodule(submodule->blob)' "
 	test_cmp expected actual
 "
 
-rm -f sm1 &&
-test_create_repo sm1 &&
-head6=$(add_file sm1 foo6 foo7)
+rm -f sm1 \
+  && test_create_repo sm1 \
+  && head6=$(add_file sm1 foo6 foo7)
 test_expect_success 'nonexistent commit' "
 	git submodule summary >actual &&
 	cat >expected <<-EOF &&
@@ -238,8 +237,8 @@ test_expect_success 'typechanged submodule(blob->submodule)' "
 	test_cmp expected actual
 "
 
-commit_file sm1 &&
-rm -rf sm1
+commit_file sm1 \
+  && rm -rf sm1
 test_expect_success 'deleted submodule' "
 	git submodule summary >actual &&
 	cat >expected <<-EOF &&

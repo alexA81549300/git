@@ -469,10 +469,10 @@ test_expect_success 'setup: new author and committer' '
 	export GIT_AUTHOR_NAME GIT_AUTHOR_EMAIL GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL
 '
 
-compare () {
-	a=$(git cat-file commit "$2" | grep "^$1 ") &&
-	b=$(git cat-file commit "$3" | grep "^$1 ") &&
-	test "$a" = "$b"
+compare() {
+  a=$(git cat-file commit "$2" | grep "^$1 ") \
+    && b=$(git cat-file commit "$3" | grep "^$1 ") \
+    && test "$a" = "$b"
 }
 
 test_expect_success 'am changes committer and keeps author' '

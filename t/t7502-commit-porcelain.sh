@@ -7,45 +7,43 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-commit_msg_is () {
-	expect=commit_msg_is.expect
-	actual=commit_msg_is.actual
+commit_msg_is() {
+  expect=commit_msg_is.expect
+  actual=commit_msg_is.actual
 
-	printf "%s" "$(git log --pretty=format:%s%b -1)" >$actual &&
-	printf "%s" "$1" >$expect &&
-	test_cmp $expect $actual
+  printf "%s" "$(git log --pretty=format:%s%b -1)" >$actual \
+    && printf "%s" "$1" >$expect \
+    && test_cmp $expect $actual
 }
 
 # Arguments: [<prefix] [<commit message>] [<commit options>]
 check_summary_oneline() {
-	test_tick &&
-	git commit ${3+"$3"} -m "$2" >raw &&
-	head -n 1 raw >act &&
+  test_tick \
+    && git commit ${3+"$3"} -m "$2" >raw \
+    && head -n 1 raw >act \
+    &&
+    # branch name
+    SUMMARY_PREFIX="$(git name-rev --name-only HEAD)" \
+    &&
+    # append the "special" prefix, like "root-commit", "detached HEAD"
+    if test -n "$1"; then
+      SUMMARY_PREFIX="$SUMMARY_PREFIX ($1)"
+    fi
 
-	# branch name
-	SUMMARY_PREFIX="$(git name-rev --name-only HEAD)" &&
-
-	# append the "special" prefix, like "root-commit", "detached HEAD"
-	if test -n "$1"
-	then
-		SUMMARY_PREFIX="$SUMMARY_PREFIX ($1)"
-	fi
-
-	# abbrev SHA-1
-	SUMMARY_POSTFIX="$(git log -1 --pretty='format:%h')"
-	echo "[$SUMMARY_PREFIX $SUMMARY_POSTFIX] $2" >exp &&
-
-	test_cmp exp act
+  # abbrev SHA-1
+  SUMMARY_POSTFIX="$(git log -1 --pretty='format:%h')"
+  echo "[$SUMMARY_PREFIX $SUMMARY_POSTFIX] $2" >exp \
+    && test_cmp exp act
 }
 
-trailer_commit_base () {
-	echo "fun" >>file &&
-	git add file &&
-	git commit -s --trailer "Signed-off-by=C1 E1 " \
-		--trailer "Helped-by:C2 E2 " \
-		--trailer "Reported-by=C3 E3" \
-		--trailer "Mentored-by:C4 E4" \
-		-m "hello"
+trailer_commit_base() {
+  echo "fun" >>file \
+    && git add file \
+    && git commit -s --trailer "Signed-off-by=C1 E1 " \
+      --trailer "Helped-by:C2 E2 " \
+      --trailer "Reported-by=C3 E3" \
+      --trailer "Mentored-by:C4 E4" \
+      -m "hello"
 }
 
 test_expect_success 'output summary format' '
@@ -88,12 +86,12 @@ test_expect_success 'output summary format for merges' '
 '
 
 output_tests_cleanup() {
-	# this is needed for "do not fire editor in the presence of conflicts"
-	git checkout main &&
-
-	# this is needed for the "partial removal" test to pass
-	git rm file1 &&
-	git commit -m "cleanup"
+  # this is needed for "do not fire editor in the presence of conflicts"
+  git checkout main \
+    &&
+    # this is needed for the "partial removal" test to pass
+    git rm file1 \
+    && git commit -m "cleanup"
 }
 
 test_expect_success 'the basics' '
@@ -537,7 +535,7 @@ mesg_with_comment_and_newlines='
 
 '
 
-test_expect_success 'prepare file with comment line and trailing newlines'  '
+test_expect_success 'prepare file with comment line and trailing newlines' '
 	printf "%s" "$mesg_with_comment_and_newlines" >expect
 '
 
@@ -877,66 +875,68 @@ EOF
 
 echo '## Custom template' >template
 
-try_commit () {
-	git reset --hard &&
-	echo >>negative &&
-	GIT_EDITOR=.git/FAKE_EDITOR git commit -a $* $use_template &&
-	case "$use_template" in
-	'')
-		test_grep ! "^## Custom template" .git/COMMIT_EDITMSG ;;
-	*)
-		test_grep "^## Custom template" .git/COMMIT_EDITMSG ;;
-	esac
+try_commit() {
+  git reset --hard \
+    && echo >>negative \
+    && GIT_EDITOR=.git/FAKE_EDITOR git commit -a $* $use_template \
+    && case "$use_template" in
+      '')
+        test_grep ! "^## Custom template" .git/COMMIT_EDITMSG
+        ;;
+      *)
+        test_grep "^## Custom template" .git/COMMIT_EDITMSG
+        ;;
+    esac
 }
 
-try_commit_status_combo () {
+try_commit_status_combo() {
 
-	test_expect_success 'commit' '
+  test_expect_success 'commit' '
 		try_commit "" &&
 		test_grep "^# Changes to be committed:" .git/COMMIT_EDITMSG
 	'
 
-	test_expect_success 'commit --status' '
+  test_expect_success 'commit --status' '
 		try_commit --status &&
 		test_grep "^# Changes to be committed:" .git/COMMIT_EDITMSG
 	'
 
-	test_expect_success 'commit --no-status' '
+  test_expect_success 'commit --no-status' '
 		try_commit --no-status &&
 		test_grep ! "^# Changes to be committed:" .git/COMMIT_EDITMSG
 	'
 
-	test_expect_success 'commit with commit.status = yes' '
+  test_expect_success 'commit with commit.status = yes' '
 		test_config commit.status yes &&
 		try_commit "" &&
 		test_grep "^# Changes to be committed:" .git/COMMIT_EDITMSG
 	'
 
-	test_expect_success 'commit with commit.status = no' '
+  test_expect_success 'commit with commit.status = no' '
 		test_config commit.status no &&
 		try_commit "" &&
 		test_grep ! "^# Changes to be committed:" .git/COMMIT_EDITMSG
 	'
 
-	test_expect_success 'commit --status with commit.status = yes' '
+  test_expect_success 'commit --status with commit.status = yes' '
 		test_config commit.status yes &&
 		try_commit --status &&
 		test_grep "^# Changes to be committed:" .git/COMMIT_EDITMSG
 	'
 
-	test_expect_success 'commit --no-status with commit.status = yes' '
+  test_expect_success 'commit --no-status with commit.status = yes' '
 		test_config commit.status yes &&
 		try_commit --no-status &&
 		test_grep ! "^# Changes to be committed:" .git/COMMIT_EDITMSG
 	'
 
-	test_expect_success 'commit --status with commit.status = no' '
+  test_expect_success 'commit --status with commit.status = no' '
 		test_config commit.status no &&
 		try_commit --status &&
 		test_grep "^# Changes to be committed:" .git/COMMIT_EDITMSG
 	'
 
-	test_expect_success 'commit --no-status with commit.status = no' '
+  test_expect_success 'commit --no-status with commit.status = no' '
 		test_config commit.status no &&
 		try_commit --no-status &&
 		test_grep ! "^# Changes to be committed:" .git/COMMIT_EDITMSG

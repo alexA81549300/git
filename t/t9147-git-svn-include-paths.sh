@@ -32,7 +32,6 @@ test_expect_success 'clone an SVN repository with filter to include qqq director
 	test_cmp expect expect2
 '
 
-
 test_expect_success 'init+fetch an SVN repository with included qqq directory' '
 	git svn init "$svnrepo" c &&
 	( cd c && git svn fetch --include-paths="qqq" ) &&

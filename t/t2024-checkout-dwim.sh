@@ -7,25 +7,25 @@ Ensures that checkout on an unborn branch does what the user expects'
 . ./test-lib.sh
 
 # Is the current branch "refs/heads/$1"?
-test_branch () {
-	printf "%s\n" "refs/heads/$1" >expect.HEAD &&
-	git symbolic-ref HEAD >actual.HEAD &&
-	test_cmp expect.HEAD actual.HEAD
+test_branch() {
+  printf "%s\n" "refs/heads/$1" >expect.HEAD \
+    && git symbolic-ref HEAD >actual.HEAD \
+    && test_cmp expect.HEAD actual.HEAD
 }
 
 # Is branch "refs/heads/$1" set to pull from "$2/$3"?
-test_branch_upstream () {
-	printf "%s\n" "$2" "refs/heads/$3" >expect.upstream &&
-	{
-		git config "branch.$1.remote" &&
-		git config "branch.$1.merge"
-	} >actual.upstream &&
-	test_cmp expect.upstream actual.upstream
+test_branch_upstream() {
+  printf "%s\n" "$2" "refs/heads/$3" >expect.upstream \
+    && {
+      git config "branch.$1.remote" \
+        && git config "branch.$1.merge"
+    } >actual.upstream \
+    && test_cmp expect.upstream actual.upstream
 }
 
-status_uno_is_clean () {
-	git status -uno --porcelain >status.actual &&
-	test_must_be_empty status.actual
+status_uno_is_clean() {
+  git status -uno --porcelain >status.actual \
+    && test_must_be_empty status.actual
 }
 
 test_expect_success 'setup' '

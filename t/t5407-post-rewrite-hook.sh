@@ -31,13 +31,13 @@ test_expect_success 'setup' '
 	EOF
 '
 
-clear_hook_input () {
-	rm -f post-rewrite.args post-rewrite.data
+clear_hook_input() {
+  rm -f post-rewrite.args post-rewrite.data
 }
 
-verify_hook_input () {
-	test_cmp expected.args "$TRASH_DIRECTORY"/post-rewrite.args &&
-	test_cmp expected.data "$TRASH_DIRECTORY"/post-rewrite.data
+verify_hook_input() {
+  test_cmp expected.args "$TRASH_DIRECTORY"/post-rewrite.args \
+    && test_cmp expected.data "$TRASH_DIRECTORY"/post-rewrite.data
 }
 
 test_expect_success 'git commit --amend' '
@@ -170,13 +170,13 @@ set_fake_editor
 
 # Helper to work around the lack of one-shot exporting for
 # test_must_fail (as it is a shell function)
-test_fail_interactive_rebase () {
-	(
-		FAKE_LINES="$1" &&
-		shift &&
-		export FAKE_LINES &&
-		test_must_fail git rebase -i "$@"
-	)
+test_fail_interactive_rebase() {
+  (
+    FAKE_LINES="$1" \
+      && shift \
+      && export FAKE_LINES \
+      && test_must_fail git rebase -i "$@"
+  )
 }
 
 test_expect_success 'git rebase with failed pick' '

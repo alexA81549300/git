@@ -7,17 +7,15 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-scramble () {
-	i=0
-	while read x
-	do
-		if test $i -ne 0
-		then
-			echo "$x"
-		fi
-		i=$((($i+1) % 10))
-	done <"$1" >"$1.new"
-	mv -f "$1.new" "$1"
+scramble() {
+  i=0
+  while read x; do
+    if test $i -ne 0; then
+      echo "$x"
+    fi
+    i=$((($i + 1) % 10))
+  done <"$1" >"$1.new"
+  mv -f "$1.new" "$1"
 }
 
 test_expect_success 'setup' '

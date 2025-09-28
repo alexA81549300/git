@@ -10,29 +10,30 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-if ! test_have_prereq ICONV
-then
-	skip_all='skipping patch i18n tests; iconv not available'
-	test_done
+if ! test_have_prereq ICONV; then
+  skip_all='skipping patch i18n tests; iconv not available'
+  test_done
 fi
 
-check_encoding () {
-	# Make sure characters are not corrupted
-	cnt="$1" header="$2" i=1 j=0
-	while test "$i" -le $cnt
-	do
-		git format-patch --encoding=UTF-8 --stdout HEAD~$i..HEAD~$j |
-		grep "^From: =?UTF-8?q?=C3=81=C3=A9=C3=AD=20=C3=B3=C3=BA?=" &&
-		git cat-file commit HEAD~$j |
-		case "$header" in
-		8859)
-			grep "^encoding ISO8859-1" ;;
-		*)
-			grep "^encoding ISO8859-1"; test "$?" != 0 ;;
-		esac || return 1
-		j=$i
-		i=$(($i+1))
-	done
+check_encoding() {
+  # Make sure characters are not corrupted
+  cnt="$1" header="$2" i=1 j=0
+  while test "$i" -le $cnt; do
+    git format-patch --encoding=UTF-8 --stdout HEAD~$i..HEAD~$j \
+      | grep "^From: =?UTF-8?q?=C3=81=C3=A9=C3=AD=20=C3=B3=C3=BA?=" \
+      && git cat-file commit HEAD~$j \
+      | case "$header" in
+        8859)
+          grep "^encoding ISO8859-1"
+          ;;
+        *)
+          grep "^encoding ISO8859-1"
+          test "$?" != 0
+          ;;
+      esac || return 1
+    j=$i
+    i=$(($i + 1))
+  done
 }
 
 test_expect_success setup '

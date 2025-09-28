@@ -13,10 +13,10 @@ P1='pathname	with HT'
 P2='pathname with SP'
 P3='pathname
 with LF'
-test_have_prereq !MINGW &&
-echo 2>/dev/null >"$P1" && test -f "$P1" && rm -f "$P1" || {
-	skip_all='Your filesystem does not allow tabs in filenames'
-	test_done
+test_have_prereq !MINGW \
+  && echo 2>/dev/null >"$P1" && test -f "$P1" && rm -f "$P1" || {
+  skip_all='Your filesystem does not allow tabs in filenames'
+  test_done
 }
 
 test_expect_success setup '

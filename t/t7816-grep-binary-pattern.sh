@@ -4,53 +4,50 @@ test_description='git grep with a binary pattern files'
 
 . ./lib-gettext.sh
 
-nul_match_internal () {
-	matches=$1
-	prereqs=$2
-	lc_all=$3
-	extra_flags=$4
-	flags=$5
-	pattern=$6
-	pattern_human=$(echo "$pattern" | sed 's/Q/<NUL>/g')
+nul_match_internal() {
+  matches=$1
+  prereqs=$2
+  lc_all=$3
+  extra_flags=$4
+  flags=$5
+  pattern=$6
+  pattern_human=$(echo "$pattern" | sed 's/Q/<NUL>/g')
 
-	if test "$matches" = 1
-	then
-		test_expect_success $prereqs "LC_ALL='$lc_all' git grep $extra_flags -f f $flags '$pattern_human' a" "
+  if test "$matches" = 1; then
+    test_expect_success $prereqs "LC_ALL='$lc_all' git grep $extra_flags -f f $flags '$pattern_human' a" "
 			printf '$pattern' | q_to_nul >f &&
 			LC_ALL='$lc_all' git grep $extra_flags -f f $flags a
 		"
-	elif test "$matches" = 0
-	then
-		test_expect_success $prereqs "LC_ALL='$lc_all' git grep $extra_flags -f f $flags '$pattern_human' a" "
+  elif test "$matches" = 0; then
+    test_expect_success $prereqs "LC_ALL='$lc_all' git grep $extra_flags -f f $flags '$pattern_human' a" "
 			>stderr &&
 			printf '$pattern' | q_to_nul >f &&
 			test_must_fail env LC_ALL=\"$lc_all\" git grep $extra_flags -f f $flags a 2>stderr &&
 			test_grep ! 'This is only supported with -P under PCRE v2' stderr
 		"
-	elif test "$matches" = P
-	then
-		test_expect_success $prereqs "error, PCRE v2 only: LC_ALL='$lc_all' git grep -f f $flags '$pattern_human' a" "
+  elif test "$matches" = P; then
+    test_expect_success $prereqs "error, PCRE v2 only: LC_ALL='$lc_all' git grep -f f $flags '$pattern_human' a" "
 			>stderr &&
 			printf '$pattern' | q_to_nul >f &&
 			test_must_fail env LC_ALL=\"$lc_all\" git grep -f f $flags a 2>stderr &&
 			test_grep 'This is only supported with -P under PCRE v2' stderr
 		"
-	else
-		test_expect_success "PANIC: Test framework error. Unknown matches value $matches" 'false'
-	fi
+  else
+    test_expect_success "PANIC: Test framework error. Unknown matches value $matches" 'false'
+  fi
 }
 
-nul_match () {
-	matches=$1
-	matches_pcre2=$2
-	matches_pcre2_locale=$3
-	flags=$4
-	pattern=$5
-	pattern_human=$(echo "$pattern" | sed 's/Q/<NUL>/g')
+nul_match() {
+  matches=$1
+  matches_pcre2=$2
+  matches_pcre2_locale=$3
+  flags=$4
+  pattern=$5
+  pattern_human=$(echo "$pattern" | sed 's/Q/<NUL>/g')
 
-	nul_match_internal "$matches" "" "C" "" "$flags" "$pattern"
-	nul_match_internal "$matches_pcre2" "LIBPCRE2" "C" "-P" "$flags" "$pattern"
-	nul_match_internal "$matches_pcre2_locale" "LIBPCRE2,GETTEXT_LOCALE" "$is_IS_locale" "-P" "$flags" "$pattern"
+  nul_match_internal "$matches" "" "C" "" "$flags" "$pattern"
+  nul_match_internal "$matches_pcre2" "LIBPCRE2" "C" "-P" "$flags" "$pattern"
+  nul_match_internal "$matches_pcre2_locale" "LIBPCRE2,GETTEXT_LOCALE" "$is_IS_locale" "-P" "$flags" "$pattern"
 }
 
 test_expect_success 'setup' "
@@ -84,8 +81,8 @@ nul_match P 1 1 '-i' '[æ]Qð'
 # ...PCRE v2 only matches non-ASCII with -i casefolding under UTF-8
 # semantics
 nul_match P P P '-Fi' 'ÆQ[Ð]'
-nul_match P 0 1 '-i'  'ÆQ[Ð]'
-nul_match P 0 1 '-i'  '[Æ]QÐ'
+nul_match P 0 1 '-i' 'ÆQ[Ð]'
+nul_match P 0 1 '-i' '[Æ]QÐ'
 nul_match P 0 1 '-i' '[Æ]Qð'
 nul_match P 0 1 '-i' 'ÆQÐ'
 

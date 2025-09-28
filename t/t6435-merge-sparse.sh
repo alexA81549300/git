@@ -6,15 +6,15 @@ TEST_CREATE_REPO_NO_TEMPLATE=1
 . ./test-lib.sh
 
 # test_file $filename $content
-test_file () {
-	echo "$2" > "$1" &&
-	git add "$1"
+test_file() {
+  echo "$2" >"$1" \
+    && git add "$1"
 }
 
 # test_commit_this $message_and_tag
-test_commit_this () {
-	git commit -m "$1" &&
-	git tag "$1"
+test_commit_this() {
+  git commit -m "$1" \
+    && git tag "$1"
 }
 
 test_expect_success 'setup' '

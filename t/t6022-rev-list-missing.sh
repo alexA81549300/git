@@ -21,9 +21,8 @@ test_expect_success 'create repository and alternate directory' '
 GIT_COMMIT_GRAPH_PARANOIA=true
 export GIT_COMMIT_GRAPH_PARANOIA
 
-for obj in "HEAD~1" "HEAD~1^{tree}" "HEAD:1.t"
-do
-	test_expect_success "rev-list --missing=error fails with missing object $obj" '
+for obj in "HEAD~1" "HEAD~1^{tree}" "HEAD:1.t"; do
+  test_expect_success "rev-list --missing=error fails with missing object $obj" '
 		oid="$(git rev-parse $obj)" &&
 		path=".git/objects/$(test_oid_to_path $oid)" &&
 
@@ -35,11 +34,9 @@ do
 	'
 done
 
-for obj in "HEAD~1" "HEAD~1^{tree}" "HEAD:1.t"
-do
-	for action in "allow-any" "print"
-	do
-		test_expect_success "rev-list --missing=$action with missing $obj" '
+for obj in "HEAD~1" "HEAD~1^{tree}" "HEAD:1.t"; do
+  for action in "allow-any" "print"; do
+    test_expect_success "rev-list --missing=$action with missing $obj" '
 			oid="$(git rev-parse $obj)" &&
 			path=".git/objects/$(test_oid_to_path $oid)" &&
 
@@ -77,19 +74,16 @@ do
 			sort expect.raw >expect &&
 			test_cmp expect actual
 		'
-	done
+  done
 done
 
-for missing_tip in "annot_tag" "regul_tag" "a_branch" "HEAD~1" "HEAD~1^{tree}" "HEAD:1.t"
-do
-	# We want to check that things work when both
-	#   - all the tips passed are missing (case existing_tip = ""), and
-	#   - there is one missing tip and one existing tip (case existing_tip = "HEAD")
-	for existing_tip in "" "HEAD"
-	do
-		for action in "allow-any" "print"
-		do
-			test_expect_success "--missing=$action with tip '$missing_tip' missing and tip '$existing_tip'" '
+for missing_tip in "annot_tag" "regul_tag" "a_branch" "HEAD~1" "HEAD~1^{tree}" "HEAD:1.t"; do
+  # We want to check that things work when both
+  #   - all the tips passed are missing (case existing_tip = ""), and
+  #   - there is one missing tip and one existing tip (case existing_tip = "HEAD")
+  for existing_tip in "" "HEAD"; do
+    for action in "allow-any" "print"; do
+      test_expect_success "--missing=$action with tip '$missing_tip' missing and tip '$existing_tip'" '
 				# Before the object is made missing, we use rev-list to
 				# get the expected oids.
 				if test "$existing_tip" = "HEAD"
@@ -141,8 +135,8 @@ do
 				sort expect.raw >expect &&
 				test_cmp expect actual
 			'
-		done
-	done
+    done
+  done
 done
 
 test_done

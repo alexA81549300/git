@@ -4,7 +4,6 @@ test_description='test test-tool env-helper'
 
 . ./test-lib.sh
 
-
 test_expect_success 'test-tool env-helper usage' '
 	test_must_fail test-tool env-helper &&
 	test_must_fail test-tool env-helper --type=bool &&

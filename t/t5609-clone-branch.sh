@@ -7,14 +7,14 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 check_HEAD() {
-	echo refs/heads/"$1" >expect &&
-	git symbolic-ref HEAD >actual &&
-	test_cmp expect actual
+  echo refs/heads/"$1" >expect \
+    && git symbolic-ref HEAD >actual \
+    && test_cmp expect actual
 }
 
 check_file() {
-	echo "$1" >expect &&
-	test_cmp expect file
+  echo "$1" >expect \
+    && test_cmp expect file
 }
 
 test_expect_success 'setup' '

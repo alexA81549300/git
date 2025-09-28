@@ -88,9 +88,8 @@ test_expect_success 'setup for fetch porcelain output' '
 	FORCE_UPDATED_NEW=$(git rev-parse HEAD)
 '
 
-for opt in "" "--atomic"
-do
-	test_expect_success "fetch porcelain output ${opt:+(atomic)}" '
+for opt in "" "--atomic"; do
+  test_expect_success "fetch porcelain output ${opt:+(atomic)}" '
 		test_when_finished "rm -rf porcelain" &&
 
 		# Clone and pre-seed the repositories. We fetch references into two

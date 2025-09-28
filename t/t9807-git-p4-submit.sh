@@ -342,12 +342,12 @@ test_expect_success 'description with odd formatting' '
 '
 
 make_job() {
-	name="$1" &&
-	tab="$(printf \\t)" &&
-	p4 job -o | \
-	sed -e "/^Job:/s/.*/Job: $name/" \
-	    -e "/^Description/{ n; s/.*/$tab job text/; }" | \
-	p4 job -i
+  name="$1" \
+    && tab="$(printf \\t)" \
+    && p4 job -o \
+    | sed -e "/^Job:/s/.*/Job: $name/" \
+      -e "/^Description/{ n; s/.*/$tab job text/; }" \
+      | p4 job -i
 }
 
 test_expect_success 'description with Jobs section at end' '
@@ -503,14 +503,14 @@ test_expect_success 'submit --shelve' '
 	)
 '
 
-last_shelve () {
-	p4 -G changes -s shelved -m 1 //depot/... | marshal_dump change
+last_shelve() {
+  p4 -G changes -s shelved -m 1 //depot/... | marshal_dump change
 }
 
 make_shelved_cl() {
-	test_commit "$1" >/dev/null &&
-	git p4 submit --origin HEAD^ --shelve >/dev/null &&
-	p4 -G changes -s shelved -m 1 | marshal_dump change
+  test_commit "$1" >/dev/null \
+    && git p4 submit --origin HEAD^ --shelve >/dev/null \
+    && p4 -G changes -s shelved -m 1 | marshal_dump change
 }
 
 # Update existing shelved changelists

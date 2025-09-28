@@ -7,40 +7,39 @@ test_description='git add in sparse checked out working trees'
 SPARSE_ENTRY_BLOB=""
 
 # Optionally take a printf format string to write to the sparse_entry file
-setup_sparse_entry () {
-	# 'sparse_entry' might already be in the index with the skip-worktree
-	# bit set. Remove it so that the subsequent git add can update it.
-	git update-index --force-remove sparse_entry &&
-	if test $# -eq 1
-	then
-		printf "$1" >sparse_entry
-	else
-		>sparse_entry
-	fi &&
-	git add sparse_entry &&
-	git update-index --skip-worktree sparse_entry &&
-	git config core.sparseCheckout false &&
-	git commit --allow-empty -m "ensure sparse_entry exists at HEAD" &&
-	SPARSE_ENTRY_BLOB=$(git rev-parse :sparse_entry)
+setup_sparse_entry() {
+  # 'sparse_entry' might already be in the index with the skip-worktree
+  # bit set. Remove it so that the subsequent git add can update it.
+  git update-index --force-remove sparse_entry \
+    && if test $# -eq 1; then
+      printf "$1" >sparse_entry
+    else
+      >sparse_entry
+    fi \
+    && git add sparse_entry \
+    && git update-index --skip-worktree sparse_entry \
+    && git config core.sparseCheckout false \
+    && git commit --allow-empty -m "ensure sparse_entry exists at HEAD" \
+    && SPARSE_ENTRY_BLOB=$(git rev-parse :sparse_entry)
 }
 
-test_sparse_entry_unchanged () {
-	echo "100644 $SPARSE_ENTRY_BLOB 0	sparse_entry" >expected &&
-	git ls-files --stage sparse_entry >actual &&
-	test_cmp expected actual
+test_sparse_entry_unchanged() {
+  echo "100644 $SPARSE_ENTRY_BLOB 0	sparse_entry" >expected \
+    && git ls-files --stage sparse_entry >actual \
+    && test_cmp expected actual
 }
 
-setup_gitignore () {
-	test_when_finished rm -f .gitignore &&
-	cat >.gitignore <<-EOF
+setup_gitignore() {
+  test_when_finished rm -f .gitignore \
+    && cat >.gitignore <<-EOF
 	*
 	!/sparse_entry
 	EOF
 }
 
-test_sparse_entry_unstaged () {
-	git diff --staged -- sparse_entry >diff &&
-	test_must_be_empty diff
+test_sparse_entry_unstaged() {
+  git diff --staged -- sparse_entry >diff \
+    && test_must_be_empty diff
 }
 
 test_expect_success 'setup' "
@@ -94,9 +93,8 @@ test_expect_success 'git add . does not remove sparse entries' '
 	test_sparse_entry_unchanged
 '
 
-for opt in "" -f -u --ignore-removal --dry-run
-do
-	test_expect_success "git add${opt:+ $opt} does not update sparse entries" '
+for opt in "" -f -u --ignore-removal --dry-run; do
+  test_expect_success "git add${opt:+ $opt} does not update sparse entries" '
 		setup_sparse_entry &&
 		echo modified >sparse_entry &&
 		test_must_fail git add $opt sparse_entry 2>stderr &&

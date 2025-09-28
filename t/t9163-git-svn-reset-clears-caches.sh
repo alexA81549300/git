@@ -11,10 +11,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 svn_ver="$(svn --version --quiet)"
 case $svn_ver in
-0.* | 1.[0-4].*)
-	skip_all="skipping git-svn test - SVN too old ($svn_ver)"
-	test_done
-	;;
+  0.* | 1.[0-4].*)
+    skip_all="skipping git-svn test - SVN too old ($svn_ver)"
+    test_done
+    ;;
 esac
 
 # ... a  -  b - m   <- trunk

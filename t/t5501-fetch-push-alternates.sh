@@ -6,16 +6,15 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-count_objects () {
-	loose=0 inpack=0
-	eval "$(
-		git count-objects -v |
-		sed -n -e 's/^count: \(.*\)/loose=\1/p' \
-		    -e 's/^in-pack: \(.*\)/inpack=\1/p'
-	)" &&
-	echo $(( $loose + $inpack ))
+count_objects() {
+  loose=0 inpack=0
+  eval "$(
+    git count-objects -v \
+      | sed -n -e 's/^count: \(.*\)/loose=\1/p' \
+        -e 's/^in-pack: \(.*\)/inpack=\1/p'
+  )" \
+    && echo $(($loose + $inpack))
 }
-
 
 test_expect_success setup '
 	(

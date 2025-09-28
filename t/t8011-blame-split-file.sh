@@ -15,16 +15,14 @@ behaves now, but it is not a property we want to make sure is retained.
 
 # help avoid typing and reading long strings of similar lines
 # in the tests below
-generate_expect () {
-	while read nr data
-	do
-		i=0
-		while test $i -lt $nr
-		do
-			echo $data
-			i=$((i + 1))
-		done
-	done
+generate_expect() {
+  while read nr data; do
+    i=0
+    while test $i -lt $nr; do
+      echo $data
+      i=$((i + 1))
+    done
+  done
 }
 
 test_expect_success 'setup split file case' '
@@ -75,13 +73,12 @@ test_expect_success 'setup simulated porcelain' '
 	EOF
 '
 
-for output in porcelain line-porcelain
-do
-	test_expect_success "generate --$output output" '
+for output in porcelain line-porcelain; do
+  test_expect_success "generate --$output output" '
 		git blame --root -C --$output combined >output
 	'
 
-	test_expect_success "$output output finds correct commits" '
+  test_expect_success "$output output finds correct commits" '
 		generate_expect >expect <<-\EOF &&
 		5 base
 		1 modified
@@ -93,7 +90,7 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "$output output shows correct filenames" '
+  test_expect_success "$output output shows correct filenames" '
 		generate_expect >expect <<-\EOF &&
 		11 one
 		11 two
@@ -102,7 +99,7 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "$output output shows correct previous pointer" '
+  test_expect_success "$output output shows correct previous pointer" '
 		generate_expect >expect <<-EOF &&
 		5 NONE
 		1 $(git rev-parse modified^) one

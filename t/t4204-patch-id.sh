@@ -48,21 +48,21 @@ test_expect_success 'patch-id output is well-formed' '
 '
 
 #calculate patch id. Make sure output is not empty.
-calc_patch_id () {
-	patch_name="$1"
-	shift
-	git patch-id "$@" >patch-id.output &&
-	sed "s/ .*//" patch-id.output >patch-id_"$patch_name" &&
-	test_line_count -eq 1 patch-id_"$patch_name"
+calc_patch_id() {
+  patch_name="$1"
+  shift
+  git patch-id "$@" >patch-id.output \
+    && sed "s/ .*//" patch-id.output >patch-id_"$patch_name" \
+    && test_line_count -eq 1 patch-id_"$patch_name"
 }
 
-get_top_diff () {
-	git log -p -1 "$@" -O bar-then-foo --full-index --
+get_top_diff() {
+  git log -p -1 "$@" -O bar-then-foo --full-index --
 }
 
-get_patch_id () {
-	get_top_diff "$1" >top-diff.output &&
-	calc_patch_id <top-diff.output "$@"
+get_patch_id() {
+  get_top_diff "$1" >top-diff.output \
+    && calc_patch_id <top-diff.output "$@"
 }
 
 test_expect_success 'patch-id detects equality' '
@@ -122,46 +122,45 @@ test_expect_success 'whitespace is irrelevant in footer' '
 	test_cmp patch-id_main patch-id_same
 '
 
-cmp_patch_id () {
-	if
-		test "$1" = "relevant"
-	then
-		! test_cmp patch-id_"$2" patch-id_"$3"
-	else
-		test_cmp patch-id_"$2" patch-id_"$3"
-	fi
+cmp_patch_id() {
+  if
+    test "$1" = "relevant"
+  then
+    ! test_cmp patch-id_"$2" patch-id_"$3"
+  else
+    test_cmp patch-id_"$2" patch-id_"$3"
+  fi
 }
 
-test_patch_id_file_order () {
-	relevant="$1"
-	shift
-	name="order-${1}-$relevant"
-	shift
-	get_top_diff "main" >top-diff.output &&
-	calc_patch_id <top-diff.output "$name" "$@" &&
-	git checkout same &&
-	git format-patch -1 --stdout -O foo-then-bar >format-patch.output &&
-	calc_patch_id <format-patch.output "ordered-$name" "$@" &&
-	cmp_patch_id $relevant "$name" "ordered-$name"
+test_patch_id_file_order() {
+  relevant="$1"
+  shift
+  name="order-${1}-$relevant"
+  shift
+  get_top_diff "main" >top-diff.output \
+    && calc_patch_id <top-diff.output "$name" "$@" \
+    && git checkout same \
+    && git format-patch -1 --stdout -O foo-then-bar >format-patch.output \
+    && calc_patch_id <format-patch.output "ordered-$name" "$@" \
+    && cmp_patch_id $relevant "$name" "ordered-$name"
 }
 
-test_patch_id_whitespace () {
-	relevant="$1"
-	shift
-	name="ws-${1}-$relevant"
-	shift
-	get_top_diff "main~" >top-diff.output &&
-	calc_patch_id <top-diff.output "$name" "$@" &&
-	get_top_diff "with_space" >top-diff.output &&
-	calc_patch_id <top-diff.output "ws-$name" "$@" &&
-	cmp_patch_id $relevant "$name" "ws-$name"
+test_patch_id_whitespace() {
+  relevant="$1"
+  shift
+  name="ws-${1}-$relevant"
+  shift
+  get_top_diff "main~" >top-diff.output \
+    && calc_patch_id <top-diff.output "$name" "$@" \
+    && get_top_diff "with_space" >top-diff.output \
+    && calc_patch_id <top-diff.output "ws-$name" "$@" \
+    && cmp_patch_id $relevant "$name" "ws-$name"
 }
-
 
 # combined test for options: add more tests here to make them
 # run with all options
-test_patch_id () {
-	test_patch_id_file_order "$@"
+test_patch_id() {
+  test_patch_id_file_order "$@"
 }
 
 # small tests with detailed diagnostic for basic options.

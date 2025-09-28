@@ -14,7 +14,7 @@ test_expect_success 'setup' '
 
 '
 
-cat > patch << EOF
+cat >patch <<EOF
 diff a/bla/blub/dir/file b/bla/blub/dir/file
 --- a/bla/blub/dir/file
 +++ b/bla/blub/dir/file
@@ -43,7 +43,7 @@ test_expect_success 'apply --directory -p (2) ' '
 
 '
 
-cat > patch << EOF
+cat >patch <<EOF
 diff --git a/newfile b/newfile
 new file mode 100644
 index 0000000..d95f3ad
@@ -62,7 +62,7 @@ test_expect_success 'apply --directory (new file)' '
 	test_cmp expect some/sub/dir/newfile
 '
 
-cat > patch << EOF
+cat >patch <<EOF
 diff --git a/c/newfile2 b/c/newfile2
 new file mode 100644
 index 0000000..d95f3ad
@@ -81,7 +81,7 @@ test_expect_success 'apply --directory -p (new file)' '
 	test_cmp expect some/sub/dir/newfile2
 '
 
-cat > patch << EOF
+cat >patch <<EOF
 diff --git a/delfile b/delfile
 deleted file mode 100644
 index d95f3ad..0000000
@@ -100,7 +100,7 @@ test_expect_success 'apply --directory (delete file)' '
 	! grep delfile out
 '
 
-cat > patch << 'EOF'
+cat >patch <<'EOF'
 diff --git "a/qu\157tefile" "b/qu\157tefile"
 new file mode 100644
 index 0000000..d95f3ad

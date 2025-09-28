@@ -13,42 +13,40 @@ export GIT_TEST_SPLIT_INDEX
 
 . ./test-lib.sh
 
-if ! test_have_prereq JGIT
-then
-	skip_all='skipping reftable JGit tests; JGit is not present in PATH'
-	test_done
+if ! test_have_prereq JGIT; then
+  skip_all='skipping reftable JGit tests; JGit is not present in PATH'
+  test_done
 fi
 
-if ! test_have_prereq SHA1
-then
-	skip_all='skipping reftable JGit tests; JGit does not support SHA256 reftables'
-	test_done
+if ! test_have_prereq SHA1; then
+  skip_all='skipping reftable JGit tests; JGit does not support SHA256 reftables'
+  test_done
 fi
 
-test_commit_jgit () {
-	touch "$1" &&
-	jgit add "$1" &&
-	jgit commit -m "$1"
+test_commit_jgit() {
+  touch "$1" \
+    && jgit add "$1" \
+    && jgit commit -m "$1"
 }
 
-test_same_refs () {
-	git show-ref --head >cgit.actual &&
-	jgit show-ref >jgit-tabs.actual &&
-	tr "\t" " " <jgit-tabs.actual >jgit.actual &&
-	test_cmp cgit.actual jgit.actual
+test_same_refs() {
+  git show-ref --head >cgit.actual \
+    && jgit show-ref >jgit-tabs.actual \
+    && tr "\t" " " <jgit-tabs.actual >jgit.actual \
+    && test_cmp cgit.actual jgit.actual
 }
 
-test_same_ref () {
-	git rev-parse "$1" >cgit.actual &&
-	jgit rev-parse "$1" >jgit.actual &&
-	test_cmp cgit.actual jgit.actual
+test_same_ref() {
+  git rev-parse "$1" >cgit.actual \
+    && jgit rev-parse "$1" >jgit.actual \
+    && test_cmp cgit.actual jgit.actual
 }
 
-test_same_reflog () {
-	git reflog "$*" >cgit.actual &&
-	jgit reflog "$*" >jgit-newline.actual &&
-	sed '/^$/d' <jgit-newline.actual >jgit.actual &&
-	test_cmp cgit.actual jgit.actual
+test_same_reflog() {
+  git reflog "$*" >cgit.actual \
+    && jgit reflog "$*" >jgit-newline.actual \
+    && sed '/^$/d' <jgit-newline.actual >jgit.actual \
+    && test_cmp cgit.actual jgit.actual
 }
 
 test_expect_success 'CGit repository can be read by JGit' '

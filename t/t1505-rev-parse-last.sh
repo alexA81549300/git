@@ -7,13 +7,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-
-make_commit () {
-	echo "$1" > "$1" &&
-	git add "$1" &&
-	git commit -m "$1"
+make_commit() {
+  echo "$1" >"$1" \
+    && git add "$1" \
+    && git commit -m "$1"
 }
-
 
 test_expect_success 'setup' '
 
@@ -60,5 +58,3 @@ test_expect_success '@{-3} fails' '
 '
 
 test_done
-
-

@@ -10,39 +10,39 @@ export GIT_TEST_FATAL_REGISTER_SUBMODULE_ODB
 
 pwd=$(pwd)
 
-write_expected_sub () {
-	NEW_HEAD=$1 &&
-	SUPER_HEAD=$2 &&
-	cat >"$pwd/expect.err.sub" <<-EOF
+write_expected_sub() {
+  NEW_HEAD=$1 \
+    && SUPER_HEAD=$2 \
+    && cat >"$pwd/expect.err.sub" <<-EOF
 	Fetching submodule submodule${SUPER_HEAD:+ at commit $SUPER_HEAD}
 	From $pwd/submodule
 	   OLD_HEAD..$NEW_HEAD  sub        -> origin/sub
 	EOF
 }
 
-write_expected_sub2 () {
-	NEW_HEAD=$1 &&
-	SUPER_HEAD=$2 &&
-	cat >"$pwd/expect.err.sub2" <<-EOF
+write_expected_sub2() {
+  NEW_HEAD=$1 \
+    && SUPER_HEAD=$2 \
+    && cat >"$pwd/expect.err.sub2" <<-EOF
 	Fetching submodule submodule2${SUPER_HEAD:+ at commit $SUPER_HEAD}
 	From $pwd/submodule2
 	   OLD_HEAD..$NEW_HEAD  sub2       -> origin/sub2
 	EOF
 }
 
-write_expected_deep () {
-	NEW_HEAD=$1 &&
-	SUB_HEAD=$2 &&
-	cat >"$pwd/expect.err.deep" <<-EOF
+write_expected_deep() {
+  NEW_HEAD=$1 \
+    && SUB_HEAD=$2 \
+    && cat >"$pwd/expect.err.deep" <<-EOF
 	Fetching submodule submodule/subdir/deepsubmodule${SUB_HEAD:+ at commit $SUB_HEAD}
 	From $pwd/deepsubmodule
 	   OLD_HEAD..$NEW_HEAD  deep       -> origin/deep
 	EOF
 }
 
-write_expected_super () {
-	NEW_HEAD=$1 &&
-	cat >"$pwd/expect.err.super" <<-EOF
+write_expected_super() {
+  NEW_HEAD=$1 \
+    && cat >"$pwd/expect.err.super" <<-EOF
 	From $pwd/.
 	   OLD_HEAD..$NEW_HEAD  super      -> origin/super
 	EOF
@@ -52,25 +52,25 @@ write_expected_super () {
 # a file that contains the expected err if that new commit were fetched.
 # These output files get concatenated in the right order by
 # verify_fetch_result().
-add_submodule_commits () {
-	(
-		cd submodule &&
-		echo new >> subfile &&
-		test_tick &&
-		git add subfile &&
-		git commit -m new subfile &&
-		new_head=$(git rev-parse --short HEAD) &&
-		write_expected_sub $new_head
-	) &&
-	(
-		cd deepsubmodule &&
-		echo new >> deepsubfile &&
-		test_tick &&
-		git add deepsubfile &&
-		git commit -m new deepsubfile &&
-		new_head=$(git rev-parse --short HEAD) &&
-		write_expected_deep $new_head
-	)
+add_submodule_commits() {
+  (
+    cd submodule \
+      && echo new >>subfile \
+      && test_tick \
+      && git add subfile \
+      && git commit -m new subfile \
+      && new_head=$(git rev-parse --short HEAD) \
+      && write_expected_sub $new_head
+  ) \
+    && (
+      cd deepsubmodule \
+        && echo new >>deepsubfile \
+        && test_tick \
+        && git add deepsubfile \
+        && git commit -m new deepsubfile \
+        && new_head=$(git rev-parse --short HEAD) \
+        && write_expected_deep $new_head
+    )
 }
 
 # For each superproject in the test setup, update its submodule, add the
@@ -78,23 +78,23 @@ add_submodule_commits () {
 #
 # This requires add_submodule_commits() to be called first, otherwise
 # the submodules will not have changed and cannot be "git add"-ed.
-add_superproject_commits () {
-	(
-		cd submodule &&
-		(
-			cd subdir/deepsubmodule &&
-			git fetch &&
-			git checkout -q FETCH_HEAD
-		) &&
-		git add subdir/deepsubmodule &&
-		git commit -m "new deep submodule"
-	) &&
-	git add submodule &&
-	git commit -m "new submodule" &&
-	super_head=$(git rev-parse --short HEAD) &&
-	sub_head=$(git -C submodule rev-parse --short HEAD) &&
-	write_expected_super $super_head &&
-	write_expected_sub $sub_head
+add_superproject_commits() {
+  (
+    cd submodule \
+      && (
+        cd subdir/deepsubmodule \
+          && git fetch \
+          && git checkout -q FETCH_HEAD
+      ) \
+      && git add subdir/deepsubmodule \
+      && git commit -m "new deep submodule"
+  ) \
+    && git add submodule \
+    && git commit -m "new submodule" \
+    && super_head=$(git rev-parse --short HEAD) \
+    && sub_head=$(git -C submodule rev-parse --short HEAD) \
+    && write_expected_super $super_head \
+    && write_expected_sub $sub_head
 }
 
 # Verifies that the expected repositories were fetched. This is done by
@@ -103,27 +103,23 @@ add_superproject_commits () {
 #
 # If a repo should not be fetched in the test, its corresponding
 # expect.err file should be rm-ed.
-verify_fetch_result () {
-	ACTUAL_ERR=$1 &&
-	rm -f expect.err.combined &&
-	if test -f expect.err.super
-	then
-		cat expect.err.super >>expect.err.combined
-	fi &&
-	if test -f expect.err.sub
-	then
-		cat expect.err.sub >>expect.err.combined
-	fi &&
-	if test -f expect.err.deep
-	then
-		cat expect.err.deep >>expect.err.combined
-	fi &&
-	if test -f expect.err.sub2
-	then
-		cat expect.err.sub2 >>expect.err.combined
-	fi &&
-	sed -e 's/[0-9a-f][0-9a-f]*\.\./OLD_HEAD\.\./' "$ACTUAL_ERR" >actual.err.cmp &&
-	test_cmp expect.err.combined actual.err.cmp
+verify_fetch_result() {
+  ACTUAL_ERR=$1 \
+    && rm -f expect.err.combined \
+    && if test -f expect.err.super; then
+      cat expect.err.super >>expect.err.combined
+    fi \
+    && if test -f expect.err.sub; then
+      cat expect.err.sub >>expect.err.combined
+    fi \
+    && if test -f expect.err.deep; then
+      cat expect.err.deep >>expect.err.combined
+    fi \
+    && if test -f expect.err.sub2; then
+      cat expect.err.sub2 >>expect.err.combined
+    fi \
+    && sed -e 's/[0-9a-f][0-9a-f]*\.\./OLD_HEAD\.\./' "$ACTUAL_ERR" >actual.err.cmp \
+    && test_cmp expect.err.combined actual.err.cmp
 }
 
 test_expect_success setup '
@@ -929,27 +925,25 @@ test_expect_success 'fetch new submodule commit intermittently referenced by sup
 	)
 '
 
-add_commit_push () {
-	dir="$1" &&
-	msg="$2" &&
-	shift 2 &&
-	git -C "$dir" add "$@" &&
-	git -C "$dir" commit -a -m "$msg" &&
-	git -C "$dir" push
+add_commit_push() {
+  dir="$1" \
+    && msg="$2" \
+    && shift 2 \
+    && git -C "$dir" add "$@" \
+    && git -C "$dir" commit -a -m "$msg" \
+    && git -C "$dir" push
 }
 
-compare_refs_in_dir () {
-	fail= &&
-	if test "x$1" = 'x!'
-	then
-		fail='!' &&
-		shift
-	fi &&
-	git -C "$1" rev-parse --verify "$2" >expect &&
-	git -C "$3" rev-parse --verify "$4" >actual &&
-	eval $fail test_cmp expect actual
+compare_refs_in_dir() {
+  fail= \
+    && if test "x$1" = 'x!'; then
+      fail='!' \
+        && shift
+    fi \
+    && git -C "$1" rev-parse --verify "$2" >expect \
+    && git -C "$3" rev-parse --verify "$4" >actual \
+    && eval $fail test_cmp expect actual
 }
-
 
 test_expect_success 'setup nested submodule fetch test' '
 	# does not depend on any previous test setups
@@ -991,20 +985,20 @@ test_expect_success 'fetching a superproject containing an uninitialized sub/sub
 	compare_refs_in_dir A origin/HEAD B origin/HEAD
 '
 
-fetch_with_recursion_abort () {
-	# In a regression the following git call will run into infinite recursion.
-	# To handle that, we connect the sed command to the git call by a pipe
-	# so that sed can kill the infinite recursion when detected.
-	# The recursion creates git output like:
-	# Fetching submodule sub
-	# Fetching submodule sub/sub              <-- [1]
-	# Fetching submodule sub/sub/sub
-	# ...
-	# [1] sed will stop reading and cause git to eventually stop and die
+fetch_with_recursion_abort() {
+  # In a regression the following git call will run into infinite recursion.
+  # To handle that, we connect the sed command to the git call by a pipe
+  # so that sed can kill the infinite recursion when detected.
+  # The recursion creates git output like:
+  # Fetching submodule sub
+  # Fetching submodule sub/sub              <-- [1]
+  # Fetching submodule sub/sub/sub
+  # ...
+  # [1] sed will stop reading and cause git to eventually stop and die
 
-	git -C "$1" fetch --recurse-submodules 2>&1 |
-		sed "/Fetching submodule $2[^$]/q" >out &&
-	! grep "Fetching submodule $2[^$]" out
+  git -C "$1" fetch --recurse-submodules 2>&1 \
+    | sed "/Fetching submodule $2[^$]/q" >out \
+    && ! grep "Fetching submodule $2[^$]" out
 }
 
 test_expect_success 'setup recursive fetch with uninit submodule' '

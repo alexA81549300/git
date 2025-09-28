@@ -102,15 +102,15 @@ commit_sha13=$(git rev-parse 13th^{commit})
 commit_sha14=$(git rev-parse 14th^{commit})
 commit_sha15=$(git rev-parse 15th^{commit})
 
-verify_notes () {
-	notes_ref="$1"
-	suffix="$2"
-	git -c core.notesRef="refs/notes/$notes_ref" notes |
-		sort >"output_notes_$suffix" &&
-	test_cmp "expect_notes_$suffix" "output_notes_$suffix" &&
-	git -c core.notesRef="refs/notes/$notes_ref" log --format="%H %s%n%N" \
-		>"output_log_$suffix" &&
-	test_cmp "expect_log_$suffix" "output_log_$suffix"
+verify_notes() {
+  notes_ref="$1"
+  suffix="$2"
+  git -c core.notesRef="refs/notes/$notes_ref" notes \
+    | sort >"output_notes_$suffix" \
+    && test_cmp "expect_notes_$suffix" "output_notes_$suffix" \
+    && git -c core.notesRef="refs/notes/$notes_ref" log --format="%H %s%n%N" \
+      >"output_log_$suffix" \
+    && test_cmp "expect_log_$suffix" "output_log_$suffix"
 }
 
 test_expect_success 'setup merge base (x)' '

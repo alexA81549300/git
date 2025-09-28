@@ -269,13 +269,12 @@ cat >expect <<-\EOF
 EOF
 
 test_align_permutations() {
-	while read -r option
-	do
-		test_expect_success "align:$option" '
+  while read -r option; do
+    test_expect_success "align:$option" '
 			git for-each-ref --format="|%(align:$option)refname is %(refname)%(end)|%(refname)" >actual &&
 			test_cmp expect actual
 		'
-	done
+  done
 }
 
 test_align_permutations <<-\EOF

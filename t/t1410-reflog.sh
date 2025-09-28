@@ -9,51 +9,51 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-check_have () {
-	gaah= &&
-	for N in "$@"
-	do
-		eval "o=\$$N" && git cat-file -t $o || {
-			echo Gaah $N
-			gaah=$N
-			break
-		}
-	done &&
-	test -z "$gaah"
+check_have() {
+  gaah= \
+    && for N in "$@"; do
+      eval "o=\$$N" && git cat-file -t $o || {
+        echo Gaah $N
+        gaah=$N
+        break
+      }
+    done \
+    && test -z "$gaah"
 }
 
-check_fsck () {
-	git fsck --full >fsck.output
-	case "$1" in
-	'')
-		test_must_be_empty fsck.output ;;
-	*)
-		test_grep "$1" fsck.output ;;
-	esac
+check_fsck() {
+  git fsck --full >fsck.output
+  case "$1" in
+    '')
+      test_must_be_empty fsck.output
+      ;;
+    *)
+      test_grep "$1" fsck.output
+      ;;
+  esac
 }
 
-corrupt () {
-	mv .git/objects/$(test_oid_to_path $1) .git/$1
+corrupt() {
+  mv .git/objects/$(test_oid_to_path $1) .git/$1
 }
 
-recover () {
-	aa=$(echo $1 | cut -c 1-2)
-	mkdir -p .git/objects/$aa
-	mv .git/$1 .git/objects/$(test_oid_to_path $1)
+recover() {
+  aa=$(echo $1 | cut -c 1-2)
+  mkdir -p .git/objects/$aa
+  mv .git/$1 .git/objects/$(test_oid_to_path $1)
 }
 
-check_dont_have () {
-	gaah= &&
-	for N in "$@"
-	do
-		eval "o=\$$N"
-		git cat-file -t $o && {
-			echo Gaah $N
-			gaah=$N
-			break
-		}
-	done
-	test -z "$gaah"
+check_dont_have() {
+  gaah= \
+    && for N in "$@"; do
+      eval "o=\$$N"
+      git cat-file -t $o && {
+        echo Gaah $N
+        gaah=$N
+        break
+      }
+    done
+  test -z "$gaah"
 }
 
 test_expect_success setup '

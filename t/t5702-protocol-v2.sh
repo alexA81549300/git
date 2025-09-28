@@ -813,18 +813,18 @@ test_expect_success 'deepen-relative' '
 	test_cmp expected actual
 '
 
-setup_negotiate_only () {
-	SERVER="$1"
-	URI="$2"
+setup_negotiate_only() {
+  SERVER="$1"
+  URI="$2"
 
-	rm -rf "$SERVER" client
+  rm -rf "$SERVER" client
 
-	git init "$SERVER"
-	test_commit -C "$SERVER" one
-	test_commit -C "$SERVER" two
+  git init "$SERVER"
+  test_commit -C "$SERVER" one
+  test_commit -C "$SERVER" two
 
-	git clone "$URI" client
-	test_commit -C client three
+  git clone "$URI" client
+  test_commit -C client three
 }
 
 test_expect_success 'usage: --negotiate-only without --negotiation-tip' '
@@ -1168,13 +1168,13 @@ test_expect_success 'when server does not send "ready", expect FLUSH' '
 	test_grep "expected no other sections to be sent after no .ready." err
 '
 
-configure_exclusion () {
-	git -C "$1" hash-object "$2" >objh &&
-	git -C "$1" pack-objects "$HTTPD_DOCUMENT_ROOT_PATH/mypack" <objh >packh &&
-	git -C "$1" config --add \
-		"uploadpack.blobpackfileuri" \
-		"$(cat objh) $(cat packh) $HTTPD_URL/dumb/mypack-$(cat packh).pack" &&
-	cat objh
+configure_exclusion() {
+  git -C "$1" hash-object "$2" >objh \
+    && git -C "$1" pack-objects "$HTTPD_DOCUMENT_ROOT_PATH/mypack" <objh >packh \
+    && git -C "$1" config --add \
+      "uploadpack.blobpackfileuri" \
+      "$(cat objh) $(cat packh) $HTTPD_URL/dumb/mypack-$(cat packh).pack" \
+    && cat objh
 }
 
 test_expect_success 'part of packfile response provided as URI' '

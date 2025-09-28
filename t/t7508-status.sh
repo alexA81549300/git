@@ -74,10 +74,10 @@ test_expect_success 'status (1)' '
 	test_grep "use \"git rm --cached <file>\.\.\.\" to unstage" output
 '
 
-strip_comments () {
-	tab='	'
-	sed "s/^\# //; s/^\#$//; s/^#$tab/$tab/" <"$1" >"$1".tmp &&
-	rm "$1" && mv "$1".tmp "$1"
+strip_comments() {
+  tab='	'
+  sed "s/^\# //; s/^\#$//; s/^#$tab/$tab/" <"$1" >"$1".tmp \
+    && rm "$1" && mv "$1".tmp "$1"
 }
 
 cat >.gitignore <<\EOF
@@ -178,14 +178,15 @@ EOF
 	chmod 755 .git/editor
 '
 
-commit_template_commented () {
-	(
-		EDITOR=.git/editor &&
-		export EDITOR &&
-		# Fails due to empty message
-		test_must_fail git commit
-	) &&
-	! grep '^[^#]' output
+commit_template_commented() {
+  (
+    EDITOR=.git/editor \
+      && export EDITOR \
+      &&
+      # Fails due to empty message
+      test_must_fail git commit
+  ) \
+    && ! grep '^[^#]' output
 }
 
 test_expect_success 'commit ignores status.displayCommentPrefix=false in COMMIT_EDITMSG' '
@@ -423,9 +424,8 @@ EOF
 	test_cmp expect output
 '
 
-for no in no false 0
-do
-	test_expect_success "status (status.showUntrackedFiles $no)" '
+for no in no false 0; do
+  test_expect_success "status (status.showUntrackedFiles $no)" '
 		test_config status.showuntrackedfiles "$no" &&
 		git status >output &&
 		test_cmp expect output
@@ -451,7 +451,7 @@ EOF
 	test_cmp expect output
 '
 
-cat >expect << EOF
+cat >expect <<EOF
  M dir1/modified
 A  dir2/added
 EOF
@@ -499,9 +499,8 @@ EOF
 	test_cmp expect output
 '
 
-for normal in normal true 1
-do
-	test_expect_success "status (status.showUntrackedFiles $normal)" '
+for normal in normal true 1; do
+  test_expect_success "status (status.showUntrackedFiles $normal)" '
 		test_config status.showuntrackedfiles $normal &&
 		git status >output &&
 		test_cmp expect output
@@ -776,8 +775,6 @@ test_expect_success 'status --porcelain respects -b' '
 	test_cmp expect output
 
 '
-
-
 
 test_expect_success 'status without relative paths' '
 	cat >expect <<\EOF &&
@@ -1118,7 +1115,7 @@ test_expect_success POSIXPERM,SANITY 'status succeeds in a read-only repository'
 	)
 '
 
-(cd sm && echo > bar && git add bar && git commit -q -m 'Add bar') && git add sm
+(cd sm && echo >bar && git add bar && git commit -q -m 'Add bar') && git add sm
 new_head=$(cd sm && git rev-parse --short=7 --verify HEAD)
 touch .gitmodules
 
@@ -1370,7 +1367,7 @@ test_expect_success ".git/config ignore=dirty doesn't suppress submodule summary
 	git config -f .gitmodules  --remove-section submodule.subname
 '
 
-cat > expect << EOF
+cat >expect <<EOF
 ; On branch main
 ; Your branch and 'upstream' have diverged,
 ; and have 2 and 2 different commits each, respectively.

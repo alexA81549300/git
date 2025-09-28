@@ -22,7 +22,6 @@ test_expect_success 'git add (absolute)' '
 
 '
 
-
 test_expect_success 'git add (funny relative)' '
 
 	rm -f .git/index &&
@@ -140,7 +139,6 @@ test_expect_success 'add a directory outside the work tree' '(
 	d1="$(cd .. && pwd)" &&
 	test_must_fail git add "$d1"
 )'
-
 
 test_expect_success 'add a file outside the work tree, nasty case 1' '(
 	cd tester &&

@@ -43,9 +43,9 @@ test_expect_success setup '
 	git stash save Changes to A.t
 '
 
-cmp_filtered_decorations () {
-	sed "s/$OID_REGEX/COMMIT_ID/" actual | test_decode_color >filtered &&
-	test_cmp expect filtered
+cmp_filtered_decorations() {
+  sed "s/$OID_REGEX/COMMIT_ID/" actual | test_decode_color >filtered \
+    && test_cmp expect filtered
 }
 
 # We want log to show all, but the second parent to refs/stash is irrelevant
@@ -70,10 +70,10 @@ ${c_tag}tag: ${c_reset}${c_tag}A${c_reset}${c_commit})${c_reset} A
 	cmp_filtered_decorations
 '
 
-remove_replace_refs () {
-	git for-each-ref 'refs/replace*/**' --format='delete %(refname)' >in &&
-	git update-ref --stdin <in &&
-	rm in
+remove_replace_refs() {
+  git for-each-ref 'refs/replace*/**' --format='delete %(refname)' >in \
+    && git update-ref --stdin <in \
+    && rm in
 }
 
 test_expect_success 'test coloring with replace-objects' '

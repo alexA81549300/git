@@ -12,14 +12,14 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 test_invalid_grep_expression() {
-	params="$@" &&
-	test_expect_success "invalid expression: grep $params" '
+  params="$@" \
+    && test_expect_success "invalid expression: grep $params" '
 		test_must_fail git grep $params -- nonexisting
 	'
 }
 
-LC_ALL=en_US.UTF-8 test-tool regex '^.$' '¿' &&
-  test_set_prereq MB_REGEX
+LC_ALL=en_US.UTF-8 test-tool regex '^.$' '¿' \
+  && test_set_prereq MB_REGEX
 
 cat >hello.c <<EOF
 #include <assert.h>
@@ -108,45 +108,42 @@ test_expect_success 'grep should not segfault with a bad input' '
 
 test_invalid_grep_expression --and -e A
 
-test_pattern_type () {
-	H=$1 &&
-	HC=$2 &&
-	L=$3 &&
-	type=$4 &&
-	shift 4 &&
-
-	expected_str= &&
-	case "$type" in
-	BRE)
-		expected_str="${HC}ab:a+bc"
-		;;
-	ERE)
-		expected_str="${HC}ab:abc"
-		;;
-	FIX)
-		expected_str="${HC}ab:a+b*c"
-		;;
-	*)
-		BUG "unknown pattern type '$type'"
-		;;
-	esac &&
-	config_str="$@" &&
-
-	test_expect_success "grep $L with '$config_str' interpreted as $type" '
+test_pattern_type() {
+  H=$1 \
+    && HC=$2 \
+    && L=$3 \
+    && type=$4 \
+    && shift 4 \
+    && expected_str= \
+    && case "$type" in
+      BRE)
+        expected_str="${HC}ab:a+bc"
+        ;;
+      ERE)
+        expected_str="${HC}ab:abc"
+        ;;
+      FIX)
+        expected_str="${HC}ab:a+b*c"
+        ;;
+      *)
+        BUG "unknown pattern type '$type'"
+        ;;
+    esac \
+    && config_str="$@" \
+    && test_expect_success "grep $L with '$config_str' interpreted as $type" '
 		echo $expected_str >expected &&
 		git $config_str grep "a+b*c" $H ab >actual &&
 		test_cmp expected actual
 	'
 }
 
-for H in HEAD ''
-do
-	case "$H" in
-	HEAD)	HC='HEAD:' L='HEAD' ;;
-	'')	HC= L='in working tree' ;;
-	esac
+for H in HEAD ''; do
+  case "$H" in
+    HEAD) HC='HEAD:' L='HEAD' ;;
+    '') HC= L='in working tree' ;;
+  esac
 
-	test_expect_success "grep -w $L" '
+  test_expect_success "grep -w $L" '
 		cat >expected <<-EOF &&
 		${HC}file:1:foo mmap bar
 		${HC}file:3:foo_mmap bar mmap
@@ -157,7 +154,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L (with --column)" '
+  test_expect_success "grep -w $L (with --column)" '
 		cat >expected <<-EOF &&
 		${HC}file:5:foo mmap bar
 		${HC}file:14:foo_mmap bar mmap
@@ -168,7 +165,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L (with --column, extended OR)" '
+  test_expect_success "grep -w $L (with --column, extended OR)" '
 		cat >expected <<-EOF &&
 		${HC}file:14:foo_mmap bar mmap
 		${HC}file:19:foo_mmap bar mmap baz
@@ -177,7 +174,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L (with --column, --invert-match)" '
+  test_expect_success "grep -w $L (with --column, --invert-match)" '
 		cat >expected <<-EOF &&
 		${HC}file:1:foo mmap bar
 		${HC}file:1:foo_mmap bar
@@ -188,7 +185,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep $L (with --column, --invert-match, extended OR)" '
+  test_expect_success "grep $L (with --column, --invert-match, extended OR)" '
 		cat >expected <<-EOF &&
 		${HC}hello_world:6:HeLLo_world
 		EOF
@@ -197,7 +194,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep $L (with --column, --invert-match, extended AND)" '
+  test_expect_success "grep $L (with --column, --invert-match, extended AND)" '
 		cat >expected <<-EOF &&
 		${HC}hello_world:3:Hello world
 		${HC}hello_world:3:Hello_world
@@ -208,7 +205,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep $L (with --column, double-negation)" '
+  test_expect_success "grep $L (with --column, double-negation)" '
 		cat >expected <<-EOF &&
 		${HC}file:1:foo_mmap bar mmap baz
 		EOF
@@ -217,7 +214,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L (with --column, -C)" '
+  test_expect_success "grep -w $L (with --column, -C)" '
 		cat >expected <<-EOF &&
 		${HC}file:5:foo mmap bar
 		${HC}file-foo_mmap bar
@@ -229,7 +226,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L (with --line-number, --column)" '
+  test_expect_success "grep -w $L (with --line-number, --column)" '
 		cat >expected <<-EOF &&
 		${HC}file:1:5:foo mmap bar
 		${HC}file:3:14:foo_mmap bar mmap
@@ -240,7 +237,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L (with non-extended patterns, --column)" '
+  test_expect_success "grep -w $L (with non-extended patterns, --column)" '
 		cat >expected <<-EOF &&
 		${HC}file:5:foo mmap bar
 		${HC}file:10:foo_mmap bar
@@ -252,7 +249,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L" '
+  test_expect_success "grep -w $L" '
 		cat >expected <<-EOF &&
 		${HC}file:1:foo mmap bar
 		${HC}file:3:foo_mmap bar mmap
@@ -263,7 +260,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L" '
+  test_expect_success "grep -w $L" '
 		cat >expected <<-EOF &&
 		${HC}file:foo mmap bar
 		${HC}file:foo_mmap bar mmap
@@ -274,12 +271,12 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L (w)" '
+  test_expect_success "grep -w $L (w)" '
 		test_must_fail git grep -n -w -e "^w" $H >actual &&
 		test_must_be_empty actual
 	'
 
-	test_expect_success "grep -w $L (x)" '
+  test_expect_success "grep -w $L (x)" '
 		cat >expected <<-EOF &&
 		${HC}x:1:x x xx x
 		EOF
@@ -287,7 +284,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L (y-1)" '
+  test_expect_success "grep -w $L (y-1)" '
 		cat >expected <<-EOF &&
 		${HC}y:1:y yy
 		EOF
@@ -295,7 +292,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -w $L (y-2)" '
+  test_expect_success "grep -w $L (y-2)" '
 		if git grep -n -w -e "^y y" $H >actual
 		then
 			echo should not have matched
@@ -306,7 +303,7 @@ do
 		fi
 	'
 
-	test_expect_success "grep -w $L (z)" '
+  test_expect_success "grep -w $L (z)" '
 		if git grep -n -w -e "^z" $H >actual
 		then
 			echo should not have matched
@@ -317,7 +314,7 @@ do
 		fi
 	'
 
-	test_expect_success "grep $L (with --column, --only-matching)" '
+  test_expect_success "grep $L (with --column, --only-matching)" '
 		cat >expected <<-EOF &&
 		${HC}file:1:5:mmap
 		${HC}file:2:5:mmap
@@ -332,13 +329,13 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep $L (t-1)" '
+  test_expect_success "grep $L (t-1)" '
 		echo "${HC}t/t:1:test" >expected &&
 		git grep -n -e test $H >actual &&
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep $L (t-2)" '
+  test_expect_success "grep $L (t-2)" '
 		echo "${HC}t:1:test" >expected &&
 		(
 			cd t &&
@@ -347,7 +344,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep $L (t-3)" '
+  test_expect_success "grep $L (t-3)" '
 		echo "${HC}t/t:1:test" >expected &&
 		(
 			cd t &&
@@ -356,11 +353,11 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep -c $L (no /dev/null)" '
+  test_expect_success "grep -c $L (no /dev/null)" '
 		! git grep -c test $H | grep /dev/null
 	'
 
-	test_expect_success "grep --max-depth -1 $L" '
+  test_expect_success "grep --max-depth -1 $L" '
 		cat >expected <<-EOF &&
 		${HC}t/a/v:1:vvv
 		${HC}t/v:1:vvv
@@ -372,7 +369,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep --max-depth 0 $L" '
+  test_expect_success "grep --max-depth 0 $L" '
 		cat >expected <<-EOF &&
 		${HC}v:1:vvv
 		EOF
@@ -382,7 +379,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep --max-depth 0 -- '*' $L" '
+  test_expect_success "grep --max-depth 0 -- '*' $L" '
 		cat >expected <<-EOF &&
 		${HC}t/a/v:1:vvv
 		${HC}t/v:1:vvv
@@ -394,7 +391,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep --max-depth 1 $L" '
+  test_expect_success "grep --max-depth 1 $L" '
 		cat >expected <<-EOF &&
 		${HC}t/v:1:vvv
 		${HC}v:1:vvv
@@ -403,7 +400,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep --max-depth 0 -- t $L" '
+  test_expect_success "grep --max-depth 0 -- t $L" '
 		cat >expected <<-EOF &&
 		${HC}t/v:1:vvv
 		EOF
@@ -413,7 +410,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep --max-depth 0 -- . t $L" '
+  test_expect_success "grep --max-depth 0 -- . t $L" '
 		cat >expected <<-EOF &&
 		${HC}t/v:1:vvv
 		${HC}v:1:vvv
@@ -424,7 +421,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep --max-depth 0 -- t . $L" '
+  test_expect_success "grep --max-depth 0 -- t . $L" '
 		cat >expected <<-EOF &&
 		${HC}t/v:1:vvv
 		${HC}v:1:vvv
@@ -435,107 +432,106 @@ do
 		test_cmp expected actual
 	'
 
+  test_pattern_type "$H" "$HC" "$L" BRE -c grep.extendedRegexp=false
+  test_pattern_type "$H" "$HC" "$L" ERE -c grep.extendedRegexp=true
+  test_pattern_type "$H" "$HC" "$L" BRE -c grep.patternType=basic
+  test_pattern_type "$H" "$HC" "$L" ERE -c grep.patternType=extended
+  test_pattern_type "$H" "$HC" "$L" FIX -c grep.patternType=fixed
 
-	test_pattern_type "$H" "$HC" "$L" BRE -c grep.extendedRegexp=false
-	test_pattern_type "$H" "$HC" "$L" ERE -c grep.extendedRegexp=true
-	test_pattern_type "$H" "$HC" "$L" BRE -c grep.patternType=basic
-	test_pattern_type "$H" "$HC" "$L" ERE -c grep.patternType=extended
-	test_pattern_type "$H" "$HC" "$L" FIX -c grep.patternType=fixed
-
-	test_expect_success PCRE "grep $L with grep.patterntype=perl" '
+  test_expect_success PCRE "grep $L with grep.patterntype=perl" '
 		echo "${HC}ab:a+b*c" >expected &&
 		git -c grep.patterntype=perl grep "a\x{2b}b\x{2a}c" $H ab >actual &&
 		test_cmp expected actual
 	'
 
-	test_expect_success !FAIL_PREREQS,!PCRE "grep $L with grep.patterntype=perl errors without PCRE" '
+  test_expect_success !FAIL_PREREQS,!PCRE "grep $L with grep.patterntype=perl errors without PCRE" '
 		test_must_fail git -c grep.patterntype=perl grep "foo.*bar"
 	'
 
-	test_pattern_type "$H" "$HC" "$L" ERE \
-		-c grep.patternType=default \
-		-c grep.extendedRegexp=true
-	test_pattern_type "$H" "$HC" "$L" ERE \
-		-c grep.extendedRegexp=true \
-		-c grep.patternType=default
-	test_pattern_type "$H" "$HC" "$L" ERE \
-		-c grep.patternType=extended \
-		-c grep.extendedRegexp=false
-	test_pattern_type "$H" "$HC" "$L" BRE \
-		-c grep.patternType=basic \
-		-c grep.extendedRegexp=true
-	test_pattern_type "$H" "$HC" "$L" ERE \
-		-c grep.extendedRegexp=false \
-		-c grep.patternType=extended
-	test_pattern_type "$H" "$HC" "$L" BRE \
-		-c grep.extendedRegexp=true \
-		-c grep.patternType=basic
+  test_pattern_type "$H" "$HC" "$L" ERE \
+    -c grep.patternType=default \
+    -c grep.extendedRegexp=true
+  test_pattern_type "$H" "$HC" "$L" ERE \
+    -c grep.extendedRegexp=true \
+    -c grep.patternType=default
+  test_pattern_type "$H" "$HC" "$L" ERE \
+    -c grep.patternType=extended \
+    -c grep.extendedRegexp=false
+  test_pattern_type "$H" "$HC" "$L" BRE \
+    -c grep.patternType=basic \
+    -c grep.extendedRegexp=true
+  test_pattern_type "$H" "$HC" "$L" ERE \
+    -c grep.extendedRegexp=false \
+    -c grep.patternType=extended
+  test_pattern_type "$H" "$HC" "$L" BRE \
+    -c grep.extendedRegexp=true \
+    -c grep.patternType=basic
 
-	# grep.extendedRegexp is last-one-wins
-	test_pattern_type "$H" "$HC" "$L" BRE \
-		-c grep.extendedRegexp=true \
-		-c grep.extendedRegexp=false
+  # grep.extendedRegexp is last-one-wins
+  test_pattern_type "$H" "$HC" "$L" BRE \
+    -c grep.extendedRegexp=true \
+    -c grep.extendedRegexp=false
 
-	# grep.patternType=basic pays no attention to grep.extendedRegexp
-	test_pattern_type "$H" "$HC" "$L" BRE \
-		-c grep.extendedRegexp=true \
-		-c grep.patternType=basic \
-		-c grep.extendedRegexp=false
+  # grep.patternType=basic pays no attention to grep.extendedRegexp
+  test_pattern_type "$H" "$HC" "$L" BRE \
+    -c grep.extendedRegexp=true \
+    -c grep.patternType=basic \
+    -c grep.extendedRegexp=false
 
-	# grep.patternType=extended pays no attention to grep.extendedRegexp
-	test_pattern_type "$H" "$HC" "$L" ERE \
-		-c grep.extendedRegexp=true \
-		-c grep.patternType=extended \
-		-c grep.extendedRegexp=false
+  # grep.patternType=extended pays no attention to grep.extendedRegexp
+  test_pattern_type "$H" "$HC" "$L" ERE \
+    -c grep.extendedRegexp=true \
+    -c grep.patternType=extended \
+    -c grep.extendedRegexp=false
 
-	# grep.extendedRegexp is used with a last-one-wins grep.patternType=default
-	test_pattern_type "$H" "$HC" "$L" ERE \
-		-c grep.patternType=fixed \
-		-c grep.extendedRegexp=true \
-		-c grep.patternType=default
+  # grep.extendedRegexp is used with a last-one-wins grep.patternType=default
+  test_pattern_type "$H" "$HC" "$L" ERE \
+    -c grep.patternType=fixed \
+    -c grep.extendedRegexp=true \
+    -c grep.patternType=default
 
-	# grep.extendedRegexp is used with earlier grep.patternType=default
-	test_pattern_type "$H" "$HC" "$L" ERE \
-		-c grep.extendedRegexp=false \
-		-c grep.patternType=default \
-		-c grep.extendedRegexp=true
+  # grep.extendedRegexp is used with earlier grep.patternType=default
+  test_pattern_type "$H" "$HC" "$L" ERE \
+    -c grep.extendedRegexp=false \
+    -c grep.patternType=default \
+    -c grep.extendedRegexp=true
 
-	# grep.extendedRegexp is used with a last-one-loses grep.patternType=default
-	test_pattern_type "$H" "$HC" "$L" ERE \
-		-c grep.extendedRegexp=false \
-		-c grep.extendedRegexp=true \
-		-c grep.patternType=default
+  # grep.extendedRegexp is used with a last-one-loses grep.patternType=default
+  test_pattern_type "$H" "$HC" "$L" ERE \
+    -c grep.extendedRegexp=false \
+    -c grep.extendedRegexp=true \
+    -c grep.patternType=default
 
-	# grep.extendedRegexp and grep.patternType are both last-one-wins independently
-	test_pattern_type "$H" "$HC" "$L" BRE \
-		-c grep.patternType=default \
-		-c grep.extendedRegexp=true \
-		-c grep.patternType=basic
+  # grep.extendedRegexp and grep.patternType are both last-one-wins independently
+  test_pattern_type "$H" "$HC" "$L" BRE \
+    -c grep.patternType=default \
+    -c grep.extendedRegexp=true \
+    -c grep.patternType=basic
 
-	# grep.patternType=extended and grep.patternType=default
-	test_pattern_type "$H" "$HC" "$L" BRE \
-		-c grep.patternType=extended \
-		-c grep.patternType=default
+  # grep.patternType=extended and grep.patternType=default
+  test_pattern_type "$H" "$HC" "$L" BRE \
+    -c grep.patternType=extended \
+    -c grep.patternType=default
 
-	# grep.patternType=[extended -> default -> fixed] (BRE)" '
-	test_pattern_type "$H" "$HC" "$L" FIX \
-		-c grep.patternType=extended \
-		-c grep.patternType=default \
-		-c grep.patternType=fixed
+  # grep.patternType=[extended -> default -> fixed] (BRE)" '
+  test_pattern_type "$H" "$HC" "$L" FIX \
+    -c grep.patternType=extended \
+    -c grep.patternType=default \
+    -c grep.patternType=fixed
 
-	test_expect_success "grep --count $L" '
+  test_expect_success "grep --count $L" '
 		echo ${HC}ab:3 >expected &&
 		git grep --count -e b $H -- ab >actual &&
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep --count -h $L" '
+  test_expect_success "grep --count -h $L" '
 		echo 3 >expected &&
 		git grep --count -h -e b $H -- ab >actual &&
 		test_cmp expected actual
 	'
 
-	test_expect_success "grep $L searches past invalid lines on UTF-8 locale" '
+  test_expect_success "grep $L searches past invalid lines on UTF-8 locale" '
 		LC_ALL=en_US.UTF-8 git grep A. invalid-utf8 >actual &&
 		cat >expected <<-EOF &&
 		invalid-utf8:ASCII
@@ -543,7 +539,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success FUNNYNAMES "grep $L should quote unusual pathnames" '
+  test_expect_success FUNNYNAMES "grep $L should quote unusual pathnames" '
 		cat >expected <<-EOF &&
 		${HC}"\"unusual\" pathname":unusual
 		${HC}"t/nested \"unusual\" pathname":unusual
@@ -552,7 +548,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success FUNNYNAMES "grep $L in subdir should quote unusual relative pathnames" '
+  test_expect_success FUNNYNAMES "grep $L in subdir should quote unusual relative pathnames" '
 		cat >expected <<-EOF &&
 		${HC}"nested \"unusual\" pathname":unusual
 		EOF
@@ -563,7 +559,7 @@ do
 		test_cmp expected actual
 	'
 
-	test_expect_success FUNNYNAMES "grep -z $L with unusual pathnames" '
+  test_expect_success FUNNYNAMES "grep -z $L with unusual pathnames" '
 		cat >expected <<-EOF &&
 		${HC}"unusual" pathname:unusual
 		${HC}t/nested "unusual" pathname:unusual
@@ -573,7 +569,7 @@ do
 		test_cmp expected actual-replace-null
 	'
 
-	test_expect_success FUNNYNAMES "grep -z $L in subdir with unusual relative pathnames" '
+  test_expect_success FUNNYNAMES "grep -z $L in subdir with unusual relative pathnames" '
 		cat >expected <<-EOF &&
 		${HC}nested "unusual" pathname:unusual
 		EOF
@@ -720,7 +716,6 @@ cat >expected <<EOF
 file:foo_mmap bar mmap
 file:foo_mmap bar mmap baz
 EOF
-
 
 test_expect_success 'grep ( -e A --or -e B ) --and -e B' '
 	git grep \( -e foo_ --or -e baz \) \
@@ -1115,9 +1110,8 @@ test_expect_success ' includes last line of the function' '
 	grep "} # hello" function-context-userdiff-actual
 '
 
-for threads in $(test_seq 0 10)
-do
-	test_expect_success "grep --threads=$threads & -c grep.threads=$threads" "
+for threads in $(test_seq 0 10); do
+  test_expect_success "grep --threads=$threads & -c grep.threads=$threads" "
 		git grep --threads=$threads . >actual.$threads &&
 		if test $threads -ge 1
 		then
@@ -1132,7 +1126,7 @@ do
 done
 
 test_expect_success !PTHREADS,!FAIL_PREREQS \
-	'grep --threads=N or pack.threads=N warns when no pthreads' '
+  'grep --threads=N or pack.threads=N warns when no pthreads' '
 	git grep --threads=2 Hello hello_world 2>err &&
 	grep ^warning: err >warnings &&
 	test_line_count = 1 warnings &&

@@ -41,12 +41,12 @@ test_expect_success 'HEAD is part of refs, valid objects appear valid' '
 # specific corruption you test afterwards, lest a later test trip over
 # it.
 
-sha1_file () {
-	git rev-parse --git-path objects/$(test_oid_to_path "$1")
+sha1_file() {
+  git rev-parse --git-path objects/$(test_oid_to_path "$1")
 }
 
-remove_object () {
-	rm "$(sha1_file "$1")"
+remove_object() {
+  rm "$(sha1_file "$1")"
 }
 
 test_expect_success 'object with hash mismatch' '
@@ -298,11 +298,11 @@ test_expect_success 'tree object with duplicate entries' '
 	test_grep "error in tree .*contains duplicate file entries" out
 '
 
-check_duplicate_names () {
-	expect=$1 &&
-	shift &&
-	names=$@ &&
-	test_expect_$expect "tree object with duplicate names: $names" '
+check_duplicate_names() {
+  expect=$1 \
+    && shift \
+    && names=$@ \
+    && test_expect_$expect "tree object with duplicate names: $names" '
 		test_when_finished "remove_object \$blob" &&
 		test_when_finished "remove_object \$tree" &&
 		test_when_finished "remove_object \$badtree" &&
@@ -537,12 +537,12 @@ test_expect_success 'set up repository with commit-graph' '
 	)
 '
 
-corrupt_graph_obj () {
-	oid=$(git -C corrupt-graph rev-parse "$1") &&
-	obj=corrupt-graph/.git/objects/$(test_oid_to_path $oid) &&
-	test_when_finished 'mv backup $obj' &&
-	mv $obj backup &&
-	echo garbage >$obj
+corrupt_graph_obj() {
+  oid=$(git -C corrupt-graph rev-parse "$1") \
+    && obj=corrupt-graph/.git/objects/$(test_oid_to_path $oid) \
+    && test_when_finished 'mv backup $obj' \
+    && mv $obj backup \
+    && echo garbage >$obj
 }
 
 test_expect_success 'rev-list --verify-objects with commit graph (tip)' '
@@ -600,9 +600,9 @@ test_expect_success 'fsck notices excessively large tree entry name' '
 '
 
 while read name path pretty; do
-	while read mode type; do
-		: ${pretty:=$path}
-		test_expect_success "fsck notices $pretty as $type" '
+  while read mode type; do
+    : ${pretty:=$path}
+    test_expect_success "fsck notices $pretty as $type" '
 		(
 			git init $name-$type &&
 			cd $name-$type &&
@@ -618,7 +618,7 @@ while read name path pretty; do
 			git fsck 2>out &&
 			test_grep "warning.*tree $bad_tree" out
 		)'
-	done <<-\EOF
+  done <<-\EOF
 	100644 blob
 	040000 tree
 	EOF
@@ -671,22 +671,22 @@ test_expect_success 'NUL in commit' '
 # create a static test repo which is broken by omitting
 # one particular object ($1, which is looked up via rev-parse
 # in the new repository).
-create_repo_missing () {
-	rm -rf missing &&
-	git init missing &&
-	(
-		cd missing &&
-		git commit -m one --allow-empty &&
-		mkdir subdir &&
-		echo content >subdir/file &&
-		git add subdir/file &&
-		git commit -m two &&
-		unrelated=$(echo unrelated | git hash-object --stdin -w) &&
-		git tag -m foo tag $unrelated &&
-		sha1=$(git rev-parse --verify "$1") &&
-		path=$(echo $sha1 | sed 's|..|&/|') &&
-		rm .git/objects/$path
-	)
+create_repo_missing() {
+  rm -rf missing \
+    && git init missing \
+    && (
+      cd missing \
+        && git commit -m one --allow-empty \
+        && mkdir subdir \
+        && echo content >subdir/file \
+        && git add subdir/file \
+        && git commit -m two \
+        && unrelated=$(echo unrelated | git hash-object --stdin -w) \
+        && git tag -m foo tag $unrelated \
+        && sha1=$(git rev-parse --verify "$1") \
+        && path=$(echo $sha1 | sed 's|..|&/|') \
+        && rm .git/objects/$path
+    )
 }
 
 test_expect_success 'fsck notices missing blob' '
@@ -963,8 +963,8 @@ test_expect_success 'bogus head does not fallback to all heads' '
 
 # Corrupt the checksum on the index.
 # Add 1 to the last byte in the SHA.
-corrupt_index_checksum () {
-    perl -w -e '
+corrupt_index_checksum() {
+  perl -w -e '
 	use Fcntl ":seek";
 	open my $fh, "+<", ".git/index" or die "open: $!";
 	binmode $fh;

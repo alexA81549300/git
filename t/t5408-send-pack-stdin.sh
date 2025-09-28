@@ -4,22 +4,22 @@ test_description='send-pack --stdin tests'
 
 . ./test-lib.sh
 
-create_ref () {
-	tree=$(git write-tree) &&
-	test_tick &&
-	commit=$(echo "$1" | git commit-tree $tree) &&
-	git update-ref "$1" $commit
+create_ref() {
+  tree=$(git write-tree) \
+    && test_tick \
+    && commit=$(echo "$1" | git commit-tree $tree) \
+    && git update-ref "$1" $commit
 }
 
-clear_remote () {
-	rm -rf remote.git &&
-	git init --bare remote.git
+clear_remote() {
+  rm -rf remote.git \
+    && git init --bare remote.git
 }
 
-verify_push () {
-	git rev-parse "$1" >expect &&
-	git --git-dir=remote.git rev-parse "${2:-$1}" >actual &&
-	test_cmp expect actual
+verify_push() {
+  git rev-parse "$1" >expect \
+    && git --git-dir=remote.git rev-parse "${2:-$1}" >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'setup refs' '

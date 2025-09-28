@@ -36,10 +36,9 @@ relationship between packs and objects is as follows:
 
 . ./test-lib.sh
 
-if ! test_have_prereq WITHOUT_BREAKING_CHANGES
-then
-	skip_all='skipping git-pack-redundant tests; built with breaking changes'
-	test_done
+if ! test_have_prereq WITHOUT_BREAKING_CHANGES; then
+  skip_all='skipping git-pack-redundant tests; built with breaking changes'
+  test_done
 fi
 
 main_repo=main.git
@@ -54,30 +53,27 @@ git_pack_redundant='git pack-redundant --i-still-use-this'
 #
 # NOTE: Avoid calling this function from a subshell since variable
 # assignments will disappear when subshell exits.
-create_commits_in () {
-	repo="$1" &&
-	if ! parent=$(git -C "$repo" rev-parse HEAD^{} 2>/dev/null)
-	then
-		parent=
-	fi &&
-	T=$(git -C "$repo" write-tree) &&
-	shift &&
-	while test $# -gt 0
-	do
-		name=$1 &&
-		test_tick &&
-		if test -z "$parent"
-		then
-			oid=$(echo $name | git -C "$repo" commit-tree $T)
-		else
-			oid=$(echo $name | git -C "$repo" commit-tree -p $parent $T)
-		fi &&
-		eval $name=$oid &&
-		parent=$oid &&
-		shift ||
-		return 1
-	done &&
-	git -C "$repo" update-ref refs/heads/main $oid
+create_commits_in() {
+  repo="$1" \
+    && if ! parent=$(git -C "$repo" rev-parse HEAD^{} 2>/dev/null); then
+      parent=
+    fi \
+    && T=$(git -C "$repo" write-tree) \
+    && shift \
+    && while test $# -gt 0; do
+      name=$1 \
+        && test_tick \
+        && if test -z "$parent"; then
+          oid=$(echo $name | git -C "$repo" commit-tree $T)
+        else
+          oid=$(echo $name | git -C "$repo" commit-tree -p $parent $T)
+        fi \
+        && eval $name=$oid \
+        && parent=$oid \
+        && shift \
+        || return 1
+    done \
+    && git -C "$repo" update-ref refs/heads/main $oid
 }
 
 # Create pack in <repo> and assign pack id to variable given in the 2nd argument
@@ -90,29 +86,27 @@ create_commits_in () {
 # NOTE: commits from stdin should be given using heredoc, not using pipe, and
 # avoid calling this function from a subshell since variable assignments will
 # disappear when subshell exits.
-create_pack_in () {
-	repo="$1" &&
-	name="$2" &&
-	pack=$(git -C "$repo/objects/pack" pack-objects -q pack) &&
-	eval $name=$pack &&
-	eval P$pack=$name:$pack
+create_pack_in() {
+  repo="$1" \
+    && name="$2" \
+    && pack=$(git -C "$repo/objects/pack" pack-objects -q pack) \
+    && eval $name=$pack \
+    && eval P$pack=$name:$pack
 }
 
-format_packfiles () {
-	sed \
-		-e "s#.*/pack-\(.*\)\.idx#\1#" \
-		-e "s#.*/pack-\(.*\)\.pack#\1#" |
-	sort -u |
-	while read p
-	do
-		if test -z "$(eval echo \${P$p})"
-		then
-			echo $p
-		else
-			eval echo "\${P$p}"
-		fi
-	done |
-	sort
+format_packfiles() {
+  sed \
+    -e "s#.*/pack-\(.*\)\.idx#\1#" \
+    -e "s#.*/pack-\(.*\)\.pack#\1#" \
+    | sort -u \
+    | while read p; do
+      if test -z "$(eval echo \${P$p})"; then
+        echo $p
+      else
+        eval echo "\${P$p}"
+      fi
+    done \
+    | sort
 }
 
 test_expect_success 'setup main repo' '

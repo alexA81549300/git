@@ -101,7 +101,6 @@ Final
 Final
 EOF
 
-
 title5="Combine many lines and change case"
 cat <<EOF >a5
 for(row=0,pBuffer=field->buf;
@@ -331,9 +330,9 @@ test_expect_success setup '
 '
 
 for i in $(test_seq 2 $last_test); do
-	eval title="\$title$i"
-	test_expect_success "$title" \
-	"git blame -M9 --ignore-rev $IGNOREME $i >output &&
+  eval title="\$title$i"
+  test_expect_success "$title" \
+    "git blame -M9 --ignore-rev $IGNOREME $i >output &&
 	sed -e \"$pick_author\" output >actual &&
 	test_cmp expected$i actual"
 done

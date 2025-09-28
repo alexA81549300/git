@@ -341,7 +341,7 @@ test_expect_success 'fetch with fetch.fsck.missingEmail=warn' '
 '
 
 test_expect_success \
-	'receive.fsck.unterminatedHeader=warn triggers error' '
+  'receive.fsck.unterminatedHeader=warn triggers error' '
 	rm -rf dst &&
 	git init dst &&
 	git --git-dir=dst/.git config receive.fsckobjects true &&
@@ -352,7 +352,7 @@ test_expect_success \
 '
 
 test_expect_success \
-	'fetch.fsck.unterminatedHeader=warn triggers error' '
+  'fetch.fsck.unterminatedHeader=warn triggers error' '
 	rm -rf dst &&
 	git init dst &&
 	git --git-dir=dst/.git config fetch.fsckobjects true &&

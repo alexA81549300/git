@@ -12,7 +12,7 @@ small_depth=50
 big_depth=4100
 
 small_ok="-c core.maxtreedepth=$small_depth"
-small_no="-c core.maxtreedepth=$((small_depth-1))"
+small_no="-c core.maxtreedepth=$((small_depth - 1))"
 
 # usage: mkdeep <name> <depth>
 #   Create a tag <name> containing a file whose path has depth <depth>.
@@ -23,28 +23,25 @@ small_no="-c core.maxtreedepth=$((small_depth-1))"
 #
 #   2. As we tighten tree limits, it's more likely to allow large sizes
 #      than trying to stuff a deep path into the index.
-mkdeep () {
-	{
-		echo "commit refs/tags/$1" &&
-		echo "committer foo <foo@example.com> 1234 -0000" &&
-		echo "data <<EOF" &&
-		echo "the commit message" &&
-		echo "EOF" &&
-
-		printf 'M 100644 inline ' &&
-		i=0 &&
-		while test $i -lt $2
-		do
-			printf 'a/'
-			i=$((i+1))
-		done &&
-		echo "file" &&
-
-		echo "data <<EOF" &&
-		echo "the file contents" &&
-		echo "EOF" &&
-		echo
-	} | git fast-import
+mkdeep() {
+  {
+    echo "commit refs/tags/$1" \
+      && echo "committer foo <foo@example.com> 1234 -0000" \
+      && echo "data <<EOF" \
+      && echo "the commit message" \
+      && echo "EOF" \
+      && printf 'M 100644 inline ' \
+      && i=0 \
+      && while test $i -lt $2; do
+        printf 'a/'
+        i=$((i + 1))
+      done \
+      && echo "file" \
+      && echo "data <<EOF" \
+      && echo "the file contents" \
+      && echo "EOF" \
+      && echo
+  } | git fast-import
 }
 
 test_expect_success 'create small tree' '

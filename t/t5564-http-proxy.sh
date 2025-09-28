@@ -39,13 +39,13 @@ test_expect_success 'clone can prompt for proxy password' '
 '
 
 start_socks() {
-	mkfifo socks_output &&
-	{
-		"$PERL_PATH" "$TEST_DIRECTORY/socks4-proxy.pl" "$1" >socks_output &
-		echo $! > "$TRASH_DIRECTORY/socks.pid"
-	} &&
-	read line <socks_output &&
-	test "$line" = ready
+  mkfifo socks_output \
+    && {
+      "$PERL_PATH" "$TEST_DIRECTORY/socks4-proxy.pl" "$1" >socks_output &
+      echo $! >"$TRASH_DIRECTORY/socks.pid"
+    } \
+    && read line <socks_output \
+    && test "$line" = ready
 }
 
 # The %30 tests that the correct amount of percent-encoding is applied to the
@@ -65,7 +65,7 @@ test_atexit '
 # later), but this is not easy to test right now. Instead, we || the tests with
 # this function.
 old_libcurl_error() {
-	grep -Fx "fatal: libcurl 7.84 or later is required to support paths in proxy URLs" "$1"
+  grep -Fx "fatal: libcurl 7.84 or later is required to support paths in proxy URLs" "$1"
 }
 
 test_expect_success SOCKS_PROXY 'clone via Unix socket' '

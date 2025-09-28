@@ -4,16 +4,16 @@ test_description='core.whitespace rules and git apply'
 
 . ./test-lib.sh
 
-prepare_test_file () {
+prepare_test_file() {
 
-	# A line that has character X is touched iff RULE is in effect:
-	#       X  RULE
-	#   	!  trailing-space
-	#   	@  space-before-tab
-	#   	#  indent-with-non-tab (default tab width 8)
-	#	=  indent-with-non-tab,tabwidth=16
-	#   	%  tab-in-indent
-	sed -e "s/_/ /g" -e "s/>/	/" <<-\EOF
+  # A line that has character X is touched iff RULE is in effect:
+  #       X  RULE
+  #   	!  trailing-space
+  #   	@  space-before-tab
+  #   	#  indent-with-non-tab (default tab width 8)
+  #	=  indent-with-non-tab,tabwidth=16
+  #   	%  tab-in-indent
+  sed -e "s/_/ /g" -e "s/>/	/" <<-\EOF
 		An_SP in an ordinary line>and a HT.
 		>A HT (%).
 		_>A SP and a HT (@%).
@@ -34,54 +34,52 @@ prepare_test_file () {
 	EOF
 }
 
-apply_patch () {
-	cmd_prefix= &&
-	if test "x$1" = 'x!'
-	then
-		cmd_prefix=test_must_fail &&
-		shift
-	fi &&
-	>target &&
-	sed -e "s|\([ab]\)/file|\1/target|" <patch |
-	$cmd_prefix git apply "$@"
+apply_patch() {
+  cmd_prefix= \
+    && if test "x$1" = 'x!'; then
+      cmd_prefix=test_must_fail \
+        && shift
+    fi \
+    && >target \
+    && sed -e "s|\([ab]\)/file|\1/target|" <patch \
+    | $cmd_prefix git apply "$@"
 }
 
-test_fix () {
-	# fix should not barf
-	apply_patch --whitespace=fix || return 1
+test_fix() {
+  # fix should not barf
+  apply_patch --whitespace=fix || return 1
 
-	# find touched lines
-	$DIFF file target | sed -n -e "s/^> //p" >fixed
-	# busybox's diff(1) doesn't output normal format
-	if ! test -s fixed
-	then
-		$DIFF -u file target |
-		grep -v '^+++ target' |
-		sed -ne "/^+/s/+//p" >fixed
-	fi
+  # find touched lines
+  $DIFF file target | sed -n -e "s/^> //p" >fixed
+  # busybox's diff(1) doesn't output normal format
+  if ! test -s fixed; then
+    $DIFF -u file target \
+      | grep -v '^+++ target' \
+      | sed -ne "/^+/s/+//p" >fixed
+  fi
 
-	# the changed lines are all expected to change
-	fixed_cnt=$(wc -l <fixed)
-	case "$1" in
-	'') expect_cnt=$fixed_cnt ;;
-	?*) expect_cnt=$(grep "[$1]" <fixed | wc -l) ;;
-	esac
-	test $fixed_cnt -eq $expect_cnt || return 1
+  # the changed lines are all expected to change
+  fixed_cnt=$(wc -l <fixed)
+  case "$1" in
+    '') expect_cnt=$fixed_cnt ;;
+    ?*) expect_cnt=$(grep "[$1]" <fixed | wc -l) ;;
+  esac
+  test $fixed_cnt -eq $expect_cnt || return 1
 
-	# and we are not missing anything
-	case "$1" in
-	'') expect_cnt=0 ;;
-	?*) expect_cnt=$(grep "[$1]" <file | wc -l) ;;
-	esac
-	test $fixed_cnt -eq $expect_cnt || return 1
+  # and we are not missing anything
+  case "$1" in
+    '') expect_cnt=0 ;;
+    ?*) expect_cnt=$(grep "[$1]" <file | wc -l) ;;
+  esac
+  test $fixed_cnt -eq $expect_cnt || return 1
 
-	# Get the patch actually applied
-	git diff-files -p target >fixed-patch
-	test -s fixed-patch && return 0
+  # Get the patch actually applied
+  git diff-files -p target >fixed-patch
+  test -s fixed-patch && return 0
 
-	# Make sure it is complaint-free
-	>target
-	git apply --whitespace=error-all <fixed-patch
+  # Make sure it is complaint-free
+  >target
+  git apply --whitespace=error-all <fixed-patch
 
 }
 
@@ -162,50 +160,46 @@ test_expect_success 'spaces inserted by tab-in-indent' '
 
 '
 
-for t in - ''
-do
-	case "$t" in '') tt='!' ;; *) tt= ;; esac
-	for s in - ''
-	do
-		case "$s" in '') ts='@' ;; *) ts= ;; esac
-		for i in - ''
-		do
-			case "$i" in '') ti='#' ti16='=';; *) ti= ti16= ;; esac
-			for h in - ''
-			do
-				[ -z "$h$i" ] && continue
-				case "$h" in '') th='%' ;; *) th= ;; esac
-				rule=${t}trailing,${s}space,${i}indent,${h}tab
+for t in - ''; do
+  case "$t" in '') tt='!' ;; *) tt= ;; esac
+  for s in - ''; do
+    case "$s" in '') ts='@' ;; *) ts= ;; esac
+    for i in - ''; do
+      case "$i" in '') ti='#' ti16='=' ;; *) ti= ti16= ;; esac
+      for h in - ''; do
+        [ -z "$h$i" ] && continue
+        case "$h" in '') th='%' ;; *) th= ;; esac
+        rule=${t}trailing,${s}space,${i}indent,${h}tab
 
-				rm -f .gitattributes
-				test_expect_success "rule=$rule" '
+        rm -f .gitattributes
+        test_expect_success "rule=$rule" '
 					git config core.whitespace "$rule" &&
 					test_fix "$tt$ts$ti$th"
 				'
 
-				test_expect_success "rule=$rule,tabwidth=16" '
+        test_expect_success "rule=$rule,tabwidth=16" '
 					git config core.whitespace "$rule,tabwidth=16" &&
 					test_fix "$tt$ts$ti16$th"
 				'
 
-				test_expect_success "rule=$rule (attributes)" '
+        test_expect_success "rule=$rule (attributes)" '
 					git config --unset core.whitespace &&
 					echo "target whitespace=$rule" >.gitattributes &&
 					test_fix "$tt$ts$ti$th"
 				'
 
-				test_expect_success "rule=$rule,tabwidth=16 (attributes)" '
+        test_expect_success "rule=$rule,tabwidth=16 (attributes)" '
 					echo "target whitespace=$rule,tabwidth=16" >.gitattributes &&
 					test_fix "$tt$ts$ti16$th"
 				'
 
-			done
-		done
-	done
+      done
+    done
+  done
 done
 
-create_patch () {
-	sed -e "s/_/ /" <<-\EOF
+create_patch() {
+  sed -e "s/_/ /" <<-\EOF
 		diff --git a/target b/target
 		index e69de29..8bd6648 100644
 		--- a/target

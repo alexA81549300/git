@@ -11,32 +11,28 @@ etc.) we will test the patterns under those numbers of threads.
 test_perf_large_repo
 test_checkout_worktree
 
-if test -n "$GIT_PERF_GREP_THREADS"
-then
-	test_set_prereq PERF_GREP_ENGINES_THREADS
+if test -n "$GIT_PERF_GREP_THREADS"; then
+  test_set_prereq PERF_GREP_ENGINES_THREADS
 fi
 
 for pattern in \
-	'\\bhow' \
-	'\\bÆvar' \
-	'\\d+ \\bÆvar' \
-	'\\bBelón\\b' \
-	'\\w{12}\\b'
-do
-	echo '$pattern' >pat
-	if ! test_have_prereq PERF_GREP_ENGINES_THREADS
-	then
-		test_perf "grep -P '$pattern'" --prereq PCRE "
+  '\\bhow' \
+  '\\bÆvar' \
+  '\\d+ \\bÆvar' \
+  '\\bBelón\\b' \
+  '\\w{12}\\b'; do
+  echo '$pattern' >pat
+  if ! test_have_prereq PERF_GREP_ENGINES_THREADS; then
+    test_perf "grep -P '$pattern'" --prereq PCRE "
 			git -P grep -f pat || :
 		"
-	else
-		for threads in $GIT_PERF_GREP_THREADS
-		do
-			test_perf "grep -P '$pattern' with $threads threads" --prereq PTHREADS,PCRE "
+  else
+    for threads in $GIT_PERF_GREP_THREADS; do
+      test_perf "grep -P '$pattern' with $threads threads" --prereq PTHREADS,PCRE "
 				git -c grep.threads=$threads -P grep -f pat || :
 			"
-		done
-	fi
+    done
+  fi
 done
 
 test_done

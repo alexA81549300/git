@@ -5,26 +5,28 @@ test_description='Test git check-ref-format'
 . ./test-lib.sh
 
 valid_ref() {
-	prereq=
-	case $1 in
-	[A-Z!]*)
-		prereq=$1
-		shift
-	esac
-	desc="ref name '$1' is valid${2:+ with options $2}"
-	test_expect_success $prereq "$desc" "
+  prereq=
+  case $1 in
+    [A-Z!]*)
+      prereq=$1
+      shift
+      ;;
+  esac
+  desc="ref name '$1' is valid${2:+ with options $2}"
+  test_expect_success $prereq "$desc" "
 		git check-ref-format $2 '$1'
 	"
 }
 invalid_ref() {
-	prereq=
-	case $1 in
-	[A-Z!]*)
-		prereq=$1
-		shift
-	esac
-	desc="ref name '$1' is invalid${2:+ with options $2}"
-	test_expect_success $prereq "$desc" "
+  prereq=
+  case $1 in
+    [A-Z!]*)
+      prereq=$1
+      shift
+      ;;
+  esac
+  desc="ref name '$1' is invalid${2:+ with options $2}"
+  test_expect_success $prereq "$desc" "
 		test_must_fail git check-ref-format $2 '$1'
 	"
 }
@@ -178,25 +180,27 @@ test_expect_success 'check-ref-format --branch main from non-repo' '
 '
 
 valid_ref_normalized() {
-	prereq=
-	case $1 in
-	[A-Z!]*)
-		prereq=$1
-		shift
-	esac
-	test_expect_success $prereq "ref name '$1' simplifies to '$2'" "
+  prereq=
+  case $1 in
+    [A-Z!]*)
+      prereq=$1
+      shift
+      ;;
+  esac
+  test_expect_success $prereq "ref name '$1' simplifies to '$2'" "
 		refname=\$(git check-ref-format --normalize '$1') &&
 		test \"\$refname\" = '$2'
 	"
 }
 invalid_ref_normalized() {
-	prereq=
-	case $1 in
-	[A-Z!]*)
-		prereq=$1
-		shift
-	esac
-	test_expect_success $prereq "check-ref-format --normalize rejects '$1'" "
+  prereq=
+  case $1 in
+    [A-Z!]*)
+      prereq=$1
+      shift
+      ;;
+  esac
+  test_expect_success $prereq "check-ref-format --normalize rejects '$1'" "
 		test_must_fail git check-ref-format --normalize '$1'
 	"
 }

@@ -9,30 +9,29 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 D=$(pwd)
 
-invert () {
-	if "$@"; then
-		return 1
-	else
-		return 0
-	fi
+invert() {
+  if "$@"; then
+    return 1
+  else
+    return 0
+  fi
 }
 
-mk_repo_pair () {
-	rm -rf main mirror &&
-	mkdir mirror &&
-	(
-		cd mirror &&
-		git init &&
-		git config receive.denyCurrentBranch warn
-	) &&
-	mkdir main &&
-	(
-		cd main &&
-		git init &&
-		git remote add $1 up ../mirror
-	)
+mk_repo_pair() {
+  rm -rf main mirror \
+    && mkdir mirror \
+    && (
+      cd mirror \
+        && git init \
+        && git config receive.denyCurrentBranch warn
+    ) \
+    && mkdir main \
+    && (
+      cd main \
+        && git init \
+        && git remote add $1 up ../mirror
+    )
 }
-
 
 # BRANCH tests
 test_expect_success 'push mirror creates new branches' '
@@ -126,7 +125,6 @@ test_expect_success 'push mirror adds, updates and removes branches together' '
 	)
 
 '
-
 
 # TAG tests
 test_expect_success 'push mirror creates new tags' '

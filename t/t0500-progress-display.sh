@@ -4,8 +4,8 @@ test_description='progress display'
 
 . ./test-lib.sh
 
-show_cr () {
-	tr '\015' Q | sed -e "s/Q/<CR>\\$LF/g"
+show_cr() {
+  tr '\015' Q | sed -e "s/Q/<CR>\\$LF/g"
 }
 
 test_expect_success 'simple progress display' '

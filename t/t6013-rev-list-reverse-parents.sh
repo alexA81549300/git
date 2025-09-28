@@ -7,12 +7,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-
-commit () {
-	test_tick &&
-	echo $1 > foo &&
-	git add foo &&
-	git commit -m "$1"
+commit() {
+  test_tick \
+    && echo $1 >foo \
+    && git add foo \
+    && git commit -m "$1"
 }
 
 test_expect_success 'set up --reverse example' '

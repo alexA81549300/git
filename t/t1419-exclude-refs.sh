@@ -7,32 +7,35 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-for_each_ref__exclude () {
-	GIT_TRACE2_PERF=1 test-tool ref-store main \
-		for-each-ref--exclude "$@" >actual.raw
-	cut -d ' ' -f 2 actual.raw
+for_each_ref__exclude() {
+  GIT_TRACE2_PERF=1 test-tool ref-store main \
+    for-each-ref--exclude "$@" >actual.raw
+  cut -d ' ' -f 2 actual.raw
 }
 
-for_each_ref () {
-	git for-each-ref --format='%(refname)' "$@"
+for_each_ref() {
+  git for-each-ref --format='%(refname)' "$@"
 }
 
-assert_jumps () {
-	local nr="$1"
-	local trace="$2"
+assert_jumps() {
+  local nr="$1"
+  local trace="$2"
 
-	case "$GIT_DEFAULT_REF_FORMAT" in
-	files)
-		grep -q "name:jumps_made value:$nr$" $trace;;
-	reftable)
-		grep -q "name:reseeks_made value:$nr$" $trace;;
-	*)
-		BUG "unhandled ref format $GIT_DEFAULT_REF_FORMAT";;
-	esac
+  case "$GIT_DEFAULT_REF_FORMAT" in
+    files)
+      grep -q "name:jumps_made value:$nr$" $trace
+      ;;
+    reftable)
+      grep -q "name:reseeks_made value:$nr$" $trace
+      ;;
+    *)
+      BUG "unhandled ref format $GIT_DEFAULT_REF_FORMAT"
+      ;;
+  esac
 }
 
-assert_no_jumps () {
-	! assert_jumps ".*" "$1"
+assert_no_jumps() {
+  ! assert_jumps ".*" "$1"
 }
 
 test_expect_success 'setup' '

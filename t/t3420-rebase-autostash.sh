@@ -37,8 +37,8 @@ test_expect_success setup '
 	remove_progress_re="$(printf "s/.*\\r//")"
 '
 
-create_expected_success_apply () {
-	cat >expected <<-EOF
+create_expected_success_apply() {
+  cat >expected <<-EOF
 	$(grep "^Created autostash: [0-9a-f][0-9a-f]*\$" actual)
 	First, rewinding head to replay your work on top of it...
 	Applying: second commit
@@ -47,16 +47,16 @@ create_expected_success_apply () {
 	EOF
 }
 
-create_expected_success_merge () {
-	q_to_cr >expected <<-EOF
+create_expected_success_merge() {
+  q_to_cr >expected <<-EOF
 	$(grep "^Created autostash: [0-9a-f][0-9a-f]*\$" actual)
 	Applied autostash.
 	Successfully rebased and updated refs/heads/rebased-feature-branch.
 	EOF
 }
 
-create_expected_failure_apply () {
-	cat >expected <<-EOF
+create_expected_failure_apply() {
+  cat >expected <<-EOF
 	$(grep "^Created autostash: [0-9a-f][0-9a-f]*\$" actual)
 	First, rewinding head to replay your work on top of it...
 	Applying: second commit
@@ -67,8 +67,8 @@ create_expected_failure_apply () {
 	EOF
 }
 
-create_expected_failure_merge () {
-	cat >expected <<-EOF
+create_expected_failure_merge() {
+  cat >expected <<-EOF
 	$(grep "^Created autostash: [0-9a-f][0-9a-f]*\$" actual)
 	Applying autostash resulted in conflicts.
 	Your changes are safe in the stash.
@@ -77,11 +77,11 @@ create_expected_failure_merge () {
 	EOF
 }
 
-testrebase () {
-	type=$1
-	dotest=$2
+testrebase() {
+  type=$1
+  dotest=$2
 
-	test_expect_success "rebase$type: restore autostash when pre-rebase hook fails" '
+  test_expect_success "rebase$type: restore autostash when pre-rebase hook fails" '
 		git checkout -f feature-branch &&
 		test_hook pre-rebase <<-\EOF &&
 		exit 1
@@ -95,7 +95,7 @@ testrebase () {
 		test_cmp expect file0
 	'
 
-	test_expect_success "rebase$type: restore autostash when checkout onto fails" '
+  test_expect_success "rebase$type: restore autostash when checkout onto fails" '
 		git checkout -f --detach feature-branch &&
 		echo uncommitted-content >file0 &&
 		echo untracked >file4 &&
@@ -108,7 +108,7 @@ testrebase () {
 		test_cmp expect file0
 	'
 
-	test_expect_success "rebase$type: restore autostash when branch checkout fails" '
+  test_expect_success "rebase$type: restore autostash when branch checkout fails" '
 		git checkout -f unrelated-onto-branch^ &&
 		echo uncommitted-content >file0 &&
 		echo untracked >file4 &&
@@ -121,7 +121,7 @@ testrebase () {
 		test_cmp expect file0
 	'
 
-	test_expect_success "rebase$type: dirty worktree, --no-autostash" '
+  test_expect_success "rebase$type: dirty worktree, --no-autostash" '
 		test_config rebase.autostash true &&
 		git reset --hard &&
 		git checkout -b rebased-feature-branch feature-branch &&
@@ -131,7 +131,7 @@ testrebase () {
 		test_must_fail git rebase$type --no-autostash unrelated-onto-branch
 	'
 
-	test_expect_success "rebase$type: dirty worktree, non-conflicting rebase" '
+  test_expect_success "rebase$type: dirty worktree, non-conflicting rebase" '
 		test_config rebase.autostash true &&
 		git reset --hard &&
 		git checkout -b rebased-feature-branch feature-branch &&
@@ -142,7 +142,7 @@ testrebase () {
 		git checkout feature-branch
 	'
 
-	test_expect_success "rebase$type --autostash: check output" '
+  test_expect_success "rebase$type --autostash: check output" '
 		test_when_finished git branch -D rebased-feature-branch &&
 		suffix=${type#\ --} && suffix=${suffix:-apply} &&
 		if test ${suffix} = "interactive"; then
@@ -153,7 +153,7 @@ testrebase () {
 		test_cmp expected actual2
 	'
 
-	test_expect_success "rebase$type: dirty index, non-conflicting rebase" '
+  test_expect_success "rebase$type: dirty index, non-conflicting rebase" '
 		test_config rebase.autostash true &&
 		git reset --hard &&
 		git checkout -b rebased-feature-branch feature-branch &&
@@ -166,7 +166,7 @@ testrebase () {
 		git checkout feature-branch
 	'
 
-	test_expect_success "rebase$type: conflicting rebase" '
+  test_expect_success "rebase$type: conflicting rebase" '
 		test_config rebase.autostash true &&
 		git reset --hard &&
 		git checkout -b rebased-feature-branch feature-branch &&
@@ -180,7 +180,7 @@ testrebase () {
 		git checkout feature-branch
 	'
 
-	test_expect_success "rebase$type: --continue" '
+  test_expect_success "rebase$type: --continue" '
 		test_config rebase.autostash true &&
 		git reset --hard &&
 		git checkout -b rebased-feature-branch feature-branch &&
@@ -197,7 +197,7 @@ testrebase () {
 		git checkout feature-branch
 	'
 
-	test_expect_success "rebase$type: --skip" '
+  test_expect_success "rebase$type: --skip" '
 		test_config rebase.autostash true &&
 		git reset --hard &&
 		git checkout -b rebased-feature-branch feature-branch &&
@@ -212,7 +212,7 @@ testrebase () {
 		git checkout feature-branch
 	'
 
-	test_expect_success "rebase$type: --abort" '
+  test_expect_success "rebase$type: --abort" '
 		test_config rebase.autostash true &&
 		git reset --hard &&
 		git checkout -b rebased-feature-branch feature-branch &&
@@ -227,7 +227,7 @@ testrebase () {
 		git checkout feature-branch
 	'
 
-	test_expect_success "rebase$type: --quit" '
+  test_expect_success "rebase$type: --quit" '
 		test_config rebase.autostash true &&
 		git reset --hard &&
 		git checkout -b rebased-feature-branch feature-branch &&
@@ -247,7 +247,7 @@ testrebase () {
 		git checkout feature-branch
 	'
 
-	test_expect_success "rebase$type: non-conflicting rebase, conflicting stash" '
+  test_expect_success "rebase$type: non-conflicting rebase, conflicting stash" '
 		test_config rebase.autostash true &&
 		git reset --hard &&
 		git checkout -b rebased-feature-branch feature-branch &&
@@ -263,7 +263,7 @@ testrebase () {
 		grep dirty file4
 	'
 
-	test_expect_success "rebase$type: check output with conflicting stash" '
+  test_expect_success "rebase$type: check output with conflicting stash" '
 		test_when_finished git branch -D rebased-feature-branch &&
 		suffix=${type#\ --} && suffix=${suffix:-apply} &&
 		if test ${suffix} = "interactive"; then

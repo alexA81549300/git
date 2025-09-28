@@ -240,10 +240,10 @@ test_expect_failure 'configuration To: header (rfc2047)' '
 
 # check_patch <patch>: Verify that <patch> looks like a half-sane
 # patch email to avoid a false positive with !grep
-check_patch () {
-	grep -e "^From:" "$1" &&
-	grep -e "^Date:" "$1" &&
-	grep -e "^Subject:" "$1"
+check_patch() {
+  grep -e "^From:" "$1" \
+    && grep -e "^Date:" "$1" \
+    && grep -e "^Subject:" "$1"
 }
 
 test_expect_success 'format.from=false' '
@@ -420,13 +420,14 @@ test_expect_success 'reroll (-v) count with a non-pathname character' '
 	! grep -v "^Subject: \[PATCH v4---\.\.\./\./\.\./--1/\.2// [0-3]/3\] " subjects
 '
 
-check_threading () {
-	expect="$1" &&
-	shift &&
-	git format-patch --stdout "$@" >patch &&
-	# Prints everything between the Message-ID and In-Reply-To,
-	# and replaces all Message-ID-lookalikes by a sequence number
-	perl -ne '
+check_threading() {
+  expect="$1" \
+    && shift \
+    && git format-patch --stdout "$@" >patch \
+    &&
+    # Prints everything between the Message-ID and In-Reply-To,
+    # and replaces all Message-ID-lookalikes by a sequence number
+    perl -ne '
 		if (/^(message-id|references|in-reply-to)/i) {
 			$printing = 1;
 		} elsif (/^\S/) {
@@ -438,8 +439,8 @@ check_threading () {
 			print;
 		}
 		print "---\n" if /^From /i;
-	' <patch >actual &&
-	test_cmp "$expect" actual
+	' <patch >actual \
+    && test_cmp "$expect" actual
 }
 
 cat >>expect.no-threading <<EOF
@@ -984,7 +985,7 @@ test_expect_success 'get git version' '
 '
 
 signature() {
-	printf "%s\n%s\n\n" "-- " "${1:-$git_version}"
+  printf "%s\n%s\n\n" "-- " "${1:-$git_version}"
 }
 
 test_expect_success 'format-patch default signature' '
@@ -1119,7 +1120,7 @@ test_expect_success TTY 'format-patch --stdout paginates' '
 	test_path_is_file pager_used
 '
 
- test_expect_success TTY 'format-patch --stdout pagination can be disabled' '
+test_expect_success TTY 'format-patch --stdout pagination can be disabled' '
 	rm -f pager_used &&
 	test_terminal env GIT_PAGER="wc >pager_used" git --no-pager format-patch --stdout --all &&
 	test_terminal env GIT_PAGER="wc >pager_used" git -c "pager.format-patch=false" format-patch --stdout --all &&
@@ -1212,12 +1213,12 @@ test_expect_success 'format-patch wraps extremely long subject (rfc2047)' '
 '
 
 check_author() {
-	echo content >>file &&
-	git add file &&
-	GIT_AUTHOR_NAME=$1 git commit -m author-check &&
-	git format-patch --stdout -1 >patch &&
-	sed -n "/^From: /p; /^ /p; /^$/q" patch >actual &&
-	test_cmp expect actual
+  echo content >>file \
+    && git add file \
+    && GIT_AUTHOR_NAME=$1 git commit -m author-check \
+    && git format-patch --stdout -1 >patch \
+    && sed -n "/^From: /p; /^ /p; /^$/q" patch >actual \
+    && test_cmp expect actual
 }
 
 cat >expect <<'EOF'
@@ -1534,12 +1535,11 @@ test_expect_success 'in-body headers trigger content encoding' '
 	test_cmp expect patch.head
 '
 
-append_signoff()
-{
-	C=$(git commit-tree HEAD^^{tree} -p HEAD) &&
-	git format-patch --stdout --signoff $C^..$C >append_signoff.patch &&
-	sed -n -e "1,/^---$/p" append_signoff.patch |
-		grep -E -n "^Subject|Sign|^$"
+append_signoff() {
+  C=$(git commit-tree HEAD^^{tree} -p HEAD) \
+    && git format-patch --stdout --signoff $C^..$C >append_signoff.patch \
+    && sed -n -e "1,/^---$/p" append_signoff.patch \
+    | grep -E -n "^Subject|Sign|^$"
 }
 
 test_expect_success 'signoff: commit with no body' '

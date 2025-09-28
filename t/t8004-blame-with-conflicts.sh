@@ -65,7 +65,7 @@ Even more" > file2 &&
 '
 
 test_expect_success \
-	'blame runs on unconflicted file while other file has conflicts' '
+  'blame runs on unconflicted file while other file has conflicts' '
 	git blame file2
 '
 

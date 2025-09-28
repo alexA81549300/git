@@ -33,9 +33,8 @@ test_expect_success CASE_INSENSITIVE_FS 'setup' '
 	EOF
 '
 
-test_workers_in_event_trace ()
-{
-	test $1 -eq $(grep ".event.:.child_start..*checkout--worker" $2 | wc -l)
+test_workers_in_event_trace() {
+  test $1 -eq $(grep ".event.:.child_start..*checkout--worker" $2 | wc -l)
 }
 
 test_expect_success CASE_INSENSITIVE_FS 'worker detects basename collision' '
@@ -135,7 +134,7 @@ test_expect_success CASE_INSENSITIVE_FS 'collision report on clone (w/ racy file
 # OSX, where the colliding pairs are found using inode.
 #
 test_expect_success CASE_INSENSITIVE_FS,!MINGW,!CYGWIN \
-	'collision report on clone (w/ colliding peer after the detected entry)' '
+  'collision report on clone (w/ colliding peer after the detected entry)' '
 
 	test_config_global filter.logger.smudge "\"$TEST_ROOT/logger_script\" %f" &&
 	git reset --hard basename_collision &&

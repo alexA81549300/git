@@ -48,10 +48,10 @@ test_expect_success '--until handles broken email' '
 	test_must_be_empty actual
 '
 
-munge_author_date () {
-	git cat-file commit "$1" >commit.orig &&
-	sed "s/^\(author .*>\) [0-9]*/\1 $2/" <commit.orig >commit.munge &&
-	git hash-object --literally -w -t commit commit.munge
+munge_author_date() {
+  git cat-file commit "$1" >commit.orig \
+    && sed "s/^\(author .*>\) [0-9]*/\1 $2/" <commit.orig >commit.munge \
+    && git hash-object --literally -w -t commit commit.munge
 }
 
 test_expect_success 'unparsable dates produce sentinel value' '

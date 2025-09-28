@@ -170,25 +170,25 @@ test_expect_success 'index-pack --strict works for non-repo pack' '
 	grep gitmodulesName output
 '
 
-check_dotx_symlink () {
-	fsck_must_fail=test_must_fail
-	fsck_prefix=error
-	refuse_index=t
-	case "$1" in
-	--warning)
-		fsck_must_fail=
-		fsck_prefix=warning
-		refuse_index=
-		shift
-		;;
-	esac
+check_dotx_symlink() {
+  fsck_must_fail=test_must_fail
+  fsck_prefix=error
+  refuse_index=t
+  case "$1" in
+    --warning)
+      fsck_must_fail=
+      fsck_prefix=warning
+      refuse_index=
+      shift
+      ;;
+  esac
 
-	name=$1
-	type=$2
-	path=$3
-	dir=symlink-$name-$type
+  name=$1
+  type=$2
+  path=$3
+  dir=symlink-$name-$type
 
-	test_expect_success "set up repo with symlinked $name ($type)" '
+  test_expect_success "set up repo with symlinked $name ($type)" '
 		git init $dir &&
 		(
 			cd $dir &&
@@ -209,7 +209,7 @@ check_dotx_symlink () {
 		tree=$(git -C $dir mktree <$dir/bad-tree)
 	'
 
-	test_expect_success "fsck detects symlinked $name ($type)" '
+  test_expect_success "fsck detects symlinked $name ($type)" '
 		(
 			cd $dir &&
 
@@ -220,8 +220,8 @@ check_dotx_symlink () {
 		)
 	'
 
-	test -n "$refuse_index" &&
-	test_expect_success "refuse to load symlinked $name into index ($type)" '
+  test -n "$refuse_index" \
+    && test_expect_success "refuse to load symlinked $name into index ($type)" '
 		test_must_fail \
 			git -C $dir \
 			    -c core.protectntfs \

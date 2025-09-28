@@ -7,7 +7,7 @@ test_description='git svn authors file tests'
 
 . ./lib-git-svn.sh
 
-cat > svn-authors <<EOF
+cat >svn-authors <<EOF
 aa = AAAAAAA AAAAAAA <aa@example.com>
 bb = BBBBBBB BBBBBBB <bb@example.com>
 EOF
@@ -35,7 +35,7 @@ test_expect_success 'imported 2 revisions successfully' '
 	)
 	'
 
-cat >> svn-authors <<EOF
+cat >>svn-authors <<EOF
 cc = CCCCCCC CCCCCCC <cc@example.com>
 dd = DDDDDDD DDDDDDD <dd@example.com>
 EOF
@@ -68,8 +68,8 @@ test_expect_success 'fetch fails on ee' '
 	( cd aa-work && test_must_fail git svn fetch --authors-file=../svn-authors )
 	'
 
-tmp_config_get () {
-	git config --file=.git/svn/.metadata --get "$1"
+tmp_config_get() {
+  git config --file=.git/svn/.metadata --get "$1"
 }
 
 test_expect_success 'failure happened without negative side effects' '
@@ -80,7 +80,7 @@ test_expect_success 'failure happened without negative side effects' '
 	)
 	'
 
-cat >> svn-authors <<EOF
+cat >>svn-authors <<EOF
 ee = EEEEEEE EEEEEEE <ee@example.com>
 EOF
 
@@ -112,7 +112,7 @@ test_expect_success !MINGW 'fresh clone with svn.authors-file in config' '
 	)
 '
 
-cat >> svn-authors <<EOF
+cat >>svn-authors <<EOF
 ff = FFFFFFF FFFFFFF <>
 EOF
 

@@ -6,10 +6,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-resolve () {
-	echo "$2" >expect &&
-	git rev-parse --symbolic-full-name "$1" >actual &&
-	test_cmp expect actual
+resolve() {
+  echo "$2" >expect \
+    && git rev-parse --symbolic-full-name "$1" >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'setup' '

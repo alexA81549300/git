@@ -12,36 +12,29 @@ test_expect_success 'setup' '
 # 1. the stash.showStat value (or "<unset>")
 # 2. the stash.showPatch value (or "<unset>")
 # 3. the diff options of the expected output (or nothing for no output)
-test_stat_and_patch () {
-	if test "<unset>" = "$1"
-	then
-		test_unconfig stash.showStat
-	else
-		test_config stash.showStat "$1"
-	fi &&
-
-	if test "<unset>" = "$2"
-	then
-		test_unconfig stash.showPatch
-	else
-		test_config stash.showPatch "$2"
-	fi &&
-
-	shift 2 &&
-	echo 2 >file.t &&
-	if test $# != 0
-	then
-		git diff "$@" >expect
-	fi &&
-	git stash &&
-	git stash show >actual &&
-
-	if test $# = 0
-	then
-		test_must_be_empty actual
-	else
-		test_cmp expect actual
-	fi
+test_stat_and_patch() {
+  if test "<unset>" = "$1"; then
+    test_unconfig stash.showStat
+  else
+    test_config stash.showStat "$1"
+  fi \
+    && if test "<unset>" = "$2"; then
+      test_unconfig stash.showPatch
+    else
+      test_config stash.showPatch "$2"
+    fi \
+    && shift 2 \
+    && echo 2 >file.t \
+    && if test $# != 0; then
+      git diff "$@" >expect
+    fi \
+    && git stash \
+    && git stash show >actual \
+    && if test $# = 0; then
+      test_must_be_empty actual
+    else
+      test_cmp expect actual
+    fi
 }
 
 test_expect_success 'showStat unset showPatch unset' '

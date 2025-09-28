@@ -191,26 +191,28 @@ test_expect_success 'cleanup edit p4 populate' '
 '
 
 setup_conflict() {
-	# clone before modifying file1 to force it to conflict
-	test_when_finished cleanup_git &&
-	git p4 clone --dest="$git" //depot &&
-	# ticks outside subshells
-	test_tick &&
-	(
-		cd "$cli" &&
-		p4 open file1 &&
-		echo $test_tick >>file1 &&
-		p4 submit -d "$test_tick in file1"
-	) &&
-	test_tick &&
-	(
-		cd "$git" &&
-		git config git-p4.skipSubmitEdit true &&
-		# easy conflict
-		echo $test_tick >>file1 &&
-		git add file1
-		# caller will add more and submit
-	)
+  # clone before modifying file1 to force it to conflict
+  test_when_finished cleanup_git \
+    && git p4 clone --dest="$git" //depot \
+    &&
+    # ticks outside subshells
+    test_tick \
+    && (
+      cd "$cli" \
+        && p4 open file1 \
+        && echo $test_tick >>file1 \
+        && p4 submit -d "$test_tick in file1"
+    ) \
+    && test_tick \
+    && (
+      cd "$git" \
+        && git config git-p4.skipSubmitEdit true \
+        &&
+        # easy conflict
+        echo $test_tick >>file1 \
+        && git add file1
+      # caller will add more and submit
+    )
 }
 
 test_expect_success 'cleanup edit after submit fail' '

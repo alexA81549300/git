@@ -141,119 +141,111 @@ test_expect_success 'setup' '
 	)
 '
 
-init_repos () {
-	rm -rf full-checkout sparse-checkout sparse-index &&
-
-	# create repos in initial state
-	cp -r initial-repo full-checkout &&
-	git -C full-checkout reset --hard &&
-
-	cp -r initial-repo sparse-checkout &&
-	git -C sparse-checkout reset --hard &&
-
-	cp -r initial-repo sparse-index &&
-	git -C sparse-index reset --hard &&
-
-	# initialize sparse-checkout definitions
-	git -C sparse-checkout sparse-checkout init --cone &&
-	git -C sparse-checkout sparse-checkout set deep &&
-	git -C sparse-index sparse-checkout init --cone --sparse-index &&
-	test_cmp_config -C sparse-index true index.sparse &&
-	git -C sparse-index sparse-checkout set deep &&
-
-	# Disable this message to keep stderr the same.
-	git -C sparse-index config advice.sparseIndexExpanded false
+init_repos() {
+  rm -rf full-checkout sparse-checkout sparse-index \
+    &&
+    # create repos in initial state
+    cp -r initial-repo full-checkout \
+    && git -C full-checkout reset --hard \
+    && cp -r initial-repo sparse-checkout \
+    && git -C sparse-checkout reset --hard \
+    && cp -r initial-repo sparse-index \
+    && git -C sparse-index reset --hard \
+    &&
+    # initialize sparse-checkout definitions
+    git -C sparse-checkout sparse-checkout init --cone \
+    && git -C sparse-checkout sparse-checkout set deep \
+    && git -C sparse-index sparse-checkout init --cone --sparse-index \
+    && test_cmp_config -C sparse-index true index.sparse \
+    && git -C sparse-index sparse-checkout set deep \
+    &&
+    # Disable this message to keep stderr the same.
+    git -C sparse-index config advice.sparseIndexExpanded false
 }
 
-init_repos_as_submodules () {
-	git reset --hard &&
-	init_repos &&
-	git submodule add ./full-checkout &&
-	git submodule add ./sparse-checkout &&
-	git submodule add ./sparse-index &&
-
-	git submodule status >actual &&
-	grep full-checkout actual &&
-	grep sparse-checkout actual &&
-	grep sparse-index actual
+init_repos_as_submodules() {
+  git reset --hard \
+    && init_repos \
+    && git submodule add ./full-checkout \
+    && git submodule add ./sparse-checkout \
+    && git submodule add ./sparse-index \
+    && git submodule status >actual \
+    && grep full-checkout actual \
+    && grep sparse-checkout actual \
+    && grep sparse-index actual
 }
 
-run_on_sparse () {
-	cat >run-on-sparse-input &&
-
-	(
-		cd sparse-checkout &&
-		GIT_PROGRESS_DELAY=100000 "$@" >../sparse-checkout-out 2>../sparse-checkout-err
-	) <run-on-sparse-input &&
-	(
-		cd sparse-index &&
-		GIT_PROGRESS_DELAY=100000 "$@" >../sparse-index-out 2>../sparse-index-err
-	) <run-on-sparse-input
+run_on_sparse() {
+  cat >run-on-sparse-input \
+    && (
+      cd sparse-checkout \
+        && GIT_PROGRESS_DELAY=100000 "$@" >../sparse-checkout-out 2>../sparse-checkout-err
+    ) <run-on-sparse-input \
+    && (
+      cd sparse-index \
+        && GIT_PROGRESS_DELAY=100000 "$@" >../sparse-index-out 2>../sparse-index-err
+    ) <run-on-sparse-input
 }
 
-run_on_all () {
-	cat >run-on-all-input &&
-
-	(
-		cd full-checkout &&
-		GIT_PROGRESS_DELAY=100000 "$@" >../full-checkout-out 2>../full-checkout-err
-	) <run-on-all-input &&
-	run_on_sparse "$@" <run-on-all-input
+run_on_all() {
+  cat >run-on-all-input \
+    && (
+      cd full-checkout \
+        && GIT_PROGRESS_DELAY=100000 "$@" >../full-checkout-out 2>../full-checkout-err
+    ) <run-on-all-input \
+    && run_on_sparse "$@" <run-on-all-input
 }
 
-test_all_match () {
-	run_on_all "$@" &&
-	test_cmp full-checkout-out sparse-checkout-out &&
-	test_cmp full-checkout-out sparse-index-out &&
-	test_cmp full-checkout-err sparse-checkout-err &&
-	test_cmp full-checkout-err sparse-index-err
+test_all_match() {
+  run_on_all "$@" \
+    && test_cmp full-checkout-out sparse-checkout-out \
+    && test_cmp full-checkout-out sparse-index-out \
+    && test_cmp full-checkout-err sparse-checkout-err \
+    && test_cmp full-checkout-err sparse-index-err
 }
 
-test_sparse_match () {
-	run_on_sparse "$@" &&
-	test_cmp sparse-checkout-out sparse-index-out &&
-	test_cmp sparse-checkout-err sparse-index-err
+test_sparse_match() {
+  run_on_sparse "$@" \
+    && test_cmp sparse-checkout-out sparse-index-out \
+    && test_cmp sparse-checkout-err sparse-index-err
 }
 
-test_sparse_unstaged () {
-	file=$1 &&
-	for repo in sparse-checkout sparse-index
-	do
-		# Skip "unmerged" paths
-		git -C $repo diff --staged --diff-filter=u -- "$file" >diff &&
-		test_must_be_empty diff || return 1
-	done
+test_sparse_unstaged() {
+  file=$1 \
+    && for repo in sparse-checkout sparse-index; do
+      # Skip "unmerged" paths
+      git -C $repo diff --staged --diff-filter=u -- "$file" >diff \
+        && test_must_be_empty diff || return 1
+    done
 }
 
 # Usage: test_sparse_checkout_set "<c1> ... <cN>" "<s1> ... <sM>"
 # Verifies that "git sparse-checkout set <c1> ... <cN>" succeeds and
 # leaves the sparse index in a state where <s1> ... <sM> are sparse
 # directories (and <c1> ... <cN> are not).
-test_sparse_checkout_set () {
-	CONE_DIRS=$1 &&
-	SPARSE_DIRS=$2 &&
-	git -C sparse-index sparse-checkout set --skip-checks $CONE_DIRS &&
-	git -C sparse-index ls-files --sparse --stage >cache &&
-
-	# Check that the directories outside of the sparse-checkout cone
-	# have sparse directory entries.
-	for dir in $SPARSE_DIRS
-	do
-		TREE=$(git -C sparse-index rev-parse HEAD:$dir) &&
-		grep "040000 $TREE 0	$dir/" cache \
-			|| return 1
-	done &&
-
-	# Check that the directories in the sparse-checkout cone
-	# are not sparse directory entries.
-	for dir in $CONE_DIRS
-	do
-		# Allow TREE to not exist because
-		# $dir does not exist at HEAD.
-		TREE=$(git -C sparse-index rev-parse HEAD:$dir) ||
-		! grep "040000 $TREE 0	$dir/" cache \
-			|| return 1
-	done
+test_sparse_checkout_set() {
+  CONE_DIRS=$1 \
+    && SPARSE_DIRS=$2 \
+    && git -C sparse-index sparse-checkout set --skip-checks $CONE_DIRS \
+    && git -C sparse-index ls-files --sparse --stage >cache \
+    &&
+    # Check that the directories outside of the sparse-checkout cone
+    # have sparse directory entries.
+    for dir in $SPARSE_DIRS; do
+      TREE=$(git -C sparse-index rev-parse HEAD:$dir) \
+        && grep "040000 $TREE 0	$dir/" cache \
+        || return 1
+    done \
+    &&
+    # Check that the directories in the sparse-checkout cone
+    # are not sparse directory entries.
+    for dir in $CONE_DIRS; do
+      # Allow TREE to not exist because
+      # $dir does not exist at HEAD.
+      TREE=$(git -C sparse-index rev-parse HEAD:$dir) \
+        || ! grep "040000 $TREE 0	$dir/" cache \
+        || return 1
+    done
 }
 
 test_expect_success 'sparse-index contents' '
@@ -915,10 +907,9 @@ test_expect_success 'update-index --cacheinfo' '
 '
 
 for MERGE_TREES in "base HEAD update-folder2" \
-		   "update-folder1 update-folder2" \
-		   "update-folder2"
-do
-	test_expect_success "'read-tree -mu $MERGE_TREES' with files outside sparse definition" '
+  "update-folder1 update-folder2" \
+  "update-folder2"; do
+  test_expect_success "'read-tree -mu $MERGE_TREES' with files outside sparse definition" '
 		init_repos &&
 
 		# Although the index matches, without --no-sparse-checkout, outside-of-
@@ -1292,9 +1283,8 @@ test_expect_success 'clean' '
 	test_sparse_match test_path_is_dir folder1
 '
 
-for builtin in show rev-parse
-do
-	test_expect_success "$builtin (cached blobs/trees)" "
+for builtin in show rev-parse; do
+  test_expect_success "$builtin (cached blobs/trees)" "
 		init_repos &&
 
 		test_all_match git $builtin :a &&
@@ -1390,37 +1380,34 @@ test_expect_success 'index.sparse disabled inline uses full index' '
 	! test_region index ensure_full_index trace2.txt
 '
 
-run_sparse_index_trace2 () {
-	rm -f trace2.txt &&
-	if test -z "$WITHOUT_UNTRACKED_TXT"
-	then
-		echo >>sparse-index/untracked.txt
-	fi &&
-
-	if test "$1" = "!"
-	then
-		shift &&
-		test_must_fail env \
-			GIT_TRACE2_EVENT="$(pwd)/trace2.txt" \
-			git -C sparse-index "$@" \
-			>sparse-index-out \
-			2>sparse-index-error || return 1
-	else
-		GIT_TRACE2_EVENT="$(pwd)/trace2.txt" \
-			git -C sparse-index "$@" \
-			>sparse-index-out \
-			2>sparse-index-error || return 1
-	fi
+run_sparse_index_trace2() {
+  rm -f trace2.txt \
+    && if test -z "$WITHOUT_UNTRACKED_TXT"; then
+      echo >>sparse-index/untracked.txt
+    fi \
+    && if test "$1" = "!"; then
+      shift \
+        && test_must_fail env \
+          GIT_TRACE2_EVENT="$(pwd)/trace2.txt" \
+          git -C sparse-index "$@" \
+          >sparse-index-out \
+          2>sparse-index-error || return 1
+    else
+      GIT_TRACE2_EVENT="$(pwd)/trace2.txt" \
+        git -C sparse-index "$@" \
+        >sparse-index-out \
+        2>sparse-index-error || return 1
+    fi
 }
 
-ensure_expanded () {
-	run_sparse_index_trace2 "$@" &&
-	test_region index ensure_full_index trace2.txt
+ensure_expanded() {
+  run_sparse_index_trace2 "$@" \
+    && test_region index ensure_full_index trace2.txt
 }
 
-ensure_not_expanded () {
-	run_sparse_index_trace2 "$@" &&
-	test_region ! index ensure_full_index trace2.txt
+ensure_not_expanded() {
+  run_sparse_index_trace2 "$@" \
+    && test_region ! index ensure_full_index trace2.txt
 }
 
 test_expect_success 'sparse-index is not expanded' '
@@ -1546,7 +1533,6 @@ test_expect_success 'describe tested on all' '
 	run_on_all rm g &&
 	test_all_match git describe --dirty
 '
-
 
 test_expect_success 'sparse-index is not expanded: describe' '
 	init_repos &&

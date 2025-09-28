@@ -12,22 +12,20 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 # Setup test files
 test_setup() {
-	# Expected commit message after merge --signoff
-	cat >expected-signed <<EOF &&
+  # Expected commit message after merge --signoff
+  cat >expected-signed <<EOF &&
 Merge branch 'main' into other-branch
 
 Signed-off-by: $(git var GIT_COMMITTER_IDENT | sed -e "s/>.*/>/")
 EOF
-
-	# Expected commit message after merge without --signoff (or with --no-signoff)
-	cat >expected-unsigned <<EOF &&
+    # Expected commit message after merge without --signoff (or with --no-signoff)
+    cat >expected-unsigned <<EOF &&
 Merge branch 'main' into other-branch
 EOF
-
-	# Initial commit and feature branch to merge main into it.
-	git commit --allow-empty -m "Initial empty commit" &&
-	git checkout -b other-branch &&
-	test_commit other-branch file1 1
+    # Initial commit and feature branch to merge main into it.
+    git commit --allow-empty -m "Initial empty commit" \
+    && git checkout -b other-branch \
+    && test_commit other-branch file1 1
 }
 
 # Setup repository, files & feature branch

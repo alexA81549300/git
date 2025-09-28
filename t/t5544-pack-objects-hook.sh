@@ -19,8 +19,8 @@ test_expect_success 'create debugging hook script' '
 	EOF
 '
 
-clear_hook_results () {
-	rm -rf .git/hook.* dst.git
+clear_hook_results() {
+  rm -rf .git/hook.* dst.git
 }
 
 test_expect_success 'hook runs via global config' '

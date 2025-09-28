@@ -8,8 +8,8 @@ test_description='basic symbolic-ref tests'
 # the git repo, meaning that further tests will operate on
 # the surrounding git repo instead of the trash directory.
 reset_to_sane() {
-	rm -rf .git &&
-	"$TAR" xf .git.tar
+  rm -rf .git \
+    && "$TAR" xf .git.tar
 }
 
 test_expect_success 'setup' '

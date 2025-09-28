@@ -5,10 +5,9 @@ test_description='remerge-diff handling'
 . ./test-lib.sh
 
 # This test is ort-specific
-if test "${GIT_TEST_MERGE_ALGORITHM}" != ort
-then
-	skip_all="GIT_TEST_MERGE_ALGORITHM != ort"
-	test_done
+if test "${GIT_TEST_MERGE_ALGORITHM}" != ort; then
+  skip_all="GIT_TEST_MERGE_ALGORITHM != ort"
+  test_done
 fi
 
 test_expect_success 'setup basic merges' '

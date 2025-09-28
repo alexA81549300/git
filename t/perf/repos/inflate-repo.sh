@@ -14,22 +14,31 @@ target_size=10000
 branch_name=p0006-ballast
 ballast=ballast
 
-while test "$#" -ne 0
-do
-    case "$1" in
-	-b)
-	    shift;
-	    test "$#" -ne 0 || { echo 'error: -b requires an argument' >&2; exit 1; }
-	    branch_name=$1;
-	    shift ;;
-	-t)
-	    shift;
-	    test "$#" -ne 0 || { echo 'error: -t requires an argument' >&2; exit 1; }
-	    target_size=$1;
-	    shift ;;
-	*)
-	    echo "error: unknown option '$1'" >&2; exit 1 ;;
-    esac
+while test "$#" -ne 0; do
+  case "$1" in
+    -b)
+      shift
+      test "$#" -ne 0 || {
+        echo 'error: -b requires an argument' >&2
+        exit 1
+      }
+      branch_name=$1
+      shift
+      ;;
+    -t)
+      shift
+      test "$#" -ne 0 || {
+        echo 'error: -t requires an argument' >&2
+        exit 1
+      }
+      target_size=$1
+      shift
+      ;;
+    *)
+      echo "error: unknown option '$1'" >&2
+      exit 1
+      ;;
+  esac
 done
 
 git ls-tree -r HEAD >GEN_src_list
@@ -39,36 +48,34 @@ src_branch=$(git symbolic-ref --short HEAD)
 
 echo "Branch $src_branch initially has $nr_src_files files."
 
-if test $target_size -le $nr_src_files
-then
-    echo "Repository already exceeds target size $target_size."
-    rm GEN_src_list
-    exit 1
+if test $target_size -le $nr_src_files; then
+  echo "Repository already exceeds target size $target_size."
+  rm GEN_src_list
+  exit 1
 fi
 
 # Create well-known branch and add 1 file change to start
 # if off before the ballast.
 git checkout -b $branch_name HEAD
-echo "$target_size" > inflate-repo.params
+echo "$target_size" >inflate-repo.params
 git add inflate-repo.params
 git commit -q -m params
 
 # Create ballast for in our branch.
 copy=1
 nr_files=$nr_src_files
-while test $nr_files -lt $target_size
-do
-    sed -e "s|	|	$ballast/$copy/|" <GEN_src_list |
-	git update-index --index-info
+while test $nr_files -lt $target_size; do
+  sed -e "s|	|	$ballast/$copy/|" <GEN_src_list \
+    | git update-index --index-info
 
-    nr_files=$(expr $nr_files + $nr_src_files)
-    copy=$(expr $copy + 1)
+  nr_files=$(expr $nr_files + $nr_src_files)
+  copy=$(expr $copy + 1)
 done
 rm GEN_src_list
 git commit -q -m "ballast"
 
 # Modify 1 file and commit.
-echo "$target_size" >> inflate-repo.params
+echo "$target_size" >>inflate-repo.params
 git add inflate-repo.params
 git commit -q -m "ballast plus 1"
 

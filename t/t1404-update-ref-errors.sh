@@ -14,95 +14,90 @@ test_description='Test git update-ref error handling'
 #   <error> is a string to look for in the stderr of update-ref.
 # All references are created in the namespace specified by the current
 # value of $prefix.
-test_update_rejected () {
-	before="$1" &&
-	pack="$2" &&
-	create="$3" &&
-	error="$4" &&
-	printf "create $prefix/%s $C\n" $before |
-	git update-ref --stdin &&
-	git for-each-ref $prefix >unchanged &&
-	if $pack
-	then
-		git pack-refs --all
-	fi &&
-	printf "create $prefix/%s $C\n" $create >input &&
-	test_must_fail git update-ref --stdin <input 2>output.err &&
-	test_grep -F "$error" output.err &&
-	git for-each-ref $prefix >actual &&
-	test_cmp unchanged actual
+test_update_rejected() {
+  before="$1" \
+    && pack="$2" \
+    && create="$3" \
+    && error="$4" \
+    && printf "create $prefix/%s $C\n" $before \
+    | git update-ref --stdin \
+    && git for-each-ref $prefix >unchanged \
+    && if $pack; then
+      git pack-refs --all
+    fi \
+    && printf "create $prefix/%s $C\n" $create >input \
+    && test_must_fail git update-ref --stdin <input 2>output.err \
+    && test_grep -F "$error" output.err \
+    && git for-each-ref $prefix >actual \
+    && test_cmp unchanged actual
 }
 
 # Test adding and deleting D/F-conflicting references in a single
 # transaction.
 df_test() {
-	prefix="$1"
-	pack=: symadd=false symdel=false add_del=false addref= delref=
-	shift
-	while test $# -gt 0
-	do
-		case "$1" in
-		--pack)
-			pack="git pack-refs --all"
-			shift
-			;;
-		--sym-add)
-			# Perform the add via a symbolic reference
-			symadd=true
-			shift
-			;;
-		--sym-del)
-			# Perform the del via a symbolic reference
-			symdel=true
-			shift
-			;;
-		--del-add)
-			# Delete first reference then add second
-			add_del=false
-			delref="$prefix/r/$2"
-			addref="$prefix/r/$3"
-			shift 3
-			;;
-		--add-del)
-			# Add first reference then delete second
-			add_del=true
-			addref="$prefix/r/$2"
-			delref="$prefix/r/$3"
-			shift 3
-			;;
-		*)
-			echo 1>&2 "Extra args to df_test: $*"
-			return 1
-			;;
-		esac
-	done
-	git update-ref "$delref" $C &&
-	if $symadd
-	then
-		addname="$prefix/s/symadd" &&
-		git symbolic-ref "$addname" "$addref"
-	else
-		addname="$addref"
-	fi &&
-	if $symdel
-	then
-		delname="$prefix/s/symdel" &&
-		git symbolic-ref "$delname" "$delref"
-	else
-		delname="$delref"
-	fi &&
-	$pack &&
-	if $add_del
-	then
-		printf "%s\n" "create $addname $D" "delete $delname"
-	else
-		printf "%s\n" "delete $delname" "create $addname $D"
-	fi >commands &&
-	test_must_fail git update-ref --stdin <commands 2>output.err &&
-	grep -E "fatal:( cannot lock ref '$addname':)? '$delref' exists; cannot create '$addref'" output.err &&
-	printf "%s\n" "$C $delref" >expected-refs &&
-	git for-each-ref --format="%(objectname) %(refname)" $prefix/r >actual-refs &&
-	test_cmp expected-refs actual-refs
+  prefix="$1"
+  pack=: symadd=false symdel=false add_del=false addref= delref=
+  shift
+  while test $# -gt 0; do
+    case "$1" in
+      --pack)
+        pack="git pack-refs --all"
+        shift
+        ;;
+      --sym-add)
+        # Perform the add via a symbolic reference
+        symadd=true
+        shift
+        ;;
+      --sym-del)
+        # Perform the del via a symbolic reference
+        symdel=true
+        shift
+        ;;
+      --del-add)
+        # Delete first reference then add second
+        add_del=false
+        delref="$prefix/r/$2"
+        addref="$prefix/r/$3"
+        shift 3
+        ;;
+      --add-del)
+        # Add first reference then delete second
+        add_del=true
+        addref="$prefix/r/$2"
+        delref="$prefix/r/$3"
+        shift 3
+        ;;
+      *)
+        echo 1>&2 "Extra args to df_test: $*"
+        return 1
+        ;;
+    esac
+  done
+  git update-ref "$delref" $C \
+    && if $symadd; then
+      addname="$prefix/s/symadd" \
+        && git symbolic-ref "$addname" "$addref"
+    else
+      addname="$addref"
+    fi \
+    && if $symdel; then
+      delname="$prefix/s/symdel" \
+        && git symbolic-ref "$delname" "$delref"
+    else
+      delname="$delref"
+    fi \
+    && $pack \
+    && if $add_del; then
+      printf "%s\n" "create $addname $D" "delete $delname"
+    else
+      printf "%s\n" "delete $delname" "create $addname $D"
+    fi >commands \
+    && test_must_fail git update-ref --stdin <commands 2>output.err \
+    && grep -E "fatal:( cannot lock ref '$addname':)? '$delref' exists; cannot create '$addref'" output.err \
+    && printf "%s\n" "$C $delref" >expected-refs \
+    && git for-each-ref --format="%(objectname) %(refname)" $prefix/r >actual-refs \
+    && test_cmp expected-refs actual-refs
 }
 
 test_expect_success 'setup' - <<\EOT

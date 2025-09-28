@@ -100,23 +100,22 @@ test_expect_success 'diff --merge-base with three commits' '
 	test_grep "usage" err
 '
 
-for cmd in diff-index diff
-do
-	test_expect_success "$cmd --merge-base with one commit" '
+for cmd in diff-index diff; do
+  test_expect_success "$cmd --merge-base with one commit" '
 		git checkout main &&
 		git $cmd commit-C >expect &&
 		git $cmd --merge-base br2 >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "$cmd --merge-base with annotated tag" '
+  test_expect_success "$cmd --merge-base with annotated tag" '
 		git checkout main &&
 		git $cmd commit-C >expect &&
 		git $cmd --merge-base commit-C >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "$cmd --merge-base with one commit and unstaged changes" '
+  test_expect_success "$cmd --merge-base with one commit and unstaged changes" '
 		git checkout main &&
 		test_when_finished git reset --hard &&
 		echo unstaged >>c &&
@@ -125,7 +124,7 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "$cmd --merge-base with one commit and staged and unstaged changes" '
+  test_expect_success "$cmd --merge-base with one commit and staged and unstaged changes" '
 		git checkout main &&
 		test_when_finished git reset --hard &&
 		echo staged >>c &&
@@ -136,7 +135,7 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "$cmd --merge-base --cached with one commit and staged and unstaged changes" '
+  test_expect_success "$cmd --merge-base --cached with one commit and staged and unstaged changes" '
 		git checkout main &&
 		test_when_finished git reset --hard &&
 		echo staged >>c &&
@@ -147,44 +146,43 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "$cmd --merge-base with non-commit" '
+  test_expect_success "$cmd --merge-base with non-commit" '
 		git checkout main &&
 		test_must_fail git $cmd --merge-base main^{tree} 2>err &&
 		test_grep "is a tree, not a commit" err
 	'
 
-	test_expect_success "$cmd --merge-base with no merge bases and one commit" '
+  test_expect_success "$cmd --merge-base with no merge bases and one commit" '
 		git checkout main &&
 		test_must_fail git $cmd --merge-base br3 2>err &&
 		test_grep "fatal: no merge base found" err
 	'
 
-	test_expect_success "$cmd --merge-base with multiple merge bases and one commit" '
+  test_expect_success "$cmd --merge-base with multiple merge bases and one commit" '
 		git checkout main &&
 		test_must_fail git $cmd --merge-base br1 2>err &&
 		test_grep "fatal: multiple merge bases found" err
 	'
 done
 
-for cmd in diff-tree diff
-do
-	test_expect_success "$cmd --merge-base with two commits" '
+for cmd in diff-tree diff; do
+  test_expect_success "$cmd --merge-base with two commits" '
 		git $cmd commit-C main >expect &&
 		git $cmd --merge-base br2 main >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "$cmd --merge-base commit and non-commit" '
+  test_expect_success "$cmd --merge-base commit and non-commit" '
 		test_must_fail git $cmd --merge-base br2 main^{tree} 2>err &&
 		test_grep "is a tree, not a commit" err
 	'
 
-	test_expect_success "$cmd --merge-base with no merge bases and two commits" '
+  test_expect_success "$cmd --merge-base with no merge bases and two commits" '
 		test_must_fail git $cmd --merge-base br2 br3 2>err &&
 		test_grep "fatal: no merge base found" err
 	'
 
-	test_expect_success "$cmd --merge-base with multiple merge bases and two commits" '
+  test_expect_success "$cmd --merge-base with multiple merge bases and two commits" '
 		test_must_fail git $cmd --merge-base main br1 2>err &&
 		test_grep "fatal: multiple merge bases found" err
 	'

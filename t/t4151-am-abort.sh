@@ -31,9 +31,8 @@ test_expect_success setup '
 	echo local change >file-2-expect
 '
 
-for with3 in '' ' -3'
-do
-	test_expect_success "am$with3 stops at a patch that does not apply" '
+for with3 in '' ' -3'; do
+  test_expect_success "am$with3 stops at a patch that does not apply" '
 
 		git reset --hard initial &&
 		cp file-2-expect file-2 &&
@@ -44,14 +43,14 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "am$with3 --skip continue after failed am$with3" '
+  test_expect_success "am$with3 --skip continue after failed am$with3" '
 		test_must_fail git am$with3 --skip >output &&
 		test_grep "^Applying: 6$" output &&
 		test_cmp file-2-expect file-2 &&
 		test ! -f .git/MERGE_RR
 	'
 
-	test_expect_success "am --abort goes back after failed am$with3" '
+  test_expect_success "am --abort goes back after failed am$with3" '
 		git am --abort &&
 		git rev-parse HEAD >actual &&
 		git rev-parse initial >expect &&

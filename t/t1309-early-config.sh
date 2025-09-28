@@ -65,14 +65,14 @@ test_expect_success 'read config file in right order' '
 	)
 '
 
-test_with_config () {
-	rm -rf throwaway &&
-	git init throwaway &&
-	(
-		cd throwaway &&
-		echo "$*" >.git/config &&
-		test-tool config read_early_config early.config
-	)
+test_with_config() {
+  rm -rf throwaway \
+    && git init throwaway \
+    && (
+      cd throwaway \
+        && echo "$*" >.git/config \
+        && test-tool config read_early_config early.config
+    )
 }
 
 test_expect_success 'ignore .git/ with incompatible repository version' '
@@ -83,7 +83,6 @@ test_expect_success 'ignore .git/ with incompatible repository version' '
 test_expect_failure 'ignore .git/ with invalid repository version' '
 	test_with_config "[core]repositoryformatversion = invalid"
 '
-
 
 test_expect_failure 'ignore .git/ with invalid config' '
 	test_with_config "["

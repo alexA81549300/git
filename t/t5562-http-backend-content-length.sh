@@ -7,43 +7,41 @@ test_description='test git-http-backend respects CONTENT_LENGTH'
 test_lazy_prereq GZIP 'gzip --version'
 
 verify_http_result() {
-	# some fatal errors still produce status 200
-	# so check if there is the error message
-	if grep 'fatal:' act.err.$test_count
-	then
-		return 1
-	fi
+  # some fatal errors still produce status 200
+  # so check if there is the error message
+  if grep 'fatal:' act.err.$test_count; then
+    return 1
+  fi
 
-	if ! grep "Status" act.out.$test_count >act
-	then
-		printf "Status: 200 OK\r\n" >act
-	fi
-	printf "Status: $1\r\n" >exp &&
-	test_cmp exp act
+  if ! grep "Status" act.out.$test_count >act; then
+    printf "Status: 200 OK\r\n" >act
+  fi
+  printf "Status: $1\r\n" >exp \
+    && test_cmp exp act
 }
 
 test_http_env() {
-	handler_type="$1"
-	request_body="$2"
-	shift
-	env \
-		CONTENT_TYPE="application/x-git-$handler_type-pack-request" \
-		QUERY_STRING="/repo.git/git-$handler_type-pack" \
-		PATH_TRANSLATED="$PWD/.git/git-$handler_type-pack" \
-		GIT_HTTP_EXPORT_ALL=TRUE \
-		REQUEST_METHOD=POST \
-		"$PERL_PATH" \
-		"$TEST_DIRECTORY"/t5562/invoke-with-content-length.pl \
-		    "$request_body" git http-backend >act.out.$test_count 2>act.err.$test_count
+  handler_type="$1"
+  request_body="$2"
+  shift
+  env \
+    CONTENT_TYPE="application/x-git-$handler_type-pack-request" \
+    QUERY_STRING="/repo.git/git-$handler_type-pack" \
+    PATH_TRANSLATED="$PWD/.git/git-$handler_type-pack" \
+    GIT_HTTP_EXPORT_ALL=TRUE \
+    REQUEST_METHOD=POST \
+    "$PERL_PATH" \
+    "$TEST_DIRECTORY"/t5562/invoke-with-content-length.pl \
+    "$request_body" git http-backend >act.out.$test_count 2>act.err.$test_count
 }
 
 ssize_b100dots() {
-	# hardcoded ((size_t) SSIZE_MAX) + 1
-	case "$(build_option sizeof-size_t)" in
-	8) echo 9223372036854775808;;
-	4) echo 2147483648;;
-	*) die "Unexpected ssize_t size: $(build_option sizeof-size_t)";;
-	esac
+  # hardcoded ((size_t) SSIZE_MAX) + 1
+  case "$(build_option sizeof-size_t)" in
+    8) echo 9223372036854775808 ;;
+    4) echo 2147483648 ;;
+    *) die "Unexpected ssize_t size: $(build_option sizeof-size_t)" ;;
+  esac
 }
 
 test_expect_success 'setup' '

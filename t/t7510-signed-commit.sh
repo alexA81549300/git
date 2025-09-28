@@ -358,7 +358,6 @@ test_expect_success GPG 'show double signature with custom format' '
 	test_cmp expect actual
 '
 
-
 # NEEDSWORK: This test relies on the test_tick commit/author dates from the first
 # 'create signed commits' test even though it creates its own
 test_expect_success GPG 'verify-commit verifies multiply signed commits' '

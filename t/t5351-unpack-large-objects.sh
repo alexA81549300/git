@@ -7,10 +7,10 @@ test_description='git unpack-objects with large objects'
 
 . ./test-lib.sh
 
-prepare_dest () {
-	test_when_finished "rm -rf dest.git" &&
-	git init --bare dest.git &&
-	git -C dest.git config core.bigFileThreshold "$1"
+prepare_dest() {
+  test_when_finished "rm -rf dest.git" \
+    && git init --bare dest.git \
+    && git -C dest.git config core.bigFileThreshold "$1"
 }
 
 test_expect_success "create large objects (1.5 MB) and PACK" '
@@ -48,19 +48,18 @@ test_expect_success 'unpack big object in stream' '
 	test_dir_is_empty dest.git/objects/pack
 '
 
-check_fsync_events () {
-	local trace="$1" &&
-	shift &&
-
-	cat >expect &&
-	sed -n \
-		-e '/^{"event":"counter",.*"category":"fsync",/ {
+check_fsync_events() {
+  local trace="$1" \
+    && shift \
+    && cat >expect \
+    && sed -n \
+      -e '/^{"event":"counter",.*"category":"fsync",/ {
 			s/.*"category":"fsync",//;
 			s/}$//;
 			p;
 		}' \
-		<"$trace" >actual &&
-	test_cmp expect actual
+      <"$trace" >actual \
+    && test_cmp expect actual
 }
 
 BATCH_CONFIGURATION='-c core.fsync=loose-object -c core.fsyncmethod=batch'

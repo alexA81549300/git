@@ -5,10 +5,9 @@ test_description='test local clone with ambiguous transport'
 . ./test-lib.sh
 . "$TEST_DIRECTORY/lib-httpd.sh"
 
-if ! test_have_prereq SYMLINKS
-then
-	skip_all='skipping test, symlink support unavailable'
-	test_done
+if ! test_have_prereq SYMLINKS; then
+  skip_all='skipping test, symlink support unavailable'
+  test_done
 fi
 
 start_httpd

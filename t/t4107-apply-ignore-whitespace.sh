@@ -10,7 +10,7 @@ test_description='git-apply --ignore-whitespace.'
 # This primes main.c file that indents without using HT at all.
 # Various patches with HT and other spaces are attempted in the test.
 
-cat > patch1.patch <<\EOF
+cat >patch1.patch <<\EOF
 diff --git a/main.c b/main.c
 new file mode 100644
 --- /dev/null
@@ -47,7 +47,7 @@ EOF
 
 # This patch will fail unless whitespace differences are being ignored
 
-sed -e 's/Z/ /g' > patch2.patch <<\EOF
+sed -e 's/Z/ /g' >patch2.patch <<\EOF
 diff --git a/main.c b/main.c
 --- a/main.c
 +++ b/main.c
@@ -67,7 +67,7 @@ EOF
 # improved by creating a line that has the same hash with and without
 # the final string.
 
-sed -e 's/Z/ /g' > patch3.patch <<\EOF
+sed -e 's/Z/ /g' >patch3.patch <<\EOF
 diff --git a/main.c b/main.c
 --- a/main.c
 +++ b/main.c
@@ -81,7 +81,7 @@ EOF
 # This patch will fail even if whitespace differences are being ignored,
 # because of the missing EOL at EOF.
 
-sed -e 's/Z/ /g' > patch4.patch <<\EOF
+sed -e 's/Z/ /g' >patch4.patch <<\EOF
 diff --git a/main.c b/main.c
 --- a/main.c
 +++ b/main.c
@@ -93,7 +93,7 @@ EOF
 
 # This patch will fail unless whitespace differences are being ignored.
 
-sed -e 's/Z/ /g' > patch5.patch <<\EOF
+sed -e 's/Z/ /g' >patch5.patch <<\EOF
 diff --git a/main.c b/main.c
 --- a/main.c
 +++ b/main.c
@@ -106,7 +106,7 @@ EOF
 # And this is how the final output should be.  Patches introduce
 # HTs but the original SP indents are mostly kept.
 
-sed -e 's/T/	/g' > main.c.final <<\EOF
+sed -e 's/T/	/g' >main.c.final <<\EOF
 #include <stdio.h>
 
 void print_int(int num);

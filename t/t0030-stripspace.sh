@@ -12,8 +12,8 @@ s40='                                        '
 sss="$s40$s40$s40$s40$s40$s40$s40$s40$s40$s40" # 400
 ttt="$t40$t40$t40$t40$t40$t40$t40$t40$t40$t40" # 400
 
-printf_git_stripspace () {
-    printf "$1" | git stripspace
+printf_git_stripspace() {
+  printf "$1" | git stripspace
 }
 
 test_expect_success 'long lines without spaces should be unchanged' '

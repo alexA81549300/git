@@ -12,10 +12,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . "$TEST_DIRECTORY"/t5411/common-functions.sh
 
-setup_upstream_and_workbench () {
-	# Refs of upstream : main(A)
-	# Refs of workbench: main(A)  tags/v123
-	test_expect_success "setup upstream and workbench" '
+setup_upstream_and_workbench() {
+  # Refs of upstream : main(A)
+  # Refs of workbench: main(A)  tags/v123
+  test_expect_success "setup upstream and workbench" '
 		rm -rf upstream.git &&
 		rm -rf workbench &&
 		git init --bare upstream.git &&
@@ -60,31 +60,29 @@ setup_upstream_and_workbench () {
 }
 
 run_proc_receive_hook_test() {
-	case $1 in
-	http)
-		PROTOCOL="HTTP protocol"
-		URL_PREFIX="http://.*"
-		;;
-	local)
-		PROTOCOL="builtin protocol"
-		URL_PREFIX="\.\."
-		;;
-	esac
+  case $1 in
+    http)
+      PROTOCOL="HTTP protocol"
+      URL_PREFIX="http://.*"
+      ;;
+    local)
+      PROTOCOL="builtin protocol"
+      URL_PREFIX="\.\."
+      ;;
+  esac
 
-	# Include test cases for both file and HTTP protocol
-	for t in  "$TEST_DIRECTORY"/t5411/test-*.sh
-	do
-		. "$t"
-	done
+  # Include test cases for both file and HTTP protocol
+  for t in "$TEST_DIRECTORY"/t5411/test-*.sh; do
+    . "$t"
+  done
 }
 
 # Initialize the upstream repository and local workbench.
 setup_upstream_and_workbench
 
 # Load test cases that only need to be executed once.
-for t in  "$TEST_DIRECTORY"/t5411/once-*.sh
-do
-	. "$t"
+for t in "$TEST_DIRECTORY"/t5411/once-*.sh; do
+  . "$t"
 done
 
 # Initialize the upstream repository and local workbench.

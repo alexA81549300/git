@@ -16,23 +16,20 @@ e.g. GIT_PERF_4221_LOG_OPTS=' -i'. Some options to try:
 test_perf_large_repo
 test_checkout_worktree
 
-for pattern in 'int' 'uncommon' 'æ'
-do
-	for engine in fixed basic extended perl
-	do
-		if test $engine = "perl" && ! test_have_prereq PCRE
-		then
-			prereq="PCRE"
-		else
-			prereq=""
-		fi
-		test_perf "$engine log$GIT_PERF_4221_LOG_OPTS --grep='$pattern'" \
-			--prereq "$prereq" "
+for pattern in 'int' 'uncommon' 'æ'; do
+  for engine in fixed basic extended perl; do
+    if test $engine = "perl" && ! test_have_prereq PCRE; then
+      prereq="PCRE"
+    else
+      prereq=""
+    fi
+    test_perf "$engine log$GIT_PERF_4221_LOG_OPTS --grep='$pattern'" \
+      --prereq "$prereq" "
 			git -c grep.patternType=$engine log --pretty=format:%h$GIT_PERF_4221_LOG_OPTS --grep='$pattern' >'out.$engine' || :
 		"
-	done
+  done
 
-	test_expect_success "assert that all engines found the same for$GIT_PERF_4221_LOG_OPTS '$pattern'" '
+  test_expect_success "assert that all engines found the same for$GIT_PERF_4221_LOG_OPTS '$pattern'" '
 		test_cmp out.fixed out.basic &&
 		test_cmp out.fixed out.extended &&
 		if test_have_prereq PCRE

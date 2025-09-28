@@ -9,7 +9,6 @@ This test runs gitweb (git web interface) as a CGI script from the
 commandline, and checks that it returns the expected HTTP status
 code and message.'
 
-
 GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME=main
 export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
@@ -29,14 +28,13 @@ test_expect_success 'setup' "
 	test_commit 'SnapshotTests' 'i can has snapshot'
 "
 
-
 cat >>gitweb_config.perl <<\EOF
 $feature{'snapshot'}{'override'} = 0;
 EOF
 
 test_expect_success \
-    'snapshots: tgz only default format enabled' \
-    'gitweb_run "p=.git;a=snapshot;h=HEAD;sf=tgz" &&
+  'snapshots: tgz only default format enabled' \
+  'gitweb_run "p=.git;a=snapshot;h=HEAD;sf=tgz" &&
     grep "Status: 200 OK" gitweb.output &&
     gitweb_run "p=.git;a=snapshot;h=HEAD;sf=tbz2" &&
     grep "403 - Unsupported snapshot format" gitweb.output &&
@@ -45,14 +43,13 @@ test_expect_success \
     gitweb_run "p=.git;a=snapshot;h=HEAD;sf=zip" &&
     grep "403 - Unsupported snapshot format" gitweb.output'
 
-
 cat >>gitweb_config.perl <<\EOF
 $feature{'snapshot'}{'default'} = ['tgz','tbz2','txz','zip'];
 EOF
 
 test_expect_success \
-    'snapshots: all enabled in default, use default disabled value' \
-    'gitweb_run "p=.git;a=snapshot;h=HEAD;sf=tgz" &&
+  'snapshots: all enabled in default, use default disabled value' \
+  'gitweb_run "p=.git;a=snapshot;h=HEAD;sf=tgz" &&
     grep "Status: 200 OK" gitweb.output &&
     gitweb_run "p=.git;a=snapshot;h=HEAD;sf=tbz2" &&
     grep "Status: 200 OK" gitweb.output &&
@@ -61,28 +58,25 @@ test_expect_success \
     gitweb_run "p=.git;a=snapshot;h=HEAD;sf=zip" &&
     grep "Status: 200 OK" gitweb.output'
 
-
 cat >>gitweb_config.perl <<\EOF
 $known_snapshot_formats{'zip'}{'disabled'} = 1;
 EOF
 
 test_expect_success \
-    'snapshots: zip explicitly disabled' \
-    'gitweb_run "p=.git;a=snapshot;h=HEAD;sf=zip" &&
+  'snapshots: zip explicitly disabled' \
+  'gitweb_run "p=.git;a=snapshot;h=HEAD;sf=zip" &&
     grep "403 - Snapshot format not allowed" gitweb.output'
 test_debug 'cat gitweb.output'
-
 
 cat >>gitweb_config.perl <<\EOF
 $known_snapshot_formats{'tgz'}{'disabled'} = 0;
 EOF
 
 test_expect_success \
-    'snapshots: tgz explicitly enabled' \
-    'gitweb_run "p=.git;a=snapshot;h=HEAD;sf=tgz" &&
+  'snapshots: tgz explicitly enabled' \
+  'gitweb_run "p=.git;a=snapshot;h=HEAD;sf=tgz" &&
     grep "Status: 200 OK" gitweb.output'
 test_debug 'cat gitweb.headers'
-
 
 # ----------------------------------------------------------------------
 # snapshot hash ids
@@ -205,7 +199,6 @@ test_debug 'cat gitweb.headers'
 cat >>gitweb_config.perl <<\EOF
 our $maxload = undef;
 EOF
-
 
 # ----------------------------------------------------------------------
 # invalid arguments

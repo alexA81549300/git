@@ -181,12 +181,10 @@ test_expect_success 'using global config, perf stream, return code 0' '
 # The timer "test/test2" should emit per-thread "th_timer" events and a
 # global summary "timer" event.
 
-have_timer_event () {
-	thread=$1 event=$2 category=$3 name=$4 intervals=$5 file=$6 &&
-
-	pattern="d0|${thread}|${event}||||${category}|name:${name} intervals:${intervals}" &&
-
-	grep "${pattern}" ${file}
+have_timer_event() {
+  thread=$1 event=$2 category=$3 name=$4 intervals=$5 file=$6 \
+    && pattern="d0|${thread}|${event}||||${category}|name:${name} intervals:${intervals}" \
+    && grep "${pattern}" ${file}
 }
 
 test_expect_success 'stopwatch timer test/test1' '
@@ -227,12 +225,10 @@ test_expect_success PTHREADS 'stopwatch timer test/test2' '
 # The counter "test/test2" could emit per-thread "th_counter" events and a
 # global summary "counter" event.
 
-have_counter_event () {
-	thread=$1 event=$2 category=$3 name=$4 value=$5 file=$6 &&
-
-	pattern="d0|${thread}|${event}||||${category}|name:${name} value:${value}" &&
-
-	grep "${pattern}" ${file}
+have_counter_event() {
+  thread=$1 event=$2 category=$3 name=$4 value=$5 file=$6 \
+    && pattern="d0|${thread}|${event}||||${category}|name:${name} value:${value}" \
+    && grep "${pattern}" ${file}
 }
 
 test_expect_success 'global counter test/test1' '
@@ -289,24 +285,20 @@ test_expect_success 'unsafe URLs are redacted by default' '
 # Confirm that the requested command produces a "cmd_name" and a
 # set of "def_param" events.
 #
-try_simple () {
-	test_when_finished "rm prop.perf actual" &&
-
-	cmd=$1 &&
-	cmd_name=$2 &&
-
-	test_config_global "trace2.configParams" "cfg.prop.*" &&
-	test_config_global "trace2.envvars" "ENV_PROP_FOO,ENV_PROP_BAR" &&
-
-	test_config_global "cfg.prop.foo" "red" &&
-
-	ENV_PROP_FOO=blue \
-		GIT_TRACE2_PERF="$(pwd)/prop.perf" \
-			$cmd &&
-	perl "$TEST_DIRECTORY/t0211/scrub_perf.perl" <prop.perf >actual &&
-	grep "d0|main|cmd_name|.*|$cmd_name" actual &&
-	grep "d0|main|def_param|.*|cfg.prop.foo:red" actual &&
-	grep "d0|main|def_param|.*|ENV_PROP_FOO:blue" actual
+try_simple() {
+  test_when_finished "rm prop.perf actual" \
+    && cmd=$1 \
+    && cmd_name=$2 \
+    && test_config_global "trace2.configParams" "cfg.prop.*" \
+    && test_config_global "trace2.envvars" "ENV_PROP_FOO,ENV_PROP_BAR" \
+    && test_config_global "cfg.prop.foo" "red" \
+    && ENV_PROP_FOO=blue \
+      GIT_TRACE2_PERF="$(pwd)/prop.perf" \
+      $cmd \
+    && perl "$TEST_DIRECTORY/t0211/scrub_perf.perl" <prop.perf >actual \
+    && grep "d0|main|cmd_name|.*|$cmd_name" actual \
+    && grep "d0|main|def_param|.*|cfg.prop.foo:red" actual \
+    && grep "d0|main|def_param|.*|ENV_PROP_FOO:blue" actual
 }
 
 # Representative mainstream builtin Git command dispatched
@@ -337,7 +329,7 @@ test_expect_success 'expect def_params for query command' '
 # events from both layers.
 #
 test_expect_success LIBCURL \
-		'expect def_params for remote-curl and _run_dashed_' '
+  'expect def_params for remote-curl and _run_dashed_' '
 	test_when_finished "rm prop.perf actual" &&
 
 	test_config_global "trace2.configParams" "cfg.prop.*" &&
@@ -367,7 +359,7 @@ test_expect_success LIBCURL \
 # def_param events from both layers.
 #
 test_expect_success LIBCURL \
-		'expect def_params for http-fetch and _run_dashed_' '
+  'expect def_params for http-fetch and _run_dashed_' '
 	test_when_finished "rm prop.perf actual" &&
 
 	test_config_global "trace2.configParams" "cfg.prop.*" &&

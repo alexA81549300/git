@@ -11,24 +11,22 @@ test_lazy_prereq XMLLINT '
 	xmllint --version
 '
 
-test_xmllint () {
-	if test_have_prereq XMLLINT
-	then
-		xmllint --noout "$@"
-	else
-		true
-	fi
+test_xmllint() {
+  if test_have_prereq XMLLINT; then
+    xmllint --noout "$@"
+  else
+    true
+  fi
 }
 
 test_lazy_prereq SYSTEMD_ANALYZE '
 	systemd-analyze verify /lib/systemd/system/basic.target
 '
 
-test_systemd_analyze_verify () {
-	if test_have_prereq SYSTEMD_ANALYZE
-	then
-		systemd-analyze verify "$@"
-	fi
+test_systemd_analyze_verify() {
+  if test_have_prereq SYSTEMD_ANALYZE; then
+    systemd-analyze verify "$@"
+  fi
 }
 
 test_expect_success 'help text' '
@@ -67,16 +65,15 @@ test_expect_success 'maintenance.auto config option' '
 	test_subcommand ! git maintenance run --auto --quiet --detach <false
 '
 
-for cfg in maintenance.autoDetach gc.autoDetach
-do
-	test_expect_success "$cfg=true config option" '
+for cfg in maintenance.autoDetach gc.autoDetach; do
+  test_expect_success "$cfg=true config option" '
 		test_when_finished "rm -f trace" &&
 		test_config $cfg true &&
 		GIT_TRACE2_EVENT="$(pwd)/trace" git commit --quiet --allow-empty -m 1 &&
 		test_subcommand git maintenance run --auto --quiet --detach <trace
 	'
 
-	test_expect_success "$cfg=false config option" '
+  test_expect_success "$cfg=false config option" '
 		test_when_finished "rm -f trace" &&
 		test_config $cfg false &&
 		GIT_TRACE2_EVENT="$(pwd)/trace" git commit --quiet --allow-empty -m 1 &&
@@ -389,34 +386,27 @@ test_expect_success EXPENSIVE 'incremental-repack 2g limit' '
 		 --no-progress --batch-size=2147483647 <run-2g.txt
 '
 
-run_incremental_repack_and_verify () {
-	test_commit A &&
-	git repack -adk &&
-	git multi-pack-index write &&
-	GIT_TRACE2_EVENT="$(pwd)/midx-init.txt" git \
-		-c maintenance.incremental-repack.auto=1 \
-		maintenance run --auto --task=incremental-repack 2>/dev/null &&
-	test_subcommand ! git multi-pack-index write --no-progress <midx-init.txt &&
-	test_commit B &&
-	git pack-objects --revs .git/objects/pack/pack <<-\EOF &&
+run_incremental_repack_and_verify() {
+  test_commit A \
+    && git repack -adk \
+    && git multi-pack-index write \
+    && GIT_TRACE2_EVENT="$(pwd)/midx-init.txt" git \
+      -c maintenance.incremental-repack.auto=1 \
+      maintenance run --auto --task=incremental-repack 2>/dev/null \
+    && test_subcommand ! git multi-pack-index write --no-progress <midx-init.txt \
+    && test_commit B \
+    && git pack-objects --revs .git/objects/pack/pack <<-\EOF && GIT_TRACE2_EVENT=$(pwd)/trace-A git \
+      -c maintenance.incremental-repack.auto=2 \
+      maintenance run --auto --task=incremental-repack 2>/dev/null && test_subcommand ! git multi-pack-index write --no-progress <trace-A && test_commit C && git pack-objects --revs .git/objects/pack/pack <<-\EOF && GIT_TRACE2_EVENT=$(pwd)/trace-B git \
+      -c maintenance.incremental-repack.auto=2 \
+      maintenance run --auto --task=incremental-repack 2>/dev/null && test_subcommand git multi-pack-index write --no-progress <trace-B
 	HEAD
 	^HEAD~1
 	EOF
-	GIT_TRACE2_EVENT=$(pwd)/trace-A git \
-		-c maintenance.incremental-repack.auto=2 \
-		maintenance run --auto --task=incremental-repack 2>/dev/null &&
-	test_subcommand ! git multi-pack-index write --no-progress <trace-A &&
-	test_commit C &&
-	git pack-objects --revs .git/objects/pack/pack <<-\EOF &&
 	HEAD
 	^HEAD~1
 	EOF
-	GIT_TRACE2_EVENT=$(pwd)/trace-B git \
-		-c maintenance.incremental-repack.auto=2 \
-		maintenance run --auto --task=incremental-repack 2>/dev/null &&
-	test_subcommand git multi-pack-index write --no-progress <trace-B
 }
-
 test_expect_success 'maintenance.incremental-repack.auto' '
 	rm -rf incremental-repack-true &&
 	git init incremental-repack-true &&

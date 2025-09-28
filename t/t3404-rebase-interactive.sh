@@ -933,7 +933,6 @@ test_expect_success 'running "git rebase -ix git show HEAD"' '
 	test_cmp expected actual
 '
 
-
 test_expect_success 'rebase -ix with several <CMD>' '
 	git reset --hard execute &&
 	(
@@ -1237,26 +1236,33 @@ test_expect_success 'short commit ID setup' '
 	)
 '
 
-if test -n "$GIT_TEST_FIND_COLLIDER"
-then
-	author="$(unset test_tick; test_tick; git var GIT_AUTHOR_IDENT)"
-	committer="$(unset test_tick; test_tick; git var GIT_COMMITTER_IDENT)"
-	blob="$(git rev-parse collide2:collide)"
-	from="$(git rev-parse collide1^0)"
-	repl="commit refs/heads/collider-&\\n"
-	repl="${repl}author $author\\ncommitter $committer\\n"
-	repl="${repl}data <<EOF\\ncollide2 &\\nEOF\\n"
-	repl="${repl}from $from\\nM 100644 $blob collide\\n"
-	test_seq 1 32768 | sed "s|.*|$repl|" >script &&
-	git fast-import <script &&
-	git pack-refs &&
-	git for-each-ref >refs &&
-	grep "^$(test_oid t3404_collision)" <refs >matches &&
-	cat matches &&
-	test_line_count -gt 2 matches || {
-		echo "Could not find a collider" >&2
-		exit 1
-	}
+if test -n "$GIT_TEST_FIND_COLLIDER"; then
+  author="$(
+    unset test_tick
+    test_tick
+    git var GIT_AUTHOR_IDENT
+  )"
+  committer="$(
+    unset test_tick
+    test_tick
+    git var GIT_COMMITTER_IDENT
+  )"
+  blob="$(git rev-parse collide2:collide)"
+  from="$(git rev-parse collide1^0)"
+  repl="commit refs/heads/collider-&\\n"
+  repl="${repl}author $author\\ncommitter $committer\\n"
+  repl="${repl}data <<EOF\\ncollide2 &\\nEOF\\n"
+  repl="${repl}from $from\\nM 100644 $blob collide\\n"
+  test_seq 1 32768 | sed "s|.*|$repl|" >script \
+    && git fast-import <script \
+    && git pack-refs \
+    && git for-each-ref >refs \
+    && grep "^$(test_oid t3404_collision)" <refs >matches \
+    && cat matches \
+    && test_line_count -gt 2 matches || {
+    echo "Could not find a collider" >&2
+    exit 1
+  }
 fi
 
 test_expect_success 'short commit ID collide' '
@@ -1417,13 +1423,13 @@ test_expect_success 'rebase --continue removes CHERRY_PICK_HEAD' '
 	test ! -f .git/CHERRY_PICK_HEAD
 '
 
-rebase_setup_and_clean () {
-	test_when_finished "
+rebase_setup_and_clean() {
+  test_when_finished "
 		git checkout primary &&
 		test_might_fail git branch -D $1 &&
 		test_might_fail git rebase --abort
-	" &&
-	git checkout -b $1 ${2:-primary}
+	" \
+    && git checkout -b $1 ${2:-primary}
 }
 
 test_expect_success 'drop' '

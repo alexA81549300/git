@@ -252,3 +252,14 @@ Release/
 /contrib/buildsystems/out
 /contrib/libgit-rs/target
 /contrib/libgit-sys/target
+# Hermes guard
+backups/
+logs/
+*.tar
+*.tar.*
+*.zip
+*.zst
+*.gz
+*.tmp
+*.swp
+*.swo

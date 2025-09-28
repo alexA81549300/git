@@ -12,19 +12,19 @@ pwd=$(pwd)
 
 # Creates a clean test environment in "pwd" by copying the repo setup
 # from test_dirs.
-reset_test () {
-	rm -fr super &&
-	rm -fr sub-sub-upstream &&
-	rm -fr sub-upstream &&
-	cp -r test_dirs/* .
+reset_test() {
+  rm -fr super \
+    && rm -fr sub-sub-upstream \
+    && rm -fr sub-upstream \
+    && cp -r test_dirs/* .
 }
 
 # Tests that the expected branch does not exist
-test_no_branch () {
-	DIR=$1 &&
-	BRANCH_NAME=$2 &&
-	test_must_fail git -C "$DIR" rev-parse "$BRANCH_NAME" 2>err &&
-	grep "ambiguous argument .$BRANCH_NAME." err
+test_no_branch() {
+  DIR=$1 \
+    && BRANCH_NAME=$2 \
+    && test_must_fail git -C "$DIR" rev-parse "$BRANCH_NAME" 2>err \
+    && grep "ambiguous argument .$BRANCH_NAME." err
 }
 
 test_expect_success 'setup superproject and submodule' '
@@ -221,9 +221,9 @@ test_expect_success 'should not set up unnecessary tracking of local branches' '
 	)
 '
 
-reset_remote_test () {
-	rm -fr super-clone &&
-	reset_test
+reset_remote_test() {
+  rm -fr super-clone \
+    && reset_test
 }
 
 test_expect_success 'setup tests with remotes' '

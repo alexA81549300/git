@@ -23,14 +23,14 @@ test_expect_success 'setup' '
 	touch .git/objects/pack/pack-$KEPT_PACK.keep
 '
 
-rev_list_objects () {
-	git rev-list "$@" >out &&
-	sort out
+rev_list_objects() {
+  git rev-list "$@" >out \
+    && sort out
 }
 
-idx_objects () {
-	git show-index <$1 >expect-idx &&
-	cut -d" " -f2 <expect-idx | sort
+idx_objects() {
+  git show-index <$1 >expect-idx \
+    && cut -d" " -f2 <expect-idx | sort
 }
 
 test_expect_success '--no-kept-objects excludes trees and blobs in .keep packs' '

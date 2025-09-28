@@ -47,50 +47,46 @@ test_lazy_prereq WATCHMAN '
 	command -v watchman
 '
 
-if test_have_prereq WATCHMAN
-then
-	# Convert unix style paths to escaped Windows style paths for Watchman
-	case "$(uname -s)" in
-	MSYS_NT*)
-	  GIT_WORK_TREE="$(cygpath -aw "$PWD" | sed 's,\\,/,g')"
-	  ;;
-	*)
-	  GIT_WORK_TREE="$PWD"
-	  ;;
-	esac
+if test_have_prereq WATCHMAN; then
+  # Convert unix style paths to escaped Windows style paths for Watchman
+  case "$(uname -s)" in
+    MSYS_NT*)
+      GIT_WORK_TREE="$(cygpath -aw "$PWD" | sed 's,\\,/,g')"
+      ;;
+    *)
+      GIT_WORK_TREE="$PWD"
+      ;;
+  esac
 fi
 
-trace_start () {
-	if test -n "$GIT_PERF_7519_TRACE"
-	then
-		name="$1"
-		TEST_TRACE_DIR="$TEST_OUTPUT_DIRECTORY/test-trace/p7519/"
-		echo "Writing trace logging to $TEST_TRACE_DIR"
+trace_start() {
+  if test -n "$GIT_PERF_7519_TRACE"; then
+    name="$1"
+    TEST_TRACE_DIR="$TEST_OUTPUT_DIRECTORY/test-trace/p7519/"
+    echo "Writing trace logging to $TEST_TRACE_DIR"
 
-		mkdir -p "$TEST_TRACE_DIR"
+    mkdir -p "$TEST_TRACE_DIR"
 
-		# Start Trace2 logging and any other GIT_TRACE_* logs that you
-		# want for this named test case.
+    # Start Trace2 logging and any other GIT_TRACE_* logs that you
+    # want for this named test case.
 
-		GIT_TRACE2_PERF="$TEST_TRACE_DIR/$name.trace2perf"
-		export GIT_TRACE2_PERF
+    GIT_TRACE2_PERF="$TEST_TRACE_DIR/$name.trace2perf"
+    export GIT_TRACE2_PERF
 
-		>"$GIT_TRACE2_PERF"
-	fi
+    >"$GIT_TRACE2_PERF"
+  fi
 }
 
-trace_stop () {
-	if test -n "$GIT_PERF_7519_TRACE"
-	then
-		unset GIT_TRACE2_PERF
-	fi
+trace_stop() {
+  if test -n "$GIT_PERF_7519_TRACE"; then
+    unset GIT_TRACE2_PERF
+  fi
 }
 
-touch_files () {
-	n=$1 &&
-	d="$n"_files &&
-
-	(cd $d && test_seq 1 $n | xargs touch )
+touch_files() {
+  n=$1 \
+    && d="$n"_files \
+    && (cd $d && test_seq 1 $n | xargs touch)
 }
 
 test_expect_success "one time repo setup" '
@@ -129,81 +125,75 @@ test_expect_success "one time repo setup" '
 	fi
 '
 
-setup_for_fsmonitor_hook () {
-	# set INTEGRATION_SCRIPT depending on the environment
-	if test -n "$INTEGRATION_PATH"
-	then
-		INTEGRATION_SCRIPT="$INTEGRATION_PATH"
-	else
-		#
-		# Choose integration script based on existence of Watchman.
-		# Fall back to an empty integration script.
-		#
-		mkdir .git/hooks &&
-		if test_have_prereq WATCHMAN
-		then
-			INTEGRATION_SCRIPT=".git/hooks/fsmonitor-watchman" &&
-			cp "$TEST_DIRECTORY/../templates/hooks--fsmonitor-watchman.sample" "$INTEGRATION_SCRIPT"
-		else
-			INTEGRATION_SCRIPT=".git/hooks/fsmonitor-empty" &&
-			write_script "$INTEGRATION_SCRIPT"<<-\EOF
+setup_for_fsmonitor_hook() {
+  # set INTEGRATION_SCRIPT depending on the environment
+  if test -n "$INTEGRATION_PATH"; then
+    INTEGRATION_SCRIPT="$INTEGRATION_PATH"
+  else
+    #
+    # Choose integration script based on existence of Watchman.
+    # Fall back to an empty integration script.
+    #
+    mkdir .git/hooks \
+      && if test_have_prereq WATCHMAN; then
+        INTEGRATION_SCRIPT=".git/hooks/fsmonitor-watchman" \
+          && cp "$TEST_DIRECTORY/../templates/hooks--fsmonitor-watchman.sample" "$INTEGRATION_SCRIPT"
+      else
+        INTEGRATION_SCRIPT=".git/hooks/fsmonitor-empty" \
+          && write_script "$INTEGRATION_SCRIPT" <<-\EOF
 			EOF
-		fi
-	fi &&
-
-	git config core.fsmonitor "$INTEGRATION_SCRIPT" &&
-	git update-index --fsmonitor 2>error &&
-	if test_have_prereq WATCHMAN
-	then
-		test_must_be_empty error  # ensure no silent error
-	else
-		grep "Empty last update token" error
-	fi
+      fi
+  fi \
+    && git config core.fsmonitor "$INTEGRATION_SCRIPT" \
+    && git update-index --fsmonitor 2>error \
+    && if test_have_prereq WATCHMAN; then
+      test_must_be_empty error # ensure no silent error
+    else
+      grep "Empty last update token" error
+    fi
 }
 
-test_perf_w_drop_caches () {
-	if test -n "$GIT_PERF_7519_DROP_CACHE"; then
-		test_perf "$1" --setup "test-tool drop-caches" "$2"
-	else
-		test_perf "$@"
-	fi
+test_perf_w_drop_caches() {
+  if test -n "$GIT_PERF_7519_DROP_CACHE"; then
+    test_perf "$1" --setup "test-tool drop-caches" "$2"
+  else
+    test_perf "$@"
+  fi
 }
 
-test_fsmonitor_suite () {
-	if test -n "$USE_FSMONITOR_DAEMON"
-	then
-		DESC="builtin fsmonitor--daemon"
-	elif test -n "$INTEGRATION_SCRIPT"
-	then
-		DESC="fsmonitor=$(basename $INTEGRATION_SCRIPT)"
-	else
-		DESC="fsmonitor=disabled"
-	fi
+test_fsmonitor_suite() {
+  if test -n "$USE_FSMONITOR_DAEMON"; then
+    DESC="builtin fsmonitor--daemon"
+  elif test -n "$INTEGRATION_SCRIPT"; then
+    DESC="fsmonitor=$(basename $INTEGRATION_SCRIPT)"
+  else
+    DESC="fsmonitor=disabled"
+  fi
 
-	test_expect_success "test_initialization" '
+  test_expect_success "test_initialization" '
 		git reset --hard &&
 		git status  # Warm caches
 	'
 
-	test_perf_w_drop_caches "status ($DESC)" '
+  test_perf_w_drop_caches "status ($DESC)" '
 		git status
 	'
 
-	test_perf_w_drop_caches "status -uno ($DESC)" '
+  test_perf_w_drop_caches "status -uno ($DESC)" '
 		git status -uno
 	'
 
-	test_perf_w_drop_caches "status -uall ($DESC)" '
+  test_perf_w_drop_caches "status -uall ($DESC)" '
 		git status -uall
 	'
 
-	# Update the mtimes on upto 100k files to make status think
-	# that they are dirty.  For simplicity, omit any files with
-	# LFs (i.e. anything that ls-files thinks it needs to dquote)
-	# and any files with whitespace so that they pass thru xargs
-	# properly.
-	#
-	test_perf_w_drop_caches "status (dirty) ($DESC)" '
+  # Update the mtimes on upto 100k files to make status think
+  # that they are dirty.  For simplicity, omit any files with
+  # LFs (i.e. anything that ls-files thinks it needs to dquote)
+  # and any files with whitespace so that they pass thru xargs
+  # properly.
+  #
+  test_perf_w_drop_caches "status (dirty) ($DESC)" '
 		git ls-files | \
 			head -100000 | \
 			grep -v \" | \
@@ -212,35 +202,35 @@ test_fsmonitor_suite () {
 		git status
 	'
 
-	test_perf_w_drop_caches "diff ($DESC)" '
+  test_perf_w_drop_caches "diff ($DESC)" '
 		git diff
 	'
 
-	test_perf_w_drop_caches "diff HEAD ($DESC)" '
+  test_perf_w_drop_caches "diff HEAD ($DESC)" '
 		git diff HEAD
 	'
 
-	test_perf_w_drop_caches "diff -- 0_files ($DESC)" '
+  test_perf_w_drop_caches "diff -- 0_files ($DESC)" '
 		git diff -- 1_file
 	'
 
-	test_perf_w_drop_caches "diff -- 10_files ($DESC)" '
+  test_perf_w_drop_caches "diff -- 10_files ($DESC)" '
 		git diff -- 10_files
 	'
 
-	test_perf_w_drop_caches "diff -- 100_files ($DESC)" '
+  test_perf_w_drop_caches "diff -- 100_files ($DESC)" '
 		git diff -- 100_files
 	'
 
-	test_perf_w_drop_caches "diff -- 1000_files ($DESC)" '
+  test_perf_w_drop_caches "diff -- 1000_files ($DESC)" '
 		git diff -- 1000_files
 	'
 
-	test_perf_w_drop_caches "diff -- 10000_files ($DESC)" '
+  test_perf_w_drop_caches "diff -- 10000_files ($DESC)" '
 		git diff -- 10000_files
 	'
 
-	test_perf_w_drop_caches "add ($DESC)" '
+  test_perf_w_drop_caches "add ($DESC)" '
 		git add  --all
 	'
 }
@@ -252,22 +242,21 @@ test_fsmonitor_suite () {
 
 trace_start fsmonitor-watchman
 if test -n "$GIT_PERF_7519_FSMONITOR"; then
-	for INTEGRATION_PATH in $GIT_PERF_7519_FSMONITOR; do
-		test_expect_success "setup for fsmonitor $INTEGRATION_PATH" 'setup_for_fsmonitor_hook'
-		test_fsmonitor_suite
-	done
+  for INTEGRATION_PATH in $GIT_PERF_7519_FSMONITOR; do
+    test_expect_success "setup for fsmonitor $INTEGRATION_PATH" 'setup_for_fsmonitor_hook'
+    test_fsmonitor_suite
+  done
 else
-	test_expect_success "setup for fsmonitor hook" 'setup_for_fsmonitor_hook'
-	test_fsmonitor_suite
+  test_expect_success "setup for fsmonitor hook" 'setup_for_fsmonitor_hook'
+  test_fsmonitor_suite
 fi
 
-if test_have_prereq WATCHMAN
-then
-	watchman watch-del "$GIT_WORK_TREE" >/dev/null 2>&1 &&
-
-	# Work around Watchman bug on Windows where it holds on to handles
-	# preventing the removal of the trash directory
-	watchman shutdown-server >/dev/null 2>&1
+if test_have_prereq WATCHMAN; then
+  watchman watch-del "$GIT_WORK_TREE" >/dev/null 2>&1 \
+    &&
+    # Work around Watchman bug on Windows where it holds on to handles
+    # preventing the removal of the trash directory
+    watchman shutdown-server >/dev/null 2>&1
 fi
 trace_stop
 
@@ -291,11 +280,10 @@ trace_stop
 # Explicitly start the daemon here and before we start client commands
 # so that we can later add custom tracing.
 #
-if test_have_prereq FSMONITOR_DAEMON
-then
-	USE_FSMONITOR_DAEMON=t
+if test_have_prereq FSMONITOR_DAEMON; then
+  USE_FSMONITOR_DAEMON=t
 
-	test_expect_success "setup for builtin fsmonitor" '
+  test_expect_success "setup for builtin fsmonitor" '
 		trace_start fsmonitor--daemon--server &&
 		git fsmonitor--daemon start &&
 
@@ -305,10 +293,10 @@ then
 		git update-index --fsmonitor
 	'
 
-	test_fsmonitor_suite
+  test_fsmonitor_suite
 
-	git fsmonitor--daemon stop
-	trace_stop
+  git fsmonitor--daemon stop
+  trace_stop
 fi
 
 test_done

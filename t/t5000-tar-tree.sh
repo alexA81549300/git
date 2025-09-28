@@ -41,33 +41,31 @@ test_lazy_prereq TAR_NEEDS_PAX_FALLBACK '
 test_lazy_prereq GZIP 'gzip --version'
 
 get_pax_header() {
-	file=$1
-	header=$2=
+  file=$1
+  header=$2=
 
-	while read len rest
-	do
-		if test "$len" = $(echo "$len $rest" | wc -c)
-		then
-			case "$rest" in
-			$header*)
-				echo "${rest#$header}"
-				;;
-			esac
-		fi
-	done <"$file"
+  while read len rest; do
+    if test "$len" = $(echo "$len $rest" | wc -c); then
+      case "$rest" in
+        $header*)
+          echo "${rest#$header}"
+          ;;
+      esac
+    fi
+  done <"$file"
 }
 
 check_tar() {
-	tarfile=$1.tar
-	listfile=$1.lst
-	dir=$1
-	dir_with_prefix=$dir/$2
+  tarfile=$1.tar
+  listfile=$1.lst
+  dir=$1
+  dir_with_prefix=$dir/$2
 
-	test_expect_success ' extract tar archive' '
+  test_expect_success ' extract tar archive' '
 		(mkdir $dir && cd $dir && "$TAR" xf -) <$tarfile
 	'
 
-	test_expect_success TAR_NEEDS_PAX_FALLBACK ' interpret pax headers' '
+  test_expect_success TAR_NEEDS_PAX_FALLBACK ' interpret pax headers' '
 		(
 			cd $dir &&
 			for header in *.paxheader
@@ -85,32 +83,32 @@ check_tar() {
 		)
 	'
 
-	test_expect_success ' validate filenames' '
+  test_expect_success ' validate filenames' '
 		(cd ${dir_with_prefix}a && find .) | sort >$listfile &&
 		test_cmp a.lst $listfile
 	'
 
-	test_expect_success ' validate file contents' '
+  test_expect_success ' validate file contents' '
 		diff -r a ${dir_with_prefix}a
 	'
 }
 
 check_added() {
-	dir=$1
-	path_in_fs=$2
-	path_in_archive=$3
+  dir=$1
+  path_in_fs=$2
+  path_in_archive=$3
 
-	test_expect_success " validate extra file $path_in_archive" '
+  test_expect_success " validate extra file $path_in_archive" '
 		diff -r $path_in_fs $dir/$path_in_archive
 	'
 }
 
 check_mtime() {
-	dir=$1
-	path_in_archive=$2
-	mtime=$3
+  dir=$1
+  path_in_archive=$2
+  mtime=$3
 
-	test_expect_success " validate mtime of $path_in_archive" '
+  test_expect_success " validate mtime of $path_in_archive" '
 		test-tool chmtime --get $dir/$path_in_archive >actual.mtime &&
 		echo $mtime >expect.mtime &&
 		test_cmp expect.mtime actual.mtime
@@ -166,8 +164,8 @@ test_expect_success 'populate workdir' '
 '
 
 test_expect_success \
-    'add ignored file' \
-    'echo ignore me >a/ignored &&
+  'add ignored file' \
+  'echo ignore me >a/ignored &&
      mkdir .git/info &&
      echo ignored export-ignore >.git/info/attributes'
 
@@ -470,9 +468,9 @@ test_expect_success 'attr pathspec in bare repo' '
 # The output of tar_info is expected to be "<size> <year>", both in decimal. It
 # ignores the return value of tar. We have to do this, because some of our test
 # input is only partial (the real data is 64GB in some cases).
-tar_info () {
-	"$TAR" tvf "$1" |
-	awk '{
+tar_info() {
+  "$TAR" tvf "$1" \
+    | awk '{
 		split($4, date, "-")
 		print $3 " " date[1]
 	}'

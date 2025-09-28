@@ -5,7 +5,7 @@ test_description='CRLF conversion'
 . ./test-lib.sh
 
 has_cr() {
-	tr '\015' Q <"$1" | grep Q >/dev/null
+  tr '\015' Q <"$1" | grep Q >/dev/null
 }
 
 test_expect_success setup '

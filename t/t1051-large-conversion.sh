@@ -5,23 +5,23 @@ test_description='test conversion filters on large files'
 . ./test-lib.sh
 
 set_attr() {
-	test_when_finished 'rm -f .gitattributes' &&
-	echo "* $*" >.gitattributes
+  test_when_finished 'rm -f .gitattributes' \
+    && echo "* $*" >.gitattributes
 }
 
 check_input() {
-	git read-tree --empty &&
-	git add small large &&
-	git cat-file blob :small >small.index &&
-	git cat-file blob :large | head -n 1 >large.index &&
-	test_cmp small.index large.index
+  git read-tree --empty \
+    && git add small large \
+    && git cat-file blob :small >small.index \
+    && git cat-file blob :large | head -n 1 >large.index \
+    && test_cmp small.index large.index
 }
 
 check_output() {
-	rm -f small large &&
-	git checkout small large &&
-	head -n 1 large >large.head &&
-	test_cmp small large.head
+  rm -f small large \
+    && git checkout small large \
+    && head -n 1 large >large.head \
+    && test_cmp small large.head
 }
 
 test_expect_success 'setup input tests' '
@@ -87,7 +87,7 @@ test_expect_success 'ident converts on output' '
 # This smudge filter prepends 5GB of zeros to the file it checks out. This
 # ensures that smudging doesn't mangle large files on 64-bit Windows.
 test_expect_success EXPENSIVE,SIZE_T_IS_64BIT,!LONG_IS_64BIT \
-		'files over 4GB convert on output' '
+  'files over 4GB convert on output' '
 	test_commit test small "a small file" &&
 	small_size=$(test_file_size small) &&
 	test_config filter.makelarge.smudge \
@@ -102,7 +102,7 @@ test_expect_success EXPENSIVE,SIZE_T_IS_64BIT,!LONG_IS_64BIT \
 # This clean filter writes down the size of input it receives. By checking against
 # the actual size, we ensure that cleaning doesn't mangle large files on 64-bit Windows.
 test_expect_success EXPENSIVE,SIZE_T_IS_64BIT,!LONG_IS_64BIT \
-		'files over 4GB convert on input' '
+  'files over 4GB convert on input' '
 	test-tool genzeros $((5*1024*1024*1024)) >big &&
 	test_config filter.checklarge.clean "wc -c >big.size" &&
 	echo "big filter=checklarge" >.gitattributes &&

@@ -24,9 +24,9 @@ test_expect_success 'git merge main' '
     test_must_fail git merge main
 '
 
-clean_branchnames () {
-	# Remove branch names after conflict lines
-	sed 's/^\([<>]\{5,\}\) .*$/\1/'
+clean_branchnames() {
+  # Remove branch names after conflict lines
+  sed 's/^\([<>]\{5,\}\) .*$/\1/'
 }
 
 test_expect_success '-m restores 2-way conflicted+resolved file' '

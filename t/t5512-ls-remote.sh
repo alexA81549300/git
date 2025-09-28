@@ -7,12 +7,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-generate_references () {
-	for ref
-	do
-		oid=$(git rev-parse "$ref") &&
-		printf '%s\t%s\n' "$oid" "$ref" || return 1
-	done
+generate_references() {
+  for ref; do
+    oid=$(git rev-parse "$ref") \
+      && printf '%s\t%s\n' "$oid" "$ref" || return 1
+  done
 }
 
 test_expect_success 'set up fake upload-pack' '
@@ -228,9 +227,8 @@ test_expect_success 'set up some extra tags for ref hiding' '
 	git tag magic/two
 '
 
-for configsection in transfer uploadpack
-do
-	test_expect_success "Hide some refs with $configsection.hiderefs" '
+for configsection in transfer uploadpack; do
+  test_expect_success "Hide some refs with $configsection.hiderefs" '
 		test_config $configsection.hiderefs refs/tags &&
 		git ls-remote . >actual &&
 		test_unconfig $configsection.hiderefs &&
@@ -239,7 +237,7 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "Override hiding of $configsection.hiderefs" '
+  test_expect_success "Override hiding of $configsection.hiderefs" '
 		test_when_finished "test_unconfig $configsection.hiderefs" &&
 		git config --add $configsection.hiderefs refs/tags &&
 		git config --add $configsection.hiderefs "!refs/tags/magic" &&

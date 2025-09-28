@@ -4,28 +4,27 @@ test_description='git status for submodule'
 
 . ./test-lib.sh
 
-test_create_repo_with_commit () {
-	test_create_repo "$1" &&
-	(
-		cd "$1" &&
-		: >bar &&
-		git add bar &&
-		git commit -m " Add bar" &&
-		: >foo &&
-		git add foo &&
-		git commit -m " Add foo"
-	)
+test_create_repo_with_commit() {
+  test_create_repo "$1" \
+    && (
+      cd "$1" \
+        && : >bar \
+        && git add bar \
+        && git commit -m " Add bar" \
+        && : >foo \
+        && git add foo \
+        && git commit -m " Add foo"
+    )
 }
 
-sanitize_output () {
-	sed -e "s/$OID_REGEX/HASH/" -e "s/$OID_REGEX/HASH/" output >output2 &&
-	mv output2 output
+sanitize_output() {
+  sed -e "s/$OID_REGEX/HASH/" -e "s/$OID_REGEX/HASH/" output >output2 \
+    && mv output2 output
 }
 
-sanitize_diff () {
-	sed -e "/^index [0-9a-f,]*\.\.[0-9a-f]*/d" "$1"
+sanitize_diff() {
+  sed -e "/^index [0-9a-f,]*\.\.[0-9a-f]*/d" "$1"
 }
-
 
 test_expect_success 'setup' '
 	test_create_repo_with_commit sub &&

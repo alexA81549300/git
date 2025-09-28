@@ -7,7 +7,7 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 check() {
-	test_expect_${4:-success} "$1 = $3" "
+  test_expect_${4:-success} "$1 = $3" "
 		echo '$3' >expect &&
 		if test '$2' = 'commit'
 		then
@@ -23,13 +23,13 @@ check() {
 }
 
 nonsense() {
-	test_expect_${2:-success} "$1 is nonsensical" "
+  test_expect_${2:-success} "$1 is nonsensical" "
 		test_must_fail git rev-parse --verify '$1'
 	"
 }
 
 fail() {
-	"$@" failure
+  "$@" failure
 }
 
 test_expect_success 'setup' '
@@ -70,8 +70,8 @@ check "@{-1}@{u}@{1}" commit main-one
 check "@" commit new-two
 check "@@{u}" ref refs/heads/upstream-branch
 check "@@/at-test" ref refs/heads/@@/at-test
-test_have_prereq MINGW ||
-check "@/at-test" ref refs/heads/@/at-test
+test_have_prereq MINGW \
+  || check "@/at-test" ref refs/heads/@/at-test
 check "@at-test" ref refs/heads/@at-test
 nonsense "@{u}@{-1}"
 nonsense "@{0}@{0}"

@@ -8,7 +8,7 @@ test_description='Rename interaction with pathspec.
 '
 
 . ./test-lib.sh
-. "$TEST_DIRECTORY"/lib-diff.sh ;# test-lib chdir's into trash
+. "$TEST_DIRECTORY"/lib-diff.sh # test-lib chdir's into trash
 
 test_expect_success 'prepare reference tree' '
 	mkdir path0 path1 &&

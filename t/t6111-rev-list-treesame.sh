@@ -18,13 +18,13 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-note () {
-	git tag "$1"
+note() {
+  git tag "$1"
 }
 
-unnote () {
-	git name-rev --tags --annotate-stdin | \
-	sed -e "s|$OID_REGEX (tags/\([^)]*\))\([ 	]\)|\1\2|g"
+unnote() {
+  git name-rev --tags --annotate-stdin \
+    | sed -e "s|$OID_REGEX (tags/\([^)]*\))\([ 	]\)|\1\2|g"
 }
 
 test_expect_success setup '
@@ -70,29 +70,29 @@ test_expect_success setup '
 	test_commit M file "Parts 1+2"
 '
 
-check_outcome () {
-	outcome=$1
-	shift
+check_outcome() {
+  outcome=$1
+  shift
 
-	case "$1" in
-	*"("*)
-		FMT="%P	%H | %s"
-		munge_actual="
+  case "$1" in
+    *"("*)
+      FMT="%P	%H | %s"
+      munge_actual="
 			s/^\([^	]*\)	\([^ ]*\) .*/(\1)\2/
 			s/ //g
 			s/()//
 		"
-		;;
-	*)
-		FMT="%H | %s"
-		munge_actual="s/^\([^ ]*\) .*/\1/"
-		;;
-	esac &&
-	printf "%s\n" $1 >expect &&
-	shift
+      ;;
+    *)
+      FMT="%H | %s"
+      munge_actual="s/^\([^ ]*\) .*/\1/"
+      ;;
+  esac \
+    && printf "%s\n" $1 >expect \
+    && shift
 
-	param="$*" &&
-	test_expect_$outcome "log $param" '
+  param="$*" \
+    && test_expect_$outcome "log $param" '
 		git log --format="$FMT" $param |
 		unnote >actual &&
 		sed -e "$munge_actual" <actual >check &&
@@ -100,8 +100,8 @@ check_outcome () {
 	'
 }
 
-check_result () {
-	check_outcome success "$@"
+check_result() {
+  check_outcome success "$@"
 }
 
 # Odd merge G drops a change in F. Important that G is listed in all
@@ -176,7 +176,7 @@ check_result 'F' B..F --first-parent -- file
 
 # E...F should be equivalent to E F ^B, and be able to drop D as above.
 check_result 'F' E F ^B -- file # includes D
-check_result 'F' E...F -- file # includes D
+check_result 'F' E...F -- file  # includes D
 
 # Any sort of full history of C..F should show D, as it's the connection to C,
 # and it differs from it.
@@ -192,6 +192,5 @@ check_result 'F D' C..F --ancestry-path --parents -- file
 check_result 'F D' C..F --ancestry-path --simplify-merges -- file
 check_result 'F D B' C..F --first-parent
 check_result 'F B' C..F --first-parent -- file
-
 
 test_done

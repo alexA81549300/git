@@ -6,20 +6,17 @@ destdir=${2?destination}
 GIT_MAN_REF=${3?master}
 
 GIT_DIR=
-for d in "$repository/.git" "$repository"
-do
-	if GIT_DIR="$d" git rev-parse "$GIT_MAN_REF" >/dev/null 2>&1
-	then
-		GIT_DIR="$d"
-		export GIT_DIR
-		break
-	fi
+for d in "$repository/.git" "$repository"; do
+  if GIT_DIR="$d" git rev-parse "$GIT_MAN_REF" >/dev/null 2>&1; then
+    GIT_DIR="$d"
+    export GIT_DIR
+    break
+  fi
 done
 
-if test -z "$GIT_DIR"
-then
-	echo >&2 "Neither $repository nor $repository/.git is a repository"
-	exit 1
+if test -z "$GIT_DIR"; then
+  echo >&2 "Neither $repository nor $repository/.git is a repository"
+  exit 1
 fi
 
 GIT_WORK_TREE=$(pwd)
@@ -31,10 +28,9 @@ trap 'rm -f "$GIT_INDEX_FILE"' 0
 git read-tree "$GIT_MAN_REF"
 git checkout-index -a -f --prefix="$destdir"/
 
-if test -n "$GZ"
-then
-	git ls-tree -r --name-only "$GIT_MAN_REF" |
-	xargs printf "$destdir/%s\n" |
-	xargs gzip -f
+if test -n "$GZ"; then
+  git ls-tree -r --name-only "$GIT_MAN_REF" \
+    | xargs printf "$destdir/%s\n" \
+    | xargs gzip -f
 fi
 rm -f "$GIT_INDEX_FILE"

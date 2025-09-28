@@ -10,22 +10,21 @@ test_description='git svn info'
 # Tested with: svn, version 1.6.[12345689]
 v=$(svn_cmd --version | sed -n -e 's/^svn, version \(1\.[0-9]*\.[0-9]*\).*$/\1/p')
 case $v in
-1.[456].*)
-	;;
-*)
-	skip_all="skipping svn-info test (SVN version: $v not supported)"
-	test_done
-	;;
+  1.[456].*) ;;
+  *)
+    skip_all="skipping svn-info test (SVN version: $v not supported)"
+    test_done
+    ;;
 esac
 
 # On the "Text Last Updated" line, "git svn info" does not return the
 # same value as "svn info" (i.e. the commit timestamp that touched the
 # path most recently); do not expect that field to match.
-test_cmp_info () {
-	sed -e '/^Text Last Updated:/d' "$1" >tmp.expect &&
-	sed -e '/^Text Last Updated:/d' "$2" >tmp.actual &&
-	test_cmp tmp.expect tmp.actual &&
-	rm -f tmp.expect tmp.actual
+test_cmp_info() {
+  sed -e '/^Text Last Updated:/d' "$1" >tmp.expect \
+    && sed -e '/^Text Last Updated:/d' "$2" >tmp.actual \
+    && test_cmp tmp.expect tmp.actual \
+    && rm -f tmp.expect tmp.actual
 }
 
 quoted_svnrepo="$(echo $svnrepo | test_uri_escape)"

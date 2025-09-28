@@ -140,13 +140,12 @@ test_expect_success 'pack-object <stdin parsing: --stdin-packs handles garbage' 
 # usage: check_deltas <stderr_from_pack_objects> <cmp_op> <nr_deltas>
 # e.g.: check_deltas stderr -gt 0
 check_deltas() {
-	deltas=$(perl -lne '/delta (\d+)/ and print $1' "$1") &&
-	shift &&
-	if ! test "$deltas" "$@"
-	then
-		echo >&2 "unexpected number of deltas (compared $delta $*)"
-		return 1
-	fi
+  deltas=$(perl -lne '/delta (\d+)/ and print $1' "$1") \
+    && shift \
+    && if ! test "$deltas" "$@"; then
+      echo >&2 "unexpected number of deltas (compared $delta $*)"
+      return 1
+    fi
 }
 
 test_expect_success 'pack without delta' '
@@ -164,18 +163,18 @@ test_expect_success 'pack-objects with bogus arguments' '
 	test_must_fail git pack-objects --window=0 test-1 blah blah <obj-list
 '
 
-check_unpack () {
-	local packname="$1" &&
-	local object_list="$2" &&
-	local git_config="$3" &&
-	test_when_finished "rm -rf git2" &&
-	git $git_config init --bare git2 &&
-	(
-		git $git_config -C git2 unpack-objects -n <"$packname".pack &&
-		git $git_config -C git2 unpack-objects <"$packname".pack &&
-		git $git_config -C git2 cat-file --batch-check="%(objectname)"
-	) <"$object_list" >current &&
-	cmp "$object_list" current
+check_unpack() {
+  local packname="$1" \
+    && local object_list="$2" \
+    && local git_config="$3" \
+    && test_when_finished "rm -rf git2" \
+    && git $git_config init --bare git2 \
+    && (
+      git $git_config -C git2 unpack-objects -n <"$packname".pack \
+        && git $git_config -C git2 unpack-objects <"$packname".pack \
+        && git $git_config -C git2 cat-file --batch-check="%(objectname)"
+    ) <"$object_list" >current \
+    && cmp "$object_list" current
 }
 
 test_expect_success 'unpack without delta' '
@@ -222,20 +221,19 @@ test_expect_success 'compare delta flavors' '
 	'\'' test-2-$packname_2.pack test-3-$packname_3.pack
 '
 
-check_use_objects () {
-	test_when_finished "rm -rf git2" &&
-	git init --bare git2 &&
-	cp "$1".pack "$1".idx git2/objects/pack &&
-	(
-		cd git2 &&
-		git diff-tree --root -p $commit &&
-		while read object
-		do
-			t=$(git cat-file -t $object) &&
-			git cat-file $t $object || exit 1
-		done
-	) <obj-list >current &&
-	cmp expect current
+check_use_objects() {
+  test_when_finished "rm -rf git2" \
+    && git init --bare git2 \
+    && cp "$1".pack "$1".idx git2/objects/pack \
+    && (
+      cd git2 \
+        && git diff-tree --root -p $commit \
+        && while read object; do
+          t=$(git cat-file -t $object) \
+            && git cat-file $t $object || exit 1
+        done
+    ) <obj-list >current \
+    && cmp expect current
 }
 
 test_expect_success 'use packed objects' '
@@ -462,14 +460,14 @@ test_expect_success 'setup for --strict and --fsck-objects downgrading fsck msgs
 	)
 '
 
-test_with_bad_commit () {
-	must_fail_arg="$1" &&
-	must_pass_arg="$2" &&
-	(
-		cd strict &&
-		test_must_fail git index-pack "$must_fail_arg" "test-$(cat pack-name).pack" &&
-		git index-pack "$must_pass_arg" "test-$(cat pack-name).pack"
-	)
+test_with_bad_commit() {
+  must_fail_arg="$1" \
+    && must_pass_arg="$2" \
+    && (
+      cd strict \
+        && test_must_fail git index-pack "$must_fail_arg" "test-$(cat pack-name).pack" \
+        && git index-pack "$must_pass_arg" "test-$(cat pack-name).pack"
+    )
 }
 
 test_expect_success 'index-pack with --strict downgrading fsck msgs' '
@@ -529,9 +527,8 @@ test_expect_success SHA1 'show-index works OK outside a repository' '
 	nongit git show-index <foo.idx
 '
 
-for hash in sha1 sha256
-do
-	test_expect_success 'show-index works OK outside a repository with hash algo passed in via --object-format' '
+for hash in sha1 sha256; do
+  test_expect_success 'show-index works OK outside a repository with hash algo passed in via --object-format' '
 		test_when_finished "rm -rf explicit-hash-$hash" &&
 		git init --object-format=$hash explicit-hash-$hash &&
 		test_commit -C explicit-hash-$hash one &&
@@ -544,7 +541,7 @@ do
 done
 
 test_expect_success !PTHREADS,!FAIL_PREREQS \
-	'index-pack --threads=N or pack.threads=N warns when no pthreads' '
+  'index-pack --threads=N or pack.threads=N warns when no pthreads' '
 	test_must_fail git index-pack --threads=2 2>err &&
 	grep ^warning: err >warnings &&
 	test_line_count = 1 warnings &&
@@ -563,7 +560,7 @@ test_expect_success !PTHREADS,!FAIL_PREREQS \
 '
 
 test_expect_success !PTHREADS,!FAIL_PREREQS \
-	'pack-objects --threads=N or pack.threads=N warns when no pthreads' '
+  'pack-objects --threads=N or pack.threads=N warns when no pthreads' '
 	git pack-objects --threads=2 --stdout --all </dev/null >/dev/null 2>err &&
 	grep ^warning: err >warnings &&
 	test_line_count = 1 warnings &&
@@ -650,9 +647,8 @@ test_expect_success 'prefetch objects' '
 	test_line_count = 1 donelines
 '
 
-for hash in sha1 sha256
-do
-	test_expect_success "verify-pack with $hash packfile" '
+for hash in sha1 sha256; do
+  test_expect_success "verify-pack with $hash packfile" '
 		test_when_finished "rm -rf repo" &&
 		git init --object-format=$hash repo &&
 		test_commit -C repo initial &&
@@ -670,7 +666,7 @@ do
 		fi
 	'
 
-	test_expect_success "index-pack outside of a $hash repository" '
+  test_expect_success "index-pack outside of a $hash repository" '
 		test_when_finished "rm -rf repo" &&
 		git init --object-format=$hash repo &&
 		test_commit -C repo initial &&

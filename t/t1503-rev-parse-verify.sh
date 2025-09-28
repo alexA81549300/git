@@ -11,22 +11,21 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-add_line_into_file()
-{
-    _line=$1
-    _file=$2
+add_line_into_file() {
+  _line=$1
+  _file=$2
 
-    if [ -f "$_file" ]; then
-        echo "$_line" >> $_file || return $?
-        MSG="Add <$_line> into <$_file>."
-    else
-        echo "$_line" > $_file || return $?
-        git add $_file || return $?
-        MSG="Create file <$_file> with <$_line> inside."
-    fi
+  if [ -f "$_file" ]; then
+    echo "$_line" >>$_file || return $?
+    MSG="Add <$_line> into <$_file>."
+  else
+    echo "$_line" >$_file || return $?
+    git add $_file || return $?
+    MSG="Create file <$_file> with <$_line> inside."
+  fi
 
-    test_tick
-    git commit --quiet -m "$MSG" $_file
+  test_tick
+  git commit --quiet -m "$MSG" $_file
 }
 
 HASH1=

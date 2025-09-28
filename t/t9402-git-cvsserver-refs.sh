@@ -13,75 +13,73 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 #########
 
 check_start_tree() {
-	rm -f "$WORKDIR/list.expected"
-	echo "start $1" >>"${WORKDIR}/check.log"
+  rm -f "$WORKDIR/list.expected"
+  echo "start $1" >>"${WORKDIR}/check.log"
 }
 
 check_file() {
-	sandbox="$1"
-	file="$2"
-	ver="$3"
-	GIT_DIR=$SERVERDIR git show "${ver}:${file}" \
-		>"$WORKDIR/check.got" 2>"$WORKDIR/check.stderr"
-	test_cmp "$WORKDIR/check.got" "$sandbox/$file"
-	stat=$?
-	echo "check_file $sandbox $file $ver : $stat" >>"$WORKDIR/check.log"
-	echo "$file" >>"$WORKDIR/list.expected"
-	return $stat
+  sandbox="$1"
+  file="$2"
+  ver="$3"
+  GIT_DIR=$SERVERDIR git show "${ver}:${file}" \
+    >"$WORKDIR/check.got" 2>"$WORKDIR/check.stderr"
+  test_cmp "$WORKDIR/check.got" "$sandbox/$file"
+  stat=$?
+  echo "check_file $sandbox $file $ver : $stat" >>"$WORKDIR/check.log"
+  echo "$file" >>"$WORKDIR/list.expected"
+  return $stat
 }
 
 check_end_tree() {
-	sandbox="$1" &&
-	find "$sandbox" -name CVS -prune -o -type f -print >"$WORKDIR/list.actual" &&
-	sort <"$WORKDIR/list.expected" >expected &&
-	sort <"$WORKDIR/list.actual" | sed -e "s%cvswork/%%" >actual &&
-	test_cmp expected actual &&
-	rm expected actual
+  sandbox="$1" \
+    && find "$sandbox" -name CVS -prune -o -type f -print >"$WORKDIR/list.actual" \
+    && sort <"$WORKDIR/list.expected" >expected \
+    && sort <"$WORKDIR/list.actual" | sed -e "s%cvswork/%%" >actual \
+    && test_cmp expected actual \
+    && rm expected actual
 }
 
 check_end_full_tree() {
-	sandbox="$1" &&
-	sort <"$WORKDIR/list.expected" >expected &&
-	find "$sandbox" -name CVS -prune -o -type f -print |
-	sed -e "s%$sandbox/%%" | sort >act1 &&
-	test_cmp expected act1 &&
-	git ls-tree --name-only -r "$2" | sort >act2 &&
-	test_cmp expected act2 &&
-	rm expected act1 act2
+  sandbox="$1" \
+    && sort <"$WORKDIR/list.expected" >expected \
+    && find "$sandbox" -name CVS -prune -o -type f -print \
+    | sed -e "s%$sandbox/%%" | sort >act1 \
+    && test_cmp expected act1 \
+    && git ls-tree --name-only -r "$2" | sort >act2 \
+    && test_cmp expected act2 \
+    && rm expected act1 act2
 }
 
 #########
 
 check_diff() {
-	diffFile="$1"
-	vOld="$2"
-	vNew="$3"
-	rm -rf diffSandbox
-	git clone -q -n . diffSandbox &&
-	(
-		cd diffSandbox &&
-		git checkout "$vOld" &&
-		git apply -p0 --index <"../$diffFile" &&
-		git diff --exit-code "$vNew"
-	) >check_diff_apply.out 2>&1
+  diffFile="$1"
+  vOld="$2"
+  vNew="$3"
+  rm -rf diffSandbox
+  git clone -q -n . diffSandbox \
+    && (
+      cd diffSandbox \
+        && git checkout "$vOld" \
+        && git apply -p0 --index <"../$diffFile" \
+        && git diff --exit-code "$vNew"
+    ) >check_diff_apply.out 2>&1
 }
 
 #########
 
 cvs >/dev/null 2>&1
-if test $? -ne 1
-then
-	skip_all='skipping git-cvsserver tests, cvs not found'
-	test_done
+if test $? -ne 1; then
+  skip_all='skipping git-cvsserver tests, cvs not found'
+  test_done
 fi
-if ! test_have_prereq PERL
-then
-	skip_all='skipping git-cvsserver tests, perl not available'
-	test_done
+if ! test_have_prereq PERL; then
+  skip_all='skipping git-cvsserver tests, perl not available'
+  test_done
 fi
 perl -e 'use DBI; use DBD::SQLite' >/dev/null 2>&1 || {
-	skip_all='skipping git-cvsserver tests, Perl SQLite interface unavailable'
-	test_done
+  skip_all='skipping git-cvsserver tests, Perl SQLite interface unavailable'
+  test_done
 }
 
 unset GIT_DIR GIT_CONFIG

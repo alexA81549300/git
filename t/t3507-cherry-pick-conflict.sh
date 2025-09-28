@@ -15,10 +15,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 TEST_CREATE_REPO_NO_TEMPLATE=1
 . ./test-lib.sh
 
-pristine_detach () {
-	git checkout -f "$1^0" &&
-	git read-tree -u --reset HEAD &&
-	git clean -d -f -f -q -x
+pristine_detach() {
+  git checkout -f "$1^0" \
+    && git read-tree -u --reset HEAD \
+    && git clean -d -f -f -q -x
 }
 
 test_expect_success setup '
@@ -108,7 +108,7 @@ test_expect_success 'cherry-pick w/dirty tree does not set CHERRY_PICK_HEAD' '
 '
 
 test_expect_success \
-	'cherry-pick --strategy=resolve w/dirty tree does not set CHERRY_PICK_HEAD' '
+  'cherry-pick --strategy=resolve w/dirty tree does not set CHERRY_PICK_HEAD' '
 	pristine_detach initial &&
 	echo foo >foo &&
 	test_must_fail git cherry-pick --strategy=resolve base &&
@@ -246,7 +246,7 @@ test_expect_success 'failed cherry-pick registers participants in index' '
 '
 
 test_expect_success \
-	'cherry-pick conflict, ensure commit.cleanup = scissors places scissors line properly' '
+  'cherry-pick conflict, ensure commit.cleanup = scissors places scissors line properly' '
 	pristine_detach initial &&
 	git config commit.cleanup scissors &&
 	cat <<-EOF >expected &&
@@ -266,7 +266,7 @@ test_expect_success \
 '
 
 test_expect_success \
-	'cherry-pick conflict, ensure cleanup=scissors places scissors line properly' '
+  'cherry-pick conflict, ensure cleanup=scissors places scissors line properly' '
 	pristine_detach initial &&
 	git config --unset commit.cleanup &&
 	cat <<-EOF >expected &&
@@ -452,7 +452,7 @@ test_expect_success 'revert conflict, diff3 -m style' '
 '
 
 test_expect_success \
-	'revert conflict, ensure commit.cleanup = scissors places scissors line properly' '
+  'revert conflict, ensure commit.cleanup = scissors places scissors line properly' '
 	pristine_detach initial &&
 	git config commit.cleanup scissors &&
 	cat >expected <<-EOF &&
@@ -475,7 +475,7 @@ test_expect_success \
 '
 
 test_expect_success \
-	'revert conflict, ensure cleanup=scissors places scissors line properly' '
+  'revert conflict, ensure cleanup=scissors places scissors line properly' '
 	pristine_detach initial &&
 	git config --unset commit.cleanup &&
 	cat >expected <<-EOF &&

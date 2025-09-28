@@ -6,9 +6,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-modify () {
-	sed -e "$1" <"$2" >"$2.x" &&
-	mv "$2.x" "$2"
+modify() {
+  sed -e "$1" <"$2" >"$2.x" \
+    && mv "$2.x" "$2"
 }
 
 test_expect_success 'setup' '
@@ -101,7 +101,7 @@ test_expect_success 'setup' '
 '
 
 test_expect_success 'pull renaming branch into unrenaming one' \
-'
+  '
 	git show-branch &&
 	test_expect_code 1 git pull --no-rebase . white &&
 	git ls-files -s &&
@@ -115,7 +115,7 @@ test_expect_success 'pull renaming branch into unrenaming one' \
 '
 
 test_expect_success 'pull renaming branch into another renaming one' \
-'
+  '
 	rm -f B &&
 	git reset --hard &&
 	git checkout red &&
@@ -130,7 +130,7 @@ test_expect_success 'pull renaming branch into another renaming one' \
 '
 
 test_expect_success 'pull unrenaming branch into renaming one' \
-'
+  '
 	git reset --hard &&
 	git show-branch &&
 	test_expect_code 1 git pull --no-rebase . main &&
@@ -144,7 +144,7 @@ test_expect_success 'pull unrenaming branch into renaming one' \
 '
 
 test_expect_success 'pull conflicting renames' \
-'
+  '
 	git reset --hard &&
 	git show-branch &&
 	test_expect_code 1 git pull --no-rebase . blue &&
@@ -527,9 +527,8 @@ test_expect_success 'setup pair rename to parent of other (D/F conflicts)' '
 	git commit -m "Rename one/file -> two"
 '
 
-if test "$GIT_TEST_MERGE_ALGORITHM" = ort
-then
-	test_expect_success 'pair rename to parent of other (D/F conflicts) w/ untracked dir' '
+if test "$GIT_TEST_MERGE_ALGORITHM" = ort; then
+  test_expect_success 'pair rename to parent of other (D/F conflicts) w/ untracked dir' '
 		git checkout -q rename-one^0 &&
 		mkdir one &&
 		test_must_fail git merge --strategy=recursive rename-two &&
@@ -548,7 +547,7 @@ then
 		test "stuff" = $(cat two)
 	'
 else
-	test_expect_success 'pair rename to parent of other (D/F conflicts) w/ untracked dir' '
+  test_expect_success 'pair rename to parent of other (D/F conflicts) w/ untracked dir' '
 		git checkout -q rename-one^0 &&
 		mkdir one &&
 		test_must_fail git merge --strategy=recursive rename-two &&

@@ -11,11 +11,11 @@ Prepare:
 '
 
 . ./test-lib.sh
-. "$TEST_DIRECTORY"/lib-diff.sh ;# test-lib chdir's into trash
+. "$TEST_DIRECTORY"/lib-diff.sh # test-lib chdir's into trash
 
 test_expect_success \
-    setup \
-    'echo frotz >file0 &&
+  setup \
+  'echo frotz >file0 &&
      mkdir path1 &&
      echo rezrov >path1/file1 &&
      before0=$(git hash-object file0) &&
@@ -32,47 +32,47 @@ test_expect_success \
 cat >expected <<\EOF
 EOF
 test_expect_success \
-    'limit to path should show nothing' \
-    'git diff-index --cached $tree -- path >current &&
+  'limit to path should show nothing' \
+  'git diff-index --cached $tree -- path >current &&
      compare_diff_raw current expected'
 
 cat >expected <<EOF
 :100644 100644 $before1 $after1 M	path1/file1
 EOF
 test_expect_success \
-    'limit to path1 should show path1/file1' \
-    'git diff-index --cached $tree -- path1 >current &&
+  'limit to path1 should show path1/file1' \
+  'git diff-index --cached $tree -- path1 >current &&
      compare_diff_raw current expected'
 
 cat >expected <<EOF
 :100644 100644 $before1 $after1 M	path1/file1
 EOF
 test_expect_success \
-    'limit to path1/ should show path1/file1' \
-    'git diff-index --cached $tree -- path1/ >current &&
+  'limit to path1/ should show path1/file1' \
+  'git diff-index --cached $tree -- path1/ >current &&
      compare_diff_raw current expected'
 
 cat >expected <<EOF
 :100644 100644 $before1 $after1 M	path1/file1
 EOF
 test_expect_success \
-    '"*file1" should show path1/file1' \
-    'git diff-index --cached $tree -- "*file1" >current &&
+  '"*file1" should show path1/file1' \
+  'git diff-index --cached $tree -- "*file1" >current &&
      compare_diff_raw current expected'
 
 cat >expected <<EOF
 :100644 100644 $before0 $after0 M	file0
 EOF
 test_expect_success \
-    'limit to file0 should show file0' \
-    'git diff-index --cached $tree -- file0 >current &&
+  'limit to file0 should show file0' \
+  'git diff-index --cached $tree -- file0 >current &&
      compare_diff_raw current expected'
 
 cat >expected <<\EOF
 EOF
 test_expect_success \
-    'limit to file0/ should emit nothing.' \
-    'git diff-index --cached $tree -- file0/ >current &&
+  'limit to file0/ should emit nothing.' \
+  'git diff-index --cached $tree -- file0/ >current &&
      compare_diff_raw current expected'
 
 test_expect_success 'diff-tree pathspec' '

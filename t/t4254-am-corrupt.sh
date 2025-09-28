@@ -4,25 +4,23 @@ test_description='git am with corrupt input'
 
 . ./test-lib.sh
 
-if ! test_have_prereq ICONV
-then
-	skip_all='skipping am encoding corruption tests; iconv not available'
-	test_done
+if ! test_have_prereq ICONV; then
+  skip_all='skipping am encoding corruption tests; iconv not available'
+  test_done
 fi
 
-make_mbox_with_nul () {
-	space=' '
-	q_nul_in_subject=
-	q_nul_in_body=
-	while test $# -ne 0
-	do
-		case "$1" in
-		subject) q_nul_in_subject='=00' ;;
-		body)    q_nul_in_body='=00' ;;
-		esac &&
-		shift
-	done &&
-	cat <<-EOF
+make_mbox_with_nul() {
+  space=' '
+  q_nul_in_subject=
+  q_nul_in_body=
+  while test $# -ne 0; do
+    case "$1" in
+      subject) q_nul_in_subject='=00' ;;
+      body) q_nul_in_body='=00' ;;
+    esac \
+      && shift
+  done \
+    && cat <<-EOF
 	From ec7364544f690c560304f5a5de9428ea3b978b26 Mon Sep 17 00:00:00 2001
 	From: A U Thor <author@example.com>
 	Date: Sun, 19 Apr 2020 13:42:07 +0700

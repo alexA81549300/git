@@ -6,53 +6,51 @@ Tests whether various commands properly update and/or rewrite the
 cache-tree extension.
 "
 
- . ./test-lib.sh
+. ./test-lib.sh
 
-cmp_cache_tree () {
-	test-tool dump-cache-tree | sed -e '/#(ref)/d' >actual &&
-	sed "s/$OID_REGEX/SHA/" <actual >filtered &&
-	test_cmp "$1" filtered &&
-	rm filtered
+cmp_cache_tree() {
+  test-tool dump-cache-tree | sed -e '/#(ref)/d' >actual \
+    && sed "s/$OID_REGEX/SHA/" <actual >filtered \
+    && test_cmp "$1" filtered \
+    && rm filtered
 }
 
 # We don't bother with actually checking the SHA1:
 # test-tool dump-cache-tree already verifies that all existing data is
 # correct.
-generate_expected_cache_tree () {
-	pathspec="$1" &&
-	dir="$2${2:+/}" &&
-	git ls-tree --name-only HEAD -- "$pathspec" >files &&
-	git ls-tree --name-only -d HEAD -- "$pathspec" >subtrees &&
-	printf "SHA %s (%d entries, %d subtrees)\n" "$dir" $(wc -l <files) $(wc -l <subtrees) &&
-	while read subtree
-	do
-		generate_expected_cache_tree "$pathspec/$subtree/" "$subtree" || return 1
-	done <subtrees
+generate_expected_cache_tree() {
+  pathspec="$1" \
+    && dir="$2${2:+/}" \
+    && git ls-tree --name-only HEAD -- "$pathspec" >files \
+    && git ls-tree --name-only -d HEAD -- "$pathspec" >subtrees \
+    && printf "SHA %s (%d entries, %d subtrees)\n" "$dir" $(wc -l <files) $(wc -l <subtrees) \
+    && while read subtree; do
+      generate_expected_cache_tree "$pathspec/$subtree/" "$subtree" || return 1
+    done <subtrees
 }
 
-test_cache_tree () {
-	generate_expected_cache_tree "." >expect &&
-	cmp_cache_tree expect &&
-	rm expect actual files subtrees &&
-	git status --porcelain -- ':!status' ':!expected.status' >status &&
-	if test -n "$1"
-	then
-		test_cmp "$1" status
-	else
-		test_must_be_empty status
-	fi
+test_cache_tree() {
+  generate_expected_cache_tree "." >expect \
+    && cmp_cache_tree expect \
+    && rm expect actual files subtrees \
+    && git status --porcelain -- ':!status' ':!expected.status' >status \
+    && if test -n "$1"; then
+      test_cmp "$1" status
+    else
+      test_must_be_empty status
+    fi
 }
 
-test_invalid_cache_tree () {
-	printf "invalid                                  %s ()\n" "" "$@" >expect &&
-	test-tool dump-cache-tree |
-	sed -n -e "s/[0-9]* subtrees//" -e '/#(ref)/d' -e '/^invalid /p' >actual &&
-	test_cmp expect actual
+test_invalid_cache_tree() {
+  printf "invalid                                  %s ()\n" "" "$@" >expect \
+    && test-tool dump-cache-tree \
+    | sed -n -e "s/[0-9]* subtrees//" -e '/#(ref)/d' -e '/^invalid /p' >actual \
+    && test_cmp expect actual
 }
 
-test_no_cache_tree () {
-	>expect &&
-	cmp_cache_tree expect
+test_no_cache_tree() {
+  >expect \
+    && cmp_cache_tree expect
 }
 
 test_expect_success 'initial commit has cache-tree' '

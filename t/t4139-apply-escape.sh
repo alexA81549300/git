@@ -15,9 +15,9 @@ test_expect_success 'bump git repo one level down' '
 
 # $1 = name of file
 # $2 = current path to file (if different)
-mkpatch_add () {
-	rm -f "${2:-$1}" &&
-	cat <<-EOF
+mkpatch_add() {
+  rm -f "${2:-$1}" \
+    && cat <<-EOF
 	diff --git a/$1 b/$1
 	new file mode 100644
 	index 0000000..53c74cd
@@ -28,9 +28,9 @@ mkpatch_add () {
 	EOF
 }
 
-mkpatch_del () {
-	echo evil >"${2:-$1}" &&
-	cat <<-EOF
+mkpatch_del() {
+  echo evil >"${2:-$1}" \
+    && cat <<-EOF
 	diff --git a/$1 b/$1
 	deleted file mode 100644
 	index 53c74cd..0000000
@@ -43,9 +43,9 @@ mkpatch_del () {
 
 # $1 = name of file
 # $2 = content of symlink
-mkpatch_symlink () {
-	rm -f "$1" &&
-	cat <<-EOF
+mkpatch_symlink() {
+  rm -f "$1" \
+    && cat <<-EOF
 	diff --git a/$1 b/$1
 	new file mode 120000
 	index 0000000..$(printf "%s" "$2" | git hash-object --stdin)
@@ -69,13 +69,13 @@ test_expect_success 'can create file containing .. with --unsafe-paths' '
 	test_path_is_file ../foo
 '
 
-test_expect_success  'cannot create file containing .. (index)' '
+test_expect_success 'cannot create file containing .. (index)' '
 	mkpatch_add ../foo >patch &&
 	test_must_fail git apply --index patch &&
 	test_path_is_missing ../foo
 '
 
-test_expect_success  'cannot create file containing .. with --unsafe-paths (index)' '
+test_expect_success 'cannot create file containing .. with --unsafe-paths (index)' '
 	mkpatch_add ../foo >patch &&
 	test_must_fail git apply --index --unsafe-paths patch &&
 	test_path_is_missing ../foo

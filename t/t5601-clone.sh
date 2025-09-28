@@ -343,33 +343,33 @@ test_expect_success 'set up ssh wrapper' '
 	>"$TRASH_DIRECTORY"/ssh-output
 '
 
-copy_ssh_wrapper_as () {
-	rm -f "${1%$X}$X" &&
-	cp "$TRASH_DIRECTORY/ssh$X" "${1%$X}$X" &&
-	test_when_finished "rm $(git rev-parse --sq-quote "${1%$X}$X")" &&
-	GIT_SSH="${1%$X}$X" &&
-	test_when_finished "GIT_SSH=\"\$TRASH_DIRECTORY/ssh\$X\""
+copy_ssh_wrapper_as() {
+  rm -f "${1%$X}$X" \
+    && cp "$TRASH_DIRECTORY/ssh$X" "${1%$X}$X" \
+    && test_when_finished "rm $(git rev-parse --sq-quote "${1%$X}$X")" \
+    && GIT_SSH="${1%$X}$X" \
+    && test_when_finished "GIT_SSH=\"\$TRASH_DIRECTORY/ssh\$X\""
 }
 
-expect_ssh () {
-	test_when_finished '
+expect_ssh() {
+  test_when_finished '
 		(cd "$TRASH_DIRECTORY" && rm -f ssh-expect && >ssh-output)
-	' &&
-	{
-		case "$#" in
-		1)
-			;;
-		2)
-			echo "ssh: $1 git-upload-pack '$2'"
-			;;
-		3)
-			echo "ssh: $1 $2 git-upload-pack '$3'"
-			;;
-		*)
-			echo "ssh: $1 $2 git-upload-pack '$3' $4"
-		esac
-	} >"$TRASH_DIRECTORY/ssh-expect" &&
-	(cd "$TRASH_DIRECTORY" && test_cmp ssh-expect ssh-output)
+	' \
+    && {
+      case "$#" in
+        1) ;;
+        2)
+          echo "ssh: $1 git-upload-pack '$2'"
+          ;;
+        3)
+          echo "ssh: $1 $2 git-upload-pack '$3'"
+          ;;
+        *)
+          echo "ssh: $1 $2 git-upload-pack '$3' $4"
+          ;;
+      esac
+    } >"$TRASH_DIRECTORY/ssh-expect" \
+    && (cd "$TRASH_DIRECTORY" && test_cmp ssh-expect ssh-output)
 }
 
 test_expect_success 'clone myhost:src uses ssh' '
@@ -507,11 +507,11 @@ counter=0
 # $1 url
 # $2 none|host
 # $3 path
-test_clone_url () {
-	counter=$(($counter + 1))
-	test_might_fail env GIT_TEST_PROTOCOL_VERSION=0 git clone "$1" tmp$counter &&
-	shift &&
-	expect_ssh "$@"
+test_clone_url() {
+  counter=$(($counter + 1))
+  test_might_fail env GIT_TEST_PROTOCOL_VERSION=0 git clone "$1" tmp$counter \
+    && shift \
+    && expect_ssh "$@"
 }
 
 test_expect_success !MINGW,!CYGWIN 'clone c:temp is ssl' '
@@ -523,24 +523,21 @@ test_expect_success MINGW 'clone c:temp is dos drive' '
 '
 
 #ip v4
-for repo in rep rep/home/project 123
-do
-	test_expect_success "clone host:$repo" '
+for repo in rep rep/home/project 123; do
+  test_expect_success "clone host:$repo" '
 		test_clone_url host:$repo host $repo
 	'
 done
 
 # Parsing of paths that look like IPv6 addresses is broken on Cygwin.
 expectation_for_ipv6_tests=success
-if test_have_prereq CYGWIN
-then
-	expectation_for_ipv6_tests=failure
+if test_have_prereq CYGWIN; then
+  expectation_for_ipv6_tests=failure
 fi
 
 #ipv6
-for repo in rep rep/home/project 123
-do
-	test_expect_$expectation_for_ipv6_tests "clone [::1]:$repo" '
+for repo in rep rep/home/project 123; do
+  test_expect_$expectation_for_ipv6_tests "clone [::1]:$repo" '
 		test_clone_url [::1]:$repo ::1 "$repo"
 	'
 done
@@ -558,22 +555,20 @@ test_expect_$expectation_for_ipv6_tests !SANITIZE_LEAK "clone [::1]:/~repo" '
 '
 
 # Corner cases
-for url in foo/bar:baz [foo]bar/baz:qux [foo/bar]:baz
-do
-	test_expect_success "clone $url is not ssh" '
+for url in foo/bar:baz [foo]bar/baz:qux [foo/bar]:baz; do
+  test_expect_success "clone $url is not ssh" '
 		test_clone_url $url none
 	'
 done
 
 #with ssh:// scheme
 #ignore trailing colon
-for tcol in "" :
-do
-	test_expect_success "clone ssh://host.xz$tcol/home/user/repo" '
+for tcol in "" :; do
+  test_expect_success "clone ssh://host.xz$tcol/home/user/repo" '
 		test_clone_url "ssh://host.xz$tcol/home/user/repo" host.xz /home/user/repo
 	'
-	# from home directory
-	test_expect_success !SANITIZE_LEAK "clone ssh://host.xz$tcol/~repo" '
+  # from home directory
+  test_expect_success !SANITIZE_LEAK "clone ssh://host.xz$tcol/~repo" '
 		test_clone_url "ssh://host.xz$tcol/~repo" host.xz "~repo"
 	'
 done
@@ -589,37 +584,33 @@ test_expect_success !SANITIZE_LEAK 'clone ssh://host.xz:22/~repo' '
 '
 
 #IPv6
-for tuah in ::1 [::1] [::1]: user@::1 user@[::1] user@[::1]: [user@::1] [user@::1]:
-do
-	ehost=$(echo $tuah | sed -e "s/1]:/1]/" | tr -d "[]")
-	test_expect_success "clone ssh://$tuah/home/user/repo" "
+for tuah in ::1 [::1] [::1]: user@::1 user@[::1] user@[::1]: [user@::1] [user@::1]:; do
+  ehost=$(echo $tuah | sed -e "s/1]:/1]/" | tr -d "[]")
+  test_expect_success "clone ssh://$tuah/home/user/repo" "
 	  test_clone_url ssh://$tuah/home/user/repo $ehost /home/user/repo
 	"
 done
 
 #IPv6 from home directory
-for tuah in ::1 [::1] user@::1 user@[::1] [user@::1]
-do
-	euah=$(echo $tuah | tr -d "[]")
-	test_expect_success !SANITIZE_LEAK "clone ssh://$tuah/~repo" "
+for tuah in ::1 [::1] user@::1 user@[::1] [user@::1]; do
+  euah=$(echo $tuah | tr -d "[]")
+  test_expect_success !SANITIZE_LEAK "clone ssh://$tuah/~repo" "
 		test_clone_url ssh://$tuah/~repo $euah '~repo'
 	"
 done
 
 #IPv6 with port number
-for tuah in [::1] user@[::1] [user@::1]
-do
-	euah=$(echo $tuah | tr -d "[]")
-	test_expect_success "clone ssh://$tuah:22/home/user/repo" "
+for tuah in [::1] user@[::1] [user@::1]; do
+  euah=$(echo $tuah | tr -d "[]")
+  test_expect_success "clone ssh://$tuah:22/home/user/repo" "
 	  test_clone_url ssh://$tuah:22/home/user/repo '-p 22' $euah /home/user/repo
 	"
 done
 
 #IPv6 from home directory with port number
-for tuah in [::1] user@[::1] [user@::1]
-do
-	euah=$(echo $tuah | tr -d "[]")
-	test_expect_success !SANITIZE_LEAK "clone ssh://$tuah:22/~repo" "
+for tuah in [::1] user@[::1] [user@::1]; do
+  euah=$(echo $tuah | tr -d "[]")
+  test_expect_success !SANITIZE_LEAK "clone ssh://$tuah:22/~repo" "
 		  test_clone_url ssh://$tuah:22/~repo '-p 22' $euah '~repo'
 	"
 done
@@ -669,7 +660,7 @@ test_expect_success CASE_INSENSITIVE_FS 'colliding file detection' '
 '
 
 test_expect_success CASE_INSENSITIVE_FS,SYMLINKS \
-		'colliding symlink/directory keeps directory' '
+  'colliding symlink/directory keeps directory' '
 	git init icasefs-colliding-symlink &&
 	(
 		cd icasefs-colliding-symlink &&
@@ -697,36 +688,33 @@ test_expect_success 'clone with GIT_DEFAULT_HASH' '
 	git -C test-clone-sha256 status
 '
 
-partial_clone_server () {
-	       SERVER="$1" &&
-
-	rm -rf "$SERVER" client &&
-	test_create_repo "$SERVER" &&
-	test_commit -C "$SERVER" one &&
-	HASH1=$(git -C "$SERVER" hash-object one.t) &&
-	git -C "$SERVER" revert HEAD &&
-	test_commit -C "$SERVER" two &&
-	HASH2=$(git -C "$SERVER" hash-object two.t) &&
-	test_config -C "$SERVER" uploadpack.allowfilter 1 &&
-	test_config -C "$SERVER" uploadpack.allowanysha1inwant 1
+partial_clone_server() {
+  SERVER="$1" \
+    && rm -rf "$SERVER" client \
+    && test_create_repo "$SERVER" \
+    && test_commit -C "$SERVER" one \
+    && HASH1=$(git -C "$SERVER" hash-object one.t) \
+    && git -C "$SERVER" revert HEAD \
+    && test_commit -C "$SERVER" two \
+    && HASH2=$(git -C "$SERVER" hash-object two.t) \
+    && test_config -C "$SERVER" uploadpack.allowfilter 1 \
+    && test_config -C "$SERVER" uploadpack.allowanysha1inwant 1
 }
 
-partial_clone () {
-	       SERVER="$1" &&
-	       URL="$2" &&
-
-	partial_clone_server "${SERVER}" &&
-	git clone --filter=blob:limit=0 "$URL" client &&
-
-	git -C client fsck &&
-
-	# Ensure that unneeded blobs are not inadvertently fetched.
-	test_config -C client remote.origin.promisor "false" &&
-	git -C client config --unset remote.origin.partialclonefilter &&
-	test_must_fail git -C client cat-file -e "$HASH1" &&
-
-	# But this blob was fetched, because clone performs an initial checkout
-	git -C client cat-file -e "$HASH2"
+partial_clone() {
+  SERVER="$1" \
+    && URL="$2" \
+    && partial_clone_server "${SERVER}" \
+    && git clone --filter=blob:limit=0 "$URL" client \
+    && git -C client fsck \
+    &&
+    # Ensure that unneeded blobs are not inadvertently fetched.
+    test_config -C client remote.origin.promisor "false" \
+    && git -C client config --unset remote.origin.partialclonefilter \
+    && test_must_fail git -C client cat-file -e "$HASH1" \
+    &&
+    # But this blob was fetched, because clone performs an initial checkout
+    git -C client cat-file -e "$HASH2"
 }
 
 test_expect_success 'partial clone' '

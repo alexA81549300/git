@@ -7,14 +7,14 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-note () {
-	git tag "$1"
+note() {
+  git tag "$1"
 }
 
-unnote () {
-	test_when_finished "rm -f tmp" &&
-	git name-rev --tags --annotate-stdin >tmp &&
-	sed -e "s|$OID_REGEX (tags/\([^)]*\)) |\1 |g" <tmp
+unnote() {
+  test_when_finished "rm -f tmp" \
+    && git name-rev --tags --annotate-stdin >tmp \
+    && sed -e "s|$OID_REGEX (tags/\([^)]*\)) |\1 |g" <tmp
 }
 
 #
@@ -103,16 +103,15 @@ test_expect_success setup '
 
 FMT='tformat:%P 	%H | %s'
 
-check_outcome () {
-	outcome=$1
-	shift
-	for c in $1
-	do
-		echo "$c"
-	done >expect &&
-	shift &&
-	param="$*" &&
-	test_expect_$outcome "log $param" '
+check_outcome() {
+  outcome=$1
+  shift
+  for c in $1; do
+    echo "$c"
+  done >expect \
+    && shift \
+    && param="$*" \
+    && test_expect_$outcome "log $param" '
 		git log --pretty="$FMT" --parents $param >out &&
 		unnote >actual <out &&
 		sed -e "s/^.*	\([^ ]*\) .*/\1/" >check <actual &&
@@ -120,8 +119,8 @@ check_outcome () {
 	'
 }
 
-check_result () {
-	check_outcome success "$@"
+check_result() {
+  check_outcome success "$@"
 }
 
 check_result 'L K J I H F E D C G B A' --full-history --topo-order
@@ -251,19 +250,19 @@ check_result 'N M A I' --first-parent --show-pulls -- file
 
 # --ancestry-path implies --full-history
 check_result 'P O N R M' --topo-order \
-	--ancestry-path A..HEAD -- file
+  --ancestry-path A..HEAD -- file
 check_result 'P O N R M' --topo-order \
-	--show-pulls \
-	--ancestry-path A..HEAD -- file
+  --show-pulls \
+  --ancestry-path A..HEAD -- file
 check_result 'P O N R M' --topo-order \
-	--full-history \
-	--ancestry-path A..HEAD -- file
+  --full-history \
+  --ancestry-path A..HEAD -- file
 check_result 'R M' --topo-order \
-	--simplify-merges \
-	--ancestry-path A..HEAD -- file
+  --simplify-merges \
+  --ancestry-path A..HEAD -- file
 check_result 'N R M' --topo-order \
-	--simplify-merges --show-pulls \
-	--ancestry-path A..HEAD -- file
+  --simplify-merges --show-pulls \
+  --ancestry-path A..HEAD -- file
 
 test_expect_success 'log --graph --simplify-merges --show-pulls' '
 	cat >expect <<-\EOF &&

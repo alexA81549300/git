@@ -5,10 +5,9 @@ test_description='git merge-tree --write-tree'
 . ./test-lib.sh
 
 # This test is ort-specific
-if test "$GIT_TEST_MERGE_ALGORITHM" != "ort"
-then
-	skip_all="GIT_TEST_MERGE_ALGORITHM != ort"
-	test_done
+if test "$GIT_TEST_MERGE_ALGORITHM" != "ort"; then
+  skip_all="GIT_TEST_MERGE_ALGORITHM != ort"
+  test_done
 fi
 
 test_expect_success setup '
@@ -134,7 +133,7 @@ test_expect_success 'Barf on too many arguments' '
 '
 
 anonymize_hash() {
-	sed -e "s/[0-9a-f]\{40,\}/HASH/g" "$@"
+  sed -e "s/[0-9a-f]\{40,\}/HASH/g" "$@"
 }
 
 test_expect_success 'test conflict notices and such' '
@@ -733,14 +732,12 @@ test_expect_success 'directory rename + rename/delete + modify/delete + director
 	)
 '
 
-for opt in $(git merge-tree --git-completion-helper-all)
-do
-	if test $opt = "--trivial-merge" || test $opt = "--write-tree"
-	then
-		continue
-	fi
+for opt in $(git merge-tree --git-completion-helper-all); do
+  if test $opt = "--trivial-merge" || test $opt = "--write-tree"; then
+    continue
+  fi
 
-	test_expect_success "usage: --trivial-merge is incompatible with $opt" '
+  test_expect_success "usage: --trivial-merge is incompatible with $opt" '
 		test_expect_code 128 git merge-tree --trivial-merge $opt side1 side2 side3
 	'
 done
@@ -882,7 +879,6 @@ test_expect_success '--stdin with both a successful and a conflicted merge' '
 
 	test_cmp expect actual
 '
-
 
 test_expect_success '--merge-base is incompatible with --stdin' '
 	test_must_fail git merge-tree --merge-base=side1 --stdin 2>expect &&

@@ -12,18 +12,18 @@ GNUPGHOME_NOT_USED=$GNUPGHOME
 
 # Mon Jul 3 23:18:43 2006 +0000
 datestamp=1151968723
-setdate_and_increment () {
-    GIT_COMMITTER_DATE="$datestamp +0200"
-    datestamp=$(expr "$datestamp" + 1)
-    GIT_AUTHOR_DATE="$datestamp +0200"
-    datestamp=$(expr "$datestamp" + 1)
-    export GIT_COMMITTER_DATE GIT_AUTHOR_DATE
+setdate_and_increment() {
+  GIT_COMMITTER_DATE="$datestamp +0200"
+  datestamp=$(expr "$datestamp" + 1)
+  GIT_AUTHOR_DATE="$datestamp +0200"
+  datestamp=$(expr "$datestamp" + 1)
+  export GIT_COMMITTER_DATE GIT_AUTHOR_DATE
 }
 
-test_object_file_size () {
-	oid=$(git rev-parse "$1")
-	path=".git/objects/$(test_oid_to_path $oid)"
-	test_file_size "$path"
+test_object_file_size() {
+  oid=$(git rev-parse "$1")
+  path=".git/objects/$(test_oid_to_path $oid)"
+  test_file_size "$path"
 }
 
 test_expect_success setup '
@@ -49,29 +49,28 @@ test_expect_success setup '
 	git config push.default current
 '
 
-test_atom () {
-	case "$1" in
-		head) ref=refs/heads/main ;;
-		 tag) ref=refs/tags/testtag ;;
-		 sym) ref=refs/heads/sym ;;
-		   *) ref=$1 ;;
-	esac
-	format=$2
-	test_do=test_expect_${4:-success}
+test_atom() {
+  case "$1" in
+    head) ref=refs/heads/main ;;
+    tag) ref=refs/tags/testtag ;;
+    sym) ref=refs/heads/sym ;;
+    *) ref=$1 ;;
+  esac
+  format=$2
+  test_do=test_expect_${4:-success}
 
-	printf '%s\n' "$3" >expected
-	$test_do $PREREQ "basic atom: $ref $format" '
+  printf '%s\n' "$3" >expected
+  $test_do $PREREQ "basic atom: $ref $format" '
 		git for-each-ref --format="%($format)" "$ref" >actual &&
 		sanitize_pgp <actual >actual.clean &&
 		test_cmp expected actual.clean
 	'
 
-	# Automatically test "contents:size" atom after testing "contents"
-	if test "$format" = "contents"
-	then
-		# for commit leg, $3 is changed there
-		expect=$(printf '%s' "$3" | wc -c)
-		$test_do $PREREQ "basic atom: $ref contents:size" '
+  # Automatically test "contents:size" atom after testing "contents"
+  if test "$format" = "contents"; then
+    # for commit leg, $3 is changed there
+    expect=$(printf '%s' "$3" | wc -c)
+    $test_do $PREREQ "basic atom: $ref contents:size" '
 			type=$(git cat-file -t "$ref") &&
 			case $type in
 			tag)
@@ -91,7 +90,7 @@ test_atom () {
 			git for-each-ref --format="%(contents:size)" "$ref" >actual &&
 			test_cmp expected actual
 		'
-	fi
+  fi
 }
 
 hexlen=$(test_oid hexsz)
@@ -318,18 +317,18 @@ test_expect_success 'arguments to %(objectname:short=) must be positive integers
 	test_must_fail git for-each-ref --format="%(objectname:short=foo)"
 '
 
-test_bad_atom () {
-	case "$1" in
-	head) ref=refs/heads/main ;;
-	 tag) ref=refs/tags/testtag ;;
-	 sym) ref=refs/heads/sym ;;
-	   *) ref=$1 ;;
-	esac
-	format=$2
-	test_do=test_expect_${4:-success}
+test_bad_atom() {
+  case "$1" in
+    head) ref=refs/heads/main ;;
+    tag) ref=refs/tags/testtag ;;
+    sym) ref=refs/heads/sym ;;
+    *) ref=$1 ;;
+  esac
+  format=$2
+  test_do=test_expect_${4:-success}
 
-	printf '%s\n' "$3" >expect
-	$test_do $PREREQ "err basic atom: $ref $format" '
+  printf '%s\n' "$3" >expect
+  $test_do $PREREQ "err basic atom: $ref $format" '
 		test_must_fail git for-each-ref \
 			--format="%($format)" "$ref" 2>error &&
 		test_cmp expect error
@@ -337,65 +336,64 @@ test_bad_atom () {
 }
 
 test_bad_atom head 'authoremail:foo' \
-	'fatal: unrecognized %(authoremail) argument: foo'
+  'fatal: unrecognized %(authoremail) argument: foo'
 
 test_bad_atom head 'authoremail:mailmap,trim,bar' \
-	'fatal: unrecognized %(authoremail) argument: bar'
+  'fatal: unrecognized %(authoremail) argument: bar'
 
 test_bad_atom head 'authoremail:trim,' \
-	'fatal: unrecognized %(authoremail) argument: '
+  'fatal: unrecognized %(authoremail) argument: '
 
 test_bad_atom head 'authoremail:mailmaptrim' \
-	'fatal: unrecognized %(authoremail) argument: trim'
+  'fatal: unrecognized %(authoremail) argument: trim'
 
 test_bad_atom head 'committeremail: ' \
-	'fatal: unrecognized %(committeremail) argument:  '
+  'fatal: unrecognized %(committeremail) argument:  '
 
 test_bad_atom head 'committeremail: trim,foo' \
-	'fatal: unrecognized %(committeremail) argument:  trim,foo'
+  'fatal: unrecognized %(committeremail) argument:  trim,foo'
 
 test_bad_atom head 'committeremail:mailmap,localpart ' \
-	'fatal: unrecognized %(committeremail) argument:  '
+  'fatal: unrecognized %(committeremail) argument:  '
 
 test_bad_atom head 'committeremail:trim_localpart' \
-	'fatal: unrecognized %(committeremail) argument: _localpart'
+  'fatal: unrecognized %(committeremail) argument: _localpart'
 
 test_bad_atom head 'committeremail:localpart,,,trim' \
-	'fatal: unrecognized %(committeremail) argument: ,,trim'
+  'fatal: unrecognized %(committeremail) argument: ,,trim'
 
 test_bad_atom tag 'taggeremail:mailmap,trim, foo ' \
-	'fatal: unrecognized %(taggeremail) argument:  foo '
+  'fatal: unrecognized %(taggeremail) argument:  foo '
 
 test_bad_atom tag 'taggeremail:trim,localpart,' \
-	'fatal: unrecognized %(taggeremail) argument: '
+  'fatal: unrecognized %(taggeremail) argument: '
 
 test_bad_atom tag 'taggeremail:mailmap;localpart trim' \
-	'fatal: unrecognized %(taggeremail) argument: ;localpart trim'
+  'fatal: unrecognized %(taggeremail) argument: ;localpart trim'
 
 test_bad_atom tag 'taggeremail:localpart trim' \
-	'fatal: unrecognized %(taggeremail) argument:  trim'
+  'fatal: unrecognized %(taggeremail) argument:  trim'
 
 test_bad_atom tag 'taggeremail:mailmap,mailmap,trim,qux,localpart,trim' \
-	'fatal: unrecognized %(taggeremail) argument: qux,localpart,trim'
+  'fatal: unrecognized %(taggeremail) argument: qux,localpart,trim'
 
-test_date () {
-	f=$1 &&
-	committer_date=$2 &&
-	author_date=$3 &&
-	tagger_date=$4 &&
-	cat >expected <<-EOF &&
+test_date() {
+  f=$1 \
+    && committer_date=$2 \
+    && author_date=$3 \
+    && tagger_date=$4 \
+    && cat >expected <<-EOF && (
 	'refs/heads/main' '$committer_date' '$author_date'
 	'refs/tags/testtag' '$tagger_date'
 	EOF
-	(
-		git for-each-ref --shell \
-			--format="%(refname) %(committerdate${f:+:$f}) %(authordate${f:+:$f})" \
-			refs/heads &&
-		git for-each-ref --shell \
-			--format="%(refname) %(taggerdate${f:+:$f})" \
-			refs/tags
-	) >actual &&
-	test_cmp expected actual
+      git for-each-ref --shell \
+        --format="%(refname) %(committerdate${f:+:$f}) %(authordate${f:+:$f})" \
+        refs/heads \
+        && git for-each-ref --shell \
+          --format="%(refname) %(taggerdate${f:+:$f})" \
+          refs/tags
+    ) >actual \
+    && test_cmp expected actual
 }
 
 test_expect_success 'Check unformatted date fields output' '
@@ -516,7 +514,6 @@ test_expect_success 'Verify ascending sort' '
 	test_cmp expected actual
 '
 
-
 cat >expected <<\EOF
 refs/tags/testtag
 refs/remotes/origin/main
@@ -627,7 +624,7 @@ test_expect_success 'Quoting style: tcl' '
 '
 
 for i in "--perl --shell" "-s --python" "--python --tcl" "--tcl --perl"; do
-	test_expect_success "more than one quoting style: $i" "
+  test_expect_success "more than one quoting style: $i" "
 		test_must_fail git for-each-ref $i 2>err &&
 		grep '^error: more than one quoting style' err
 	"
@@ -1419,8 +1416,8 @@ Acked-by: A U Thor
   <author@example.com>
 EOF
 
-unfold () {
-	perl -0pe 's/\n\s+/ /g'
+unfold() {
+  perl -0pe 's/\n\s+/ /g'
 }
 
 test_expect_success 'set up trailers for next test' '
@@ -1435,10 +1432,10 @@ test_expect_success 'set up trailers for next test' '
 	EOF
 '
 
-test_trailer_option () {
-	title=$1 option=$2
-	cat >expect
-	test_expect_success "$title" '
+test_trailer_option() {
+  title=$1 option=$2
+  cat >expect
+  test_expect_success "$title" '
 		git for-each-ref --format="%($option)" refs/heads/main >actual &&
 		test_cmp expect actual &&
 		git for-each-ref --format="%(contents:$option)" refs/heads/main >actual &&
@@ -1447,116 +1444,116 @@ test_trailer_option () {
 }
 
 test_trailer_option '%(trailers:unfold) unfolds trailers' \
-	'trailers:unfold' <<-EOF
+  'trailers:unfold' <<-EOF
 	$(unfold <trailers)
 
 	EOF
 
 test_trailer_option '%(trailers:only) shows only "key: value" trailers' \
-	'trailers:only' <<-EOF
+  'trailers:only' <<-EOF
 	$(grep -v patch.description <trailers)
 
 	EOF
 
 test_trailer_option '%(trailers:only=no,only=true) shows only "key: value" trailers' \
-	'trailers:only=no,only=true' <<-EOF
+  'trailers:only=no,only=true' <<-EOF
 	$(grep -v patch.description <trailers)
 
 	EOF
 
 test_trailer_option '%(trailers:only=yes) shows only "key: value" trailers' \
-	'trailers:only=yes' <<-EOF
+  'trailers:only=yes' <<-EOF
 	$(grep -v patch.description <trailers)
 
 	EOF
 
 test_trailer_option '%(trailers:only=no) shows all trailers' \
-	'trailers:only=no' <<-EOF
+  'trailers:only=no' <<-EOF
 	$(cat trailers)
 
 	EOF
 
 test_trailer_option '%(trailers:only) and %(trailers:unfold) work together' \
-	'trailers:only,unfold' <<-EOF
+  'trailers:only,unfold' <<-EOF
 	$(grep -v patch.description <trailers | unfold)
 
 	EOF
 
 test_trailer_option '%(trailers:unfold) and %(trailers:only) work together' \
-	'trailers:unfold,only' <<-EOF
+  'trailers:unfold,only' <<-EOF
 	$(grep -v patch.description <trailers | unfold)
 
 	EOF
 
 test_trailer_option '%(trailers:key=foo) shows that trailer' \
-	'trailers:key=Signed-off-by' <<-EOF
+  'trailers:key=Signed-off-by' <<-EOF
 	Signed-off-by: A U Thor <author@example.com>
 
 	EOF
 
 test_trailer_option '%(trailers:key=foo) is case insensitive' \
-	'trailers:key=SiGned-oFf-bY' <<-EOF
+  'trailers:key=SiGned-oFf-bY' <<-EOF
 	Signed-off-by: A U Thor <author@example.com>
 
 	EOF
 
 test_trailer_option '%(trailers:key=foo:) trailing colon also works' \
-	'trailers:key=Signed-off-by:' <<-EOF
+  'trailers:key=Signed-off-by:' <<-EOF
 	Signed-off-by: A U Thor <author@example.com>
 
 	EOF
 
 test_trailer_option '%(trailers:key=foo) multiple keys' \
-	'trailers:key=Reviewed-by:,key=Signed-off-by' <<-EOF
+  'trailers:key=Reviewed-by:,key=Signed-off-by' <<-EOF
 	Reviewed-by: A U Thor <author@example.com>
 	Signed-off-by: A U Thor <author@example.com>
 
 	EOF
 
 test_trailer_option '%(trailers:key=nonexistent) becomes empty' \
-	'trailers:key=Shined-off-by:' <<-EOF
+  'trailers:key=Shined-off-by:' <<-EOF
 
 	EOF
 
 test_trailer_option '%(trailers:key=foo) handles multiple lines even if folded' \
-	'trailers:key=Acked-by' <<-EOF
+  'trailers:key=Acked-by' <<-EOF
 	$(grep -v patch.description <trailers | grep -v Signed-off-by | grep -v Reviewed-by)
 
 	EOF
 
 test_trailer_option '%(trailers:key=foo,unfold) properly unfolds' \
-	'trailers:key=Signed-Off-by,unfold' <<-EOF
+  'trailers:key=Signed-Off-by,unfold' <<-EOF
 	$(unfold <trailers | grep Signed-off-by)
 
 	EOF
 
 test_trailer_option '%(trailers:key=foo,only=no) also includes nontrailer lines' \
-	'trailers:key=Signed-off-by,only=no' <<-EOF
+  'trailers:key=Signed-off-by,only=no' <<-EOF
 	Signed-off-by: A U Thor <author@example.com>
 	$(grep patch.description <trailers)
 
 	EOF
 
 test_trailer_option '%(trailers:key=foo,valueonly) shows only value' \
-	'trailers:key=Signed-off-by,valueonly' <<-EOF
+  'trailers:key=Signed-off-by,valueonly' <<-EOF
 	A U Thor <author@example.com>
 
 	EOF
 
 test_trailer_option '%(trailers:separator) changes separator' \
-	'trailers:separator=%x2C,key=Reviewed-by,key=Signed-off-by:' <<-EOF
+  'trailers:separator=%x2C,key=Reviewed-by,key=Signed-off-by:' <<-EOF
 	Reviewed-by: A U Thor <author@example.com>,Signed-off-by: A U Thor <author@example.com>
 	EOF
 
 test_trailer_option '%(trailers:key_value_separator) changes key-value separator' \
-	'trailers:key_value_separator=%x2C,key=Reviewed-by,key=Signed-off-by:' <<-EOF
+  'trailers:key_value_separator=%x2C,key=Reviewed-by,key=Signed-off-by:' <<-EOF
 	Reviewed-by,A U Thor <author@example.com>
 	Signed-off-by,A U Thor <author@example.com>
 
 	EOF
 
 test_trailer_option '%(trailers:separator,key_value_separator) changes both separators' \
-	'trailers:separator=%x2C,key_value_separator=%x2C,key=Reviewed-by,key=Signed-off-by:' <<-EOF
+  'trailers:separator=%x2C,key_value_separator=%x2C,key=Reviewed-by,key=Signed-off-by:' <<-EOF
 	Reviewed-by,A U Thor <author@example.com>,Signed-off-by,A U Thor <author@example.com>
 	EOF
 
@@ -1579,10 +1576,10 @@ test_expect_success 'multiple %(trailers) use their own options' '
 	test_cmp expect actual
 '
 
-test_failing_trailer_option () {
-	title=$1 option=$2
-	cat >expect
-	test_expect_success "$title" '
+test_failing_trailer_option() {
+  title=$1 option=$2
+  cat >expect
+  test_expect_success "$title" '
 		# error message cannot be checked under i18n
 		test_must_fail git for-each-ref --format="%($option)" refs/heads/main 2>actual &&
 		test_cmp expect actual &&
@@ -1592,12 +1589,12 @@ test_failing_trailer_option () {
 }
 
 test_failing_trailer_option '%(trailers) rejects unknown trailers arguments' \
-	'trailers:unsupported' <<-\EOF
+  'trailers:unsupported' <<-\EOF
 	fatal: unknown %(trailers) argument: unsupported
 	EOF
 
 test_failing_trailer_option '%(trailers:key) without value is error' \
-	'trailers:key' <<-\EOF
+  'trailers:key' <<-\EOF
 	fatal: expected %(trailers:key=<value>)
 	EOF
 
@@ -1850,7 +1847,10 @@ test_atom refs/tags/fake-sig-crlf contents:body ''
 # through append_cr. But test_atom requires a shell string, which means command
 # substitution, and the shell will strip trailing newlines from the output of
 # the substitution. Hack around it by adding and then removing a dummy line.
-sig_crlf="$(printf "%s" "$sig" | append_cr; echo dummy)"
+sig_crlf="$(
+  printf "%s" "$sig" | append_cr
+  echo dummy
+)"
 sig_crlf=${sig_crlf%dummy}
 test_atom refs/tags/fake-sig-crlf contents:signature "$sig_crlf"
 

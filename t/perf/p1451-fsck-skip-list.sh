@@ -20,21 +20,20 @@ test_expect_success "setup $n bad commits" '
 '
 
 skip=0
-while test $skip -le $n
-do
-	test_expect_success "create skipList for $skip bad commits" '
+while test $skip -le $n; do
+  test_expect_success "create skipList for $skip bad commits" '
 		git log --format=%H --max-count=$skip |
 		sort >skiplist
 	'
 
-	test_perf "fsck with $skip skipped bad commits" '
+  test_perf "fsck with $skip skipped bad commits" '
 		git -c fsck.skipList=skiplist fsck
 	'
 
-	case $skip in
-	0) skip=1 ;;
-	*) skip=${skip}0 ;;
-	esac
+  case $skip in
+    0) skip=1 ;;
+    *) skip=${skip}0 ;;
+  esac
 done
 
 test_done

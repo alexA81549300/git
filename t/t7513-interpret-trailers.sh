@@ -647,19 +647,18 @@ test_expect_success 'with 2 files arguments' '
 '
 
 # Cover multiple comment characters with the same test input.
-for char in "#" ";"
-do
-	case "$char" in
-	"#")
-		# This is the default, so let's explicitly _not_
-		# set any config to make sure it behaves as we expect.
-		;;
-	*)
-		config="-c core.commentChar=$char"
-		;;
-	esac
+for char in "#" ";"; do
+  case "$char" in
+    "#")
+      # This is the default, so let's explicitly _not_
+      # set any config to make sure it behaves as we expect.
+      ;;
+    *)
+      config="-c core.commentChar=$char"
+      ;;
+  esac
 
-	test_expect_success "with message that has comments ($char)" '
+  test_expect_success "with message that has comments ($char)" '
 		cat basic_message >message_with_comments &&
 		sed -e "s/ Z\$/ /" \
 		    -e "s/#/$char/g" >>message_with_comments <<-EOF &&

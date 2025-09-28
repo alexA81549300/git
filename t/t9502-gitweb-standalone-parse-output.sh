@@ -9,7 +9,6 @@ This test runs gitweb (git web interface) as a CGI script from the
 commandline, and checks that it produces the correct output, either
 in the HTTP header or the actual script output.'
 
-
 GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME=main
 export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
@@ -37,13 +36,13 @@ EOF
 # (gitweb message body) has <prefix> as prefix for all files in tarfile
 #
 # <prefix> default to <basename>
-check_snapshot () {
-	basename=$1
-	prefix=${2:-"$1"}
-	echo "basename=$basename"
-	grep "filename=.*$basename.tar" gitweb.headers >/dev/null 2>&1 &&
-	"$TAR" tf gitweb.body >file_list &&
-	! grep -v -e "^$prefix$" -e "^$prefix/" -e "^pax_global_header$" file_list
+check_snapshot() {
+  basename=$1
+  prefix=${2:-"$1"}
+  echo "basename=$basename"
+  grep "filename=.*$basename.tar" gitweb.headers >/dev/null 2>&1 \
+    && "$TAR" tf gitweb.body >file_list \
+    && ! grep -v -e "^$prefix$" -e "^$prefix/" -e "^pax_global_header$" file_list
 }
 
 test_expect_success setup '
@@ -191,13 +190,13 @@ test_expect_success 'forks: project_index lists all projects (incl. forks)' '
 '
 
 xss() {
-	echo >&2 "Checking $*..." &&
-	gitweb_run "$@" &&
-	if grep "$TAG" gitweb.body; then
-		echo >&2 "xss: $TAG should have been quoted in output"
-		return 1
-	fi
-	return 0
+  echo >&2 "Checking $*..." \
+    && gitweb_run "$@" \
+    && if grep "$TAG" gitweb.body; then
+      echo >&2 "xss: $TAG should have been quoted in output"
+      return 1
+    fi
+  return 0
 }
 
 test_expect_success 'xss checks' '
@@ -208,8 +207,8 @@ test_expect_success 'xss checks' '
 '
 
 no_http_equiv_content_type() {
-	gitweb_run "$@" &&
-	! grep -E "http-equiv=['\"]?content-type" gitweb.body
+  gitweb_run "$@" \
+    && ! grep -E "http-equiv=['\"]?content-type" gitweb.body
 }
 
 # See: <https://html.spec.whatwg.org/dev/semantics.html#attr-meta-http-equiv-content-type>
@@ -221,10 +220,10 @@ test_expect_success 'no http-equiv="content-type" in XHTML' '
 '
 
 proper_doctype() {
-	gitweb_run "$@" &&
-	grep -F "<!DOCTYPE html [" gitweb.body &&
-	grep "<!ENTITY nbsp" gitweb.body &&
-	grep "<!ENTITY sdot" gitweb.body
+  gitweb_run "$@" \
+    && grep -F "<!DOCTYPE html [" gitweb.body \
+    && grep "<!ENTITY nbsp" gitweb.body \
+    && grep "<!ENTITY sdot" gitweb.body
 }
 
 test_expect_success 'Proper DOCTYPE with entity declarations' '

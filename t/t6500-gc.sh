@@ -210,25 +210,23 @@ test_expect_success 'gc.repackFilterTo store filtered out objects' '
 	test_stdout_line_count = 1 ls filtered.git/objects/pack/*.pack
 '
 
-prepare_cruft_history () {
-	test_commit base &&
-
-	test_commit --no-tag foo &&
-	test_commit --no-tag bar &&
-	git reset HEAD^^
+prepare_cruft_history() {
+  test_commit base \
+    && test_commit --no-tag foo \
+    && test_commit --no-tag bar \
+    && git reset HEAD^^
 }
 
-assert_no_cruft_packs () {
-	find .git/objects/pack -name "*.mtimes" >mtimes &&
-	test_must_be_empty mtimes
+assert_no_cruft_packs() {
+  find .git/objects/pack -name "*.mtimes" >mtimes \
+    && test_must_be_empty mtimes
 }
 
 for argv in \
-	"gc" \
-	"-c gc.cruftPacks=true gc" \
-	"-c gc.cruftPacks=false gc --cruft"
-do
-	test_expect_success "git $argv generates a cruft pack" '
+  "gc" \
+  "-c gc.cruftPacks=true gc" \
+  "-c gc.cruftPacks=false gc --cruft"; do
+  test_expect_success "git $argv generates a cruft pack" '
 		test_when_finished "rm -fr repo" &&
 		git init repo &&
 		(
@@ -250,11 +248,10 @@ do
 done
 
 for argv in \
-	"gc --no-cruft" \
-	"-c gc.cruftPacks=false gc" \
-	"-c gc.cruftPacks=true gc --no-cruft"
-do
-	test_expect_success "git $argv does not generate a cruft pack" '
+  "gc --no-cruft" \
+  "-c gc.cruftPacks=false gc" \
+  "-c gc.cruftPacks=true gc --no-cruft"; do
+  test_expect_success "git $argv does not generate a cruft pack" '
 		test_when_finished "rm -fr repo" &&
 		git init repo &&
 		(
@@ -354,7 +351,6 @@ test_expect_success '--expire-to with --prune=now sets repack --expire-to' '
 	test_subcommand git repack -d -l --cruft --cruft-expiration=now --expire-to="$expire_to" <trace2.txt
 '
 
-
 test_expect_success '--expire-to with --no-cruft sets repack -A' '
 	rm -rf expired &&
 	mkdir expired &&
@@ -371,14 +367,14 @@ test_expect_success '--expire-to with --no-cruft sets repack -a' '
 	test_subcommand git repack -d -l -a <trace2.txt
 '
 
-run_and_wait_for_gc () {
-	# We read stdout from gc for the side effect of waiting until the
-	# background gc process exits, closing its fd 9.  Furthermore, the
-	# variable assignment from a command substitution preserves the
-	# exit status of the main gc process.
-	# Note: this fd trickery doesn't work on Windows, but there is no
-	# need to, because on Win the auto gc always runs in the foreground.
-	doesnt_matter=$(git gc "$@" 9>&1)
+run_and_wait_for_gc() {
+  # We read stdout from gc for the side effect of waiting until the
+  # background gc process exits, closing its fd 9.  Furthermore, the
+  # variable assignment from a command substitution preserves the
+  # exit status of the main gc process.
+  # Note: this fd trickery doesn't work on Windows, but there is no
+  # need to, because on Win the auto gc always runs in the foreground.
+  doesnt_matter=$(git gc "$@" 9>&1)
 }
 
 test_expect_success 'background auto gc does not run if gc.log is present and recent but does if it is old' '

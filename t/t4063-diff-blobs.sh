@@ -4,22 +4,22 @@ test_description='test direct comparison of blobs via git-diff'
 
 . ./test-lib.sh
 
-run_diff () {
-	# use full-index to make it easy to match the index line
-	git diff --full-index "$@" >diff
+run_diff() {
+  # use full-index to make it easy to match the index line
+  git diff --full-index "$@" >diff
 }
 
-check_index () {
-	grep "^index $1\\.\\.$2" diff
+check_index() {
+  grep "^index $1\\.\\.$2" diff
 }
 
-check_mode () {
-	grep "^old mode $1" diff &&
-	grep "^new mode $2" diff
+check_mode() {
+  grep "^old mode $1" diff \
+    && grep "^new mode $2" diff
 }
 
-check_paths () {
-	grep "^diff --git a/$1 b/$2" diff
+check_paths() {
+  grep "^diff --git a/$1 b/$2" diff
 }
 
 test_expect_success 'create some blobs' '

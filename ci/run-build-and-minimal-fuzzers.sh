@@ -6,12 +6,12 @@
 . ${0%/*}/lib.sh
 
 group "Build fuzzers" make \
-	NO_CURL=NoThanks \
-	CC=clang \
-	FUZZ_CXX=clang++ \
-	CFLAGS="-fsanitize=fuzzer-no-link,address" \
-	LIB_FUZZING_ENGINE="-fsanitize=fuzzer,address" \
-	fuzz-all
+  NO_CURL=NoThanks \
+  CC=clang \
+  FUZZ_CXX=clang++ \
+  CFLAGS="-fsanitize=fuzzer-no-link,address" \
+  LIB_FUZZING_ENGINE="-fsanitize=fuzzer,address" \
+  fuzz-all
 
 fuzzers="
 commit-graph
@@ -25,7 +25,7 @@ url-decode-mem
 "
 
 for fuzzer in $fuzzers; do
-	begin_group "fuzz-$fuzzer"
-	./oss-fuzz/fuzz-$fuzzer -verbosity=0 -runs=1 || exit 1
-	end_group "fuzz-$fuzzer"
+  begin_group "fuzz-$fuzzer"
+  ./oss-fuzz/fuzz-$fuzzer -verbosity=0 -runs=1 || exit 1
+  end_group "fuzz-$fuzzer"
 done

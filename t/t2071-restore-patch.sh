@@ -44,9 +44,8 @@ test_expect_success 'git restore -p with staged changes' '
 	verify_state dir/foo index index
 '
 
-for opt in "HEAD" "@"
-do
-	test_expect_success "git restore -p --source=$opt" '
+for opt in "HEAD" "@"; do
+  test_expect_success "git restore -p --source=$opt" '
 		set_state dir/foo work index &&
 		# the third n is to get out in case it mistakenly does not apply
 		test_write_lines n y n | git restore -p --source=$opt >output &&

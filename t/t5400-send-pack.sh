@@ -196,19 +196,19 @@ test_expect_success 'receive-pack runs auto-gc in remote repo' '
 '
 
 rewound_push_setup() {
-	rm -rf parent child &&
-	mkdir parent &&
-	(
-		cd parent &&
-		git init &&
-		echo one >file && git add file && git commit -m one &&
-		git config receive.denyCurrentBranch warn &&
-		echo two >file && git commit -a -m two
-	) &&
-	git clone parent child &&
-	(
-		cd child && git reset --hard HEAD^
-	)
+  rm -rf parent child \
+    && mkdir parent \
+    && (
+      cd parent \
+        && git init \
+        && echo one >file && git add file && git commit -m one \
+        && git config receive.denyCurrentBranch warn \
+        && echo two >file && git commit -a -m two
+    ) \
+    && git clone parent child \
+    && (
+      cd child && git reset --hard HEAD^
+    )
 }
 
 test_expect_success 'pushing explicit refspecs respects forcing' '
@@ -259,8 +259,8 @@ test_expect_success 'deny pushing to delete current branch' '
 	)
 '
 
-extract_ref_advertisement () {
-	perl -lne '
+extract_ref_advertisement() {
+  perl -lne '
 		# \\ is there to skip capabilities after \0
 		/push< ([^\\]+)/ or next;
 		exit 0 if $1 eq "0000";

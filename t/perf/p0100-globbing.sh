@@ -26,16 +26,14 @@ test_expect_success 'setup' '
 	test_commit test $(cat refname).t "" $(cat refname).t
 '
 
-for i in $test_globs_small
-do
-	test_perf "refglob((a*)^nb) against tag (a^100).t; n = $i" '
+for i in $test_globs_small; do
+  test_perf "refglob((a*)^nb) against tag (a^100).t; n = $i" '
 		git for-each-ref "refs/tags/$(cat refglob.'$i')b"
 	'
 done
 
-for i in $test_globs_small
-do
-	test_perf "fileglob((a*)^nb) against file (a^100).t; n = $i" '
+for i in $test_globs_small; do
+  test_perf "fileglob((a*)^nb) against file (a^100).t; n = $i" '
 		git ls-files "$(cat refglob.'$i')b"
 	'
 done

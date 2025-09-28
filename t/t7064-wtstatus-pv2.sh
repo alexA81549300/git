@@ -6,7 +6,6 @@ This test exercises porcelain V2 output for git status.'
 
 . ./test-lib.sh
 
-
 test_expect_success setup '
 	git checkout -f --orphan initial-branch &&
 	test_tick &&

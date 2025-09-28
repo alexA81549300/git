@@ -12,21 +12,20 @@ test_expect_success 'set up conflicting branches' '
 	test_commit two file
 '
 
-create_conflict () {
-	test_when_finished "git rebase --abort" &&
-	git checkout -B tmp branch2 &&
-	test_must_fail git rebase branch1
+create_conflict() {
+  test_when_finished "git rebase --abort" \
+    && git checkout -B tmp branch2 \
+    && test_must_fail git rebase branch1
 }
 
-check_resolve_fails () {
-	echo resolved >file &&
-	git add file &&
-	test_must_fail git rebase --continue
+check_resolve_fails() {
+  echo resolved >file \
+    && git add file \
+    && test_must_fail git rebase --continue
 }
 
-for item in NAME EMAIL DATE
-do
-	test_expect_success "detect missing GIT_AUTHOR_$item" '
+for item in NAME EMAIL DATE; do
+  test_expect_success "detect missing GIT_AUTHOR_$item" '
 		create_conflict &&
 
 		grep -v $item .git/rebase-merge/author-script >tmp &&
@@ -36,9 +35,8 @@ do
 	'
 done
 
-for item in NAME EMAIL DATE
-do
-	test_expect_success "detect duplicate GIT_AUTHOR_$item" '
+for item in NAME EMAIL DATE; do
+  test_expect_success "detect duplicate GIT_AUTHOR_$item" '
 		create_conflict &&
 
 		grep -i $item .git/rebase-merge/author-script >tmp &&

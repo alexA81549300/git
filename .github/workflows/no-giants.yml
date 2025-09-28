@@ -1,0 +1,18 @@
+name: no-giants
+on: [push, pull_request]
+jobs:
+  size-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Block blobs >100MB (use LFS)
+        run: |
+          git rev-list --objects --no-object-names $(git merge-base HEAD origin/HEAD || echo HEAD)..HEAD \
+          | while read oid; do
+              sz=$(git cat-file -s "$oid" || echo 0)
+              if [ "$sz" -gt $((100*1024*1024)) ]; then
+                echo "❌ Large blob >100MB: $oid ($sz bytes). Use Git LFS." >&2
+                exit 1
+              fi
+            done

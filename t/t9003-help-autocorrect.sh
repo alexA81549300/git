@@ -28,9 +28,8 @@ test_expect_success 'setup' '
 	test_cmp expect actual
 '
 
-for show in false no off 0 show
-do
-	test_expect_success 'autocorrect showing candidates' '
+for show in false no off 0 show; do
+  test_expect_success 'autocorrect showing candidates' '
 		git config help.autocorrect $show &&
 
 		test_must_fail git lfg 2>actual &&
@@ -41,9 +40,8 @@ do
 	'
 done
 
-for immediate in -1 immediate
-do
-	test_expect_success 'autocorrect running commands' '
+for immediate in -1 immediate; do
+  test_expect_success 'autocorrect running commands' '
 		git config help.autocorrect $immediate &&
 
 		git lfg >actual &&

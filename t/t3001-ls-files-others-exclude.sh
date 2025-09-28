@@ -11,13 +11,11 @@ This test runs git ls-files --others and tests --exclude patterns.
 . ./test-lib.sh
 
 rm -fr one three
-for dir in . one one/two three
-do
-  mkdir -p $dir &&
-  for i in 1 2 3 4 5 6 7 8
-  do
-    >$dir/a.$i
-  done
+for dir in . one one/two three; do
+  mkdir -p $dir \
+    && for i in 1 2 3 4 5 6 7 8; do
+      >$dir/a.$i
+    done
 done
 >"#ignore1"
 >"#ignore2"
@@ -107,7 +105,7 @@ test_expect_success 'restore gitignore' '
 	rm .git/index
 '
 
-cat > excludes-file <<\EOF
+cat >excludes-file <<\EOF
 *.[1-8]
 e*
 \#*
@@ -115,9 +113,9 @@ EOF
 
 git config core.excludesFile excludes-file
 
-git -c status.displayCommentPrefix=true status | grep "^#	" > output
+git -c status.displayCommentPrefix=true status | grep "^#	" >output
 
-cat > expect << EOF
+cat >expect <<EOF
 #	.gitignore
 #	a.6
 #	one/
@@ -126,7 +124,7 @@ cat > expect << EOF
 EOF
 
 test_expect_success 'git status honors core.excludesfile' \
-	'test_cmp expect output'
+  'test_cmp expect output'
 
 test_expect_success 'trailing slash in exclude allows directory match(1)' '
 

@@ -19,25 +19,25 @@ ASan or valgrind for more confidence.
 
 # the general idea for tags and commits is to build up the "base" file
 # progressively, and then test new truncations on top of it.
-reset () {
-	test_expect_success 'reset input to empty' '
+reset() {
+  test_expect_success 'reset input to empty' '
 		>base
 	'
 }
 
-add () {
-	content="$1"
-	type=${content%% *}
-	test_expect_success "add $type line" '
+add() {
+  content="$1"
+  type=${content%% *}
+  test_expect_success "add $type line" '
 		echo "$content" >>base
 	'
 }
 
-check () {
-	type=$1
-	fsck=$2
-	content=$3
-	test_expect_success "truncated $type ($fsck, \"$content\")" '
+check() {
+  type=$1
+  fsck=$2
+  content=$3
+  test_expect_success "truncated $type ($fsck, \"$content\")" '
 		# do not pipe into hash-object here; we want to increase
 		# the chance that it uses a fixed-size buffer or mmap,
 		# and a pipe would be read into a strbuf.
@@ -75,16 +75,16 @@ add "parent $commit"
 check commit missingAuthor ""
 check commit missingAuthor "au"
 check commit missingAuthor "author"
-ident_checks () {
-	check $1 missingEmail "$2 "
-	check $1 missingEmail "$2 name"
-	check $1 badEmail "$2 name <"
-	check $1 badEmail "$2 name <email"
-	check $1 missingSpaceBeforeDate "$2 name <email>"
-	check $1 badDate "$2 name <email> "
-	check $1 badDate "$2 name <email> 1234"
-	check $1 badTimezone "$2 name <email> 1234 "
-	check $1 badTimezone "$2 name <email> 1234 +"
+ident_checks() {
+  check $1 missingEmail "$2 "
+  check $1 missingEmail "$2 name"
+  check $1 badEmail "$2 name <"
+  check $1 badEmail "$2 name <email"
+  check $1 missingSpaceBeforeDate "$2 name <email>"
+  check $1 badDate "$2 name <email> "
+  check $1 badDate "$2 name <email> 1234"
+  check $1 badTimezone "$2 name <email> 1234 "
+  check $1 badTimezone "$2 name <email> 1234 +"
 }
 ident_checks commit author
 add "author name <email> 1234 +0000"

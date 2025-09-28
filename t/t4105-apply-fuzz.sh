@@ -2,12 +2,11 @@
 
 test_description='apply with fuzz and offset'
 
-
 . ./test-lib.sh
 
-dotest () {
-	name="$1" && shift &&
-	test_expect_success "$name" "
+dotest() {
+  name="$1" && shift \
+    && test_expect_success "$name" "
 		git checkout-index -f -q -u file &&
 		git apply $* &&
 		test_cmp expect file

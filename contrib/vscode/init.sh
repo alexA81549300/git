@@ -1,19 +1,19 @@
 #!/bin/sh
 
-die () {
-	echo "$*" >&2
-	exit 1
+die() {
+  echo "$*" >&2
+  exit 1
 }
 
-cd "$(dirname "$0")"/../.. ||
-die "Could not cd to top-level directory"
+cd "$(dirname "$0")"/../.. \
+  || die "Could not cd to top-level directory"
 
-mkdir -p .vscode ||
-die "Could not create .vscode/"
+mkdir -p .vscode \
+  || die "Could not create .vscode/"
 
 # General settings
 
-cat >.vscode/settings.json.new <<\EOF ||
+cat >.vscode/settings.json.new <<\EOF || die "Could not write settings.json"
 {
     "C_Cpp.intelliSenseEngine": "Default",
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
@@ -207,8 +207,6 @@ cat >.vscode/settings.json.new <<\EOF ||
     ],
 }
 EOF
-die "Could not write settings.json"
-
 # Infer some setup-specific locations/names
 
 GCCPATH="$(which gcc)"
@@ -217,25 +215,25 @@ MAKECOMMAND="make -j5 DEVELOPER=1"
 OSNAME=
 X=
 case "$(uname -s)" in
-MINGW*)
-	GCCPATH="$(cygpath -am "$GCCPATH")"
-	GDBPATH="$(cygpath -am "$GDBPATH")"
-	MAKE_BASH="$(cygpath -am /git-cmd.exe) --command=usr\\\\bin\\\\bash.exe"
-	MAKECOMMAND="$MAKE_BASH -lc \\\"$MAKECOMMAND\\\""
-	OSNAME=Win32
-	X=.exe
-	;;
-Linux)
-	OSNAME=Linux
-	;;
-Darwin)
-	OSNAME=macOS
-	;;
+  MINGW*)
+    GCCPATH="$(cygpath -am "$GCCPATH")"
+    GDBPATH="$(cygpath -am "$GDBPATH")"
+    MAKE_BASH="$(cygpath -am /git-cmd.exe) --command=usr\\\\bin\\\\bash.exe"
+    MAKECOMMAND="$MAKE_BASH -lc \\\"$MAKECOMMAND\\\""
+    OSNAME=Win32
+    X=.exe
+    ;;
+  Linux)
+    OSNAME=Linux
+    ;;
+  Darwin)
+    OSNAME=macOS
+    ;;
 esac
 
 # Default build task
 
-cat >.vscode/tasks.json.new <<EOF ||
+cat >.vscode/tasks.json.new <<EOF || die "Could not install default build task"
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
@@ -253,11 +251,9 @@ cat >.vscode/tasks.json.new <<EOF ||
     ]
 }
 EOF
-die "Could not install default build task"
-
 # Debugger settings
 
-cat >.vscode/launch.json.new <<EOF ||
+cat >.vscode/launch.json.new <<EOF || die "Could not write launch configuration"
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
@@ -287,12 +283,10 @@ cat >.vscode/launch.json.new <<EOF ||
     ]
 }
 EOF
-die "Could not write launch configuration"
-
 # C/C++ extension settings
 
 make -f - OSNAME=$OSNAME GCCPATH="$GCCPATH" vscode-init \
-	>.vscode/c_cpp_properties.json <<\EOF ||
+  >.vscode/c_cpp_properties.json <<\EOF || die "Could not write settings for the C/C++ extension"
 include Makefile
 
 vscode-init:
@@ -357,21 +351,16 @@ vscode-init:
 	echo '    "version": 4' && \
 	echo '}'
 EOF
-die "Could not write settings for the C/C++ extension"
-
-for file in .vscode/settings.json .vscode/tasks.json .vscode/launch.json
-do
-	if test -f $file
-	then
-		if git diff --no-index --quiet --exit-code $file $file.new
-		then
-			rm $file.new
-		else
-			printf "The file $file.new has these changes:\n\n"
-			git --no-pager diff --no-index $file $file.new
-			printf "\n\nMaybe \`mv $file.new $file\`?\n\n"
-		fi
-	else
-		mv $file.new $file
-	fi
+for file in .vscode/settings.json .vscode/tasks.json .vscode/launch.json; do
+  if test -f $file; then
+    if git diff --no-index --quiet --exit-code $file $file.new; then
+      rm $file.new
+    else
+      printf "The file $file.new has these changes:\n\n"
+      git --no-pager diff --no-index $file $file.new
+      printf "\n\nMaybe \`mv $file.new $file\`?\n\n"
+    fi
+  else
+    mv $file.new $file
+  fi
 done

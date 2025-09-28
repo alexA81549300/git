@@ -75,8 +75,8 @@ test_expect_success 'create series of packs' '
 '
 
 max_chain() {
-	git index-pack --verify-stat-only "$1" >output &&
-	perl -lne '
+  git index-pack --verify-stat-only "$1" >output \
+    && perl -lne '
 	  BEGIN { $len = 0 }
 	  /chain length = (\d+)/ and $len = $1;
 	  END { print $len }

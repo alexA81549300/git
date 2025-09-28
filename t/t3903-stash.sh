@@ -30,32 +30,31 @@ test_expect_success 'usage for subcommands should emit subcommand usage' '
 	grep -F "usage: git stash [push" usage
 '
 
-diff_cmp () {
-	for i in "$1" "$2"
-	do
-		sed -e 's/^index 0000000\.\.[0-9a-f]*/index 0000000..1234567/' \
-		-e 's/^index [0-9a-f]*\.\.[0-9a-f]*/index 1234567..89abcde/' \
-		-e 's/^index [0-9a-f]*,[0-9a-f]*\.\.[0-9a-f]*/index 1234567,7654321..89abcde/' \
-		"$i" >"$i.compare" || return 1
-	done &&
-	test_cmp "$1.compare" "$2.compare" &&
-	rm -f "$1.compare" "$2.compare"
+diff_cmp() {
+  for i in "$1" "$2"; do
+    sed -e 's/^index 0000000\.\.[0-9a-f]*/index 0000000..1234567/' \
+      -e 's/^index [0-9a-f]*\.\.[0-9a-f]*/index 1234567..89abcde/' \
+      -e 's/^index [0-9a-f]*,[0-9a-f]*\.\.[0-9a-f]*/index 1234567,7654321..89abcde/' \
+      "$i" >"$i.compare" || return 1
+  done \
+    && test_cmp "$1.compare" "$2.compare" \
+    && rm -f "$1.compare" "$2.compare"
 }
 
 setup_stash() {
-	echo 1 >file &&
-	git add file &&
-	echo unrelated >other-file &&
-	git add other-file &&
-	test_tick &&
-	git commit -m initial &&
-	echo 2 >file &&
-	git add file &&
-	echo 3 >file &&
-	test_tick &&
-	git stash &&
-	git diff-files --quiet &&
-	git diff-index --cached --quiet HEAD
+  echo 1 >file \
+    && git add file \
+    && echo unrelated >other-file \
+    && git add other-file \
+    && test_tick \
+    && git commit -m initial \
+    && echo 2 >file \
+    && git add file \
+    && echo 3 >file \
+    && test_tick \
+    && git stash \
+    && git diff-files --quiet \
+    && git diff-index --cached --quiet HEAD
 }
 
 test_expect_success 'stash some dirty working directory' '
@@ -1439,7 +1438,6 @@ test_expect_success 'stash handles skip-worktree entries nicely' '
 	git rev-parse --verify refs/stash:A.t
 '
 
-
 BATCH_CONFIGURATION='-c core.fsync=loose-object -c core.fsyncmethod=batch'
 
 test_expect_success 'stash with core.fsyncmethod=batch' "
@@ -1456,7 +1454,6 @@ test_expect_success 'stash with core.fsyncmethod=batch' "
 	git cat-file --batch-check='%(objectname)' <stashed_files_oids >stashed_files_actual &&
 	test_cmp stashed_files_oids stashed_files_actual
 "
-
 
 test_expect_success 'git stash succeeds despite directory/file change' '
 	test_create_repo directory_file_switch_v1 &&

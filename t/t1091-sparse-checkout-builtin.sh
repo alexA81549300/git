@@ -11,18 +11,18 @@ export GIT_TEST_SPLIT_INDEX
 . ./test-lib.sh
 
 list_files() {
-	# Do not replace this with 'ls "$1"', as "ls" with BSD-lineage
-	# enables "-A" by default for root and ends up including ".git" and
-	# such in its output. (Note, though, that running the test suite as
-	# root is generally not recommended.)
-	(cd "$1" && printf '%s\n' *)
+  # Do not replace this with 'ls "$1"', as "ls" with BSD-lineage
+  # enables "-A" by default for root and ends up including ".git" and
+  # such in its output. (Note, though, that running the test suite as
+  # root is generally not recommended.)
+  (cd "$1" && printf '%s\n' *)
 }
 
 check_files() {
-	list_files "$1" >actual &&
-	shift &&
-	printf "%s\n" $@ >expect &&
-	test_cmp expect actual
+  list_files "$1" >actual \
+    && shift \
+    && printf "%s\n" $@ >expect \
+    && test_cmp expect actual
 }
 
 test_expect_success 'setup' '
@@ -604,21 +604,20 @@ test_expect_success 'set using filename keeps file on-disk' '
 	check_files repo a deep
 '
 
-check_read_tree_errors () {
-	REPO=$1
-	FILES=$2
-	ERRORS=$3
-	git -C $REPO -c core.sparseCheckoutCone=false read-tree -mu HEAD 2>err &&
-	test_must_be_empty err &&
-	check_files $REPO "$FILES" &&
-	git -C $REPO read-tree -mu HEAD 2>err &&
-	if test -z "$ERRORS"
-	then
-		test_must_be_empty err
-	else
-		test_grep "$ERRORS" err
-	fi &&
-	check_files $REPO $FILES
+check_read_tree_errors() {
+  REPO=$1
+  FILES=$2
+  ERRORS=$3
+  git -C $REPO -c core.sparseCheckoutCone=false read-tree -mu HEAD 2>err \
+    && test_must_be_empty err \
+    && check_files $REPO "$FILES" \
+    && git -C $REPO read-tree -mu HEAD 2>err \
+    && if test -z "$ERRORS"; then
+      test_must_be_empty err
+    else
+      test_grep "$ERRORS" err
+    fi \
+    && check_files $REPO $FILES
 }
 
 test_expect_success 'pattern-checks: /A/**' '
@@ -1049,6 +1048,5 @@ test_expect_success 'check-rules null termination' '
 
 	test_cmp expect actual
 '
-
 
 test_done

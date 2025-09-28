@@ -360,30 +360,30 @@ test_expect_success 'transfer.hiderefs works over smart-http' '
 '
 
 # create an arbitrary number of tags, numbered from tag-$1 to tag-$2
-create_tags () {
-	rm -f marks &&
-	for i in $(test_seq "$1" "$2")
-	do
-		# don't use here-doc, because it requires a process
-		# per loop iteration
-		echo "commit refs/heads/too-many-refs-$1" &&
-		echo "mark :$i" &&
-		echo "committer git <git@example.com> $i +0000" &&
-		echo "data 0" &&
-		echo "M 644 inline bla.txt" &&
-		echo "data 4" &&
-		echo "bla" &&
-		# make every commit dangling by always
-		# rewinding the branch after each commit
-		echo "reset refs/heads/too-many-refs-$1" &&
-		echo "from :$1"
-	done | git fast-import --export-marks=marks &&
-
-	# now assign tags to all the dangling commits we created above
-	tag=$(perl -e "print \"bla\" x 30") &&
-	sed -e "s|^:\([^ ]*\) \(.*\)$|create refs/tags/$tag-\1 \2|" <marks >input &&
-	git update-ref --stdin <input &&
-	rm input
+create_tags() {
+  rm -f marks \
+    && for i in $(test_seq "$1" "$2"); do
+      # don't use here-doc, because it requires a process
+      # per loop iteration
+      echo "commit refs/heads/too-many-refs-$1" \
+      && echo "mark :$i" \
+        && echo "committer git <git@example.com> $i +0000" \
+        && echo "data 0" \
+        && echo "M 644 inline bla.txt" \
+        && echo "data 4" \
+        && echo "bla" \
+        &&
+        # make every commit dangling by always
+        # rewinding the branch after each commit
+        echo "reset refs/heads/too-many-refs-$1" \
+        && echo "from :$1"
+    done | git fast-import --export-marks=marks \
+    &&
+    # now assign tags to all the dangling commits we created above
+    tag=$(perl -e "print \"bla\" x 30") \
+    && sed -e "s|^:\([^ ]*\) \(.*\)$|create refs/tags/$tag-\1 \2|" <marks >input \
+    && git update-ref --stdin <input \
+    && rm input
 }
 
 test_expect_success 'create 2,000 tags in the repo' '
@@ -394,7 +394,7 @@ test_expect_success 'create 2,000 tags in the repo' '
 '
 
 test_expect_success CMDLINE_LIMIT \
-	'clone the 2,000 tag repo to check OS command line overflow' '
+  'clone the 2,000 tag repo to check OS command line overflow' '
 	run_with_limited_cmdline git clone $HTTPD_URL/smart/repo.git too-many-refs &&
 	(
 		cd too-many-refs &&
@@ -730,7 +730,6 @@ test_expect_success 'fetch warns or fails when using username:password' '
 	grep "fatal: $message" err >warnings &&
 	test_line_count -ge 1 warnings
 '
-
 
 test_expect_success 'push warns or fails when using username:password' '
 	git -c transfer.credentialsInUrl=allow push $url_userpass 2>err &&

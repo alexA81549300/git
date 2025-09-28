@@ -8,14 +8,13 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 delete_refs() {
-	dir=$1
-	shift
-	rm -rf deletes
-	for arg in $*
-	do
-		echo "delete ${arg}" >>deletes
-	done
-	git -C $dir update-ref --stdin < deletes
+  dir=$1
+  shift
+  rm -rf deletes
+  for arg in $*; do
+    echo "delete ${arg}" >>deletes
+  done
+  git -C $dir update-ref --stdin <deletes
 }
 
 test_expect_success 'setup bare remote' '
@@ -76,7 +75,6 @@ test_expect_success '--all or --branches can not be combined with --tags' '
 	test_cmp actual.all actual.branches &&
 	grep "cannot be used together" actual.all
 '
-
 
 test_expect_success '--all or --branches can not be combined with --delete' '
 	test_must_fail git push remote-1 --all --delete >actual.all 2>&1 &&

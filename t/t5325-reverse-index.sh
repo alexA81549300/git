@@ -20,14 +20,15 @@ test_expect_success 'setup' '
 	test_path_is_missing $rev
 '
 
-test_index_pack () {
-	rm -f $rev &&
-	conf=$1 &&
-	shift &&
-	# remove the index since Windows won't overwrite an existing file
-	rm $packdir/pack-$pack.idx &&
-	git -c pack.writeReverseIndex=$conf index-pack "$@" \
-		$packdir/pack-$pack.pack
+test_index_pack() {
+  rm -f $rev \
+    && conf=$1 \
+    && shift \
+    &&
+    # remove the index since Windows won't overwrite an existing file
+    rm $packdir/pack-$pack.idx \
+    && git -c pack.writeReverseIndex=$conf index-pack "$@" \
+      $packdir/pack-$pack.pack
 }
 
 test_expect_success 'index-pack with pack.writeReverseIndex' '
@@ -158,22 +159,20 @@ test_expect_success 'set up rev-index corruption tests' '
 	)
 '
 
-corrupt_rev_and_verify () {
-	(
-		pos="$1" &&
-		value="$2" &&
-		error="$3" &&
-
-		cd corrupt &&
-		revfile=$(ls .git/objects/pack/pack-*.rev) &&
-
-		# Reset to original rev-file.
-		cp $revfile.bak $revfile &&
-
-		printf "$value" | dd of=$revfile bs=1 seek="$pos" conv=notrunc &&
-		test_must_fail git fsck 2>err &&
-		grep "$error" err
-	)
+corrupt_rev_and_verify() {
+  (
+    pos="$1" \
+      && value="$2" \
+      && error="$3" \
+      && cd corrupt \
+      && revfile=$(ls .git/objects/pack/pack-*.rev) \
+      &&
+      # Reset to original rev-file.
+      cp $revfile.bak $revfile \
+      && printf "$value" | dd of=$revfile bs=1 seek="$pos" conv=notrunc \
+      && test_must_fail git fsck 2>err \
+      && grep "$error" err
+  )
 }
 
 test_expect_success 'fsck catches invalid checksum' '

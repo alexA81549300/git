@@ -28,24 +28,22 @@ test_expect_success 'setup repo' '
 '
 
 graph_read_expect() {
-	NUM_BASE=0
-	if test ! -z $2
-	then
-		NUM_BASE=$2
-	fi
-	OPTIONS=
-	if test -z "$3"
-	then
-		OPTIONS=" read_generation_data"
-	fi
-	cat >expect <<- EOF
+  NUM_BASE=0
+  if test ! -z $2; then
+    NUM_BASE=$2
+  fi
+  OPTIONS=
+  if test -z "$3"; then
+    OPTIONS=" read_generation_data"
+  fi
+  cat >expect <<-EOF
 	header: 43475048 1 $(test_oid oid_version) 4 $NUM_BASE
 	num_commits: $1
 	chunks: oid_fanout oid_lookup commit_metadata generation_data
 	options:$OPTIONS
 	EOF
-	test-tool read-graph >output &&
-	test_cmp expect output
+  test-tool read-graph >output \
+    && test_cmp expect output
 }
 
 test_expect_success POSIXPERM 'tweak umask for modebit tests' '
@@ -64,17 +62,17 @@ test_expect_success 'create commits and write commit-graph' '
 '
 
 graph_git_two_modes() {
-	git ${2:+ -C "$2"} -c core.commitGraph=true $1 >output &&
-	git ${2:+ -C "$2"} -c core.commitGraph=false $1 >expect &&
-	test_cmp expect output
+  git ${2:+ -C "$2"} -c core.commitGraph=true $1 >output \
+    && git ${2:+ -C "$2"} -c core.commitGraph=false $1 >expect \
+    && test_cmp expect output
 }
 
 graph_git_behavior() {
-	MSG=$1
-	BRANCH=$2
-	COMPARE=$3
-	DIR=$4
-	test_expect_success "check normal git operations: $MSG" '
+  MSG=$1
+  BRANCH=$2
+  COMPARE=$3
+  DIR=$4
+  test_expect_success "check normal git operations: $MSG" '
 		graph_git_two_modes "log --oneline $BRANCH" "$DIR" &&
 		graph_git_two_modes "log --topo-order $BRANCH" "$DIR" &&
 		graph_git_two_modes "log --graph $COMPARE..$BRANCH" "$DIR" &&
@@ -86,10 +84,9 @@ graph_git_behavior() {
 graph_git_behavior 'graph exists' commits/3 commits/1
 
 verify_chain_files_exist() {
-	for hash in $(cat $1/commit-graph-chain)
-	do
-		test_path_is_file $1/graph-$hash.graph || return 1
-	done
+  for hash in $(cat $1/commit-graph-chain); do
+    test_path_is_file $1/graph-$hash.graph || return 1
+  done
 }
 
 test_expect_success 'add more commits, and write a new base graph' '
@@ -197,9 +194,8 @@ test_expect_success 'create fork and chain across alternate' '
 	)
 '
 
-if test -d fork
-then
-	graph_git_behavior 'alternate: commit 13 vs 6' commits/13 origin/commits/6 "fork"
+if test -d fork; then
+  graph_git_behavior 'alternate: commit 13 vs 6' commits/13 origin/commits/6 "fork"
 fi
 
 test_expect_success 'test merge strategy constants' '
@@ -268,11 +264,11 @@ test_expect_success 'remove commit-graph-chain file after flattening' '
 '
 
 corrupt_file() {
-	file=$1
-	pos=$2
-	data="${3:-\0}"
-	chmod a+w "$file" &&
-	printf "$data" | dd of="$file" bs=1 seek="$pos" conv=notrunc
+  file=$1
+  pos=$2
+  data="${3:-\0}"
+  chmod a+w "$file" \
+    && printf "$data" | dd of="$file" bs=1 seek="$pos" conv=notrunc
 }
 
 test_expect_success 'verify hashes along chain, even in shallow' '
@@ -487,9 +483,8 @@ test_expect_success ULIMIT_FILE_DESCRIPTORS 'handles file descriptor exhaustion'
 	)
 '
 
-while read mode modebits
-do
-	test_expect_success POSIXPERM "split commit-graph respects core.sharedrepository $mode" '
+while read mode modebits; do
+  test_expect_success POSIXPERM "split commit-graph respects core.sharedrepository $mode" '
 		rm -rf $graphdir $infodir/commit-graph &&
 		git reset --hard commits/1 &&
 		test_config core.sharedrepository "$mode" &&

@@ -67,7 +67,7 @@ test_expect_success 'prompt - unborn branch' '
 '
 
 if test_have_prereq !FUNNYNAMES; then
-	say 'Your filesystem does not allow newlines in filenames.'
+  say 'Your filesystem does not allow newlines in filenames.'
 fi
 
 test_expect_success FUNNYNAMES 'prompt - with newline in path' '

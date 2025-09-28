@@ -28,8 +28,8 @@
 #
 #   ">" -- Add a blank line.
 
-set_fake_editor () {
-	write_script fake-editor.sh <<-\EOF
+set_fake_editor() {
+  write_script fake-editor.sh <<-\EOF
 	case "$1" in
 	*/COMMIT_EDITMSG)
 		test -z "$EXPECT_HEADER_COUNT" ||
@@ -77,7 +77,7 @@ set_fake_editor () {
 	cat "$1"
 	EOF
 
-	test_set_editor "$(pwd)/fake-editor.sh"
+  test_set_editor "$(pwd)/fake-editor.sh"
 }
 
 # After set_cat_todo_editor, rebase -i will write the todo list (ignoring
@@ -86,53 +86,53 @@ set_fake_editor () {
 # experience, for todo list changes that do not affect the outcome of
 # rebase; or as an extra check in addition to checking the outcome.
 
-set_cat_todo_editor () {
-	write_script fake-editor.sh <<-\EOF
+set_cat_todo_editor() {
+  write_script fake-editor.sh <<-\EOF
 	grep "^[^#]" "$1"
 	exit 1
 	EOF
-	test_set_editor "$(pwd)/fake-editor.sh"
+  test_set_editor "$(pwd)/fake-editor.sh"
 }
 
 # checks that the revisions in "$2" represent a linear range with the
 # subjects in "$1"
-test_linear_range () {
-	revlist_merges=$(git rev-list --merges "$2") &&
-	test -z "$revlist_merges" &&
-	expected=$1
-	set -- $(git log --reverse --format=%s "$2")
-	test "$expected" = "$*"
+test_linear_range() {
+  revlist_merges=$(git rev-list --merges "$2") \
+    && test -z "$revlist_merges" \
+    && expected=$1
+  set -- $(git log --reverse --format=%s "$2")
+  test "$expected" = "$*"
 }
 
-reset_rebase () {
-	test_might_fail git rebase --abort &&
-	git reset --hard &&
-	git clean -f
+reset_rebase() {
+  test_might_fail git rebase --abort \
+    && git reset --hard \
+    && git clean -f
 }
 
-cherry_pick () {
-	git cherry-pick -n "$2" &&
-	git commit -m "$1" &&
-	git tag "$1"
+cherry_pick() {
+  git cherry-pick -n "$2" \
+    && git commit -m "$1" \
+    && git tag "$1"
 }
 
-revert () {
-	git revert -n "$2" &&
-	git commit -m "$1" &&
-	git tag "$1"
+revert() {
+  git revert -n "$2" \
+    && git commit -m "$1" \
+    && git tag "$1"
 }
 
-make_empty () {
-	git commit --allow-empty -m "$1" &&
-	git tag "$1"
+make_empty() {
+  git commit --allow-empty -m "$1" \
+    && git tag "$1"
 }
 
 # Call this (inside test_expect_success) at the end of a test file to
 # check that no tests have changed editor related environment
 # variables or config settings
-test_editor_unchanged () {
-	# We're only interested in exported variables hence 'sh -c'
-	sh -c 'cat >actual <<-EOF
+test_editor_unchanged() {
+  # We're only interested in exported variables hence 'sh -c'
+  sh -c 'cat >actual <<-EOF
 	EDITOR=$EDITOR
 	FAKE_COMMIT_AMEND=$FAKE_COMMIT_AMEND
 	FAKE_COMMIT_MESSAGE=$FAKE_COMMIT_MESSAGE
@@ -142,7 +142,7 @@ test_editor_unchanged () {
 	core.editor=$(git config core.editor)
 	sequence.editor=$(git config sequence.editor)
 	EOF'
-	cat >expect <<-\EOF
+  cat >expect <<-\EOF
 	EDITOR=:
 	FAKE_COMMIT_AMEND=
 	FAKE_COMMIT_MESSAGE=
@@ -152,29 +152,27 @@ test_editor_unchanged () {
 	core.editor=
 	sequence.editor=
 	EOF
-	test_cmp expect actual
+  test_cmp expect actual
 }
 
 # Set up an editor for testing reword commands
 # Checks that there are no uncommitted changes when rewording and that the
 # todo-list is reread after each
-set_reword_editor () {
-	>reword-actual &&
-	>reword-oid &&
+set_reword_editor() {
+  >reword-actual \
+    && >reword-oid \
+    &&
+    # Check rewording keeps the original authorship
+    GIT_AUTHOR_NAME="Reword Author"
+  GIT_AUTHOR_EMAIL="reword.author@example.com"
+  GIT_AUTHOR_DATE=@123456
 
-	# Check rewording keeps the original authorship
-	GIT_AUTHOR_NAME="Reword Author"
-	GIT_AUTHOR_EMAIL="reword.author@example.com"
-	GIT_AUTHOR_DATE=@123456
-
-	write_script reword-sequence-editor.sh <<-\EOF &&
+  write_script reword-sequence-editor.sh <<-\EOF && write_script reword-editor.sh <<-EOF && test_set_editor "$PWD/reword-editor.sh"
 	todo="$(cat "$1")" &&
 	echo "exec git log -1 --pretty=format:'%an <%ae> %at%n%B%n' \
 		>>reword-actual" >"$1" &&
 	printf "%s\n" "$todo" >>"$1"
 	EOF
-
-	write_script reword-editor.sh <<-EOF &&
 	# Save the oid of the first reworded commit so we can check rebase
 	# fast-forwards to it. Also check that we do not write .git/MERGE_MSG
 	# when fast-forwarding
@@ -190,25 +188,21 @@ set_reword_editor () {
 	# There should be no uncommitted changes
 	git diff --exit-code HEAD &&
 	# The todo-list should be re-read after a reword
-	GIT_SEQUENCE_EDITOR="\"$PWD/reword-sequence-editor.sh\"" \
-		git rebase --edit-todo &&
+	GIT_SEQUENCE_EDITOR="\"$PWD/reword-sequence-editor.sh\"" 		git rebase --edit-todo &&
 	echo edited >>"\$1"
 	EOF
-
-	test_set_editor "$PWD/reword-editor.sh"
 }
-
 # Check the results of a rebase after calling set_reword_editor
 # Pass the commits that were reworded in the order that they were picked
 # Expects the first pick to be a fast-forward
-check_reworded_commits () {
-	test_cmp_rev "$(cat reword-oid)" "$1^{commit}" &&
-	git log --format="%an <%ae> %at%n%B%nedited%n" --no-walk=unsorted "$@" \
-		>reword-expected &&
-	test_cmp reword-expected reword-actual &&
-	git log --format="%an <%ae> %at%n%B" -n $# --first-parent --reverse \
-		>reword-log &&
-	test_cmp reword-expected reword-log
+check_reworded_commits() {
+  test_cmp_rev "$(cat reword-oid)" "$1^{commit}" \
+    && git log --format="%an <%ae> %at%n%B%nedited%n" --no-walk=unsorted "$@" \
+      >reword-expected \
+    && test_cmp reword-expected reword-actual \
+    && git log --format="%an <%ae> %at%n%B" -n $# --first-parent --reverse \
+      >reword-log \
+    && test_cmp reword-expected reword-log
 }
 
 # usage: set_replace_editor <file>
@@ -217,15 +211,11 @@ check_reworded_commits () {
 # N.B. sets GIT_SEQUENCE_EDITOR rather than EDITOR so it can be
 # combined with set_fake_editor to reword commits and replace the
 # todo list
-set_replace_editor () {
-	cat >script <<-\EOF &&
+set_replace_editor() {
+  cat >script <<-\EOF && sed -e "s/FILENAME/$1/g" script | write_script fake-sequence-editor.sh && test_set_sequence_editor "$(pwd)/fake-sequence-editor.sh"
 	cat FILENAME >"$1"
 
 	echo 'rebase -i script after editing:'
 	cat "$1"
 	EOF
-
-	sed -e "s/FILENAME/$1/g" script |
-		write_script fake-sequence-editor.sh &&
-	test_set_sequence_editor "$(pwd)/fake-sequence-editor.sh"
 }

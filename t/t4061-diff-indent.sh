@@ -11,18 +11,18 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 # Compare two diff outputs. Ignore "index" lines, because we don't
 # care about SHA-1s or file modes.
-compare_diff () {
-	sed -e "/^index /d" <"$1" >.tmp-1
-	sed -e "/^index /d" <"$2" >.tmp-2
-	test_cmp .tmp-1 .tmp-2 && rm -f .tmp-1 .tmp-2
+compare_diff() {
+  sed -e "/^index /d" <"$1" >.tmp-1
+  sed -e "/^index /d" <"$2" >.tmp-2
+  test_cmp .tmp-1 .tmp-2 && rm -f .tmp-1 .tmp-2
 }
 
 # Compare blame output using the expectation for a diff as reference.
 # Only look for the lines coming from non-boundary commits.
-compare_blame () {
-	sed -n -e "1,4d" -e "s/^+//p" <"$1" >.tmp-1
-	sed -ne "s/^[^^][^)]*) *//p" <"$2" >.tmp-2
-	test_cmp .tmp-1 .tmp-2 && rm -f .tmp-1 .tmp-2
+compare_blame() {
+  sed -n -e "1,4d" -e "s/^+//p" <"$1" >.tmp-1
+  sed -ne "s/^[^^][^)]*) *//p" <"$2" >.tmp-2
+  test_cmp .tmp-1 .tmp-2 && rm -f .tmp-1 .tmp-2
 }
 
 test_expect_success 'prepare' '

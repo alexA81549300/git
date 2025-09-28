@@ -25,7 +25,6 @@ test_description="merge cases"
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-merge.sh
 
-
 ###########################################################################
 # SECTION 1: Cases involving no renames (one side has subset of changes of
 #            the other side)
@@ -37,32 +36,28 @@ test_description="merge cases"
 #   Commit B: b_3
 #   Expected: b_2
 
-test_setup_1a () {
-	git init 1a_$1 &&
-	(
-		cd 1a_$1 &&
-
-		test_write_lines 1 2 3 4 5 6 7 8 9 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 10.5 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_1a() {
+  git init 1a_$1 \
+    && (
+      cd 1a_$1 \
+        && test_write_lines 1 2 3 4 5 6 7 8 9 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 10.5 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '1a-L: Modify(A)/Modify(B), change on B subset of A' '
@@ -124,7 +119,6 @@ test_expect_success '1a-R: Modify(A)/Modify(B), change on B subset of A' '
 	)
 '
 
-
 ###########################################################################
 # SECTION 2: Cases involving basic renames
 ###########################################################################
@@ -135,31 +129,27 @@ test_expect_success '1a-R: Modify(A)/Modify(B), change on B subset of A' '
 #   Commit B: c_1
 #   Expected: c_2
 
-test_setup_2a () {
-	git init 2a_$1 &&
-	(
-		cd 2a_$1 &&
-
-		test_seq 1 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_seq 1 11 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv b c &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_2a() {
+  git init 2a_$1 \
+    && (
+      cd 2a_$1 \
+        && test_seq 1 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_seq 1 11 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv b c \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '2a-L: Modify/rename, merge into modify side' '
@@ -228,33 +218,29 @@ test_expect_success '2a-R: Modify/rename, merge into rename side' '
 #   Commit B: b_3
 #   Expected: c_2
 
-test_setup_2b () {
-	git init 2b_$1 &&
-	(
-		cd 2b_$1 &&
-
-		test_write_lines 1 2 3 4 5 6 7 8 9 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 10.5 >b &&
-		git add b &&
-		git mv b c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_2b() {
+  git init 2b_$1 \
+    && (
+      cd 2b_$1 \
+        && test_write_lines 1 2 3 4 5 6 7 8 9 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 10.5 >b \
+        && git add b \
+        && git mv b c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '2b-L: Rename+Mod(A)/Mod(B), B mods subset of A' '
@@ -335,32 +321,28 @@ test_expect_success '2b-R: Rename+Mod(A)/Mod(B), B mods subset of A' '
 #         skip the update, then we're in trouble.  This test verifies we do
 #         not make that particular mistake.
 
-test_setup_2c () {
-	git init 2c &&
-	(
-		cd 2c &&
-
-		test_seq 1 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_seq 1 11 >b &&
-		echo whatever >c &&
-		git add b c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv b c &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_2c() {
+  git init 2c \
+    && (
+      cd 2c \
+        && test_seq 1 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_seq 1 11 >b \
+        && echo whatever >c \
+        && git add b c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv b c \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '2c: Modify b & add c VS rename b->c' '
@@ -405,7 +387,6 @@ test_expect_success '2c: Modify b & add c VS rename b->c' '
 	)
 '
 
-
 ###########################################################################
 # SECTION 3: Cases involving directory renames
 #
@@ -424,34 +405,30 @@ test_expect_success '2c: Modify b & add c VS rename b->c' '
 #   Commit B: bq_1, bar/whatever
 #   Expected: bar/{bq_2, whatever}
 
-test_setup_3a () {
-	git init 3a_$1 &&
-	(
-		cd 3a_$1 &&
-
-		mkdir foo &&
-		test_seq 1 10 >bq &&
-		test_write_lines a b c d e f g h i j k >foo/whatever &&
-		git add bq foo/whatever &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_seq 1 11 >bq &&
-		git add bq &&
-		git mv bq foo/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		git mv foo/ bar/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_3a() {
+  git init 3a_$1 \
+    && (
+      cd 3a_$1 \
+        && mkdir foo \
+        && test_seq 1 10 >bq \
+        && test_write_lines a b c d e f g h i j k >foo/whatever \
+        && git add bq foo/whatever \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_seq 1 11 >bq \
+        && git add bq \
+        && git mv bq foo/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && git mv foo/ bar/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '3a-L: bq_1->foo/bq_2 on A, foo/->bar/ on B' '
@@ -524,34 +501,30 @@ test_expect_success '3a-R: bq_1->foo/bq_2 on A, foo/->bar/ on B' '
 #   Commit B: bq_2, bar/whatever
 #   Expected: bar/{bq_2, whatever}
 
-test_setup_3b () {
-	git init 3b_$1 &&
-	(
-		cd 3b_$1 &&
-
-		mkdir foo &&
-		test_seq 1 10 >bq &&
-		test_write_lines a b c d e f g h i j k >foo/whatever &&
-		git add bq foo/whatever &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		git mv bq foo/ &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		test_seq 1 11 >bq &&
-		git add bq &&
-		git mv foo/ bar/ &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_3b() {
+  git init 3b_$1 \
+    && (
+      cd 3b_$1 \
+        && mkdir foo \
+        && test_seq 1 10 >bq \
+        && test_write_lines a b c d e f g h i j k >foo/whatever \
+        && git add bq foo/whatever \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && git mv bq foo/ \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && test_seq 1 11 >bq \
+        && git add bq \
+        && git mv foo/ bar/ \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '3b-L: bq_1->foo/bq_2 on A, foo/->bar/ on B' '
@@ -629,32 +602,28 @@ test_expect_success '3b-R: bq_1->foo/bq_2 on A, foo/->bar/ on B' '
 #   Working copy: b_4
 #   Expected: b_2 for merge, b_4 in working copy
 
-test_setup_4a () {
-	git init 4a &&
-	(
-		cd 4a &&
-
-		test_write_lines 1 2 3 4 5 6 7 8 9 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 10.5 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_4a() {
+  git init 4a \
+    && (
+      cd 4a \
+        && test_write_lines 1 2 3 4 5 6 7 8 9 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 10.5 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 # NOTE: For as long as we continue using unpack_trees() without index_only
@@ -701,33 +670,29 @@ test_expect_merge_algorithm failure success '4a: Change on A, change on B subset
 #   Working copy: c_4
 #   Expected: c_2
 
-test_setup_4b () {
-	git init 4b &&
-	(
-		cd 4b &&
-
-		test_write_lines 1 2 3 4 5 6 7 8 9 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 10.5 >b &&
-		git add b &&
-		git mv b c &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 >b &&
-		git add b &&
-		test_tick &&
-		git commit -m "B"
-	)
+test_setup_4b() {
+  git init 4b \
+    && (
+      cd 4b \
+        && test_write_lines 1 2 3 4 5 6 7 8 9 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 10.5 >b \
+        && git add b \
+        && git mv b c \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && test_write_lines 1 2 3 4 5 5.5 6 7 8 9 10 >b \
+        && git add b \
+        && test_tick \
+        && git commit -m "B"
+    )
 }
 
 test_expect_success '4b: Rename+Mod(A)/Mod(B), change on B subset of A, dirty mods present' '

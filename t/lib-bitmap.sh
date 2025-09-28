@@ -18,19 +18,17 @@ midx=$objdir/pack/multi-pack-index
 #
 # This function normalizes and compares the two. The second file should
 # always be the bitmap output.
-test_bitmap_traversal () {
-	if test "$1" = "--no-confirm-bitmaps"
-	then
-		shift
-	elif cmp "$1" "$2"
-	then
-		echo >&2 "identical raw outputs; are you sure bitmaps were used?"
-		return 1
-	fi &&
-	cut -d' ' -f1 "$1" | sort >"$1.normalized" &&
-	sort "$2" >"$2.normalized" &&
-	test_cmp "$1.normalized" "$2.normalized" &&
-	rm -f "$1.normalized" "$2.normalized"
+test_bitmap_traversal() {
+  if test "$1" = "--no-confirm-bitmaps"; then
+    shift
+  elif cmp "$1" "$2"; then
+    echo >&2 "identical raw outputs; are you sure bitmaps were used?"
+    return 1
+  fi \
+    && cut -d' ' -f1 "$1" | sort >"$1.normalized" \
+    && sort "$2" >"$2.normalized" \
+    && test_cmp "$1.normalized" "$2.normalized" \
+    && rm -f "$1.normalized" "$2.normalized"
 }
 
 # To ensure the logic for "maximal commits" is exercised, make
@@ -75,7 +73,7 @@ test_bitmap_traversal () {
 # test will guarantee that the bitmaps are computed
 # correctly, even with the repeat calculations.
 setup_bitmap_history() {
-	test_expect_success 'setup repo with moderate-sized history' '
+  test_expect_success 'setup repo with moderate-sized history' '
 		test_commit_bulk --id=file 10 &&
 		git branch -M second &&
 		git checkout -b other HEAD~5 &&
@@ -122,79 +120,78 @@ setup_bitmap_history() {
 	'
 }
 
-rev_list_tests_head () {
-	test_expect_success "counting commits via bitmap ($state, $branch)" '
+rev_list_tests_head() {
+  test_expect_success "counting commits via bitmap ($state, $branch)" '
 		git rev-list --count $branch >expect &&
 		git rev-list --use-bitmap-index --count $branch >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "counting partial commits via bitmap ($state, $branch)" '
+  test_expect_success "counting partial commits via bitmap ($state, $branch)" '
 		git rev-list --count $branch~5..$branch >expect &&
 		git rev-list --use-bitmap-index --count $branch~5..$branch >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "counting commits with limit ($state, $branch)" '
+  test_expect_success "counting commits with limit ($state, $branch)" '
 		git rev-list --count -n 1 $branch >expect &&
 		git rev-list --use-bitmap-index --count -n 1 $branch >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "counting non-linear history ($state, $branch)" '
+  test_expect_success "counting non-linear history ($state, $branch)" '
 		git rev-list --count other...second >expect &&
 		git rev-list --use-bitmap-index --count other...second >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "counting commits with limiting ($state, $branch)" '
+  test_expect_success "counting commits with limiting ($state, $branch)" '
 		git rev-list --count $branch -- 1.t >expect &&
 		git rev-list --use-bitmap-index --count $branch -- 1.t >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "counting objects via bitmap ($state, $branch)" '
+  test_expect_success "counting objects via bitmap ($state, $branch)" '
 		git rev-list --count --objects $branch >expect &&
 		git rev-list --use-bitmap-index --count --objects $branch >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "enumerate commits ($state, $branch)" '
+  test_expect_success "enumerate commits ($state, $branch)" '
 		git rev-list --use-bitmap-index $branch >actual &&
 		git rev-list $branch >expect &&
 		test_bitmap_traversal --no-confirm-bitmaps expect actual
 	'
 
-	test_expect_success "enumerate --objects ($state, $branch)" '
+  test_expect_success "enumerate --objects ($state, $branch)" '
 		git rev-list --objects --use-bitmap-index $branch >actual &&
 		git rev-list --objects $branch >expect &&
 		test_bitmap_traversal expect actual
 	'
 
-	test_expect_success "bitmap --objects handles non-commit objects ($state, $branch)" '
+  test_expect_success "bitmap --objects handles non-commit objects ($state, $branch)" '
 		git rev-list --objects --use-bitmap-index $branch tagged-blob >actual &&
 		grep $blob actual
 	'
 }
 
-rev_list_tests () {
-	state=$1
+rev_list_tests() {
+  state=$1
 
-	for branch in "second" "other"
-	do
-		rev_list_tests_head
-	done
+  for branch in "second" "other"; do
+    rev_list_tests_head
+  done
 }
 
-basic_bitmap_tests () {
-	tip="$1"
-	test_expect_success 'rev-list --test-bitmap verifies bitmaps' "
+basic_bitmap_tests() {
+  tip="$1"
+  test_expect_success 'rev-list --test-bitmap verifies bitmaps' "
 		git rev-list --test-bitmap "${tip:-HEAD}"
 	"
 
-	rev_list_tests 'full bitmap'
+  rev_list_tests 'full bitmap'
 
-	test_expect_success 'clone from bitmapped repository' '
+  test_expect_success 'clone from bitmapped repository' '
 		rm -fr clone.git &&
 		git clone --no-local --bare . clone.git &&
 		git rev-parse HEAD >expect &&
@@ -202,7 +199,7 @@ basic_bitmap_tests () {
 		test_cmp expect actual
 	'
 
-	test_expect_success 'partial clone from bitmapped repository' '
+  test_expect_success 'partial clone from bitmapped repository' '
 		test_config uploadpack.allowfilter true &&
 		rm -fr partial-clone.git &&
 		git clone --no-local --bare --filter=blob:none . partial-clone.git &&
@@ -217,20 +214,20 @@ basic_bitmap_tests () {
 		)
 	'
 
-	test_expect_success 'setup further non-bitmapped commits' '
+  test_expect_success 'setup further non-bitmapped commits' '
 		test_commit_bulk --id=further 10
 	'
 
-	rev_list_tests 'partial bitmap'
+  rev_list_tests 'partial bitmap'
 
-	test_expect_success 'fetch (partial bitmap)' '
+  test_expect_success 'fetch (partial bitmap)' '
 		git --git-dir=clone.git fetch origin second:second &&
 		git rev-parse HEAD >expect &&
 		git --git-dir=clone.git rev-parse HEAD >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success 'enumerating progress counts pack-reused objects' '
+  test_expect_success 'enumerating progress counts pack-reused objects' '
 		count=$(git rev-list --objects --all --count) &&
 		git repack -adb &&
 
@@ -260,22 +257,22 @@ basic_bitmap_tests () {
 # Note that because this relies on cat-file, it might find _any_ copy of an
 # object in the repository. The caller is responsible for making sure
 # there's only one (e.g., via "repack -ad", or having just fetched a copy).
-have_delta () {
-	echo $2 >expect &&
-	echo $1 | git cat-file --batch-check="%(deltabase)" >actual &&
-	test_cmp expect actual
+have_delta() {
+  echo $2 >expect \
+    && echo $1 | git cat-file --batch-check="%(deltabase)" >actual \
+    && test_cmp expect actual
 }
 
 # midx_pack_source <obj>
-midx_pack_source () {
-	test-tool read-midx --show-objects .git/objects | grep "^$1 " | cut -f2
+midx_pack_source() {
+  test-tool read-midx --show-objects .git/objects | grep "^$1 " | cut -f2
 }
 
-test_rev_exists () {
-	commit="$1"
-	kind="$2"
+test_rev_exists() {
+  commit="$1"
+  kind="$2"
 
-	test_expect_success "reverse index exists ($kind)" '
+  test_expect_success "reverse index exists ($kind)" '
 		GIT_TRACE2_EVENT=$(pwd)/event.trace \
 			git rev-list --test-bitmap "$commit" &&
 
@@ -287,23 +284,23 @@ test_rev_exists () {
 	'
 }
 
-midx_bitmap_core () {
-	rev_kind="${1:-midx}"
+midx_bitmap_core() {
+  rev_kind="${1:-midx}"
 
-	setup_bitmap_history
+  setup_bitmap_history
 
-	test_expect_success 'create single-pack midx with bitmaps' '
+  test_expect_success 'create single-pack midx with bitmaps' '
 		git repack -ad &&
 		git multi-pack-index write --bitmap &&
 		test_path_is_file $midx &&
 		test_path_is_file $midx-$(midx_checksum $objdir).bitmap
 	'
 
-	test_rev_exists HEAD "$rev_kind"
+  test_rev_exists HEAD "$rev_kind"
 
-	basic_bitmap_tests
+  basic_bitmap_tests
 
-	test_expect_success 'create new additional packs' '
+  test_expect_success 'create new additional packs' '
 		for i in $(test_seq 1 16)
 		do
 			test_commit "$i" &&
@@ -319,7 +316,7 @@ midx_bitmap_core () {
 		git checkout second
 	'
 
-	test_expect_success 'create multi-pack midx with bitmaps' '
+  test_expect_success 'create multi-pack midx with bitmaps' '
 		git multi-pack-index write --bitmap &&
 
 		ls $objdir/pack/pack-*.pack >packs &&
@@ -329,11 +326,11 @@ midx_bitmap_core () {
 		test_path_is_file $midx-$(midx_checksum $objdir).bitmap
 	'
 
-	test_rev_exists HEAD "$rev_kind"
+  test_rev_exists HEAD "$rev_kind"
 
-	basic_bitmap_tests
+  basic_bitmap_tests
 
-	test_expect_success '--no-bitmap is respected when bitmaps exist' '
+  test_expect_success '--no-bitmap is respected when bitmaps exist' '
 		git multi-pack-index write --bitmap &&
 
 		test_commit respect--no-bitmap &&
@@ -349,7 +346,7 @@ midx_bitmap_core () {
 		test_path_is_missing $midx-$(midx_checksum $objdir).rev
 	'
 
-	test_expect_success 'setup midx with base from later pack' '
+  test_expect_success 'setup midx with base from later pack' '
 		# Write a and b so that "a" is a delta on top of base "b", since Git
 		# prefers to delete contents out of a base rather than add to a shorter
 		# object.
@@ -388,9 +385,9 @@ midx_bitmap_core () {
 		test $(midx_pack_source $a) != $(midx_pack_source $b)
 	'
 
-	rev_list_tests 'full bitmap with backwards delta'
+  rev_list_tests 'full bitmap with backwards delta'
 
-	test_expect_success 'clone with bitmaps enabled' '
+  test_expect_success 'clone with bitmaps enabled' '
 		git clone --no-local --bare . clone-reverse-delta.git &&
 		test_when_finished "rm -fr clone-reverse-delta.git" &&
 
@@ -399,7 +396,7 @@ midx_bitmap_core () {
 		test_cmp expect actual
 	'
 
-	test_expect_success 'changing the preferred pack does not corrupt bitmaps' '
+  test_expect_success 'changing the preferred pack does not corrupt bitmaps' '
 		rm -fr repo &&
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
@@ -431,10 +428,10 @@ midx_bitmap_core () {
 	'
 }
 
-midx_bitmap_partial_tests () {
-	rev_kind="${1:-midx}"
+midx_bitmap_partial_tests() {
+  rev_kind="${1:-midx}"
 
-	test_expect_success 'setup partial bitmaps' '
+  test_expect_success 'setup partial bitmaps' '
 		test_commit packed &&
 		git repack &&
 		test_commit loose &&
@@ -443,7 +440,7 @@ midx_bitmap_partial_tests () {
 		test_path_is_file $midx-$(midx_checksum $objdir).bitmap
 	'
 
-	test_rev_exists HEAD~ "$rev_kind"
+  test_rev_exists HEAD~ "$rev_kind"
 
-	basic_bitmap_tests HEAD~
+  basic_bitmap_tests HEAD~
 }

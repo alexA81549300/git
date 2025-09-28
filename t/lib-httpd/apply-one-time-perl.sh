@@ -7,21 +7,19 @@
 #
 # This can be used to simulate the effects of the repository changing in
 # between HTTP request-response pairs.
-if test -f one-time-perl
-then
-	LC_ALL=C
-	export LC_ALL
+if test -f one-time-perl; then
+  LC_ALL=C
+  export LC_ALL
 
-	"$GIT_EXEC_PATH/git-http-backend" >out
-	"$PERL_PATH" -pe "$(cat one-time-perl)" out >out_modified
+  "$GIT_EXEC_PATH/git-http-backend" >out
+  "$PERL_PATH" -pe "$(cat one-time-perl)" out >out_modified
 
-	if cmp -s out out_modified
-	then
-		cat out
-	else
-		cat out_modified
-		rm one-time-perl
-	fi
+  if cmp -s out out_modified; then
+    cat out
+  else
+    cat out_modified
+    rm one-time-perl
+  fi
 else
-	"$GIT_EXEC_PATH/git-http-backend"
+  "$GIT_EXEC_PATH/git-http-backend"
 fi

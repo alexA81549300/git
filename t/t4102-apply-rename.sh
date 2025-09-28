@@ -27,16 +27,16 @@ echo 'This is foo' >foo
 chmod +x foo
 
 test_expect_success setup \
-    'git update-index --add foo'
+  'git update-index --add foo'
 
 test_expect_success apply \
-    'git apply --index --stat --summary --apply test-patch'
+  'git apply --index --stat --summary --apply test-patch'
 
 test_expect_success FILEMODE validate \
-	    'test -f bar && ls -l bar | grep "^-..x......"'
+  'test -f bar && ls -l bar | grep "^-..x......"'
 
 test_expect_success 'apply reverse' \
-    'git apply -R --index --stat --summary --apply test-patch &&
+  'git apply -R --index --stat --summary --apply test-patch &&
      test "$(cat foo)" = "This is foo"'
 
 cat >test-patch <<\EOF
@@ -52,7 +52,7 @@ copy to bar
 EOF
 
 test_expect_success 'apply copy' \
-    'git apply --index --stat --summary --apply test-patch &&
+  'git apply --index --stat --summary --apply test-patch &&
      test "$(cat bar)" = "This is bar" && test "$(cat foo)" = "This is foo"'
 
 test_done

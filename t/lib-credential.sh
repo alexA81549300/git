@@ -5,31 +5,31 @@
 # stdout and stderr should be provided on stdin,
 # separated by "--".
 check() {
-	credential_opts=
-	credential_cmd=$1
-	shift
-	for arg in "$@"; do
-		credential_opts="$credential_opts -c credential.helper='$arg'"
-	done
-	read_chunk >stdin &&
-	read_chunk >expect-stdout &&
-	read_chunk >expect-stderr &&
-	if ! eval "git $credential_opts credential $credential_cmd <stdin >stdout 2>stderr"; then
-		echo "git credential failed with code $?" &&
-		cat stderr &&
-		false
-	fi &&
-	test_cmp expect-stdout stdout &&
-	test_cmp expect-stderr stderr
+  credential_opts=
+  credential_cmd=$1
+  shift
+  for arg in "$@"; do
+    credential_opts="$credential_opts -c credential.helper='$arg'"
+  done
+  read_chunk >stdin \
+    && read_chunk >expect-stdout \
+    && read_chunk >expect-stderr \
+    && if ! eval "git $credential_opts credential $credential_cmd <stdin >stdout 2>stderr"; then
+      echo "git credential failed with code $?" \
+        && cat stderr \
+        && false
+    fi \
+    && test_cmp expect-stdout stdout \
+    && test_cmp expect-stderr stderr
 }
 
 read_chunk() {
-	while read line; do
-		case "$line" in
-		--) break ;;
-		*) echo "$line" ;;
-		esac
-	done
+  while read line; do
+    case "$line" in
+      --) break ;;
+      *) echo "$line" ;;
+    esac
+  done
 }
 
 # Clear any residual data from previous tests. We only
@@ -40,34 +40,34 @@ read_chunk() {
 # outside the scope of tests and represents a best effort to
 # clean up after ourselves.
 helper_test_clean() {
-	reject $1 https example.com store-user
-	reject $1 https example.com user1
-	reject $1 https example.com user2
-	reject $1 https example.com user-expiry
-	reject $1 https example.com user-expiry-overwrite
-	reject $1 https example.com user4
-	reject $1 https example.com user-distinct-pass
-	reject $1 https example.com user-overwrite
-	reject $1 https example.com user-erase1
-	reject $1 https example.com user-erase2
-	reject $1 https victim.example.com user
-	reject $1 http path.tld user
-	reject $1 https timeout.tld user
-	reject $1 https sso.tld
+  reject $1 https example.com store-user
+  reject $1 https example.com user1
+  reject $1 https example.com user2
+  reject $1 https example.com user-expiry
+  reject $1 https example.com user-expiry-overwrite
+  reject $1 https example.com user4
+  reject $1 https example.com user-distinct-pass
+  reject $1 https example.com user-overwrite
+  reject $1 https example.com user-erase1
+  reject $1 https example.com user-erase2
+  reject $1 https victim.example.com user
+  reject $1 http path.tld user
+  reject $1 https timeout.tld user
+  reject $1 https sso.tld
 }
 
 reject() {
-	(
-		echo protocol=$2
-		echo host=$3
-		echo username=$4
-	) | git -c credential.helper=$1 credential reject
+  (
+    echo protocol=$2
+    echo host=$3
+    echo username=$4
+  ) | git -c credential.helper=$1 credential reject
 }
 
 helper_test() {
-	HELPER=$1
+  HELPER=$1
 
-	test_expect_success "helper ($HELPER) has no existing data" '
+  test_expect_success "helper ($HELPER) has no existing data" '
 		check fill $HELPER <<-\EOF
 		protocol=https
 		host=example.com
@@ -82,7 +82,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) stores password" '
+  test_expect_success "helper ($HELPER) stores password" '
 		check approve $HELPER <<-\EOF
 		protocol=https
 		host=example.com
@@ -91,7 +91,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) can retrieve password" '
+  test_expect_success "helper ($HELPER) can retrieve password" '
 		check fill $HELPER <<-\EOF
 		protocol=https
 		host=example.com
@@ -104,7 +104,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) requires matching protocol" '
+  test_expect_success "helper ($HELPER) requires matching protocol" '
 		check fill $HELPER <<-\EOF
 		protocol=http
 		host=example.com
@@ -119,7 +119,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) requires matching host" '
+  test_expect_success "helper ($HELPER) requires matching host" '
 		check fill $HELPER <<-\EOF
 		protocol=https
 		host=other.tld
@@ -134,7 +134,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) requires matching username" '
+  test_expect_success "helper ($HELPER) requires matching username" '
 		check fill $HELPER <<-\EOF
 		protocol=https
 		host=example.com
@@ -149,7 +149,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) requires matching path" '
+  test_expect_success "helper ($HELPER) requires matching path" '
 		test_config credential.usehttppath true &&
 		check approve $HELPER <<-\EOF &&
 		protocol=http
@@ -174,7 +174,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) overwrites on store" '
+  test_expect_success "helper ($HELPER) overwrites on store" '
 		check approve $HELPER <<-\EOF &&
 		protocol=https
 		host=example.com
@@ -217,7 +217,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) can forget host" '
+  test_expect_success "helper ($HELPER) can forget host" '
 		check reject $HELPER <<-\EOF &&
 		protocol=https
 		host=example.com
@@ -236,7 +236,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) can store multiple users" '
+  test_expect_success "helper ($HELPER) can store multiple users" '
 		check approve $HELPER <<-\EOF &&
 		protocol=https
 		host=example.com
@@ -271,7 +271,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) does not erase a password distinct from input" '
+  test_expect_success "helper ($HELPER) does not erase a password distinct from input" '
 		check approve $HELPER <<-\EOF &&
 		protocol=https
 		host=example.com
@@ -296,7 +296,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) can forget user" '
+  test_expect_success "helper ($HELPER) can forget user" '
 		check reject $HELPER <<-\EOF &&
 		protocol=https
 		host=example.com
@@ -316,7 +316,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) remembers other user" '
+  test_expect_success "helper ($HELPER) remembers other user" '
 		check fill $HELPER <<-\EOF
 		protocol=https
 		host=example.com
@@ -329,7 +329,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) can store empty username" '
+  test_expect_success "helper ($HELPER) can store empty username" '
 		check approve $HELPER <<-\EOF &&
 		protocol=https
 		host=sso.tld
@@ -347,7 +347,7 @@ helper_test() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) erases all matching credentials" '
+  test_expect_success "helper ($HELPER) erases all matching credentials" '
 		check approve $HELPER <<-\EOF &&
 		protocol=https
 		host=example.com
@@ -378,12 +378,12 @@ helper_test() {
 		EOF
 	'
 
-	: ${GIT_TEST_LONG_CRED_BUFFER:=1024}
-	# 23 bytes accounts for "wwwauth[]=basic realm=" plus NUL
-	LONG_VALUE_LEN=$((GIT_TEST_LONG_CRED_BUFFER - 23))
-	LONG_VALUE=$(perl -e 'print "a" x shift' $LONG_VALUE_LEN)
+  : ${GIT_TEST_LONG_CRED_BUFFER:=1024}
+  # 23 bytes accounts for "wwwauth[]=basic realm=" plus NUL
+  LONG_VALUE_LEN=$((GIT_TEST_LONG_CRED_BUFFER - 23))
+  LONG_VALUE=$(perl -e 'print "a" x shift' $LONG_VALUE_LEN)
 
-	test_expect_success "helper ($HELPER) not confused by long header" '
+  test_expect_success "helper ($HELPER) not confused by long header" '
 		check approve $HELPER <<-\EOF &&
 		protocol=https
 		host=victim.example.com
@@ -409,9 +409,9 @@ helper_test() {
 }
 
 helper_test_timeout() {
-	HELPER="$*"
+  HELPER="$*"
 
-	test_expect_success "helper ($HELPER) times out" '
+  test_expect_success "helper ($HELPER) times out" '
 		check approve "$HELPER" <<-\EOF &&
 		protocol=https
 		host=timeout.tld
@@ -435,9 +435,9 @@ helper_test_timeout() {
 }
 
 helper_test_password_expiry_utc() {
-	HELPER=$1
+  HELPER=$1
 
-	test_expect_success "helper ($HELPER) stores password_expiry_utc" '
+  test_expect_success "helper ($HELPER) stores password_expiry_utc" '
 		check approve $HELPER <<-\EOF
 		protocol=https
 		host=example.com
@@ -447,7 +447,7 @@ helper_test_password_expiry_utc() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) gets password_expiry_utc" '
+  test_expect_success "helper ($HELPER) gets password_expiry_utc" '
 		check fill $HELPER <<-\EOF
 		protocol=https
 		host=example.com
@@ -462,7 +462,7 @@ helper_test_password_expiry_utc() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) overwrites when password_expiry_utc changes" '
+  test_expect_success "helper ($HELPER) overwrites when password_expiry_utc changes" '
 		check approve $HELPER <<-\EOF &&
 		protocol=https
 		host=example.com
@@ -510,9 +510,9 @@ helper_test_password_expiry_utc() {
 }
 
 helper_test_oauth_refresh_token() {
-	HELPER=$1
+  HELPER=$1
 
-	test_expect_success "helper ($HELPER) stores oauth_refresh_token" '
+  test_expect_success "helper ($HELPER) stores oauth_refresh_token" '
 		check approve $HELPER <<-\EOF
 		protocol=https
 		host=example.com
@@ -522,7 +522,7 @@ helper_test_oauth_refresh_token() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) gets oauth_refresh_token" '
+  test_expect_success "helper ($HELPER) gets oauth_refresh_token" '
 		check fill $HELPER <<-\EOF
 		protocol=https
 		host=example.com
@@ -539,9 +539,9 @@ helper_test_oauth_refresh_token() {
 }
 
 helper_test_authtype() {
-	HELPER=$1
+  HELPER=$1
 
-	test_expect_success "helper ($HELPER) stores authtype and credential" '
+  test_expect_success "helper ($HELPER) stores authtype and credential" '
 		check approve $HELPER <<-\EOF
 		capability[]=authtype
 		authtype=Bearer
@@ -551,7 +551,7 @@ helper_test_authtype() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) gets authtype and credential" '
+  test_expect_success "helper ($HELPER) gets authtype and credential" '
 		check fill $HELPER <<-\EOF
 		capability[]=authtype
 		protocol=https
@@ -566,7 +566,7 @@ helper_test_authtype() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) gets authtype and credential only if request has authtype capability" '
+  test_expect_success "helper ($HELPER) gets authtype and credential only if request has authtype capability" '
 		check fill $HELPER <<-\EOF
 		protocol=https
 		host=git.example.com
@@ -581,7 +581,7 @@ helper_test_authtype() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) stores authtype and credential with username" '
+  test_expect_success "helper ($HELPER) stores authtype and credential with username" '
 		check approve $HELPER <<-\EOF
 		capability[]=authtype
 		authtype=Bearer
@@ -592,7 +592,7 @@ helper_test_authtype() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) gets authtype and credential with username" '
+  test_expect_success "helper ($HELPER) gets authtype and credential with username" '
 		check fill $HELPER <<-\EOF
 		capability[]=authtype
 		protocol=https
@@ -609,7 +609,7 @@ helper_test_authtype() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) does not get authtype and credential with different username" '
+  test_expect_success "helper ($HELPER) does not get authtype and credential with different username" '
 		check fill $HELPER <<-\EOF
 		capability[]=authtype
 		protocol=https
@@ -625,7 +625,7 @@ helper_test_authtype() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) does not store ephemeral authtype and credential" '
+  test_expect_success "helper ($HELPER) does not store ephemeral authtype and credential" '
 		check approve $HELPER <<-\EOF &&
 		capability[]=authtype
 		authtype=Bearer
@@ -650,7 +650,7 @@ helper_test_authtype() {
 		EOF
 	'
 
-	test_expect_success "helper ($HELPER) does not store ephemeral username and password" '
+  test_expect_success "helper ($HELPER) does not store ephemeral username and password" '
 		check approve $HELPER <<-\EOF &&
 		capability[]=authtype
 		protocol=https

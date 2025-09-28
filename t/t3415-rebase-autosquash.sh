@@ -27,37 +27,33 @@ test_expect_success setup '
 	git tag base
 '
 
-test_auto_fixup () {
-	no_squash= &&
-	if test "x$1" = 'x!'
-	then
-		no_squash=true
-		shift
-	fi &&
-
-	git reset --hard base &&
-	echo 1 >file1 &&
-	git add -u &&
-	test_tick &&
-	git commit -m "fixup! first" &&
-
-	git tag $1 &&
-	test_tick &&
-	git rebase $2 HEAD^^^ &&
-	git log --oneline >actual &&
-	if test -n "$no_squash"
-	then
-		test_line_count = 4 actual
-	else
-		test_line_count = 3 actual &&
-		git diff --exit-code $1 &&
-		echo 1 >expect &&
-		git cat-file blob HEAD^:file1 >actual &&
-		test_cmp expect actual &&
-		git cat-file commit HEAD^ >commit &&
-		grep first commit >actual &&
-		test_line_count = 1 actual
-	fi
+test_auto_fixup() {
+  no_squash= \
+    && if test "x$1" = 'x!'; then
+      no_squash=true
+      shift
+    fi \
+    && git reset --hard base \
+    && echo 1 >file1 \
+    && git add -u \
+    && test_tick \
+    && git commit -m "fixup! first" \
+    && git tag $1 \
+    && test_tick \
+    && git rebase $2 HEAD^^^ \
+    && git log --oneline >actual \
+    && if test -n "$no_squash"; then
+      test_line_count = 4 actual
+    else
+      test_line_count = 3 actual \
+        && git diff --exit-code $1 \
+        && echo 1 >expect \
+        && git cat-file blob HEAD^:file1 >actual \
+        && test_cmp expect actual \
+        && git cat-file commit HEAD^ >commit \
+        && grep first commit >actual \
+        && test_line_count = 1 actual
+    fi
 }
 
 test_expect_success 'auto fixup (option)' '
@@ -81,36 +77,33 @@ test_expect_success 'auto fixup (config false)' '
 	test_auto_fixup fixup-config-false-i-yes "-i --autosquash"
 '
 
-test_auto_squash () {
-	no_squash= &&
-	if test "x$1" = 'x!'
-	then
-		no_squash=true
-		shift
-	fi &&
-
-	git reset --hard base &&
-	echo 1 >file1 &&
-	git add -u &&
-	test_tick &&
-	git commit -m "squash! first" -m "extra para for first" &&
-	git tag $1 &&
-	test_tick &&
-	git rebase $2 HEAD^^^ &&
-	git log --oneline >actual &&
-	if test -n "$no_squash"
-	then
-		test_line_count = 4 actual
-	else
-		test_line_count = 3 actual &&
-		git diff --exit-code $1 &&
-		echo 1 >expect &&
-		git cat-file blob HEAD^:file1 >actual &&
-		test_cmp expect actual &&
-		git cat-file commit HEAD^ >commit &&
-		grep first commit >actual &&
-		test_line_count = 2 actual
-	fi
+test_auto_squash() {
+  no_squash= \
+    && if test "x$1" = 'x!'; then
+      no_squash=true
+      shift
+    fi \
+    && git reset --hard base \
+    && echo 1 >file1 \
+    && git add -u \
+    && test_tick \
+    && git commit -m "squash! first" -m "extra para for first" \
+    && git tag $1 \
+    && test_tick \
+    && git rebase $2 HEAD^^^ \
+    && git log --oneline >actual \
+    && if test -n "$no_squash"; then
+      test_line_count = 4 actual
+    else
+      test_line_count = 3 actual \
+        && git diff --exit-code $1 \
+        && echo 1 >expect \
+        && git cat-file blob HEAD^:file1 >actual \
+        && test_cmp expect actual \
+        && git cat-file commit HEAD^ >commit \
+        && grep first commit >actual \
+        && test_line_count = 2 actual
+    fi
 }
 
 test_expect_success 'auto squash (option)' '
@@ -263,24 +256,24 @@ test_expect_success 'auto squash of fixup commit that matches branch name which 
 	test_cmp expect actual
 '
 
-test_auto_commit_flags () {
-	git reset --hard base &&
-	echo 1 >file1 &&
-	git add -u &&
-	test_tick &&
-	git commit --$1 first-commit -m "extra para for first" &&
-	git tag final-commit-$1 &&
-	test_tick &&
-	git rebase --autosquash -i HEAD^^^ &&
-	git log --oneline >actual &&
-	test_line_count = 3 actual &&
-	git diff --exit-code final-commit-$1 &&
-	echo 1 >expect &&
-	git cat-file blob HEAD^:file1 >actual &&
-	test_cmp expect actual &&
-	git cat-file commit HEAD^ >commit &&
-	grep first commit >actual &&
-	test_line_count = $2 actual
+test_auto_commit_flags() {
+  git reset --hard base \
+    && echo 1 >file1 \
+    && git add -u \
+    && test_tick \
+    && git commit --$1 first-commit -m "extra para for first" \
+    && git tag final-commit-$1 \
+    && test_tick \
+    && git rebase --autosquash -i HEAD^^^ \
+    && git log --oneline >actual \
+    && test_line_count = 3 actual \
+    && git diff --exit-code final-commit-$1 \
+    && echo 1 >expect \
+    && git cat-file blob HEAD^:file1 >actual \
+    && test_cmp expect actual \
+    && git cat-file commit HEAD^ >commit \
+    && grep first commit >actual \
+    && test_line_count = $2 actual
 }
 
 test_expect_success 'use commit --fixup' '
@@ -291,51 +284,48 @@ test_expect_success 'use commit --squash' '
 	test_auto_commit_flags squash 2
 '
 
-test_auto_fixup_fixup () {
-	git reset --hard base &&
-	echo 1 >file1 &&
-	git add -u &&
-	test_tick &&
-	git commit -m "$1! first" -m "extra para for first" &&
-	echo 2 >file1 &&
-	git add -u &&
-	test_tick &&
-	git commit -m "$1! $2! first" -m "second extra para for first" &&
-	git tag "final-$1-$2" &&
-	test_tick &&
-	(
-		set_cat_todo_editor &&
-		test_must_fail git rebase --autosquash -i HEAD^^^^ >actual &&
-		head=$(git rev-parse --short HEAD) &&
-		parent1=$(git rev-parse --short HEAD^) &&
-		parent2=$(git rev-parse --short HEAD^^) &&
-		parent3=$(git rev-parse --short HEAD^^^) &&
-		cat >expected <<-EOF &&
+test_auto_fixup_fixup() {
+  git reset --hard base \
+    && echo 1 >file1 \
+    && git add -u \
+    && test_tick \
+    && git commit -m "$1! first" -m "extra para for first" \
+    && echo 2 >file1 \
+    && git add -u \
+    && test_tick \
+    && git commit -m "$1! $2! first" -m "second extra para for first" \
+    && git tag "final-$1-$2" \
+    && test_tick \
+    && (
+      set_cat_todo_editor \
+        && test_must_fail git rebase --autosquash -i HEAD^^^^ >actual \
+        && head=$(git rev-parse --short HEAD) \
+        && parent1=$(git rev-parse --short HEAD^) \
+        && parent2=$(git rev-parse --short HEAD^^) \
+        && parent3=$(git rev-parse --short HEAD^^^) \
+        && cat >expected <<-EOF && test_cmp expected actual
 		pick $parent3 first commit
 		$1 $parent1 $1! first
 		$1 $head $1! $2! first
 		pick $parent2 second commit
 		EOF
-		test_cmp expected actual
-	) &&
-	git rebase --autosquash -i HEAD^^^^ &&
-	git log --oneline >actual &&
-	test_line_count = 3 actual
-	git diff --exit-code "final-$1-$2" &&
-	echo 2 >expect &&
-	git cat-file blob HEAD^:file1 >actual &&
-	test_cmp expect actual &&
-	git cat-file commit HEAD^ >commit &&
-	grep first commit >actual &&
-	if test "$1" = "fixup"
-	then
-		test_line_count = 1 actual
-	elif test "$1" = "squash"
-	then
-		test_line_count = 3 actual
-	else
-		false
-	fi
+    ) \
+    && git rebase --autosquash -i HEAD^^^^ \
+    && git log --oneline >actual \
+    && test_line_count = 3 actual
+  git diff --exit-code "final-$1-$2" \
+    && echo 2 >expect \
+    && git cat-file blob HEAD^:file1 >actual \
+    && test_cmp expect actual \
+    && git cat-file commit HEAD^ >commit \
+    && grep first commit >actual \
+    && if test "$1" = "fixup"; then
+      test_line_count = 1 actual
+    elif test "$1" = "squash"; then
+      test_line_count = 3 actual
+    else
+      false
+    fi
 }
 
 test_expect_success 'fixup! fixup!' '
@@ -394,11 +384,11 @@ test_expect_success 'autosquash with empty custom instructionFormat' '
 	)
 '
 
-set_backup_editor () {
-	write_script backup-editor.sh <<-\EOF
+set_backup_editor() {
+  write_script backup-editor.sh <<-\EOF
 	cp "$1" .git/backup-"$(basename "$1")"
 	EOF
-	test_set_editor "$PWD/backup-editor.sh"
+  test_set_editor "$PWD/backup-editor.sh"
 }
 
 test_expect_success 'autosquash with multiple empty patches' '

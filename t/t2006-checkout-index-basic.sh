@@ -31,17 +31,17 @@ test_expect_success 'checkout-index reports errors (stdin)' '
 	test_must_fail git checkout-index --stdin 2>stderr &&
 	test_grep not.in.the.cache stderr
 '
-for mode in 'case' 'utf-8'
-do
-	case "$mode" in
-	case)	dir='A' symlink='a' mode_prereq='CASE_INSENSITIVE_FS' ;;
-	utf-8)
-		dir=$(printf "\141\314\210") symlink=$(printf "\303\244")
-		mode_prereq='UTF8_NFD_TO_NFC' ;;
-	esac
+for mode in 'case' 'utf-8'; do
+  case "$mode" in
+    case) dir='A' symlink='a' mode_prereq='CASE_INSENSITIVE_FS' ;;
+    utf-8)
+      dir=$(printf "\141\314\210") symlink=$(printf "\303\244")
+      mode_prereq='UTF8_NFD_TO_NFC'
+      ;;
+  esac
 
-	test_expect_success SYMLINKS,$mode_prereq \
-	"checkout-index with $mode-collision don't write to the wrong place" '
+  test_expect_success SYMLINKS,$mode_prereq \
+    "checkout-index with $mode-collision don't write to the wrong place" '
 		git init $mode-collision &&
 		(
 			cd $mode-collision &&

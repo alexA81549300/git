@@ -12,28 +12,28 @@ This is identical to t1001, but uses -u to update the work tree as well.
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-read-tree.sh
 
-compare_change () {
-	sed >current \
-	    -e '1{/^diff --git /d;}' \
-	    -e '2{/^index /d;}' \
-	    -e '/^--- /d; /^+++ /d; /^@@ /d;' \
-	    -e 's/^\(.[0-7][0-7][0-7][0-7][0-7][0-7]\) '"$OID_REGEX"' /\1 X /' "$1"
-	test_cmp expected current
+compare_change() {
+  sed >current \
+    -e '1{/^diff --git /d;}' \
+    -e '2{/^index /d;}' \
+    -e '/^--- /d; /^+++ /d; /^@@ /d;' \
+    -e 's/^\(.[0-7][0-7][0-7][0-7][0-7][0-7]\) '"$OID_REGEX"' /\1 X /' "$1"
+  test_cmp expected current
 }
 
-check_cache_at () {
-	git diff-files -- "$1" >out &&
-	clean_if_empty=$(cat out) &&
-	case "$clean_if_empty" in
-	'')  echo "$1: clean" ;;
-	?*)  echo "$1: dirty" ;;
-	esac &&
-	case "$2,$clean_if_empty" in
-	clean,)		:     ;;
-	clean,?*)	false ;;
-	dirty,)		false ;;
-	dirty,?*)	:     ;;
-	esac
+check_cache_at() {
+  git diff-files -- "$1" >out \
+    && clean_if_empty=$(cat out) \
+    && case "$clean_if_empty" in
+      '') echo "$1: clean" ;;
+      ?*) echo "$1: dirty" ;;
+    esac \
+    && case "$2,$clean_if_empty" in
+      clean,) : ;;
+      clean,?*) false ;;
+      dirty,) false ;;
+      dirty,?*) : ;;
+    esac
 }
 
 test_expect_success setup '

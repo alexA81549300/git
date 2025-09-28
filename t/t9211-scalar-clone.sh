@@ -32,7 +32,7 @@ test_expect_success 'set up repository to clone' '
 '
 
 cleanup_clone() {
-	rm -rf "$1"
+  rm -rf "$1"
 }
 
 test_expect_success 'creates content in enlistment root' '

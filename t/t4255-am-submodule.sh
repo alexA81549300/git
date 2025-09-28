@@ -5,18 +5,18 @@ test_description='git am handling submodules'
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-submodule-update.sh
 
-am () {
-	git format-patch --stdout --ignore-submodules=dirty "..$1" >patch &&
-	may_only_be_test_must_fail "$2" &&
-	$2 git am patch
+am() {
+  git format-patch --stdout --ignore-submodules=dirty "..$1" >patch \
+    && may_only_be_test_must_fail "$2" \
+    && $2 git am patch
 }
 
 test_submodule_switch_func "am"
 
-am_3way () {
-	git format-patch --stdout --ignore-submodules=dirty "..$1" >patch &&
-	may_only_be_test_must_fail "$2" &&
-	$2 git am --3way patch
+am_3way() {
+  git format-patch --stdout --ignore-submodules=dirty "..$1" >patch \
+    && may_only_be_test_must_fail "$2" \
+    && $2 git am --3way patch
 }
 
 KNOWN_FAILURE_NOFF_MERGE_ATTEMPTS_TO_MERGE_REMOVED_SUBMODULE_FILES=1
@@ -58,20 +58,21 @@ test_expect_success 'setup diff.submodule' '
 '
 
 run_test() {
-	START_COMMIT=$1 &&
-	EXPECT=$2 &&
-	# Abort any merges in progress: the previous
-	# test may have failed, and we should clean up.
-	test_might_fail git am --abort &&
-	git reset --hard $START_COMMIT &&
-	rm -f *.patch &&
-	git format-patch -1 &&
-	git reset --hard $START_COMMIT^ &&
-	git submodule update &&
-	git am *.patch &&
-	git submodule update &&
-	git -C submodule rev-parse HEAD >actual &&
-	test_cmp $EXPECT actual
+  START_COMMIT=$1 \
+    && EXPECT=$2 \
+    &&
+    # Abort any merges in progress: the previous
+    # test may have failed, and we should clean up.
+    test_might_fail git am --abort \
+    && git reset --hard $START_COMMIT \
+    && rm -f *.patch \
+    && git format-patch -1 \
+    && git reset --hard $START_COMMIT^ \
+    && git submodule update \
+    && git am *.patch \
+    && git submodule update \
+    && git -C submodule rev-parse HEAD >actual \
+    && test_cmp $EXPECT actual
 }
 
 test_expect_success 'diff.submodule unset' '

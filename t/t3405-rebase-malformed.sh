@@ -20,7 +20,6 @@ cat >G <<\EOF
 commit log message containing a diff
 EOF
 
-
 test_expect_success setup '
 
 	>file1 &&

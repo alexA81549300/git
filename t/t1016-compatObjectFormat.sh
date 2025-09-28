@@ -22,94 +22,93 @@ test_description='Test how well compatObjectFormat works'
 # This means that when the commit is translated between hash functions
 # the commit is identical to the commit in the other repository.
 
-compat_hash () {
-	case "$1" in
-	"sha1")
-		echo "sha256"
-		;;
-	"sha256")
-		echo "sha1"
-		;;
-	esac
+compat_hash() {
+  case "$1" in
+    "sha1")
+      echo "sha256"
+      ;;
+    "sha256")
+      echo "sha1"
+      ;;
+  esac
 }
 
-hello_oid () {
-	case "$1" in
-	"sha1")
-		echo "$hello_sha1_oid"
-		;;
-	"sha256")
-		echo "$hello_sha256_oid"
-		;;
-	esac
+hello_oid() {
+  case "$1" in
+    "sha1")
+      echo "$hello_sha1_oid"
+      ;;
+    "sha256")
+      echo "$hello_sha256_oid"
+      ;;
+  esac
 }
 
-tree_oid () {
-	case "$1" in
-	"sha1")
-		echo "$tree_sha1_oid"
-		;;
-	"sha256")
-		echo "$tree_sha256_oid"
-		;;
-	esac
+tree_oid() {
+  case "$1" in
+    "sha1")
+      echo "$tree_sha1_oid"
+      ;;
+    "sha256")
+      echo "$tree_sha256_oid"
+      ;;
+  esac
 }
 
-commit_oid () {
-	case "$1" in
-	"sha1")
-		echo "$commit_sha1_oid"
-		;;
-	"sha256")
-		echo "$commit_sha256_oid"
-		;;
-	esac
+commit_oid() {
+  case "$1" in
+    "sha1")
+      echo "$commit_sha1_oid"
+      ;;
+    "sha256")
+      echo "$commit_sha256_oid"
+      ;;
+  esac
 }
 
-commit2_oid () {
-	case "$1" in
-	"sha1")
-		echo "$commit2_sha1_oid"
-		;;
-	"sha256")
-		echo "$commit2_sha256_oid"
-		;;
-	esac
+commit2_oid() {
+  case "$1" in
+    "sha1")
+      echo "$commit2_sha1_oid"
+      ;;
+    "sha256")
+      echo "$commit2_sha256_oid"
+      ;;
+  esac
 }
 
-del_sigcommit () {
-	local delete="$1"
+del_sigcommit() {
+  local delete="$1"
 
-	if test "$delete" = "sha256" ; then
-		local pattern="gpgsig-sha256"
-	else
-		local pattern="gpgsig"
-	fi
-	test-tool delete-gpgsig "$pattern"
+  if test "$delete" = "sha256"; then
+    local pattern="gpgsig-sha256"
+  else
+    local pattern="gpgsig"
+  fi
+  test-tool delete-gpgsig "$pattern"
 }
 
-del_sigtag () {
-	local storage="$1"
-	local delete="$2"
+del_sigtag() {
+  local storage="$1"
+  local delete="$2"
 
-	if test "$storage" = "$delete" ; then
-		local pattern="trailer"
-	elif test "$storage" = "sha256" ; then
-		local pattern="gpgsig"
-	else
-		local pattern="gpgsig-sha256"
-	fi
-	test-tool delete-gpgsig "$pattern"
+  if test "$storage" = "$delete"; then
+    local pattern="trailer"
+  elif test "$storage" = "sha256"; then
+    local pattern="gpgsig"
+  else
+    local pattern="gpgsig-sha256"
+  fi
+  test-tool delete-gpgsig "$pattern"
 }
 
 base=$(pwd)
-for hash in sha1 sha256
-do
-	cd "$base"
-	mkdir -p repo-$hash
-	cd repo-$hash
+for hash in sha1 sha256; do
+  cd "$base"
+  mkdir -p repo-$hash
+  cd repo-$hash
 
-	test_expect_success "setup $hash repository" '
+  test_expect_success "setup $hash repository" '
 		git init --object-format=$hash &&
 		git config core.repositoryformatversion 1 &&
 		git config extensions.objectformat $hash &&
@@ -122,27 +121,27 @@ do
 		eval commit_${hash}_oid=$(git rev-parse HEAD) &&
 		eval tree_${hash}_oid=$(git rev-parse HEAD^{tree})
 	'
-	test_expect_success "create a $hash  tagged blob" '
+  test_expect_success "create a $hash  tagged blob" '
 		git tag --no-sign -m "This is a tag" hellotag $(hello_oid $hash) &&
 		eval hellotag_${hash}_oid=$(git rev-parse hellotag)
 	'
-	test_expect_success "create a $hash tagged tree" '
+  test_expect_success "create a $hash tagged tree" '
 		git tag --no-sign -m "This is a tag" treetag $(tree_oid $hash) &&
 		eval treetag_${hash}_oid=$(git rev-parse treetag)
 	'
-	test_expect_success "create a $hash tagged commit" '
+  test_expect_success "create a $hash tagged commit" '
 		git tag --no-sign -m "This is a tag" committag $(commit_oid $hash) &&
 		eval committag_${hash}_oid=$(git rev-parse committag)
 	'
-	test_expect_success GPG2 "create a $hash signed commit" '
+  test_expect_success GPG2 "create a $hash signed commit" '
 		git commit --gpg-sign --allow-empty -m "This is a signed commit" &&
 		eval signedcommit_${hash}_oid=$(git rev-parse HEAD)
 	'
-	test_expect_success GPG2 "create a $hash signed tag" '
+  test_expect_success GPG2 "create a $hash signed tag" '
 		git tag -s -m "This is a signed tag" signedtag HEAD &&
 		eval signedtag_${hash}_oid=$(git rev-parse signedtag)
 	'
-	test_expect_success "create a $hash branch" '
+  test_expect_success "create a $hash branch" '
 		git checkout -b branch $(commit_oid $hash) &&
 		echo "More more more give me more!" >more &&
 		eval more_${hash}_oid=$(git hash-object more) &&
@@ -153,22 +152,22 @@ do
 		eval commit2_${hash}_oid=$(git rev-parse HEAD) &&
 		eval tree2_${hash}_oid=$(git rev-parse HEAD^{tree})
 	'
-	test_expect_success GPG2 "create another $hash signed tag" '
+  test_expect_success GPG2 "create another $hash signed tag" '
 		git tag -s -m "This is another signed tag" signedtag2 $(commit2_oid $hash) &&
 		eval signedtag2_${hash}_oid=$(git rev-parse signedtag2)
 	'
-	test_expect_success GPG2 "merge the $hash branches together" '
+  test_expect_success GPG2 "merge the $hash branches together" '
 		git merge -S -m "merge some signed tags together" signedtag signedtag2 &&
 		eval signedcommit2_${hash}_oid=$(git rev-parse HEAD)
 	'
-	test_expect_success GPG2 "create additional $hash signed commits" '
+  test_expect_success GPG2 "create additional $hash signed commits" '
 		git commit --gpg-sign --allow-empty -m "This is an additional signed commit" &&
 		git cat-file commit HEAD | del_sigcommit sha256 >"../${hash}_signedcommit3" &&
 		git cat-file commit HEAD | del_sigcommit sha1 >"../${hash}_signedcommit4" &&
 		eval signedcommit3_${hash}_oid=$(git hash-object -t commit -w ../${hash}_signedcommit3) &&
 		eval signedcommit4_${hash}_oid=$(git hash-object -t commit -w ../${hash}_signedcommit4)
 	'
-	test_expect_success GPG2 "create additional $hash signed tags" '
+  test_expect_success GPG2 "create additional $hash signed tags" '
 		git tag -s -m "This is an additional signed tag" signedtag34 HEAD &&
 		git cat-file tag signedtag34 | del_sigtag "${hash}" sha256 >../${hash}_signedtag3 &&
 		git cat-file tag signedtag34 | del_sigtag "${hash}" sha1 >../${hash}_signedtag4 &&
@@ -178,77 +177,80 @@ do
 done
 cd "$base"
 
-compare_oids () {
-	test "$#" = 5 && { local PREREQ="$1"; shift; } || PREREQ=
-	local type="$1"
-	local name="$2"
-	local sha1_oid="$3"
-	local sha256_oid="$4"
+compare_oids() {
+  test "$#" = 5 && {
+    local PREREQ="$1"
+    shift
+  } || PREREQ=
+  local type="$1"
+  local name="$2"
+  local sha1_oid="$3"
+  local sha256_oid="$4"
 
-	echo ${sha1_oid} >${name}_sha1_expected
-	echo ${sha256_oid} >${name}_sha256_expected
-	echo ${type} >${name}_type_expected
+  echo ${sha1_oid} >${name}_sha1_expected
+  echo ${sha256_oid} >${name}_sha256_expected
+  echo ${type} >${name}_type_expected
 
-	git --git-dir=repo-sha1/.git rev-parse --output-object-format=sha256 ${sha1_oid} >${name}_sha1_sha256_found
-	git --git-dir=repo-sha256/.git rev-parse --output-object-format=sha1 ${sha256_oid} >${name}_sha256_sha1_found
-	local sha1_sha256_oid="$(cat ${name}_sha1_sha256_found)"
-	local sha256_sha1_oid="$(cat ${name}_sha256_sha1_found)"
+  git --git-dir=repo-sha1/.git rev-parse --output-object-format=sha256 ${sha1_oid} >${name}_sha1_sha256_found
+  git --git-dir=repo-sha256/.git rev-parse --output-object-format=sha1 ${sha256_oid} >${name}_sha256_sha1_found
+  local sha1_sha256_oid="$(cat ${name}_sha1_sha256_found)"
+  local sha256_sha1_oid="$(cat ${name}_sha256_sha1_found)"
 
-	test_expect_success $PREREQ "Verify ${type} ${name}'s sha1 oid" '
+  test_expect_success $PREREQ "Verify ${type} ${name}'s sha1 oid" '
 		git --git-dir=repo-sha256/.git rev-parse --output-object-format=sha1 ${sha256_oid} >${name}_sha1 &&
 		test_cmp ${name}_sha1 ${name}_sha1_expected
 	'
 
-	test_expect_success $PREREQ "Verify ${type} ${name}'s sha256 oid" '
+  test_expect_success $PREREQ "Verify ${type} ${name}'s sha256 oid" '
 		git --git-dir=repo-sha1/.git rev-parse --output-object-format=sha256 ${sha1_oid} >${name}_sha256 &&
 		test_cmp ${name}_sha256 ${name}_sha256_expected
 	'
 
-	test_expect_success $PREREQ "Verify ${name}'s sha1 type" '
+  test_expect_success $PREREQ "Verify ${name}'s sha1 type" '
 		git --git-dir=repo-sha1/.git cat-file -t ${sha1_oid} >${name}_type1 &&
 		git --git-dir=repo-sha256/.git cat-file -t ${sha256_sha1_oid} >${name}_type2 &&
 		test_cmp ${name}_type1 ${name}_type2 &&
 		test_cmp ${name}_type1 ${name}_type_expected
 	'
 
-	test_expect_success $PREREQ "Verify ${name}'s sha256 type" '
+  test_expect_success $PREREQ "Verify ${name}'s sha256 type" '
 		git --git-dir=repo-sha256/.git cat-file -t ${sha256_oid} >${name}_type3 &&
 		git --git-dir=repo-sha1/.git cat-file -t ${sha1_sha256_oid} >${name}_type4 &&
 		test_cmp ${name}_type3 ${name}_type4 &&
 		test_cmp ${name}_type3 ${name}_type_expected
 	'
 
-	test_expect_success $PREREQ "Verify ${name}'s sha1 size" '
+  test_expect_success $PREREQ "Verify ${name}'s sha1 size" '
 		git --git-dir=repo-sha1/.git cat-file -s ${sha1_oid} >${name}_size1 &&
 		git --git-dir=repo-sha256/.git cat-file -s ${sha256_sha1_oid} >${name}_size2 &&
 		test_cmp ${name}_size1 ${name}_size2
 	'
 
-	test_expect_success $PREREQ "Verify ${name}'s sha256 size" '
+  test_expect_success $PREREQ "Verify ${name}'s sha256 size" '
 		git --git-dir=repo-sha256/.git cat-file -s ${sha256_oid} >${name}_size3 &&
 		git --git-dir=repo-sha1/.git cat-file -s ${sha1_sha256_oid} >${name}_size4 &&
 		test_cmp ${name}_size3 ${name}_size4
 	'
 
-	test_expect_success $PREREQ "Verify ${name}'s sha1 pretty content" '
+  test_expect_success $PREREQ "Verify ${name}'s sha1 pretty content" '
 		git --git-dir=repo-sha1/.git cat-file -p ${sha1_oid} >${name}_content1 &&
 		git --git-dir=repo-sha256/.git cat-file -p ${sha256_sha1_oid} >${name}_content2 &&
 		test_cmp ${name}_content1 ${name}_content2
 	'
 
-	test_expect_success $PREREQ "Verify ${name}'s sha256 pretty content" '
+  test_expect_success $PREREQ "Verify ${name}'s sha256 pretty content" '
 		git --git-dir=repo-sha256/.git cat-file -p ${sha256_oid} >${name}_content3 &&
 		git --git-dir=repo-sha1/.git cat-file -p ${sha1_sha256_oid} >${name}_content4 &&
 		test_cmp ${name}_content3 ${name}_content4
 	'
 
-	test_expect_success $PREREQ "Verify ${name}'s sha1 content" '
+  test_expect_success $PREREQ "Verify ${name}'s sha1 content" '
 		git --git-dir=repo-sha1/.git cat-file ${type} ${sha1_oid} >${name}_content5 &&
 		git --git-dir=repo-sha256/.git cat-file ${type} ${sha256_sha1_oid} >${name}_content6 &&
 		test_cmp ${name}_content5 ${name}_content6
 	'
 
-	test_expect_success $PREREQ "Verify ${name}'s sha256 content" '
+  test_expect_success $PREREQ "Verify ${name}'s sha256 content" '
 		git --git-dir=repo-sha256/.git cat-file ${type} ${sha256_oid} >${name}_content7 &&
 		git --git-dir=repo-sha1/.git cat-file ${type} ${sha1_sha256_oid} >${name}_content8 &&
 		test_cmp ${name}_content7 ${name}_content8

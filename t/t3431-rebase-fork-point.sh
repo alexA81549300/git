@@ -29,23 +29,23 @@ test_expect_success setup '
 	test_commit G
 '
 
-do_test_rebase () {
-	expected="$1" &&
-	shift &&
-	git checkout main &&
-	git reset --hard E &&
-	git checkout side &&
-	git reset --hard G &&
-	git rebase $* &&
-	test_write_lines $expected >expect &&
-	git log --pretty=%s >actual &&
-	test_cmp expect actual
+do_test_rebase() {
+  expected="$1" \
+    && shift \
+    && git checkout main \
+    && git reset --hard E \
+    && git checkout side \
+    && git reset --hard G \
+    && git rebase $* \
+    && test_write_lines $expected >expect \
+    && git log --pretty=%s >actual \
+    && test_cmp expect actual
 }
 
-test_rebase () {
-	expected="$1" &&
-	shift &&
-	test_expect_success "git rebase $*" "do_test_rebase '$expected' $*"
+test_rebase() {
+  expected="$1" \
+    && shift \
+    && test_expect_success "git rebase $*" "do_test_rebase '$expected' $*"
 }
 
 test_rebase 'G F E D B A'

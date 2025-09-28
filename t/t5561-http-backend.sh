@@ -8,34 +8,34 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . "$TEST_DIRECTORY"/lib-httpd.sh
 
 if ! test_have_prereq CURL; then
-	skip_all='skipping raw http-backend tests, curl not available'
-	test_done
+  skip_all='skipping raw http-backend tests, curl not available'
+  test_done
 fi
 
 start_httpd
 
 GET() {
-	curl --include "$HTTPD_URL/$SMART/repo.git/$1" >out &&
-	tr '\015' Q <out |
-	sed '
+  curl --include "$HTTPD_URL/$SMART/repo.git/$1" >out \
+    && tr '\015' Q <out \
+    | sed '
 		s/Q$//
 		1q
-	' >act &&
-	echo "HTTP/1.1 $2" >exp &&
-	test_cmp exp act
+	' >act \
+    && echo "HTTP/1.1 $2" >exp \
+    && test_cmp exp act
 }
 
 POST() {
-	curl --include --data "$2" \
-	--header "Content-Type: application/x-$1-request" \
-	"$HTTPD_URL/smart/repo.git/$1" >out &&
-	tr '\015' Q <out |
-	sed '
+  curl --include --data "$2" \
+    --header "Content-Type: application/x-$1-request" \
+    "$HTTPD_URL/smart/repo.git/$1" >out \
+    && tr '\015' Q <out \
+    | sed '
 		s/Q$//
 		1q
-	' >act &&
-	echo "HTTP/1.1 $3" >exp &&
-	test_cmp exp act
+	' >act \
+    && echo "HTTP/1.1 $3" >exp \
+    && test_cmp exp act
 }
 
 . "$TEST_DIRECTORY"/t556x_common

@@ -14,13 +14,13 @@ test_expect_success setup '
 	echo D >fileD.t
 '
 
-restore_checkpoint () {
-	git reset
+restore_checkpoint() {
+  git reset
 }
 
-verify_expect () {
-	git status --porcelain --untracked-files=no -- fileA.t fileB.t fileC.t fileD.t >actual &&
-	test_cmp expect actual
+verify_expect() {
+  git status --porcelain --untracked-files=no -- fileA.t fileB.t fileC.t fileD.t >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success '--pathspec-from-file from stdin' '

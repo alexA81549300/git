@@ -25,9 +25,8 @@ test_expect_success 'saying "n" does nothing' '
 	verify_saved_state bar
 '
 
-for opt in "HEAD" "@" ""
-do
-	test_expect_success "git reset -p $opt" '
+for opt in "HEAD" "@" ""; do
+  test_expect_success "git reset -p $opt" '
 		set_and_save_state dir/foo work work &&
 		test_write_lines n y | git reset -p $opt >output &&
 		verify_state dir/foo work head &&
@@ -92,6 +91,5 @@ test_expect_success 'git reset -p HEAD^ -- dir' '
 test_expect_success 'none of this moved HEAD' '
 	verify_saved_head
 '
-
 
 test_done

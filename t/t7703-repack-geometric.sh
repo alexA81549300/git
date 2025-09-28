@@ -10,11 +10,11 @@ objdir=.git/objects
 packdir=$objdir/pack
 midx=$objdir/pack/multi-pack-index
 
-packed_objects () {
-	git show-index <"$1" >tmp-object-list &&
-	cut -d' ' -f2 tmp-object-list | sort &&
-	rm tmp-object-list
- }
+packed_objects() {
+  git show-index <"$1" >tmp-object-list \
+    && cut -d' ' -f2 tmp-object-list | sort \
+    && rm tmp-object-list
+}
 
 test_expect_success '--geometric with no packs' '
 	git init geometric &&

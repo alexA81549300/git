@@ -27,13 +27,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 test_tick
 
-fill () {
-	for i
-	do
-		echo "$i"
-	done
+fill() {
+  for i; do
+    echo "$i"
+  done
 }
-
 
 test_expect_success setup '
 	fill x y z >same &&
@@ -443,18 +441,18 @@ test_expect_success 'checkout with --track, but without -b, fails with too short
 	test_must_fail git checkout --track renamer
 '
 
-setup_conflicting_index () {
-	rm -f .git/index &&
-	O=$(echo original | git hash-object -w --stdin) &&
-	A=$(echo ourside | git hash-object -w --stdin) &&
-	B=$(echo theirside | git hash-object -w --stdin) &&
-	(
-		echo "100644 $A 0	fild" &&
-		echo "100644 $O 1	file" &&
-		echo "100644 $A 2	file" &&
-		echo "100644 $B 3	file" &&
-		echo "100644 $A 0	filf"
-	) | git update-index --index-info
+setup_conflicting_index() {
+  rm -f .git/index \
+    && O=$(echo original | git hash-object -w --stdin) \
+    && A=$(echo ourside | git hash-object -w --stdin) \
+    && B=$(echo theirside | git hash-object -w --stdin) \
+    && (
+      echo "100644 $A 0	fild" \
+      && echo "100644 $O 1	file" \
+        && echo "100644 $A 2	file" \
+        && echo "100644 $B 3	file" \
+        && echo "100644 $A 0	filf"
+    ) | git update-index --index-info
 }
 
 test_expect_success 'checkout an unmerged path should fail' '
@@ -729,8 +727,8 @@ test_expect_success 'switch out of non-branch' '
 '
 
 (
- echo "#!$SHELL_PATH"
- cat <<\EOF
+  echo "#!$SHELL_PATH"
+  cat <<\EOF
 O=$1 A=$2 B=$3
 cat "$A" >.tmp
 exec >"$A"

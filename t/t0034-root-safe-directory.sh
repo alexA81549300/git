@@ -5,16 +5,14 @@ test_description='verify safe.directory checks while running as root'
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-sudo.sh
 
-if [ "$GIT_TEST_ALLOW_SUDO" != "YES" ]
-then
-	skip_all="You must set env var GIT_TEST_ALLOW_SUDO=YES in order to run this test"
-	test_done
+if [ "$GIT_TEST_ALLOW_SUDO" != "YES" ]; then
+  skip_all="You must set env var GIT_TEST_ALLOW_SUDO=YES in order to run this test"
+  test_done
 fi
 
-if ! test_have_prereq NOT_ROOT
-then
-	skip_all="These tests do not support running as root"
-	test_done
+if ! test_have_prereq NOT_ROOT; then
+  skip_all="These tests do not support running as root"
+  test_done
 fi
 
 test_lazy_prereq SUDO '
@@ -26,10 +24,9 @@ test_lazy_prereq SUDO '
 	test_cmp u r
 '
 
-if ! test_have_prereq SUDO
-then
-	skip_all="Your sudo/system configuration is either too strict or unsupported"
-	test_done
+if ! test_have_prereq SUDO; then
+  skip_all="Your sudo/system configuration is either too strict or unsupported"
+  test_done
 fi
 
 test_expect_success SUDO 'setup' '

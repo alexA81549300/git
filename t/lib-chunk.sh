@@ -9,10 +9,12 @@
 #
 # The <bytes> are interpreted as pairs of hex digits (so "000000FE" would be
 # big-endian 254).
-corrupt_chunk_file () {
-	fn=$1; shift
-	perl "$TEST_DIRECTORY"/lib-chunk/corrupt-chunk-file.pl \
-		"$@" <"$fn" >"$fn.tmp" &&
-	# some vintages of macOS 'mv' fails to overwrite a read-only file.
-	mv -f "$fn.tmp" "$fn"
+corrupt_chunk_file() {
+  fn=$1
+  shift
+  perl "$TEST_DIRECTORY"/lib-chunk/corrupt-chunk-file.pl \
+    "$@" <"$fn" >"$fn.tmp" \
+    &&
+    # some vintages of macOS 'mv' fails to overwrite a read-only file.
+    mv -f "$fn.tmp" "$fn"
 }

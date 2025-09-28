@@ -16,7 +16,7 @@ echo '1
 8' >file
 
 test_expect_success 'setup' \
-	'git add file &&
+  'git add file &&
 	git commit -q -m 1 &&
 	git checkout -b test &&
 	mv file file.tmp &&
@@ -29,7 +29,7 @@ test_expect_success 'setup' \
 	git checkout main'
 
 test_expect_success \
-	'check if contextually independent diffs for the same file apply' \
-	'( git diff test~2 test~1 && git diff test~1 test~0 )| git apply'
+  'check if contextually independent diffs for the same file apply' \
+  '( git diff test~2 test~1 && git diff test~1 test~0 )| git apply'
 
 test_done

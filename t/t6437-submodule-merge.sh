@@ -234,7 +234,6 @@ test_expect_success 'merging should fail for changes that are backwards' '
 	fi)
 '
 
-
 # Check that the conflicting submodule is detected when it is
 # in the common ancestor. status should be 'U00...00"
 test_expect_success 'git submodule status should display the merge conflict properly with merge base' '
@@ -270,7 +269,6 @@ EOF
        test_cmp expect actual &&
        git reset --hard)
 '
-
 
 test_expect_success 'merging with a modify/modify conflict between merge bases' '
 	git reset --hard HEAD &&

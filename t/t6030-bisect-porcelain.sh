@@ -11,22 +11,21 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-add_line_into_file()
-{
-    _line=$1
-    _file=$2
+add_line_into_file() {
+  _line=$1
+  _file=$2
 
-    if [ -f "$_file" ]; then
-        echo "$_line" >> $_file || return $?
-        MSG="Add <$_line> into <$_file>."
-    else
-        echo "$_line" > $_file || return $?
-        git add $_file || return $?
-        MSG="Create file <$_file> with <$_line> inside."
-    fi
+  if [ -f "$_file" ]; then
+    echo "$_line" >>$_file || return $?
+    MSG="Add <$_line> into <$_file>."
+  else
+    echo "$_line" >$_file || return $?
+    git add $_file || return $?
+    MSG="Create file <$_file> with <$_line> inside."
+  fi
 
-    test_tick
-    git commit --quiet -m "$MSG" $_file
+  test_tick
+  git commit --quiet -m "$MSG" $_file
 }
 
 HASH1=
@@ -34,13 +33,13 @@ HASH2=
 HASH3=
 HASH4=
 
-test_bisect_usage () {
-	local code="$1" &&
-	shift &&
-	cat >expect &&
-	test_expect_code $code "$@" >out 2>actual &&
-	test_must_be_empty out &&
-	test_cmp expect actual
+test_bisect_usage() {
+  local code="$1" \
+    && shift \
+    && cat >expect \
+    && test_expect_code $code "$@" >out 2>actual \
+    && test_must_be_empty out \
+    && test_cmp expect actual
 }
 
 test_expect_success 'bisect usage' "
@@ -311,37 +310,31 @@ test_expect_success 'bisect skip: with commit both bad and skipped' '
 	grep $HASH4 my_bisect_log.txt
 '
 
-test_bisect_run_args () {
-	test_when_finished "rm -f run.sh actual" &&
-	>actual &&
-	cat >expect.args &&
-	cat <&6 >expect.out &&
-	cat <&7 >expect.err &&
-	write_script run.sh <<-\EOF &&
+test_bisect_run_args() {
+  test_when_finished "rm -f run.sh actual" \
+    && >actual \
+    && cat >expect.args \
+    && cat <&6 >expect.out \
+    && cat <&7 >expect.err \
+    && write_script run.sh <<-\EOF && test_when_finished "git bisect reset" && git bisect start && git bisect good $HASH1 && git bisect bad $HASH4 && git bisect run ./run.sh $@ >actual.out.raw 2>actual.err &&
 	while test $# != 0
 	do
 		echo "<$1>" &&
 		shift
 	done >actual.args
 	EOF
-
-	test_when_finished "git bisect reset" &&
-	git bisect start &&
-	git bisect good $HASH1 &&
-	git bisect bad $HASH4 &&
-	git bisect run ./run.sh $@ >actual.out.raw 2>actual.err &&
-	# Prune just the log output
-	sed -n \
-		-e '/^Author:/d' \
-		-e '/^Date:/d' \
-		-e '/^$/d' \
-		-e '/^commit /d' \
-		-e '/^ /d' \
-		-e 'p' \
-		<actual.out.raw >actual.out &&
-	test_cmp expect.out actual.out &&
-	test_cmp expect.err actual.err &&
-	test_cmp expect.args actual.args
+    # Prune just the log output
+    sed -n \
+      -e '/^Author:/d' \
+      -e '/^Date:/d' \
+      -e '/^$/d' \
+      -e '/^commit /d' \
+      -e '/^ /d' \
+      -e 'p' \
+      <actual.out.raw >actual.out \
+    && test_cmp expect.out actual.out \
+    && test_cmp expect.err actual.err \
+    && test_cmp expect.args actual.args
 }
 
 test_expect_success 'git bisect run: args, stdout and stderr with no arguments' "
@@ -829,7 +822,6 @@ test_expect_success 'test bisection on bare repo - --no-checkout specified' '
 	grep "$HASH3 is the first bad commit" nocheckout.log
 '
 
-
 test_expect_success 'test bisection on bare repo - --no-checkout defaulted' '
 	git clone --bare . bare.defaulted &&
 	(
@@ -876,8 +868,8 @@ test_expect_success 'broken branch creation' '
 	rm .git/objects/$(test_oid_to_path $deleted)
 '
 
-echo "" > expected.ok
-cat > expected.missing-tree.default <<EOF
+echo "" >expected.ok
+cat >expected.missing-tree.default <<EOF
 fatal: unable to read tree ($deleted)
 EOF
 
@@ -895,10 +887,9 @@ test_expect_success 'bisect fails if tree is broken on trial commit' '
 	test_cmp expected.missing-tree.default error.txt
 '
 
-check_same()
-{
-	echo "Checking $1 is the same as $2" &&
-	test_cmp_rev "$1" "$2"
+check_same() {
+  echo "Checking $1 is the same as $2" \
+    && test_cmp_rev "$1" "$2"
 }
 
 test_expect_success 'bisect: --no-checkout - start commit bad' '
@@ -963,7 +954,7 @@ test_expect_success 'bisect: demonstrate identification of damage boundary' "
 	git bisect reset
 "
 
-cat > expected.bisect-log <<EOF
+cat >expected.bisect-log <<EOF
 # bad: [$HASH4] Add <4: Ciao for now> into <hello>.
 # good: [$HASH2] Add <2: A new day for git> into <hello>.
 git bisect start '$HASH4' '$HASH2'
@@ -981,7 +972,7 @@ test_expect_success 'bisect log: successful result' '
 	git bisect reset
 '
 
-cat > expected.bisect-skip-log <<EOF
+cat >expected.bisect-skip-log <<EOF
 # bad: [$HASH4] Add <4: Ciao for now> into <hello>.
 # good: [$HASH2] Add <2: A new day for git> into <hello>.
 git bisect start '$HASH4' '$HASH2'

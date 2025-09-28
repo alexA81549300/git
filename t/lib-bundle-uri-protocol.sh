@@ -7,31 +7,31 @@ BUNDLE_URI_TEST_PARENT=
 BUNDLE_URI_TEST_URI=
 BUNDLE_URI_TEST_BUNDLE_URI=
 case "$BUNDLE_URI_PROTOCOL" in
-file)
-	BUNDLE_URI_PARENT=file_parent
-	BUNDLE_URI_REPO_URI="file://$PWD/file_parent"
-	BUNDLE_URI_BUNDLE_URI="$BUNDLE_URI_REPO_URI/fake.bdl"
-	test_set_prereq BUNDLE_URI_FILE
-	;;
-git)
-	. "$TEST_DIRECTORY"/lib-git-daemon.sh
-	start_git_daemon --export-all --enable=receive-pack
-	BUNDLE_URI_PARENT="$GIT_DAEMON_DOCUMENT_ROOT_PATH/parent"
-	BUNDLE_URI_REPO_URI="$GIT_DAEMON_URL/parent"
-	BUNDLE_URI_BUNDLE_URI="$BUNDLE_URI_REPO_URI/fake.bdl"
-	test_set_prereq BUNDLE_URI_GIT
-	;;
-http)
-	. "$TEST_DIRECTORY"/lib-httpd.sh
-	start_httpd
-	BUNDLE_URI_PARENT="$HTTPD_DOCUMENT_ROOT_PATH/http_parent"
-	BUNDLE_URI_REPO_URI="$HTTPD_URL/smart/http_parent"
-	BUNDLE_URI_BUNDLE_URI="$BUNDLE_URI_REPO_URL/fake.bdl"
-	test_set_prereq BUNDLE_URI_HTTP
-	;;
-*)
-	BUG "Need to pass valid BUNDLE_URI_PROTOCOL (was \"$BUNDLE_URI_PROTOCOL\")"
-	;;
+  file)
+    BUNDLE_URI_PARENT=file_parent
+    BUNDLE_URI_REPO_URI="file://$PWD/file_parent"
+    BUNDLE_URI_BUNDLE_URI="$BUNDLE_URI_REPO_URI/fake.bdl"
+    test_set_prereq BUNDLE_URI_FILE
+    ;;
+  git)
+    . "$TEST_DIRECTORY"/lib-git-daemon.sh
+    start_git_daemon --export-all --enable=receive-pack
+    BUNDLE_URI_PARENT="$GIT_DAEMON_DOCUMENT_ROOT_PATH/parent"
+    BUNDLE_URI_REPO_URI="$GIT_DAEMON_URL/parent"
+    BUNDLE_URI_BUNDLE_URI="$BUNDLE_URI_REPO_URI/fake.bdl"
+    test_set_prereq BUNDLE_URI_GIT
+    ;;
+  http)
+    . "$TEST_DIRECTORY"/lib-httpd.sh
+    start_httpd
+    BUNDLE_URI_PARENT="$HTTPD_DOCUMENT_ROOT_PATH/http_parent"
+    BUNDLE_URI_REPO_URI="$HTTPD_URL/smart/http_parent"
+    BUNDLE_URI_BUNDLE_URI="$BUNDLE_URI_REPO_URL/fake.bdl"
+    test_set_prereq BUNDLE_URI_HTTP
+    ;;
+  *)
+    BUG "Need to pass valid BUNDLE_URI_PROTOCOL (was \"$BUNDLE_URI_PROTOCOL\")"
+    ;;
 esac
 
 test_expect_success "setup protocol v2 $BUNDLE_URI_PROTOCOL:// tests" '
@@ -41,13 +41,12 @@ test_expect_success "setup protocol v2 $BUNDLE_URI_PROTOCOL:// tests" '
 '
 
 case "$BUNDLE_URI_PROTOCOL" in
-http)
-	test_expect_success "setup config for $BUNDLE_URI_PROTOCOL:// tests" '
+  http)
+    test_expect_success "setup config for $BUNDLE_URI_PROTOCOL:// tests" '
 		git -C "$BUNDLE_URI_PARENT" config http.receivepack true
 	'
-	;;
-*)
-	;;
+    ;;
+  *) ;;
 esac
 BUNDLE_URI_BUNDLE_URI_ESCAPED=$(echo "$BUNDLE_URI_BUNDLE_URI" | test_uri_escape)
 

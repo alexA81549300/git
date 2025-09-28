@@ -12,8 +12,8 @@ test_expect_success 'setup ' '
 	git commit -m "Initial commit"
 '
 
-has_cr () {
-	tr '\015' Q <"$1" | grep Q >/dev/null
+has_cr() {
+  tr '\015' Q <"$1" | grep Q >/dev/null
 }
 
 test_expect_success 'no filters with `git show`' '

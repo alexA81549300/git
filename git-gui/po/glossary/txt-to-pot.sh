@@ -8,20 +8,18 @@
 # 19 Aug 2001, 23 Jul 2007
 
 #check args
-if [ $# -eq 0 ]
-then
-	cat <<!
+if [ $# -eq 0 ]; then
+  cat <<!
 Usage: $(basename $0) git-gui-glossary.txt > git-gui-glossary.pot
 !
-	exit 1;
+  exit 1
 fi
 
-GLOSSARY_CSV="$1";
+GLOSSARY_CSV="$1"
 
-if [ ! -f "$GLOSSARY_CSV" ]
-then
-	echo "Can't find $GLOSSARY_CSV.";
-	exit 1;
+if [ ! -f "$GLOSSARY_CSV" ]; then
+  echo "Can't find $GLOSSARY_CSV."
+  exit 1
 fi
 
 cat <<!
@@ -45,4 +43,4 @@ msgstr ""
 
 #Yes this is the most simple awk script you've ever seen :)
 awk -F'\t' '{if ($2 != "") print "#. "$2; print "msgid "$1; print "msgstr \"\"\n"}' \
-$GLOSSARY_CSV
+  $GLOSSARY_CSV

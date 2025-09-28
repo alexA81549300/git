@@ -18,45 +18,44 @@ test_expect_success setup '
 	git checkout -t -b side
 '
 
-test_rebase_same_head () {
-	status_n="$1" &&
-	shift &&
-	what_n="$1" &&
-	shift &&
-	cmp_n="$1" &&
-	shift &&
-	status_f="$1" &&
-	shift &&
-	what_f="$1" &&
-	shift &&
-	cmp_f="$1" &&
-	shift &&
-	test_rebase_same_head_ $status_n $what_n $cmp_n 0 " --apply" "$*" &&
-	test_rebase_same_head_ $status_f $what_f $cmp_f 0 " --apply --no-ff" "$*"
-	test_rebase_same_head_ $status_n $what_n $cmp_n 0 " --merge" "$*" &&
-	test_rebase_same_head_ $status_f $what_f $cmp_f 0 " --merge --no-ff" "$*"
-	test_rebase_same_head_ $status_n $what_n $cmp_n 1 " --merge" "$*" &&
-	test_rebase_same_head_ $status_f $what_f $cmp_f 1 " --merge --no-ff" "$*"
+test_rebase_same_head() {
+  status_n="$1" \
+    && shift \
+    && what_n="$1" \
+    && shift \
+    && cmp_n="$1" \
+    && shift \
+    && status_f="$1" \
+    && shift \
+    && what_f="$1" \
+    && shift \
+    && cmp_f="$1" \
+    && shift \
+    && test_rebase_same_head_ $status_n $what_n $cmp_n 0 " --apply" "$*" \
+    && test_rebase_same_head_ $status_f $what_f $cmp_f 0 " --apply --no-ff" "$*"
+  test_rebase_same_head_ $status_n $what_n $cmp_n 0 " --merge" "$*" \
+    && test_rebase_same_head_ $status_f $what_f $cmp_f 0 " --merge --no-ff" "$*"
+  test_rebase_same_head_ $status_n $what_n $cmp_n 1 " --merge" "$*" \
+    && test_rebase_same_head_ $status_f $what_f $cmp_f 1 " --merge --no-ff" "$*"
 }
 
-test_rebase_same_head_ () {
-	status="$1" &&
-	shift &&
-	what="$1" &&
-	shift &&
-	cmp="$1" &&
-	shift &&
-	abbreviate="$1" &&
-	shift &&
-	flag="$1"
-	shift &&
-	if test $abbreviate -eq 1
-	then
-		msg="git rebase$flag $* (rebase.abbreviateCommands = true) with $changes is $what with $cmp HEAD"
-	else
-		msg="git rebase$flag $* with $changes is $what with $cmp HEAD"
-	fi &&
-	test_expect_$status "$msg" "
+test_rebase_same_head_() {
+  status="$1" \
+    && shift \
+    && what="$1" \
+    && shift \
+    && cmp="$1" \
+    && shift \
+    && abbreviate="$1" \
+    && shift \
+    && flag="$1"
+  shift \
+    && if test $abbreviate -eq 1; then
+      msg="git rebase$flag $* (rebase.abbreviateCommands = true) with $changes is $what with $cmp HEAD"
+    else
+      msg="git rebase$flag $* with $changes is $what with $cmp HEAD"
+    fi \
+    && test_expect_$status "$msg" "
 		if test $abbreviate -eq 1
 		then
 			test_config rebase.abbreviateCommands true

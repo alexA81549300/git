@@ -16,64 +16,61 @@ TEST_CREATE_REPO_NO_TEMPLATE=1
 #
 # If the first argument is `!`, "git checkout" is expected to fail when
 # it is run.
-do_checkout () {
-	should_fail= &&
-	if test "x$1" = "x!"
-	then
-		should_fail=yes &&
-		shift
-	fi &&
-	exp_branch=$1 &&
-	exp_ref="refs/heads/$exp_branch" &&
+do_checkout() {
+  should_fail= \
+    && if test "x$1" = "x!"; then
+      should_fail=yes \
+        && shift
+    fi \
+    && exp_branch=$1 \
+    && exp_ref="refs/heads/$exp_branch" \
+    &&
+    # if <oid> is not specified, use HEAD.
+    exp_oid=${2:-$(git rev-parse --verify HEAD)} \
+    &&
+    # default options for git checkout: -b
+    if test -z "$3"; then
+      opts="-b"
+    else
+      opts="$3"
+    fi
 
-	# if <oid> is not specified, use HEAD.
-	exp_oid=${2:-$(git rev-parse --verify HEAD)} &&
-
-	# default options for git checkout: -b
-	if test -z "$3"
-	then
-		opts="-b"
-	else
-		opts="$3"
-	fi
-
-	if test -n "$should_fail"
-	then
-		test_must_fail git checkout $opts $exp_branch $exp_oid
-	else
-		git checkout $opts $exp_branch $exp_oid &&
-		echo "$exp_ref" >ref.expect &&
-		git rev-parse --symbolic-full-name HEAD >ref.actual &&
-		test_cmp ref.expect ref.actual &&
-		echo "$exp_oid" >oid.expect &&
-		git rev-parse --verify HEAD >oid.actual &&
-		test_cmp oid.expect oid.actual
-	fi
+  if test -n "$should_fail"; then
+    test_must_fail git checkout $opts $exp_branch $exp_oid
+  else
+    git checkout $opts $exp_branch $exp_oid \
+      && echo "$exp_ref" >ref.expect \
+      && git rev-parse --symbolic-full-name HEAD >ref.actual \
+      && test_cmp ref.expect ref.actual \
+      && echo "$exp_oid" >oid.expect \
+      && git rev-parse --verify HEAD >oid.actual \
+      && test_cmp oid.expect oid.actual
+  fi
 }
 
-test_dirty_unmergeable () {
-	test_expect_code 1 git diff --exit-code
+test_dirty_unmergeable() {
+  test_expect_code 1 git diff --exit-code
 }
 
-test_dirty_unmergeable_discards_changes () {
-	git diff --exit-code
+test_dirty_unmergeable_discards_changes() {
+  git diff --exit-code
 }
 
-setup_dirty_unmergeable () {
-	echo >>file1 change2
+setup_dirty_unmergeable() {
+  echo >>file1 change2
 }
 
-test_dirty_mergeable () {
-	test_expect_code 1 git diff --cached --exit-code
+test_dirty_mergeable() {
+  test_expect_code 1 git diff --cached --exit-code
 }
 
-test_dirty_mergeable_discards_changes () {
-	git diff --cached --exit-code
+test_dirty_mergeable_discards_changes() {
+  git diff --cached --exit-code
 }
 
-setup_dirty_mergeable () {
-	echo >file2 file2 &&
-	git add file2
+setup_dirty_mergeable() {
+  echo >file2 file2 \
+    && git add file2
 }
 
 test_expect_success 'setup' '

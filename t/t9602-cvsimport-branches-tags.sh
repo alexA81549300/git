@@ -77,5 +77,4 @@ test_expect_failure PERL 'test tag T_MIXED' '
 
 '
 
-
 test_done

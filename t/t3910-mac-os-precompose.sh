@@ -10,10 +10,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-if ! test_have_prereq UTF8_NFD_TO_NFC
-then
-	skip_all="filesystem does not corrupt utf-8"
-	test_done
+if ! test_have_prereq UTF8_NFD_TO_NFC; then
+  skip_all="filesystem does not corrupt utf-8"
+  test_done
 fi
 
 # create utf-8 variables
@@ -24,7 +23,6 @@ Odiarnfc=$(printf '\303\226')
 Odiarnfd=$(printf 'O\314\210')
 AEligatu=$(printf '\303\206')
 Invalidu=$(printf '\303\377')
-
 
 #Create a string with 255 bytes (decomposed)
 Alongd=$Adiarnfd$Adiarnfd$Adiarnfd$Adiarnfd$Adiarnfd$Adiarnfd$Adiarnfd #21 Byte
@@ -37,25 +35,24 @@ Alongc=$Alongc$Alongc$Alongc$Alongc$Alongc           #50 Byte
 Alongc=$Alongc$Alongc$Alongc$Alongc$Alongc           #250 Byte
 Alongc=$Alongc$AEligatu$AEligatu                     #254 Byte
 
-
-ls_files_nfc_nfd () {
-	test_when_finished "git config --global --unset core.precomposeunicode" &&
-	prglbl=$1
-	prlocl=$2
-	aumlcreat=$3
-	aumllist=$4
-	git config --global core.precomposeunicode $prglbl &&
-	(
-		rm -rf .git &&
-		mkdir -p "somewhere/$prglbl/$prlocl/$aumlcreat" &&
-		mypwd=$PWD &&
-		cd "somewhere/$prglbl/$prlocl/$aumlcreat" &&
-		git init &&
-		git config core.precomposeunicode $prlocl &&
-		git --literal-pathspecs ls-files "$mypwd/somewhere/$prglbl/$prlocl/$aumllist" 2>err &&
-		>expected &&
-		test_cmp expected err
-	)
+ls_files_nfc_nfd() {
+  test_when_finished "git config --global --unset core.precomposeunicode" \
+    && prglbl=$1
+  prlocl=$2
+  aumlcreat=$3
+  aumllist=$4
+  git config --global core.precomposeunicode $prglbl \
+    && (
+      rm -rf .git \
+        && mkdir -p "somewhere/$prglbl/$prlocl/$aumlcreat" \
+        && mypwd=$PWD \
+        && cd "somewhere/$prglbl/$prlocl/$aumlcreat" \
+        && git init \
+        && git config core.precomposeunicode $prlocl \
+        && git --literal-pathspecs ls-files "$mypwd/somewhere/$prglbl/$prlocl/$aumllist" 2>err \
+        && >expected \
+        && test_cmp expected err
+    )
 }
 
 test_expect_success "detect if nfd needed" '

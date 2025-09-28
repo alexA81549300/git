@@ -5,84 +5,81 @@ test_description=check-ignore
 TEST_CREATE_REPO_NO_TEMPLATE=1
 . ./test-lib.sh
 
-init_vars () {
-	global_excludes="global-excludes"
+init_vars() {
+  global_excludes="global-excludes"
 }
 
-enable_global_excludes () {
-	init_vars &&
-	git config core.excludesfile "$global_excludes"
+enable_global_excludes() {
+  init_vars \
+    && git config core.excludesfile "$global_excludes"
 }
 
-expect_in () {
-	dest="$HOME/expected-$1" text="$2"
-	if test -z "$text"
-	then
-		>"$dest" # avoid newline
-	else
-		echo "$text" >"$dest"
-	fi
+expect_in() {
+  dest="$HOME/expected-$1" text="$2"
+  if test -z "$text"; then
+    >"$dest" # avoid newline
+  else
+    echo "$text" >"$dest"
+  fi
 }
 
-expect () {
-	expect_in stdout "$1"
+expect() {
+  expect_in stdout "$1"
 }
 
-expect_from_stdin () {
-	cat >"$HOME/expected-stdout"
+expect_from_stdin() {
+  cat >"$HOME/expected-stdout"
 }
 
-test_stderr () {
-	expected="$1"
-	expect_in stderr "$1" &&
-	test_cmp "$HOME/expected-stderr" "$HOME/stderr"
+test_stderr() {
+  expected="$1"
+  expect_in stderr "$1" \
+    && test_cmp "$HOME/expected-stderr" "$HOME/stderr"
 }
 
-broken_c_unquote () {
-	"$PERL_PATH" -pe 's/^"//; s/\\//; s/"$//; tr/\n/\0/' "$@"
+broken_c_unquote() {
+  "$PERL_PATH" -pe 's/^"//; s/\\//; s/"$//; tr/\n/\0/' "$@"
 }
 
-broken_c_unquote_verbose () {
-	"$PERL_PATH" -pe 's/	"/	/; s/\\//; s/"$//; tr/:\t\n/\0/' "$@"
+broken_c_unquote_verbose() {
+  "$PERL_PATH" -pe 's/	"/	/; s/\\//; s/"$//; tr/:\t\n/\0/' "$@"
 }
 
-stderr_contains () {
-	regexp="$1"
-	if test_grep "$regexp" "$HOME/stderr"
-	then
-		return 0
-	else
-		echo "didn't find /$regexp/ in $HOME/stderr"
-		cat "$HOME/stderr"
-		return 1
-	fi
+stderr_contains() {
+  regexp="$1"
+  if test_grep "$regexp" "$HOME/stderr"; then
+    return 0
+  else
+    echo "didn't find /$regexp/ in $HOME/stderr"
+    cat "$HOME/stderr"
+    return 1
+  fi
 }
 
-stderr_empty_on_success () {
-	expect_code="$1"
-	if test $expect_code = 0
-	then
-		test_stderr ""
-	else
-		# If we expect failure then stderr might or might not be empty
-		# due to --quiet - the caller can check its contents
-		return 0
-	fi
+stderr_empty_on_success() {
+  expect_code="$1"
+  if test $expect_code = 0; then
+    test_stderr ""
+  else
+    # If we expect failure then stderr might or might not be empty
+    # due to --quiet - the caller can check its contents
+    return 0
+  fi
 }
 
-test_check_ignore () {
-	args="$1" expect_code="${2:-0}" global_args="$3"
+test_check_ignore() {
+  args="$1" expect_code="${2:-0}" global_args="$3"
 
-	init_vars &&
-	rm -f "$HOME/stdout" "$HOME/stderr" "$HOME/cmd" &&
-	echo git $global_args check-ignore $quiet_opt $verbose_opt $non_matching_opt $no_index_opt $args \
-		>"$HOME/cmd" &&
-	echo "$expect_code" >"$HOME/expected-exit-code" &&
-	test_expect_code "$expect_code" \
-		git $global_args check-ignore $quiet_opt $verbose_opt $non_matching_opt $no_index_opt $args \
-		>"$HOME/stdout" 2>"$HOME/stderr" &&
-	test_cmp "$HOME/expected-stdout" "$HOME/stdout" &&
-	stderr_empty_on_success "$expect_code"
+  init_vars \
+    && rm -f "$HOME/stdout" "$HOME/stderr" "$HOME/cmd" \
+    && echo git $global_args check-ignore $quiet_opt $verbose_opt $non_matching_opt $no_index_opt $args \
+      >"$HOME/cmd" \
+    && echo "$expect_code" >"$HOME/expected-exit-code" \
+    && test_expect_code "$expect_code" \
+      git $global_args check-ignore $quiet_opt $verbose_opt $non_matching_opt $no_index_opt $args \
+      >"$HOME/stdout" 2>"$HOME/stderr" \
+    && test_cmp "$HOME/expected-stdout" "$HOME/stdout" \
+    && stderr_empty_on_success "$expect_code"
 }
 
 # Runs the same code with 4 different levels of output verbosity:
@@ -107,73 +104,66 @@ test_check_ignore () {
 #     from this value)
 #   - code to run (should invoke test_check_ignore)
 #   - index option: --index or --no-index
-test_expect_success_multiple () {
-	prereq=
-	if test $# -eq 5
-	then
-		prereq=$1
-		shift
-	fi
-	if test "$4" = "--index"
-	then
-		no_index_opt=
-	else
-		no_index_opt=$4
-	fi
-	testname="$1" expect_all="$2" code="$3"
+test_expect_success_multiple() {
+  prereq=
+  if test $# -eq 5; then
+    prereq=$1
+    shift
+  fi
+  if test "$4" = "--index"; then
+    no_index_opt=
+  else
+    no_index_opt=$4
+  fi
+  testname="$1" expect_all="$2" code="$3"
 
-	expect_verbose=$( echo "$expect_all" | grep -v '^::	' )
-	expect=$( echo "$expect_verbose" | sed -e 's/.*	//' )
+  expect_verbose=$(echo "$expect_all" | grep -v '^::	')
+  expect=$(echo "$expect_verbose" | sed -e 's/.*	//')
 
-	test_expect_success $prereq "$testname${no_index_opt:+ with $no_index_opt}" '
+  test_expect_success $prereq "$testname${no_index_opt:+ with $no_index_opt}" '
 		expect "$expect" &&
 		eval "$code"
 	'
 
-	# --quiet is only valid when a single pattern is passed
-	if test $( echo "$expect_all" | wc -l ) = 1
-	then
-		for quiet_opt in '-q' '--quiet'
-		do
-			opts="${no_index_opt:+$no_index_opt }$quiet_opt"
-			test_expect_success $prereq "$testname${opts:+ with $opts}" "
+  # --quiet is only valid when a single pattern is passed
+  if test $(echo "$expect_all" | wc -l) = 1; then
+    for quiet_opt in '-q' '--quiet'; do
+      opts="${no_index_opt:+$no_index_opt }$quiet_opt"
+      test_expect_success $prereq "$testname${opts:+ with $opts}" "
 			expect '' &&
 			$code
 		"
-		done
-		quiet_opt=
-	fi
+    done
+    quiet_opt=
+  fi
 
-	for verbose_opt in '-v' '--verbose'
-	do
-		for non_matching_opt in '' '-n' '--non-matching'
-		do
-			if test -n "$non_matching_opt"
-			then
-				my_expect="$expect_all"
-			else
-				my_expect="$expect_verbose"
-			fi
+  for verbose_opt in '-v' '--verbose'; do
+    for non_matching_opt in '' '-n' '--non-matching'; do
+      if test -n "$non_matching_opt"; then
+        my_expect="$expect_all"
+      else
+        my_expect="$expect_verbose"
+      fi
 
-			test_code="
+      test_code="
 				expect '$my_expect' &&
 				$code
 			"
-			opts="${no_index_opt:+$no_index_opt }$verbose_opt${non_matching_opt:+ $non_matching_opt}"
-			test_expect_success $prereq "$testname${opts:+ with $opts}" "$test_code"
-		done
-	done
-	verbose_opt=
-	non_matching_opt=
-	no_index_opt=
+      opts="${no_index_opt:+$no_index_opt }$verbose_opt${non_matching_opt:+ $non_matching_opt}"
+      test_expect_success $prereq "$testname${opts:+ with $opts}" "$test_code"
+    done
+  done
+  verbose_opt=
+  non_matching_opt=
+  no_index_opt=
 }
 
-test_expect_success_multi () {
-	test_expect_success_multiple "$@" "--index"
+test_expect_success_multi() {
+  test_expect_success_multiple "$@" "--index"
 }
 
-test_expect_success_no_index_multi () {
-	test_expect_success_multiple "$@" "--no-index"
+test_expect_success_no_index_multi() {
+  test_expect_success_multiple "$@" "--no-index"
 }
 
 test_expect_success 'setup' '
@@ -261,16 +251,14 @@ test_expect_success '--quiet with multiple args' '
 	stderr_contains "fatal: --quiet is only valid with a single pathname"
 '
 
-for verbose_opt in '-v' '--verbose'
-do
-	for quiet_opt in '-q' '--quiet'
-	do
-		test_expect_success "$quiet_opt $verbose_opt" "
+for verbose_opt in '-v' '--verbose'; do
+  for quiet_opt in '-q' '--quiet'; do
+    test_expect_success "$quiet_opt $verbose_opt" "
 			expect '' &&
 			test_check_ignore '$quiet_opt $verbose_opt foo' 128 &&
 			stderr_contains 'fatal: cannot have both --quiet and --verbose'
 		"
-	done
+  done
 done
 
 test_expect_success '--quiet with multiple args' '
@@ -320,62 +308,60 @@ test_expect_success_multi 'needs work tree' '' '
 # does not impact results, but that the presence of a file in the
 # index does unless the --no-index option is used.
 
-for subdir in '' 'a/'
-do
-	if test -z "$subdir"
-	then
-		where="at top-level"
-	else
-		where="in subdir $subdir"
-	fi
+for subdir in '' 'a/'; do
+  if test -z "$subdir"; then
+    where="at top-level"
+  else
+    where="in subdir $subdir"
+  fi
 
-	test_expect_success_multi "non-existent file $where not ignored" \
-		"::	${subdir}non-existent" \
-		"test_check_ignore '${subdir}non-existent' 1"
+  test_expect_success_multi "non-existent file $where not ignored" \
+    "::	${subdir}non-existent" \
+    "test_check_ignore '${subdir}non-existent' 1"
 
-	test_expect_success_no_index_multi "non-existent file $where not ignored" \
-		"::	${subdir}non-existent" \
-		"test_check_ignore '${subdir}non-existent' 1"
+  test_expect_success_no_index_multi "non-existent file $where not ignored" \
+    "::	${subdir}non-existent" \
+    "test_check_ignore '${subdir}non-existent' 1"
 
-	test_expect_success_multi "non-existent file $where ignored" \
-		".gitignore:1:one	${subdir}one" \
-		"test_check_ignore '${subdir}one'"
+  test_expect_success_multi "non-existent file $where ignored" \
+    ".gitignore:1:one	${subdir}one" \
+    "test_check_ignore '${subdir}one'"
 
-	test_expect_success_no_index_multi "non-existent file $where ignored" \
-		".gitignore:1:one	${subdir}one" \
-		"test_check_ignore '${subdir}one'"
+  test_expect_success_no_index_multi "non-existent file $where ignored" \
+    ".gitignore:1:one	${subdir}one" \
+    "test_check_ignore '${subdir}one'"
 
-	test_expect_success_multi "existing untracked file $where not ignored" \
-		"::	${subdir}not-ignored" \
-		"test_check_ignore '${subdir}not-ignored' 1"
+  test_expect_success_multi "existing untracked file $where not ignored" \
+    "::	${subdir}not-ignored" \
+    "test_check_ignore '${subdir}not-ignored' 1"
 
-	test_expect_success_no_index_multi "existing untracked file $where not ignored" \
-		"::	${subdir}not-ignored" \
-		"test_check_ignore '${subdir}not-ignored' 1"
+  test_expect_success_no_index_multi "existing untracked file $where not ignored" \
+    "::	${subdir}not-ignored" \
+    "test_check_ignore '${subdir}not-ignored' 1"
 
-	test_expect_success_multi "existing tracked file $where not ignored" \
-		"::	${subdir}ignored-but-in-index" \
-		"test_check_ignore '${subdir}ignored-but-in-index' 1"
+  test_expect_success_multi "existing tracked file $where not ignored" \
+    "::	${subdir}ignored-but-in-index" \
+    "test_check_ignore '${subdir}ignored-but-in-index' 1"
 
-	test_expect_success_no_index_multi "existing tracked file $where shown as ignored" \
-		".gitignore:2:ignored-*	${subdir}ignored-but-in-index" \
-		"test_check_ignore '${subdir}ignored-but-in-index'"
+  test_expect_success_no_index_multi "existing tracked file $where shown as ignored" \
+    ".gitignore:2:ignored-*	${subdir}ignored-but-in-index" \
+    "test_check_ignore '${subdir}ignored-but-in-index'"
 
-	test_expect_success_multi "existing untracked file $where ignored" \
-		".gitignore:2:ignored-*	${subdir}ignored-and-untracked" \
-		"test_check_ignore '${subdir}ignored-and-untracked'"
+  test_expect_success_multi "existing untracked file $where ignored" \
+    ".gitignore:2:ignored-*	${subdir}ignored-and-untracked" \
+    "test_check_ignore '${subdir}ignored-and-untracked'"
 
-	test_expect_success_no_index_multi "existing untracked file $where ignored" \
-		".gitignore:2:ignored-*	${subdir}ignored-and-untracked" \
-		"test_check_ignore '${subdir}ignored-and-untracked'"
+  test_expect_success_no_index_multi "existing untracked file $where ignored" \
+    ".gitignore:2:ignored-*	${subdir}ignored-and-untracked" \
+    "test_check_ignore '${subdir}ignored-and-untracked'"
 
-	test_expect_success_multi "mix of file types $where" \
-"::	${subdir}non-existent
+  test_expect_success_multi "mix of file types $where" \
+    "::	${subdir}non-existent
 .gitignore:1:one	${subdir}one
 ::	${subdir}not-ignored
 ::	${subdir}ignored-but-in-index
 .gitignore:2:ignored-*	${subdir}ignored-and-untracked" \
-		"test_check_ignore '
+    "test_check_ignore '
 			${subdir}non-existent
 			${subdir}one
 			${subdir}not-ignored
@@ -383,13 +369,13 @@ do
 			${subdir}ignored-and-untracked'
 		"
 
-	test_expect_success_no_index_multi "mix of file types $where" \
-"::	${subdir}non-existent
+  test_expect_success_no_index_multi "mix of file types $where" \
+    "::	${subdir}non-existent
 .gitignore:1:one	${subdir}one
 ::	${subdir}not-ignored
 .gitignore:2:ignored-*	${subdir}ignored-but-in-index
 .gitignore:2:ignored-*	${subdir}ignored-and-untracked" \
-		"test_check_ignore '
+    "test_check_ignore '
 			${subdir}non-existent
 			${subdir}one
 			${subdir}not-ignored
@@ -406,7 +392,7 @@ test_expect_success 'sub-directory local ignore' '
 	test_check_ignore "a/3-three a/three-not-this-one"
 '
 
-test_expect_success 'sub-directory local ignore with --verbose'  '
+test_expect_success 'sub-directory local ignore with --verbose' '
 	expect "a/.gitignore:2:*three	a/3-three" &&
 	test_check_ignore "--verbose a/3-three a/three-not-this-one"
 '
@@ -451,7 +437,7 @@ test_expect_success 'nested include of negated pattern with -v -n' '
 # test ignored sub-directories
 
 test_expect_success_multi 'ignored sub-directory' \
-	'a/b/.gitignore:5:ignored-dir/	a/b/ignored-dir' '
+  'a/b/.gitignore:5:ignored-dir/	a/b/ignored-dir' '
 	test_check_ignore "a/b/ignored-dir"
 '
 
@@ -640,19 +626,18 @@ test_expect_success '--stdin -v' '
 	test_check_ignore "-v --stdin" <stdin
 '
 
-for opts in '--stdin -z' '-z --stdin'
-do
-	test_expect_success "$opts" "
+for opts in '--stdin -z' '-z --stdin'; do
+  test_expect_success "$opts" "
 		expect_from_stdin <expected-default0 &&
 		test_check_ignore '$opts' <stdin0
 	"
 
-	test_expect_success "$opts -q" "
+  test_expect_success "$opts -q" "
 		expect "" &&
 		test_check_ignore '-q $opts' <stdin0
 	"
 
-	test_expect_success "$opts -v" "
+  test_expect_success "$opts -v" "
 		expect_from_stdin <expected-verbose0 &&
 		test_check_ignore '-v $opts' <stdin0
 	"
@@ -738,9 +723,8 @@ test_expect_success '--stdin from subdirectory with -v -n' '
 	)
 '
 
-for opts in '--stdin -z' '-z --stdin'
-do
-	test_expect_success "$opts from subdirectory" '
+for opts in '--stdin -z' '-z --stdin'; do
+  test_expect_success "$opts from subdirectory" '
 		expect_from_stdin <expected-default0 &&
 		(
 			cd a &&
@@ -748,7 +732,7 @@ do
 		)
 	'
 
-	test_expect_success "$opts from subdirectory with -v" '
+  test_expect_success "$opts from subdirectory with -v" '
 		expect_from_stdin <expected-verbose0 &&
 		(
 			cd a &&

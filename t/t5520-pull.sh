@@ -7,31 +7,31 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-modify () {
-	sed -e "$1" "$2" >"$2.x" &&
-	mv "$2.x" "$2"
+modify() {
+  sed -e "$1" "$2" >"$2.x" \
+    && mv "$2.x" "$2"
 }
 
-test_pull_autostash () {
-	expect_parent_num="$1" &&
-	shift &&
-	git reset --hard before-rebase &&
-	echo dirty >new_file &&
-	git add new_file &&
-	git pull "$@" . copy &&
-	test_cmp_rev HEAD^"$expect_parent_num" copy &&
-	echo dirty >expect &&
-	test_cmp expect new_file &&
-	echo "modified again" >expect &&
-	test_cmp expect file
+test_pull_autostash() {
+  expect_parent_num="$1" \
+    && shift \
+    && git reset --hard before-rebase \
+    && echo dirty >new_file \
+    && git add new_file \
+    && git pull "$@" . copy \
+    && test_cmp_rev HEAD^"$expect_parent_num" copy \
+    && echo dirty >expect \
+    && test_cmp expect new_file \
+    && echo "modified again" >expect \
+    && test_cmp expect file
 }
 
-test_pull_autostash_fail () {
-	git reset --hard before-rebase &&
-	echo dirty >new_file &&
-	git add new_file &&
-	test_must_fail git pull "$@" . copy 2>err &&
-	test_grep -E "uncommitted changes.|overwritten by merge:" err
+test_pull_autostash_fail() {
+  git reset --hard before-rebase \
+    && echo dirty >new_file \
+    && git add new_file \
+    && test_must_fail git pull "$@" . copy 2>err \
+    && test_grep -E "uncommitted changes.|overwritten by merge:" err
 }
 
 test_expect_success setup '

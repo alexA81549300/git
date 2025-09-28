@@ -5,32 +5,32 @@ test_description='Clone repositories and store files in Git LFS'
 . ./lib-git-p4.sh
 
 git lfs help >/dev/null 2>&1 || {
-	skip_all='skipping git p4 Git LFS tests; Git LFS not found'
-	test_done
+  skip_all='skipping git p4 Git LFS tests; Git LFS not found'
+  test_done
 }
 
-test_file_in_lfs () {
-	FILE="$1" &&
-	SIZE="$2" &&
-	EXPECTED_CONTENT="$3" &&
-	sed -n '1,1 p' "$FILE" | grep "^version " &&
-	sed -n '2,2 p' "$FILE" | grep "^oid " &&
-	sed -n '3,3 p' "$FILE" | grep "^size " &&
-	test_line_count = 3 "$FILE" &&
-	grep "size $SIZE" "$FILE" &&
-	HASH=$(sed -ne "/oid sha256:/s/oid sha256://gp" "$FILE") &&
-	LFS_FILE=".git/lfs/objects/$(echo "$HASH" | cut -c1-2)/$(echo "$HASH" | cut -c3-4)/$HASH" &&
-	echo $EXPECTED_CONTENT >expect &&
-	test_path_is_file "$FILE" &&
-	test_path_is_file "$LFS_FILE" &&
-	test_cmp expect "$LFS_FILE"
+test_file_in_lfs() {
+  FILE="$1" \
+    && SIZE="$2" \
+    && EXPECTED_CONTENT="$3" \
+    && sed -n '1,1 p' "$FILE" | grep "^version " \
+    && sed -n '2,2 p' "$FILE" | grep "^oid " \
+    && sed -n '3,3 p' "$FILE" | grep "^size " \
+    && test_line_count = 3 "$FILE" \
+    && grep "size $SIZE" "$FILE" \
+    && HASH=$(sed -ne "/oid sha256:/s/oid sha256://gp" "$FILE") \
+    && LFS_FILE=".git/lfs/objects/$(echo "$HASH" | cut -c1-2)/$(echo "$HASH" | cut -c3-4)/$HASH" \
+    && echo $EXPECTED_CONTENT >expect \
+    && test_path_is_file "$FILE" \
+    && test_path_is_file "$LFS_FILE" \
+    && test_cmp expect "$LFS_FILE"
 }
 
-test_file_count_in_dir () {
-	DIR="$1" &&
-	EXPECTED_COUNT="$2" &&
-	find "$DIR" -type f >actual &&
-	test_line_count = $EXPECTED_COUNT actual
+test_file_count_in_dir() {
+  DIR="$1" \
+    && EXPECTED_COUNT="$2" \
+    && find "$DIR" -type f >actual \
+    && test_line_count = $EXPECTED_COUNT actual
 }
 
 test_expect_success 'start p4d' '

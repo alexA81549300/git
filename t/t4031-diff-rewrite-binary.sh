@@ -7,18 +7,15 @@ test_description='rewrite diff on binary file'
 # We must be large enough to meet the MINIMUM_BREAK_SIZE
 # requirement.
 make_file() {
-	# common first line to help identify rewrite versus regular diff
-	printf "=\n" >file
-	for i in 1 2 3 4 5 6 7 8 9 10
-	do
-		for j in 1 2 3 4 5 6 7 8 9
-		do
-			for k in 1 2 3 4 5
-			do
-				printf "$1\n"
-			done
-		done
-	done >>file
+  # common first line to help identify rewrite versus regular diff
+  printf "=\n" >file
+  for i in 1 2 3 4 5 6 7 8 9 10; do
+    for j in 1 2 3 4 5 6 7 8 9; do
+      for k in 1 2 3 4 5; do
+        printf "$1\n"
+      done
+    done
+  done >>file
 }
 
 test_expect_success 'create binary file with changes' '
@@ -58,8 +55,8 @@ test_expect_success 'diff --stat counts binary rewrite as 0 lines' '
 '
 
 {
-	echo "#!$SHELL_PATH"
-	cat <<'EOF'
+  echo "#!$SHELL_PATH"
+  cat <<'EOF'
 "$PERL_PATH" -e '$/ = undef; $_ = <>; s/./ord($&)/ge; print $_' < "$1"
 EOF
 } >dump

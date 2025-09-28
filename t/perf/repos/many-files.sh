@@ -26,38 +26,55 @@ depth=5
 width=10
 files=9
 
-while test "$#" -ne 0
-do
-    case "$1" in
-	-r)
-	    shift;
-	    test "$#" -ne 0 || { echo 'error: -r requires an argument' >&2; exit 1; }
-	    repo=$1;
-	    shift ;;
-	-d)
-	    shift;
-	    test "$#" -ne 0 || { echo 'error: -d requires an argument' >&2; exit 1; }
-	    depth=$1;
-	    shift ;;
-	-w)
-	    shift;
-	    test "$#" -ne 0 || { echo 'error: -w requires an argument' >&2; exit 1; }
-	    width=$1;
-	    shift ;;
-	-f)
-	    shift;
-	    test "$#" -ne 0 || { echo 'error: -f requires an argument' >&2; exit 1; }
-	    files=$1;
-	    shift ;;
-	*)
-	    echo "error: unknown option '$1'" >&2; exit 1 ;;
-	esac
+while test "$#" -ne 0; do
+  case "$1" in
+    -r)
+      shift
+      test "$#" -ne 0 || {
+        echo 'error: -r requires an argument' >&2
+        exit 1
+      }
+      repo=$1
+      shift
+      ;;
+    -d)
+      shift
+      test "$#" -ne 0 || {
+        echo 'error: -d requires an argument' >&2
+        exit 1
+      }
+      depth=$1
+      shift
+      ;;
+    -w)
+      shift
+      test "$#" -ne 0 || {
+        echo 'error: -w requires an argument' >&2
+        exit 1
+      }
+      width=$1
+      shift
+      ;;
+    -f)
+      shift
+      test "$#" -ne 0 || {
+        echo 'error: -f requires an argument' >&2
+        exit 1
+      }
+      files=$1
+      shift
+      ;;
+    *)
+      echo "error: unknown option '$1'" >&2
+      exit 1
+      ;;
+  esac
 done
 
 # Inflate the index with thousands of empty files.
 # usage: dir depth width files
 fill_index() {
-	awk -v arg_dir=$1 -v arg_depth=$2 -v arg_width=$3 -v arg_files=$4 '
+  awk -v arg_dir=$1 -v arg_depth=$2 -v arg_width=$3 -v arg_files=$4 '
 		function make_paths(dir, depth, width, files, f, w) {
 			for (f = 1; f <= files; f++) {
 				print dir "/file" f
@@ -69,10 +86,10 @@ fill_index() {
 			}
 		}
 		END { make_paths(arg_dir, arg_depth, arg_width, arg_files) }
-		' </dev/null |
-	sed "s/^/100644 $EMPTY_BLOB	/" |
-	git update-index --index-info
-	return 0
+		' </dev/null \
+    | sed "s/^/100644 $EMPTY_BLOB	/" \
+    | git update-index --index-info
+  return 0
 }
 
 [ -z "$repo" ] && repo=gen-many-files-$depth.$width.$files.git

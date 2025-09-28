@@ -6,8 +6,8 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-reset_state () {
-	rm -rf .git && "$TAR" xf .git-saved.tar
+reset_state() {
+  rm -rf .git && "$TAR" xf .git-saved.tar
 }
 
 test_expect_success setup '

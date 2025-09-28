@@ -46,72 +46,69 @@ test_write_lines '1 X' 2 3 4 '5 X' 6 7 8 '9 X' >result.1-5-9
 test_write_lines '1 X' 2 '3 X' 4 '5 X' 6 7 8 '9 X' >result.1-3-5-9
 test_write_lines 1 2 3 4 5 6 7 8 '9 Z' >result.9z
 
-create_merge_msgs () {
-	echo "Merge tag 'c2'" >msg.1-5 &&
-	echo "Merge tags 'c2' and 'c3'" >msg.1-5-9 &&
-	{
-		echo "Squashed commit of the following:" &&
-		echo &&
-		git log --no-merges ^HEAD c1
-	} >squash.1 &&
-	{
-		echo "Squashed commit of the following:" &&
-		echo &&
-		git log --no-merges ^HEAD c2
-	} >squash.1-5 &&
-	{
-		echo "Squashed commit of the following:" &&
-		echo &&
-		git log --no-merges ^HEAD c2 c3
-	} >squash.1-5-9 &&
-	{
-		echo "* tag 'c3':" &&
-		echo "  commit 3"
-	} >msg.log
+create_merge_msgs() {
+  echo "Merge tag 'c2'" >msg.1-5 \
+    && echo "Merge tags 'c2' and 'c3'" >msg.1-5-9 \
+    && {
+      echo "Squashed commit of the following:" \
+        && echo \
+        && git log --no-merges ^HEAD c1
+    } >squash.1 \
+    && {
+      echo "Squashed commit of the following:" \
+        && echo \
+        && git log --no-merges ^HEAD c2
+    } >squash.1-5 \
+    && {
+      echo "Squashed commit of the following:" \
+        && echo \
+        && git log --no-merges ^HEAD c2 c3
+    } >squash.1-5-9 \
+    && {
+      echo "* tag 'c3':" \
+        && echo "  commit 3"
+    } >msg.log
 }
 
-verify_merge () {
-	test_cmp "$2" "$1" &&
-	git update-index --refresh &&
-	git diff --exit-code &&
-	if test -n "$3"
-	then
-		git show -s --pretty=tformat:%s HEAD >msg.act &&
-		test_cmp "$3" msg.act
-	fi
+verify_merge() {
+  test_cmp "$2" "$1" \
+    && git update-index --refresh \
+    && git diff --exit-code \
+    && if test -n "$3"; then
+      git show -s --pretty=tformat:%s HEAD >msg.act \
+        && test_cmp "$3" msg.act
+    fi
 }
 
-verify_head () {
-	echo "$1" >head.expected &&
-	git rev-parse HEAD >head.actual &&
-	test_cmp head.expected head.actual
+verify_head() {
+  echo "$1" >head.expected \
+    && git rev-parse HEAD >head.actual \
+    && test_cmp head.expected head.actual
 }
 
-verify_parents () {
-	test_write_lines "$@" >parents.expected &&
-	>parents.actual &&
-	i=1 &&
-	while test $i -le $#
-	do
-		git rev-parse HEAD^$i >>parents.actual &&
-		i=$(expr $i + 1) ||
-		return 1
-	done &&
-	test_must_fail git rev-parse --verify "HEAD^$i" &&
-	test_cmp parents.expected parents.actual
+verify_parents() {
+  test_write_lines "$@" >parents.expected \
+    && >parents.actual \
+    && i=1 \
+    && while test $i -le $#; do
+      git rev-parse HEAD^$i >>parents.actual \
+        && i=$(expr $i + 1) \
+        || return 1
+    done \
+    && test_must_fail git rev-parse --verify "HEAD^$i" \
+    && test_cmp parents.expected parents.actual
 }
 
-verify_mergeheads () {
-	test_write_lines "$@" >mergehead.expected &&
-	while read sha1 rest
-	do
-		git rev-parse $sha1 || return 1
-	done <.git/MERGE_HEAD >mergehead.actual &&
-	test_cmp mergehead.expected mergehead.actual
+verify_mergeheads() {
+  test_write_lines "$@" >mergehead.expected \
+    && while read sha1 rest; do
+      git rev-parse $sha1 || return 1
+    done <.git/MERGE_HEAD >mergehead.actual \
+    && test_cmp mergehead.expected mergehead.actual
 }
 
-verify_no_mergehead () {
-	! test -e .git/MERGE_HEAD
+verify_no_mergehead() {
+  ! test -e .git/MERGE_HEAD
 }
 
 test_expect_success 'setup' '

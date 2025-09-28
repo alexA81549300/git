@@ -14,21 +14,21 @@ base_dir=$(pwd)
 U=$base_dir/UPLOAD_LOG
 
 # create a commit in repo $1 with name $2
-commit_in () {
-	(
-		cd "$1" &&
-		echo "$2" >"$2" &&
-		git add "$2" &&
-		git commit -m "$2"
-	)
+commit_in() {
+  (
+    cd "$1" \
+      && echo "$2" >"$2" \
+      && git add "$2" \
+      && git commit -m "$2"
+  )
 }
 
 # check that there are $2 loose objects in repo $1
-test_objcount () {
-	echo "$2" >expect &&
-	git -C "$1" count-objects >actual.raw &&
-	cut -d' ' -f1 <actual.raw >actual &&
-	test_cmp expect actual
+test_objcount() {
+  echo "$2" >expect \
+    && git -C "$1" count-objects >actual.raw \
+    && cut -d' ' -f1 <actual.raw >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'preparing first repository' '
@@ -308,7 +308,6 @@ test_expect_success SYMLINKS 'setup repo with manually symlinked or unknown file
 	git -C T fsck &&
 	git -C T rev-list --all --objects >T.objects
 '
-
 
 test_expect_success SYMLINKS 'clone repo with symlinked or unknown files at objects/' '
 	# None of these options work when cloning locally, since T has

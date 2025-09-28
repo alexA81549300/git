@@ -4,8 +4,8 @@ test_description='grep icase on non-English locales'
 
 . ./lib-gettext.sh
 
-doalarm () {
-	perl -e 'alarm shift; exec @ARGV' -- "$@"
+doalarm() {
+  perl -e 'alarm shift; exec @ARGV' -- "$@"
 }
 
 test_expect_success GETTEXT_LOCALE 'setup' '

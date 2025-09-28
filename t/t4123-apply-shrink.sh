@@ -4,7 +4,7 @@ test_description='apply a patch that is larger than the preimage'
 
 . ./test-lib.sh
 
-cat >F  <<\EOF
+cat >F <<\EOF
 1
 2
 3

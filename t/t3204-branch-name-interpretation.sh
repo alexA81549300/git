@@ -12,13 +12,13 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 expect_branch() {
-	git log -1 --format=%s "$1" >actual &&
-	echo "$2" >expect &&
-	test_cmp expect actual
+  git log -1 --format=%s "$1" >actual \
+    && echo "$2" >expect \
+    && test_cmp expect actual
 }
 
 expect_deleted() {
-	test_must_fail git rev-parse --verify "$1"
+  test_must_fail git rev-parse --verify "$1"
 }
 
 test_expect_success 'set up repo' '

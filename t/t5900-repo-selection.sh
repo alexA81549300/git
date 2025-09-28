@@ -5,35 +5,36 @@ test_description='selecting remote repo in ambiguous cases'
 . ./test-lib.sh
 
 reset() {
-	rm -rf foo foo.git fetch clone
+  rm -rf foo foo.git fetch clone
 }
 
 make_tree() {
-	git init "$1" &&
-	(cd "$1" && test_commit "$1")
+  git init "$1" \
+    && (cd "$1" && test_commit "$1")
 }
 
 make_bare() {
-	git init --bare "$1" &&
-	(cd "$1" &&
-	 tree=$(git hash-object -w -t tree /dev/null) &&
-	 commit=$(echo "$1" | git commit-tree $tree) &&
-	 git update-ref HEAD $commit
-	)
+  git init --bare "$1" \
+    && (
+      cd "$1" \
+        && tree=$(git hash-object -w -t tree /dev/null) \
+        && commit=$(echo "$1" | git commit-tree $tree) \
+        && git update-ref HEAD $commit
+    )
 }
 
 get() {
-	git init --bare fetch &&
-	(cd fetch && git fetch "../$1") &&
-	git clone "$1" clone
+  git init --bare fetch \
+    && (cd fetch && git fetch "../$1") \
+    && git clone "$1" clone
 }
 
 check() {
-	echo "$1" >expect &&
-	(cd fetch && git log -1 --format=%s FETCH_HEAD) >actual.fetch &&
-	(cd clone && git log -1 --format=%s HEAD) >actual.clone &&
-	test_cmp expect actual.fetch &&
-	test_cmp expect actual.clone
+  echo "$1" >expect \
+    && (cd fetch && git log -1 --format=%s FETCH_HEAD) >actual.fetch \
+    && (cd clone && git log -1 --format=%s HEAD) >actual.clone \
+    && test_cmp expect actual.fetch \
+    && test_cmp expect actual.clone
 }
 
 test_expect_success 'find .git dir in worktree' '

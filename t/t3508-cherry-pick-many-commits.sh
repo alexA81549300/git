@@ -8,11 +8,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 check_head_differs_from() {
-	test_cmp_rev ! HEAD "$1"
+  test_cmp_rev ! HEAD "$1"
 }
 
 check_head_equals() {
-	test_cmp_rev HEAD "$1"
+  test_cmp_rev HEAD "$1"
 }
 
 test_expect_success setup '

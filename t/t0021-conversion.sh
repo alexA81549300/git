@@ -11,61 +11,59 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 PATH=$PWD:$PATH
 TEST_ROOT="$(pwd)"
 
-write_script <<\EOF "$TEST_ROOT/rot13.sh"
+write_script "$TEST_ROOT/rot13.sh" <<\EOF
 tr \
   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' \
   'nopqrstuvwxyzabcdefghijklmNOPQRSTUVWXYZABCDEFGHIJKLM'
 EOF
 
-generate_random_characters () {
-	LEN=$1
-	NAME=$2
-	test-tool genrandom some-seed $LEN |
-		perl -pe "s/./chr((ord($&) % 26) + ord('a'))/sge" >"$TEST_ROOT/$NAME"
+generate_random_characters() {
+  LEN=$1
+  NAME=$2
+  test-tool genrandom some-seed $LEN \
+    | perl -pe "s/./chr((ord($&) % 26) + ord('a'))/sge" >"$TEST_ROOT/$NAME"
 }
 
-filter_git () {
-	rm -f *.log &&
-	git "$@"
+filter_git() {
+  rm -f *.log \
+    && git "$@"
 }
 
 # Compare two files and ensure that `clean` and `smudge` respectively are
 # called at least once if specified in the `expect` file. The actual
 # invocation count is not relevant because their number can vary.
 # c.f. https://lore.kernel.org/git/xmqqshv18i8i.fsf@gitster.mtv.corp.google.com/
-test_cmp_count () {
-	expect=$1
-	actual=$2
-	for FILE in "$expect" "$actual"
-	do
-		sort "$FILE" | uniq -c |
-		sed -e "s/^ *[0-9][0-9]*[ 	]*IN: /x IN: /" >"$FILE.tmp"
-	done &&
-	test_cmp "$expect.tmp" "$actual.tmp" &&
-	rm "$expect.tmp" "$actual.tmp"
+test_cmp_count() {
+  expect=$1
+  actual=$2
+  for FILE in "$expect" "$actual"; do
+    sort "$FILE" | uniq -c \
+      | sed -e "s/^ *[0-9][0-9]*[ 	]*IN: /x IN: /" >"$FILE.tmp"
+  done \
+    && test_cmp "$expect.tmp" "$actual.tmp" \
+    && rm "$expect.tmp" "$actual.tmp"
 }
 
 # Compare two files but exclude all `clean` invocations because Git can
 # call `clean` zero or more times.
 # c.f. https://lore.kernel.org/git/xmqqshv18i8i.fsf@gitster.mtv.corp.google.com/
-test_cmp_exclude_clean () {
-	expect=$1
-	actual=$2
-	for FILE in "$expect" "$actual"
-	do
-		grep -v "IN: clean" "$FILE" >"$FILE.tmp"
-	done &&
-	test_cmp "$expect.tmp" "$actual.tmp" &&
-	rm "$expect.tmp" "$actual.tmp"
+test_cmp_exclude_clean() {
+  expect=$1
+  actual=$2
+  for FILE in "$expect" "$actual"; do
+    grep -v "IN: clean" "$FILE" >"$FILE.tmp"
+  done \
+    && test_cmp "$expect.tmp" "$actual.tmp" \
+    && rm "$expect.tmp" "$actual.tmp"
 }
 
 # Check that the contents of two files are equal and that their rot13 version
 # is equal to the committed content.
-test_cmp_committed_rot13 () {
-	test_cmp "$1" "$2" &&
-	rot13.sh <"$1" >expected &&
-	git cat-file blob :"$2" >actual &&
-	test_cmp expected actual
+test_cmp_committed_rot13() {
+  test_cmp "$1" "$2" \
+    && rot13.sh <"$1" >expected \
+    && git cat-file blob :"$2" >actual \
+    && test_cmp expected actual
 }
 
 test_expect_success setup '
@@ -978,17 +976,17 @@ test_expect_success 'invalid file in delayed checkout' '
 	grep "error: external filter .* signaled that .unfiltered. is now available although it has not been delayed earlier" git-stderr.log
 '
 
-for mode in 'case' 'utf-8'
-do
-	case "$mode" in
-	case)	dir='A' symlink='a' mode_prereq='CASE_INSENSITIVE_FS' ;;
-	utf-8)
-		dir=$(printf "\141\314\210") symlink=$(printf "\303\244")
-		mode_prereq='UTF8_NFD_TO_NFC' ;;
-	esac
+for mode in 'case' 'utf-8'; do
+  case "$mode" in
+    case) dir='A' symlink='a' mode_prereq='CASE_INSENSITIVE_FS' ;;
+    utf-8)
+      dir=$(printf "\141\314\210") symlink=$(printf "\303\244")
+      mode_prereq='UTF8_NFD_TO_NFC'
+      ;;
+  esac
 
-	test_expect_success SYMLINKS,$mode_prereq \
-	"delayed checkout with $mode-collision don't write to the wrong place" '
+  test_expect_success SYMLINKS,$mode_prereq \
+    "delayed checkout with $mode-collision don't write to the wrong place" '
 		test_config_global filter.delay.process \
 			"test-tool rot13-filter --always-delay --log=delayed.log clean smudge delay" &&
 		test_config_global filter.delay.required true &&
@@ -1024,7 +1022,7 @@ do
 done
 
 test_expect_success SYMLINKS,CASE_INSENSITIVE_FS \
-"delayed checkout with submodule collision don't write to the wrong place" '
+  "delayed checkout with submodule collision don't write to the wrong place" '
 	git init collision-with-submodule &&
 	(
 		cd collision-with-submodule &&
@@ -1073,57 +1071,50 @@ test_expect_success 'setup for progress tests' '
 	)
 '
 
-test_delayed_checkout_progress () {
-	if test "$1" = "!"
-	then
-		local expect_progress=N &&
-		shift
-	else
-		local expect_progress=
-	fi &&
-
-	if test $# -lt 1
-	then
-		BUG "no command given to test_delayed_checkout_progress"
-	fi &&
-
-	(
-		cd progress &&
-		GIT_PROGRESS_DELAY=0 &&
-		export GIT_PROGRESS_DELAY &&
-		rm -f *.a delay-progress.log &&
-
-		"$@" 2>err &&
-		grep "IN: smudge test-delay10.a .* \\[DELAYED\\]" delay-progress.log &&
-		if test "$expect_progress" = N
-		then
-			! grep "Filtering content" err
-		else
-			grep "Filtering content" err
-		fi
-	)
+test_delayed_checkout_progress() {
+  if test "$1" = "!"; then
+    local expect_progress=N \
+      && shift
+  else
+    local expect_progress=
+  fi \
+    && if test $# -lt 1; then
+      BUG "no command given to test_delayed_checkout_progress"
+    fi \
+    && (
+      cd progress \
+        && GIT_PROGRESS_DELAY=0 \
+        && export GIT_PROGRESS_DELAY \
+        && rm -f *.a delay-progress.log \
+        && "$@" 2>err \
+        && grep "IN: smudge test-delay10.a .* \\[DELAYED\\]" delay-progress.log \
+        && if test "$expect_progress" = N; then
+          ! grep "Filtering content" err
+        else
+          grep "Filtering content" err
+        fi
+    )
 }
 
-for mode in pathspec branch
-do
-	case "$mode" in
-	pathspec) opt='.' ;;
-	branch) opt='-f HEAD' ;;
-	esac
+for mode in pathspec branch; do
+  case "$mode" in
+    pathspec) opt='.' ;;
+    branch) opt='-f HEAD' ;;
+  esac
 
-	test_expect_success PERL,TTY "delayed checkout shows progress by default on tty ($mode checkout)" '
+  test_expect_success PERL,TTY "delayed checkout shows progress by default on tty ($mode checkout)" '
 		test_delayed_checkout_progress test_terminal git checkout $opt
 	'
 
-	test_expect_success PERL "delayed checkout omits progress on non-tty ($mode checkout)" '
+  test_expect_success PERL "delayed checkout omits progress on non-tty ($mode checkout)" '
 		test_delayed_checkout_progress ! git checkout $opt
 	'
 
-	test_expect_success PERL,TTY "delayed checkout omits progress with --quiet ($mode checkout)" '
+  test_expect_success PERL,TTY "delayed checkout omits progress with --quiet ($mode checkout)" '
 		test_delayed_checkout_progress ! test_terminal git checkout --quiet $opt
 	'
 
-	test_expect_success PERL,TTY "delayed checkout honors --[no]-progress ($mode checkout)" '
+  test_expect_success PERL,TTY "delayed checkout honors --[no]-progress ($mode checkout)" '
 		test_delayed_checkout_progress ! test_terminal git checkout --no-progress $opt &&
 		test_delayed_checkout_progress test_terminal git checkout --quiet --progress $opt
 	'

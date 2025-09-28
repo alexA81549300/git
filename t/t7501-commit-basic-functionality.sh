@@ -130,9 +130,8 @@ test_expect_success '--long with stuff to commit returns ok' '
 	git commit -m next -a --long
 '
 
-for opt in "" "-o" "--only"
-do
-	test_expect_success 'exclude additional staged changes when given pathspec' '
+for opt in "" "-o" "--only"; do
+  test_expect_success 'exclude additional staged changes when given pathspec' '
 		echo content >>file &&
 		echo content >>baz &&
 		git add baz &&

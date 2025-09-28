@@ -19,17 +19,16 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-if ! test_have_prereq ICONV
-then
-	skip_all='skipping rebase i18n tests; iconv not available'
-	test_done
+if ! test_have_prereq ICONV; then
+  skip_all='skipping rebase i18n tests; iconv not available'
+  test_done
 fi
 
-compare_msg () {
-	iconv -f "$2" -t "$3" "$TEST_DIRECTORY/t3434/$1" >expect &&
-	git cat-file commit HEAD >raw &&
-	sed "1,/^$/d" raw >actual &&
-	test_cmp expect actual
+compare_msg() {
+  iconv -f "$2" -t "$3" "$TEST_DIRECTORY/t3434/$1" >expect \
+    && git cat-file commit HEAD >raw \
+    && sed "1,/^$/d" raw >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success setup '
@@ -63,11 +62,11 @@ test_expect_success 'rebase --rebase-merges update encoding eucJP to ISO-2022-JP
 	compare_msg eucJP.txt eucJP ISO-2022-JP
 '
 
-test_rebase_continue_update_encode () {
-	old=$1
-	new=$2
-	msgfile=$3
-	test_expect_success "rebase --continue update from $old to $new" '
+test_rebase_continue_update_encode() {
+  old=$1
+  new=$2
+  msgfile=$3
+  test_expect_success "rebase --continue update from $old to $new" '
 		(git rebase --abort || : abort current git-rebase failure) &&
 		git switch -c conflict-$old-$new one &&
 		echo for-conflict >two.t &&

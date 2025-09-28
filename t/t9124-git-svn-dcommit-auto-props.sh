@@ -7,7 +7,7 @@ test_description='git svn dcommit honors auto-props'
 . ./lib-git-svn.sh
 
 generate_auto_props() {
-cat << EOF
+  cat <<EOF
 [miscellany]
 enable-auto-props=$1
 [auto-props]

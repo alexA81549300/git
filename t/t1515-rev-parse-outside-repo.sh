@@ -17,10 +17,10 @@ test_expect_success 'set up non-repo directory' '
 # make sure the shell can read back a tricky case, since
 # that's what we really care about anyway.
 tricky="really tricky with \\ and \" and '"
-dump_args () {
-	for i in "$@"; do
-		echo "arg: $i"
-	done
+dump_args() {
+  for i in "$@"; do
+    echo "arg: $i"
+  done
 }
 test_expect_success 'rev-parse --sq-quote' '
 	dump_args "$tricky" easy >expect &&

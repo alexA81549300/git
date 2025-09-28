@@ -61,23 +61,23 @@ test_expect_success 'setup' '
 	git config core.commitGraph true
 '
 
-run_all_modes () {
-	test_when_finished rm -rf .git/objects/info/commit-graph &&
-	"$@" <input >actual &&
-	test_cmp expect actual &&
-	cp commit-graph-full .git/objects/info/commit-graph &&
-	"$@" <input >actual &&
-	test_cmp expect actual &&
-	cp commit-graph-half .git/objects/info/commit-graph &&
-	"$@" <input >actual &&
-	test_cmp expect actual &&
-	cp commit-graph-no-gdat .git/objects/info/commit-graph &&
-	"$@" <input >actual &&
-	test_cmp expect actual
+run_all_modes() {
+  test_when_finished rm -rf .git/objects/info/commit-graph \
+    && "$@" <input >actual \
+    && test_cmp expect actual \
+    && cp commit-graph-full .git/objects/info/commit-graph \
+    && "$@" <input >actual \
+    && test_cmp expect actual \
+    && cp commit-graph-half .git/objects/info/commit-graph \
+    && "$@" <input >actual \
+    && test_cmp expect actual \
+    && cp commit-graph-no-gdat .git/objects/info/commit-graph \
+    && "$@" <input >actual \
+    && test_cmp expect actual
 }
 
-test_all_modes () {
-	run_all_modes test-tool reach "$@"
+test_all_modes() {
+  run_all_modes test-tool reach "$@"
 }
 
 test_expect_success 'ref_newer:miss' '

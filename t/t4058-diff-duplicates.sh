@@ -17,20 +17,22 @@ test_description='test tree diff when trees have duplicate entries'
 #
 # We have to rely on perl here because not all printfs understand
 # hex escapes (only octal), and xxd is not portable.
-make_tree_entry () {
-	printf '%s %s\0' "$1" "$2" &&
-	perl -e 'print chr(hex($_)) for ($ARGV[0] =~ /../g)' "$3"
+make_tree_entry() {
+  printf '%s %s\0' "$1" "$2" \
+    && perl -e 'print chr(hex($_)) for ($ARGV[0] =~ /../g)' "$3"
 }
 
 # Like git-mktree, but without all of the pesky sanity checking.
 # Arguments come in groups of three, each group specifying a single
 # tree entry (see make_tree_entry above).
-make_tree () {
-	while test $# -gt 2; do
-		make_tree_entry "$1" "$2" "$3"
-		shift; shift; shift
-	done |
-	git hash-object --literally -w -t tree --stdin
+make_tree() {
+  while test $# -gt 2; do
+    make_tree_entry "$1" "$2" "$3"
+    shift
+    shift
+    shift
+  done \
+    | git hash-object --literally -w -t tree --stdin
 }
 
 # this is kind of a convoluted setup, but matches

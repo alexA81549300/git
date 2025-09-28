@@ -4,31 +4,29 @@ test_description='git init'
 
 . ./test-lib.sh
 
-check_config () {
-	if test_path_is_dir "$1" &&
-	   test_path_is_file "$1/config" && test_path_is_dir "$1/refs"
-	then
-		: happy
-	else
-		echo "expected a directory $1, a file $1/config and $1/refs"
-		return 1
-	fi
+check_config() {
+  if test_path_is_dir "$1" \
+    && test_path_is_file "$1/config" && test_path_is_dir "$1/refs"; then
+    : happy
+  else
+    echo "expected a directory $1, a file $1/config and $1/refs"
+    return 1
+  fi
 
-	if test_have_prereq POSIXPERM && test -x "$1/config"
-	then
-		echo "$1/config is executable?"
-		return 1
-	fi
+  if test_have_prereq POSIXPERM && test -x "$1/config"; then
+    echo "$1/config is executable?"
+    return 1
+  fi
 
-	bare=$(cd "$1" && git config --bool core.bare)
-	worktree=$(cd "$1" && git config core.worktree) ||
-	worktree=unset
+  bare=$(cd "$1" && git config --bool core.bare)
+  worktree=$(cd "$1" && git config core.worktree) \
+    || worktree=unset
 
-	test "$bare" = "$2" && test "$worktree" = "$3" || {
-		echo "expected bare=$2 worktree=$3"
-		echo "     got bare=$bare worktree=$worktree"
-		return 1
-	}
+  test "$bare" = "$2" && test "$worktree" = "$3" || {
+    echo "expected bare=$2 worktree=$3"
+    echo "     got bare=$bare worktree=$worktree"
+    return 1
+  }
 }
 
 test_expect_success 'plain' '
@@ -187,13 +185,13 @@ test_expect_success 'init with --template (blank)' '
 	test_path_is_missing template-blank/.git/info/exclude
 '
 
-init_no_templatedir_env () {
-	(
-		sane_unset GIT_TEMPLATE_DIR &&
-		NO_SET_GIT_TEMPLATE_DIR=t &&
-		export NO_SET_GIT_TEMPLATE_DIR &&
-		git init "$1"
-	)
+init_no_templatedir_env() {
+  (
+    sane_unset GIT_TEMPLATE_DIR \
+      && NO_SET_GIT_TEMPLATE_DIR=t \
+      && export NO_SET_GIT_TEMPLATE_DIR \
+      && git init "$1"
+  )
 }
 
 test_expect_success 'init with init.templatedir set' '
@@ -369,21 +367,20 @@ test_lazy_prereq GETCWD_IGNORES_PERMS '
 	return $status
 '
 
-check_long_base_path () {
-	# exceed initial buffer size of strbuf_getcwd()
-	component=123456789abcdef &&
-	test_when_finished "chmod 0700 $component; rm -rf $component" &&
-	p31=$component/$component &&
-	p127=$p31/$p31/$p31/$p31 &&
-	mkdir -p $p127 &&
-	if test $# = 1
-	then
-		chmod $1 $component
-	fi &&
-	(
-		cd $p127 &&
-		git init newdir
-	)
+check_long_base_path() {
+  # exceed initial buffer size of strbuf_getcwd()
+  component=123456789abcdef \
+    && test_when_finished "chmod 0700 $component; rm -rf $component" \
+    && p31=$component/$component \
+    && p127=$p31/$p31/$p31/$p31 \
+    && mkdir -p $p127 \
+    && if test $# = 1; then
+      chmod $1 $component
+    fi \
+    && (
+      cd $p127 \
+        && git init newdir
+    )
 }
 
 test_expect_success 'init in long base path' '
@@ -430,21 +427,20 @@ test_expect_success SYMLINKS 're-init to move gitdir symlink' '
 	test_path_is_dir realgitdir/refs
 '
 
-sep_git_dir_worktree ()  {
-	test_when_finished "rm -rf mainwt linkwt seprepo" &&
-	git init mainwt &&
-	if test "relative" = $2
-	then
-		test_config -C mainwt worktree.useRelativePaths true
-	else
-		test_config -C mainwt worktree.useRelativePaths false
-	fi
-	test_commit -C mainwt gumby &&
-	git -C mainwt worktree add --detach ../linkwt &&
-	git -C "$1" init --separate-git-dir ../seprepo &&
-	git -C mainwt rev-parse --git-common-dir >expect &&
-	git -C linkwt rev-parse --git-common-dir >actual &&
-	test_cmp expect actual
+sep_git_dir_worktree() {
+  test_when_finished "rm -rf mainwt linkwt seprepo" \
+    && git init mainwt \
+    && if test "relative" = $2; then
+      test_config -C mainwt worktree.useRelativePaths true
+    else
+      test_config -C mainwt worktree.useRelativePaths false
+    fi
+  test_commit -C mainwt gumby \
+    && git -C mainwt worktree add --detach ../linkwt \
+    && git -C "$1" init --separate-git-dir ../seprepo \
+    && git -C mainwt rev-parse --git-common-dir >expect \
+    && git -C linkwt rev-parse --git-common-dir >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 're-init to move gitdir with linked worktrees (absolute)' '
@@ -586,9 +582,8 @@ test_expect_success 'GIT_DEFAULT_HASH overrides init.defaultObjectFormat' '
 	echo sha256 >expected
 '
 
-for hash in sha1 sha256
-do
-	test_expect_success "reinit repository with GIT_DEFAULT_HASH=$hash does not change format" '
+for hash in sha1 sha256; do
+  test_expect_success "reinit repository with GIT_DEFAULT_HASH=$hash does not change format" '
 		test_when_finished "rm -rf repo" &&
 		git init repo &&
 		git -C repo rev-parse --show-object-format >expect &&
@@ -659,9 +654,8 @@ test_expect_success 'init warns about invalid init.defaultRefFormat' '
 '
 
 backends="files reftable"
-for format in $backends
-do
-	test_expect_success DEFAULT_REPO_FORMAT "init with GIT_DEFAULT_REF_FORMAT=$format" '
+for format in $backends; do
+  test_expect_success DEFAULT_REPO_FORMAT "init with GIT_DEFAULT_REF_FORMAT=$format" '
 		test_when_finished "rm -rf refformat" &&
 		GIT_DEFAULT_REF_FORMAT=$format git init refformat &&
 
@@ -681,7 +675,7 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "init with --ref-format=$format" '
+  test_expect_success "init with --ref-format=$format" '
 		test_when_finished "rm -rf refformat" &&
 		git init --ref-format=$format refformat &&
 		echo $format >expect &&
@@ -689,7 +683,7 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "init with init.defaultRefFormat=$format" '
+  test_expect_success "init with init.defaultRefFormat=$format" '
 		test_when_finished "rm -rf refformat" &&
 		test_config_global init.defaultRefFormat $format &&
 		(
@@ -702,7 +696,7 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "--ref-format=$format overrides GIT_DEFAULT_REF_FORMAT" '
+  test_expect_success "--ref-format=$format overrides GIT_DEFAULT_REF_FORMAT" '
 		test_when_finished "rm -rf refformat" &&
 		GIT_DEFAULT_REF_FORMAT=garbage git init --ref-format=$format refformat &&
 		echo $format >expect &&
@@ -710,7 +704,7 @@ do
 		test_cmp expect actual
 	'
 
-	test_expect_success "reinit repository with GIT_DEFAULT_REF_FORMAT=$format does not change format" '
+  test_expect_success "reinit repository with GIT_DEFAULT_REF_FORMAT=$format does not change format" '
 		test_when_finished "rm -rf refformat" &&
 		git init refformat &&
 		git -C refformat rev-parse --show-ref-format >expect &&
@@ -738,9 +732,8 @@ test_expect_success "GIT_DEFAULT_REF_FORMAT= overrides init.defaultRefFormat" '
 	test_cmp expect actual
 '
 
-for from_format in $backends
-do
-	test_expect_success "re-init with same format ($from_format)" '
+for from_format in $backends; do
+  test_expect_success "re-init with same format ($from_format)" '
 		test_when_finished "rm -rf refformat" &&
 		git init --ref-format=$from_format refformat &&
 		git init --ref-format=$from_format refformat &&
@@ -749,14 +742,12 @@ do
 		test_cmp expect actual
 	'
 
-	for to_format in $backends
-	do
-		if test "$from_format" = "$to_format"
-		then
-			continue
-		fi
+  for to_format in $backends; do
+    if test "$from_format" = "$to_format"; then
+      continue
+    fi
 
-		test_expect_success "re-init with different format fails ($from_format -> $to_format)" '
+    test_expect_success "re-init with different format fails ($from_format -> $to_format)" '
 			test_when_finished "rm -rf refformat" &&
 			git init --ref-format=$from_format refformat &&
 			cat >expect <<-EOF &&
@@ -768,7 +759,7 @@ do
 			git -C refformat rev-parse --show-ref-format >actual &&
 			test_cmp expect actual
 		'
-	done
+  done
 done
 
 test_expect_success 'init with --ref-format=garbage' '

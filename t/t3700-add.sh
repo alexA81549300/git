@@ -10,17 +10,17 @@ test_description='Test of git add, including the -- option.'
 . "$TEST_DIRECTORY"/lib-unique-files.sh
 
 # Test the file mode "$1" of the file "$2" in the index.
-test_mode_in_index () {
-	case "$(git ls-files -s "$2")" in
-	"$1 "*"	$2")
-		echo pass
-		;;
-	*)
-		echo fail
-		git ls-files -s "$2"
-		return 1
-		;;
-	esac
+test_mode_in_index() {
+  case "$(git ls-files -s "$2")" in
+    "$1 "*"	$2")
+      echo pass
+      ;;
+    *)
+      echo fail
+      git ls-files -s "$2"
+      return 1
+      ;;
+  esac
 }
 
 test_expect_success 'Test of git add' '
@@ -72,8 +72,8 @@ test_expect_success 'git update-index: core.fsyncmethod=batch' "
 "
 
 test_expect_success \
-	'git add: Test that executable bit is not used if core.filemode=0' \
-	'git config core.filemode 0 &&
+  'git add: Test that executable bit is not used if core.filemode=0' \
+  'git config core.filemode 0 &&
 	 echo foo >xfoo1 &&
 	 chmod 755 xfoo1 &&
 	 git add xfoo1 &&
@@ -86,8 +86,8 @@ test_expect_success 'git add: filemode=0 should not get confused by symlink' '
 '
 
 test_expect_success \
-	'git update-index --add: Test that executable bit is not used...' \
-	'git config core.filemode 0 &&
+  'git update-index --add: Test that executable bit is not used...' \
+  'git config core.filemode 0 &&
 	 echo foo >xfoo2 &&
 	 chmod 755 xfoo2 &&
 	 git update-index --add xfoo2 &&
@@ -100,8 +100,8 @@ test_expect_success 'git add: filemode=0 should not get confused by symlink' '
 '
 
 test_expect_success \
-	'git update-index --add: Test that executable bit is not used...' \
-	'git config core.filemode 0 &&
+  'git update-index --add: Test that executable bit is not used...' \
+  'git config core.filemode 0 &&
 	 test_ln_s_add xfoo2 xfoo3 &&	# runs git update-index --add
 	 test_mode_in_index 120000 xfoo3'
 

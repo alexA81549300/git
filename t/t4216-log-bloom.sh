@@ -43,16 +43,16 @@ test_expect_success 'setup test - repo, commits, commit graph, log outputs' '
 	EOF
 '
 
-graph_read_expect () {
-	NUM_CHUNKS=6
-	cat >expect <<- EOF
+graph_read_expect() {
+  NUM_CHUNKS=6
+  cat >expect <<-EOF
 	header: 43475048 1 $(test_oid oid_version) $NUM_CHUNKS 0
 	num_commits: $1
 	chunks: oid_fanout oid_lookup commit_metadata generation_data bloom_indexes bloom_data
 	options: bloom(1,10,7) read_generation_data
 	EOF
-	test-tool read-graph >actual &&
-	test_cmp expect actual
+  test-tool read-graph >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'commit-graph write wrote out the bloom chunks' '
@@ -64,65 +64,61 @@ sane_unset GIT_TRACE2 GIT_TRACE2_PERF GIT_TRACE2_EVENT
 sane_unset GIT_TRACE2_PERF_BRIEF
 sane_unset GIT_TRACE2_CONFIG_PARAMS
 
-setup () {
-	rm -f "$TRASH_DIRECTORY/trace.perf" &&
-	git -c core.commitGraph=false log --pretty="format:%s" $1 >log_wo_bloom &&
-	GIT_TRACE2_PERF="$TRASH_DIRECTORY/trace.perf" git -c core.commitGraph=true log --pretty="format:%s" $1 >log_w_bloom
+setup() {
+  rm -f "$TRASH_DIRECTORY/trace.perf" \
+    && git -c core.commitGraph=false log --pretty="format:%s" $1 >log_wo_bloom \
+    && GIT_TRACE2_PERF="$TRASH_DIRECTORY/trace.perf" git -c core.commitGraph=true log --pretty="format:%s" $1 >log_w_bloom
 }
 
-test_bloom_filters_used () {
-	log_args=$1
-	bloom_trace_prefix="statistics:{\"filter_not_present\":${2:-0},\"maybe\""
-	setup "$log_args" &&
-	grep -q "$bloom_trace_prefix" "$TRASH_DIRECTORY/trace.perf" &&
-	test_cmp log_wo_bloom log_w_bloom &&
-    test_path_is_file "$TRASH_DIRECTORY/trace.perf"
+test_bloom_filters_used() {
+  log_args=$1
+  bloom_trace_prefix="statistics:{\"filter_not_present\":${2:-0},\"maybe\""
+  setup "$log_args" \
+    && grep -q "$bloom_trace_prefix" "$TRASH_DIRECTORY/trace.perf" \
+    && test_cmp log_wo_bloom log_w_bloom \
+    && test_path_is_file "$TRASH_DIRECTORY/trace.perf"
 }
 
-test_bloom_filters_not_used () {
-	log_args=$1
-	setup "$log_args" &&
+test_bloom_filters_not_used() {
+  log_args=$1
+  setup "$log_args" \
+    && if grep -q "statistics:{\"filter_not_present\":" "$TRASH_DIRECTORY/trace.perf"; then
+      # if the Bloom filter system is initialized, ensure that no
+      # filters were used
+      data="statistics:{"
+      # unusable filters (e.g., those computed with a
+      # different value of commitGraph.changedPathsVersion)
+      # are counted in the filter_not_present bucket, so any
+      # value is OK there.
+      data="$data\"filter_not_present\":[0-9][0-9]*,"
+      data="$data\"maybe\":0,"
+      data="$data\"definitely_not\":0,"
+      data="$data\"false_positive\":0}"
 
-	if grep -q "statistics:{\"filter_not_present\":" "$TRASH_DIRECTORY/trace.perf"
-	then
-		# if the Bloom filter system is initialized, ensure that no
-		# filters were used
-		data="statistics:{"
-		# unusable filters (e.g., those computed with a
-		# different value of commitGraph.changedPathsVersion)
-		# are counted in the filter_not_present bucket, so any
-		# value is OK there.
-		data="$data\"filter_not_present\":[0-9][0-9]*,"
-		data="$data\"maybe\":0,"
-		data="$data\"definitely_not\":0,"
-		data="$data\"false_positive\":0}"
-
-		grep -q "$data" "$TRASH_DIRECTORY/trace.perf"
-	fi &&
-	test_cmp log_wo_bloom log_w_bloom
+      grep -q "$data" "$TRASH_DIRECTORY/trace.perf"
+    fi \
+    && test_cmp log_wo_bloom log_w_bloom
 }
 
-for path in A A/B A/B/C A/file1 A/B/file2 A/B/C/file3 file4 file5 file5_renamed file_to_be_deleted
-do
-	for option in "" \
-	      "--all" \
-		      "--full-history" \
-		      "--full-history --simplify-merges" \
-		      "--simplify-merges" \
-		      "--simplify-by-decoration" \
-		      "--follow" \
-		      "--first-parent" \
-		      "--topo-order" \
-		      "--date-order" \
-		      "--author-date-order" \
-		      "--ancestry-path side..main"
-	do
-		test_expect_success "git log option: $option for path: $path" '
+for path in A A/B A/B/C A/file1 A/B/file2 A/B/C/file3 file4 file5 file5_renamed file_to_be_deleted; do
+  for option in "" \
+    "--all" \
+    "--full-history" \
+    "--full-history --simplify-merges" \
+    "--simplify-merges" \
+    "--simplify-by-decoration" \
+    "--follow" \
+    "--first-parent" \
+    "--topo-order" \
+    "--date-order" \
+    "--author-date-order" \
+    "--ancestry-path side..main"; do
+    test_expect_success "git log option: $option for path: $path" '
 			test_bloom_filters_used "$option -- $path" &&
 			test_config commitgraph.readChangedPaths false &&
 			test_bloom_filters_not_used "$option -- $path"
 		'
-	done
+  done
 done
 
 test_expect_success 'git log -- folder works with and without the trailing slash' '
@@ -177,12 +173,12 @@ test_expect_success 'setup - add commit-graph to the chain with Bloom filters' '
 	test_line_count = 3 .git/objects/info/commit-graphs/commit-graph-chain
 '
 
-test_bloom_filters_used_when_some_filters_are_missing () {
-	log_args=$1
-	bloom_trace_prefix="statistics:{\"filter_not_present\":3,\"maybe\":6,\"definitely_not\":10"
-	setup "$log_args" &&
-	grep -q "$bloom_trace_prefix" "$TRASH_DIRECTORY/trace.perf" &&
-	test_cmp log_wo_bloom log_w_bloom
+test_bloom_filters_used_when_some_filters_are_missing() {
+  log_args=$1
+  bloom_trace_prefix="statistics:{\"filter_not_present\":3,\"maybe\":6,\"definitely_not\":10"
+  setup "$log_args" \
+    && grep -q "$bloom_trace_prefix" "$TRASH_DIRECTORY/trace.perf" \
+    && test_cmp log_wo_bloom log_w_bloom
 }
 
 test_expect_success 'Use Bloom filters if they exist in the latest but not all commit graphs in the chain.' '
@@ -202,28 +198,28 @@ test_expect_success 'persist filter settings' '
 	grep "{\"hash_version\":1,\"num_hashes\":9,\"bits_per_entry\":15,\"max_changed_paths\":512" trace2-auto.txt
 '
 
-test_max_changed_paths () {
-	grep "\"max_changed_paths\":$1" $2
+test_max_changed_paths() {
+  grep "\"max_changed_paths\":$1" $2
 }
 
-test_filter_not_computed () {
-	grep "\"key\":\"filter-not-computed\",\"value\":\"$1\"" $2
+test_filter_not_computed() {
+  grep "\"key\":\"filter-not-computed\",\"value\":\"$1\"" $2
 }
 
-test_filter_computed () {
-	grep "\"key\":\"filter-computed\",\"value\":\"$1\"" $2
+test_filter_computed() {
+  grep "\"key\":\"filter-computed\",\"value\":\"$1\"" $2
 }
 
-test_filter_trunc_empty () {
-	grep "\"key\":\"filter-trunc-empty\",\"value\":\"$1\"" $2
+test_filter_trunc_empty() {
+  grep "\"key\":\"filter-trunc-empty\",\"value\":\"$1\"" $2
 }
 
-test_filter_trunc_large () {
-	grep "\"key\":\"filter-trunc-large\",\"value\":\"$1\"" $2
+test_filter_trunc_large() {
+  grep "\"key\":\"filter-trunc-large\",\"value\":\"$1\"" $2
 }
 
-test_filter_upgraded () {
-	grep "\"key\":\"filter-upgraded\",\"value\":\"$1\"" $2
+test_filter_upgraded() {
+  grep "\"key\":\"filter-upgraded\",\"value\":\"$1\"" $2
 }
 
 test_expect_success 'correctly report changes over limit' '
@@ -530,9 +526,9 @@ test_expect_success 'ensure Bloom filter with incompatible versions are ignored'
 	grep "{\"hash_version\":2,\"num_hashes\":7,\"bits_per_entry\":10,\"max_changed_paths\":512" trace2.txt
 '
 
-get_first_changed_path_filter () {
-	test-tool read-graph bloom-filters >filters.dat &&
-	head -n 1 filters.dat
+get_first_changed_path_filter() {
+  test-tool read-graph bloom-filters >filters.dat \
+    && head -n 1 filters.dat
 }
 
 test_expect_success 'set up repo with high bit path, version 1 changed-path' '
@@ -553,9 +549,8 @@ test_expect_success 'setup check value of version 1 changed-path' '
 # in this way, so that a user running this test script can still see if the two
 # files match. (It will appear as an ordinary success if they match, and a skip
 # if not.)
-if test_cmp highbit1/expect highbit1/actual
-then
-	test_set_prereq SIGNED_CHAR_BY_DEFAULT
+if test_cmp highbit1/expect highbit1/actual; then
+  test_set_prereq SIGNED_CHAR_BY_DEFAULT
 fi
 test_expect_success SIGNED_CHAR_BY_DEFAULT 'check value of version 1 changed-path' '
 	# Only the prereq matters for this test.
@@ -725,17 +720,17 @@ test_expect_success 'when writing commit graph, reuse changed-path of another ve
 	test_filter_upgraded 1 trace2.txt
 '
 
-corrupt_graph () {
-	test_when_finished "rm -rf $graph" &&
-	git commit-graph write --reachable --changed-paths &&
-	corrupt_chunk_file $graph "$@"
+corrupt_graph() {
+  test_when_finished "rm -rf $graph" \
+    && git commit-graph write --reachable --changed-paths \
+    && corrupt_chunk_file $graph "$@"
 }
 
-check_corrupt_graph () {
-	corrupt_graph "$@" &&
-	git -c core.commitGraph=false log -- A/B/file2 >expect.out &&
-	git -c core.commitGraph=true log -- A/B/file2 >out 2>err &&
-	test_cmp expect.out out
+check_corrupt_graph() {
+  corrupt_graph "$@" \
+    && git -c core.commitGraph=false log -- A/B/file2 >expect.out \
+    && git -c core.commitGraph=true log -- A/B/file2 >out 2>err \
+    && test_cmp expect.out out
 }
 
 test_expect_success 'Bloom reader notices too-small data chunk' '

@@ -2,7 +2,6 @@
 
 test_description='git apply --numstat - <patch'
 
-
 . ./test-lib.sh
 
 test_expect_success setup '

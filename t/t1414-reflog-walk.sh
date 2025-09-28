@@ -17,8 +17,8 @@ test_expect_success 'set up some reflog entries' '
 	git commit --no-edit -a
 '
 
-do_walk () {
-	git log -g --format="%gd %gs" "$@"
+do_walk() {
+  git log -g --format="%gd %gs" "$@"
 }
 
 test_expect_success 'set up expected reflog' '

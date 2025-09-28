@@ -62,19 +62,13 @@ test_expect_success 'clone without -s/-T/-b/-t does not warn' '
 	rm -f warning
 	'
 
-test_svn_configured_prefix () {
-	prefix=$1 &&
-	cat >expect <<EOF &&
+test_svn_configured_prefix() {
+  prefix=$1 \
+    && cat >expect <<EOF && test ! -f actual && git --git-dir=project/.git config svn-remote.svn.fetch >>actual && git --git-dir=project/.git config svn-remote.svn.branches >>actual && git --git-dir=project/.git config svn-remote.svn.tags >>actual && test_cmp expect actual && rm -f expect actual
 project/trunk:refs/remotes/${prefix}trunk
 project/branches/*:refs/remotes/${prefix}*
 project/tags/*:refs/remotes/${prefix}tags/*
 EOF
-	test ! -f actual &&
-	git --git-dir=project/.git config svn-remote.svn.fetch >>actual &&
-	git --git-dir=project/.git config svn-remote.svn.branches >>actual &&
-	git --git-dir=project/.git config svn-remote.svn.tags >>actual &&
-	test_cmp expect actual &&
-	rm -f expect actual
 }
 
 test_expect_success 'init with -s/-T/-b/-t assumes --prefix=origin/' '

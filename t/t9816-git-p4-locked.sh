@@ -49,18 +49,18 @@ test_expect_success 'add with lock not taken' '
 '
 
 lock_in_another_client() {
-	# build a different client
-	cli2="$TRASH_DIRECTORY/cli2" &&
-	mkdir -p "$cli2" &&
-	test_when_finished "p4 client -f -d client2 && rm -rf \"$cli2\"" &&
-	(
-		cd "$cli2" &&
-		P4CLIENT=client2 &&
-		cli="$cli2" &&
-		client_view "//depot/... //client2/..." &&
-		p4 sync &&
-		p4 open file1
-	)
+  # build a different client
+  cli2="$TRASH_DIRECTORY/cli2" \
+    && mkdir -p "$cli2" \
+    && test_when_finished "p4 client -f -d client2 && rm -rf \"$cli2\"" \
+    && (
+      cd "$cli2" \
+        && P4CLIENT=client2 \
+        && cli="$cli2" \
+        && client_view "//depot/... //client2/..." \
+        && p4 sync \
+        && p4 open file1
+    )
 }
 
 test_expect_failure 'edit with lock taken' '

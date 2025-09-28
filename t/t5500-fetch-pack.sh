@@ -14,34 +14,33 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 # Some convenience functions
 
-add () {
-	name=$1 &&
-	text="$@" &&
-	branch=$(echo $name | sed -e 's/^\(.\).*$/\1/') &&
-	parents="" &&
-
-	shift &&
-	while test $1; do
-		parents="$parents -p $1" &&
-		shift
-	done &&
-
-	echo "$text" > test.txt &&
-	git update-index --add test.txt &&
-	tree=$(git write-tree) &&
-	# make sure timestamps are in correct order
-	test_tick &&
-	commit=$(echo "$text" | git commit-tree $tree $parents) &&
-	eval "$name=$commit; export $name" &&
-	git update-ref "refs/heads/$branch" "$commit" &&
-	eval ${branch}TIP=$commit
+add() {
+  name=$1 \
+    && text="$@" \
+    && branch=$(echo $name | sed -e 's/^\(.\).*$/\1/') \
+    && parents="" \
+    && shift \
+    && while test $1; do
+      parents="$parents -p $1" \
+        && shift
+    done \
+    && echo "$text" >test.txt \
+    && git update-index --add test.txt \
+    && tree=$(git write-tree) \
+    &&
+    # make sure timestamps are in correct order
+    test_tick \
+    && commit=$(echo "$text" | git commit-tree $tree $parents) \
+    && eval "$name=$commit; export $name" \
+    && git update-ref "refs/heads/$branch" "$commit" \
+    && eval ${branch}TIP=$commit
 }
 
-pull_to_client () {
-	number=$1 &&
-	heads=$2 &&
-	count=$3 &&
-	test_expect_success "$number pull" '
+pull_to_client() {
+  number=$1 \
+    && heads=$2 \
+    && count=$3 \
+    && test_expect_success "$number pull" '
 		(
 			cd client &&
 			git fetch-pack -k -v .. $heads &&
@@ -103,7 +102,7 @@ test_expect_success 'setup' '
 	git symbolic-ref HEAD refs/heads/B
 '
 
-pull_to_client 1st "refs/heads/B refs/heads/A" $((11*3))
+pull_to_client 1st "refs/heads/B refs/heads/A" $((11 * 3))
 
 test_expect_success 'post 1st pull setup' '
 	add A11 $A10 &&
@@ -116,9 +115,9 @@ test_expect_success 'post 1st pull setup' '
 	done
 '
 
-pull_to_client 2nd "refs/heads/B" $((64*3))
+pull_to_client 2nd "refs/heads/B" $((64 * 3))
 
-pull_to_client 3rd "refs/heads/A" $((1*3))
+pull_to_client 3rd "refs/heads/A" $((1 * 3))
 
 test_expect_success 'single branch clone' '
 	git clone --single-branch "file://$(pwd)/." singlebranch
@@ -509,9 +508,8 @@ test_expect_success 'setup fetch refs from cmdline v[12]' '
 	cp -r client client2
 '
 
-for version in '' 0 1 2
-do
-	test_expect_success "protocol.version=$version fetch refs from cmdline" "
+for version in '' 0 1 2; do
+  test_expect_success "protocol.version=$version fetch refs from cmdline" "
 		(
 			cd client$version &&
 			GIT_TEST_PROTOCOL_VERSION=$version git fetch-pack --no-progress .. \$(cat ../input)
@@ -708,117 +706,105 @@ test_expect_success 'fetch-pack cannot fetch a raw sha1 that is not advertised a
 	test_grep "Server does not allow request for unadvertised object" err
 '
 
-check_prot_path () {
-	cat >expected <<-EOF &&
+check_prot_path() {
+  cat >expected <<-EOF && git fetch-pack --diag-url "$1" | grep -v hostandport= >actual && test_cmp expected actual
 	Diag: url=$1
 	Diag: protocol=$2
 	Diag: path=$3
 	EOF
-	git fetch-pack --diag-url "$1" | grep -v hostandport= >actual &&
-	test_cmp expected actual
 }
 
-check_prot_host_port_path () {
-	case "$2" in
-		*ssh*)
-		pp=ssh
-		uah=userandhost
-		ehost=$(echo $3 | tr -d "[]")
-		diagport="Diag: port=$4"
-		;;
-		*)
-		pp=$p
-		uah=hostandport
-		ehost=$(echo $3$4 | sed -e "s/22$/:22/" -e "s/NONE//")
-		diagport=""
-		;;
-	esac
-	cat >exp <<-EOF &&
+check_prot_host_port_path() {
+  case "$2" in
+    *ssh*)
+      pp=ssh
+      uah=userandhost
+      ehost=$(echo $3 | tr -d "[]")
+      diagport="Diag: port=$4"
+      ;;
+    *)
+      pp=$p
+      uah=hostandport
+      ehost=$(echo $3$4 | sed -e "s/22$/:22/" -e "s/NONE//")
+      diagport=""
+      ;;
+  esac
+  cat >exp <<-EOF && grep -v "^$" exp >expected
 	Diag: url=$1
 	Diag: protocol=$pp
 	Diag: $uah=$ehost
 	$diagport
 	Diag: path=$5
 	EOF
-	grep -v "^$" exp >expected
-	git fetch-pack --diag-url "$1" >actual &&
-	test_cmp expected actual
+  git fetch-pack --diag-url "$1" >actual \
+    && test_cmp expected actual
 }
 
-for r in repo re:po re/po
-do
-	# git or ssh with scheme
-	for p in "ssh+git" "git+ssh" git ssh
-	do
-		for h in host user@host user@[::1] user@::1
-		do
-			for c in "" :
-			do
-				test_expect_success "fetch-pack --diag-url $p://$h$c/$r" '
+for r in repo re:po re/po; do
+  # git or ssh with scheme
+  for p in "ssh+git" "git+ssh" git ssh; do
+    for h in host user@host user@[::1] user@::1; do
+      for c in "" :; do
+        test_expect_success "fetch-pack --diag-url $p://$h$c/$r" '
 					check_prot_host_port_path $p://$h/$r $p "$h" NONE "/$r"
 				'
-				# "/~" -> "~" conversion
-				test_expect_success "fetch-pack --diag-url $p://$h$c/~$r" '
+        # "/~" -> "~" conversion
+        test_expect_success "fetch-pack --diag-url $p://$h$c/~$r" '
 					check_prot_host_port_path $p://$h/~$r $p "$h" NONE "~$r"
 				'
-			done
-		done
-		for h in host User@host User@[::1]
-		do
-			test_expect_success "fetch-pack --diag-url $p://$h:22/$r" '
+      done
+    done
+    for h in host User@host User@[::1]; do
+      test_expect_success "fetch-pack --diag-url $p://$h:22/$r" '
 				check_prot_host_port_path $p://$h:22/$r $p "$h" 22 "/$r"
 			'
-		done
-	done
-	# file with scheme
-	for p in file
-	do
-		test_expect_success !WINDOWS "fetch-pack --diag-url $p://$h/$r" '
+    done
+  done
+  # file with scheme
+  for p in file; do
+    test_expect_success !WINDOWS "fetch-pack --diag-url $p://$h/$r" '
 			check_prot_path $p://$h/$r $p "/$r"
 		'
-		test_expect_success MINGW "fetch-pack --diag-url $p://$h/$r" '
+    test_expect_success MINGW "fetch-pack --diag-url $p://$h/$r" '
 			check_prot_path $p://$h/$r $p "//$h/$r"
 		'
-		test_expect_success MINGW "fetch-pack --diag-url $p:///$r" '
+    test_expect_success MINGW "fetch-pack --diag-url $p:///$r" '
 			check_prot_path $p:///$r $p "/$r"
 		'
-		# No "/~" -> "~" conversion for file
-		test_expect_success !WINDOWS "fetch-pack --diag-url $p://$h/~$r" '
+    # No "/~" -> "~" conversion for file
+    test_expect_success !WINDOWS "fetch-pack --diag-url $p://$h/~$r" '
 			check_prot_path $p://$h/~$r $p "/~$r"
 		'
-		test_expect_success MINGW "fetch-pack --diag-url $p://$h/~$r" '
+    test_expect_success MINGW "fetch-pack --diag-url $p://$h/~$r" '
 			check_prot_path $p://$h/~$r $p "//$h/~$r"
 		'
-	done
-	# file without scheme
-	for h in nohost nohost:12 [::1] [::1]:23 [ [:aa
-	do
-		test_expect_success "fetch-pack --diag-url ./$h:$r" '
+  done
+  # file without scheme
+  for h in nohost nohost:12 [::1] [::1]:23 [ [:aa; do
+    test_expect_success "fetch-pack --diag-url ./$h:$r" '
 			check_prot_path ./$h:$r $p "./$h:$r"
 		'
-		# No "/~" -> "~" conversion for file
-		test_expect_success "fetch-pack --diag-url ./$p:$h/~$r" '
+    # No "/~" -> "~" conversion for file
+    test_expect_success "fetch-pack --diag-url ./$p:$h/~$r" '
 		check_prot_path ./$p:$h/~$r $p "./$p:$h/~$r"
 		'
-	done
-	#ssh without scheme
-	p=ssh
-	for h in host [::1]
-	do
-		expectation="success"
-		if test_have_prereq CYGWIN && test "$h" = "[::1]"
-		then
-			expectation="failure"
-		fi
+  done
+  #ssh without scheme
+  p=ssh
+  for h in host [::1]; do
+    expectation="success"
+    if test_have_prereq CYGWIN && test "$h" = "[::1]"; then
+      expectation="failure"
+    fi
 
-		test_expect_$expectation "fetch-pack --diag-url $h:$r" '
+    test_expect_$expectation "fetch-pack --diag-url $h:$r" '
 			check_prot_host_port_path $h:$r $p "$h" NONE "$r"
 		'
-		# Do "/~" -> "~" conversion
-		test_expect_$expectation "fetch-pack --diag-url $h:/~$r" '
+    # Do "/~" -> "~" conversion
+    test_expect_$expectation "fetch-pack --diag-url $h:/~$r" '
 			check_prot_host_port_path $h:/~$r $p "$h" NONE "~$r"
 		'
-	done
+  done
 done
 
 test_expect_success MINGW 'fetch-pack --diag-url file://c:/repo' '
@@ -955,38 +941,35 @@ test_expect_success 'fetching deepen' '
 	)
 '
 
-test_negotiation_algorithm_default () {
-	test_when_finished rm -rf clientv0 clientv2 &&
-	rm -rf server client &&
-	git init server &&
-	test_commit -C server both_have_1 &&
-	git -C server tag -d both_have_1 &&
-	test_commit -C server both_have_2 &&
-
-	git clone server client &&
-	test_commit -C server server_has &&
-	test_commit -C client client_has &&
-
-	# In both protocol v0 and v2, ensure that the parent of both_have_2 is
-	# not sent as a "have" line. The client should know that the server has
-	# both_have_2, so it only needs to inform the server that it has
-	# both_have_2, and the server can infer the rest.
-
-	rm -f trace &&
-	cp -r client clientv0 &&
-	GIT_TRACE_PACKET="$(pwd)/trace" git -C clientv0 \
-		"$@" fetch origin server_has both_have_2 &&
-	grep "have $(git -C client rev-parse client_has)" trace &&
-	grep "have $(git -C client rev-parse both_have_2)" trace &&
-	! grep "have $(git -C client rev-parse both_have_2^)" trace &&
-
-	rm -f trace &&
-	cp -r client clientv2 &&
-	GIT_TRACE_PACKET="$(pwd)/trace" git -C clientv2 -c protocol.version=2 \
-		"$@" fetch origin server_has both_have_2 &&
-	grep "have $(git -C client rev-parse client_has)" trace &&
-	grep "have $(git -C client rev-parse both_have_2)" trace &&
-	! grep "have $(git -C client rev-parse both_have_2^)" trace
+test_negotiation_algorithm_default() {
+  test_when_finished rm -rf clientv0 clientv2 \
+    && rm -rf server client \
+    && git init server \
+    && test_commit -C server both_have_1 \
+    && git -C server tag -d both_have_1 \
+    && test_commit -C server both_have_2 \
+    && git clone server client \
+    && test_commit -C server server_has \
+    && test_commit -C client client_has \
+    &&
+    # In both protocol v0 and v2, ensure that the parent of both_have_2 is
+    # not sent as a "have" line. The client should know that the server has
+    # both_have_2, so it only needs to inform the server that it has
+    # both_have_2, and the server can infer the rest.
+    rm -f trace \
+    && cp -r client clientv0 \
+    && GIT_TRACE_PACKET="$(pwd)/trace" git -C clientv0 \
+      "$@" fetch origin server_has both_have_2 \
+    && grep "have $(git -C client rev-parse client_has)" trace \
+    && grep "have $(git -C client rev-parse both_have_2)" trace \
+    && ! grep "have $(git -C client rev-parse both_have_2^)" trace \
+    && rm -f trace \
+    && cp -r client clientv2 \
+    && GIT_TRACE_PACKET="$(pwd)/trace" git -C clientv2 -c protocol.version=2 \
+      "$@" fetch origin server_has both_have_2 \
+    && grep "have $(git -C client rev-parse client_has)" trace \
+    && grep "have $(git -C client rev-parse both_have_2)" trace \
+    && ! grep "have $(git -C client rev-parse both_have_2^)" trace
 }
 
 test_expect_success 'use ref advertisement to prune "have" lines sent' '
@@ -1052,27 +1035,24 @@ test_expect_success 'filtering by size has no effect if support for it is not ad
 	test_grep "filtering not recognized by server" err
 '
 
-fetch_filter_blob_limit_zero () {
-	SERVER="$1"
-	URL="$2"
+fetch_filter_blob_limit_zero() {
+  SERVER="$1"
+  URL="$2"
 
-	rm -rf "$SERVER" client &&
-	test_create_repo "$SERVER" &&
-	test_commit -C "$SERVER" one &&
-	test_config -C "$SERVER" uploadpack.allowfilter 1 &&
-
-	git clone "$URL" client &&
-
-	test_commit -C "$SERVER" two &&
-
-	git -C client fetch --filter=blob:limit=0 origin HEAD:somewhere &&
-
-	# Ensure that commit is fetched, but blob is not
-	commit=$(git -C "$SERVER" rev-parse two) &&
-	blob=$(git hash-object "$SERVER/two.t") &&
-	git -C client rev-list --objects --missing=allow-any "$commit" >oids &&
-	grep "$commit" oids &&
-	! grep "$blob" oids
+  rm -rf "$SERVER" client \
+    && test_create_repo "$SERVER" \
+    && test_commit -C "$SERVER" one \
+    && test_config -C "$SERVER" uploadpack.allowfilter 1 \
+    && git clone "$URL" client \
+    && test_commit -C "$SERVER" two \
+    && git -C client fetch --filter=blob:limit=0 origin HEAD:somewhere \
+    &&
+    # Ensure that commit is fetched, but blob is not
+    commit=$(git -C "$SERVER" rev-parse two) \
+    && blob=$(git hash-object "$SERVER/two.t") \
+    && git -C client rev-list --objects --missing=allow-any "$commit" >oids \
+    && grep "$commit" oids \
+    && ! grep "$blob" oids
 }
 
 test_expect_success 'fetch with --filter=blob:limit=0' '

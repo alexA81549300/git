@@ -10,29 +10,28 @@ test_description='git mailinfo and git mailsplit test'
 DATA="$TEST_DIRECTORY/t5100"
 
 test_expect_success 'split sample box' \
-	'git mailsplit -o. "$DATA/sample.mbox" >last &&
+  'git mailsplit -o. "$DATA/sample.mbox" >last &&
 	last=$(cat last) &&
 	echo total is $last &&
 	test $(cat last) = 18'
 
-check_mailinfo () {
-	mail=$1 opt=$2
-	mo="$mail$opt"
-	git mailinfo -u $opt "msg$mo" "patch$mo" <"$mail" >"info$mo" &&
-	test_cmp "$DATA/msg$mo" "msg$mo" &&
-	test_cmp "$DATA/patch$mo" "patch$mo" &&
-	test_cmp "$DATA/info$mo" "info$mo"
+check_mailinfo() {
+  mail=$1 opt=$2
+  mo="$mail$opt"
+  git mailinfo -u $opt "msg$mo" "patch$mo" <"$mail" >"info$mo" \
+    && test_cmp "$DATA/msg$mo" "msg$mo" \
+    && test_cmp "$DATA/patch$mo" "patch$mo" \
+    && test_cmp "$DATA/info$mo" "info$mo"
 }
 
+for mail in 00*; do
+  case "$mail" in
+    0004)
+      prereq=ICONV
+      ;;
+  esac
 
-for mail in 00*
-do
-	case "$mail" in
-	0004)
-		prereq=ICONV;;
-	esac
-
-	test_expect_success $prereq "mailinfo $mail" '
+  test_expect_success $prereq "mailinfo $mail" '
 		check_mailinfo "$mail" "" &&
 		if test -f "$DATA/msg$mail--scissors"
 		then
@@ -49,23 +48,22 @@ do
 	'
 done
 
-
 test_expect_success 'split box with rfc2047 samples' \
-	'mkdir rfc2047 &&
+  'mkdir rfc2047 &&
 	git mailsplit -orfc2047 "$DATA/rfc2047-samples.mbox" \
 	  >rfc2047/last &&
 	last=$(cat rfc2047/last) &&
 	echo total is $last &&
 	test $(cat rfc2047/last) = 11'
 
-for mail in rfc2047/00*
-do
-	case "$mail" in
-	rfc2047/0001)
-		prereq=ICONV;;
-	esac
+for mail in rfc2047/00*; do
+  case "$mail" in
+    rfc2047/0001)
+      prereq=ICONV
+      ;;
+  esac
 
-	test_expect_success $prereq "mailinfo $mail" '
+  test_expect_success $prereq "mailinfo $mail" '
 		git mailinfo -u "$mail-msg" "$mail-patch" <"$mail" >"$mail-info" &&
 		echo msg &&
 		test_cmp "$DATA/empty" "$mail-msg" &&
@@ -180,7 +178,6 @@ test_expect_success 'mailinfo with mailinfo.scissors config' '
 	test_cmp "$DATA/info0014--scissors" info0014.sc
 '
 
-
 test_expect_success 'mailinfo no options' '
 	subj="$(echo "Subject: [PATCH] [other] [PATCH] message" |
 		git mailinfo /dev/null /dev/null)" &&
@@ -238,13 +235,13 @@ test_expect_success 'mailinfo handles unusual header whitespace' '
 	test_cmp expect actual
 '
 
-check_quoted_cr_mail () {
-	mail="$1" && shift &&
-	git mailinfo -u "$@" "$mail.msg" "$mail.patch" \
-		<"$mail" >"$mail.info" 2>"$mail.err" &&
-	test_cmp "$mail-expected.msg" "$mail.msg" &&
-	test_cmp "$mail-expected.patch" "$mail.patch" &&
-	test_cmp "$DATA/quoted-cr-info" "$mail.info"
+check_quoted_cr_mail() {
+  mail="$1" && shift \
+    && git mailinfo -u "$@" "$mail.msg" "$mail.patch" \
+      <"$mail" >"$mail.info" 2>"$mail.err" \
+    && test_cmp "$mail-expected.msg" "$mail.msg" \
+    && test_cmp "$mail-expected.patch" "$mail.patch" \
+    && test_cmp "$DATA/quoted-cr-info" "$mail.info"
 }
 
 test_expect_success 'split base64 email with quoted-cr' '

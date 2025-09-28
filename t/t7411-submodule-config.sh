@@ -153,7 +153,6 @@ test_expect_success 'unsetting submodules config from the working tree' '
 	)
 '
 
-
 test_expect_success 'writing submodules config' '
 	(cd super &&
 		echo "new_url" >expect &&

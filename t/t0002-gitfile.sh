@@ -10,7 +10,7 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 objpath() {
-	echo "$1" | sed -e 's|\(..\)|\1/|'
+  echo "$1" | sed -e 's|\(..\)|\1/|'
 }
 
 test_expect_success 'initial setup' '

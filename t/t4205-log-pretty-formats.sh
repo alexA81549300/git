@@ -13,17 +13,16 @@ test_encoding="ISO8859-1"
 
 sample_utf8_part=$(printf "f\303\244ng")
 
-commit_msg () {
-	# String "initial. initial" partly in German
-	# (translated with Google Translate),
-	# encoded in UTF-8, used as a commit log message below.
-	msg="initial. an${sample_utf8_part}lich\n"
-	if test -n "$1"
-	then
-		printf "$msg" | iconv -f utf-8 -t "$1"
-	else
-		printf "$msg"
-	fi
+commit_msg() {
+  # String "initial. initial" partly in German
+  # (translated with Google Translate),
+  # encoded in UTF-8, used as a commit log message below.
+  msg="initial. an${sample_utf8_part}lich\n"
+  if test -n "$1"; then
+    printf "$msg" | iconv -f utf-8 -t "$1"
+  else
+    printf "$msg"
+  fi
 }
 
 test_expect_success 'set up basic repos' '
@@ -141,9 +140,8 @@ test_expect_failure 'NUL termination with --stat' '
 	test_cmp expected actual
 '
 
-for p in short medium full fuller email raw
-do
-	test_expect_success "NUL termination with --reflog --pretty=$p" '
+for p in short medium full fuller email raw; do
+  test_expect_success "NUL termination with --reflog --pretty=$p" '
 		revs="$(git rev-list --reflog)" &&
 		for r in $revs
 		do
@@ -639,8 +637,8 @@ Signed-off-by: A U Thor
   <author@example.com>
 EOF
 
-unfold () {
-	perl -0pe 's/\n\s+/ /g'
+unfold() {
+  perl -0pe 's/\n\s+/ /g'
 }
 
 test_expect_success 'set up trailer tests' '

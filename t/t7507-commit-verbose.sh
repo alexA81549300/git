@@ -4,12 +4,10 @@ test_description='verbose commit template'
 
 . ./test-lib.sh
 
-write_script "check-for-diff" <<\EOF &&
+write_script "check-for-diff" <<\EOF && test_set_editor "$PWD/check-for-diff"
 grep '^diff --git' "$1" >out
 exit 0
 EOF
-test_set_editor "$PWD/check-for-diff"
-
 cat >message <<'EOF'
 subject
 
@@ -34,8 +32,8 @@ test_expect_success 'second commit' '
 '
 
 check_message() {
-	git log -1 --pretty=format:%s%n%n%b >actual &&
-	test_cmp "$1" actual
+  git log -1 --pretty=format:%s%n%n%b >actual \
+    && test_cmp "$1" actual
 }
 
 test_expect_success 'verbose diff is stripped out' '
@@ -119,43 +117,39 @@ test_expect_success 'setup -v -v' '
 	echo dirty >file
 '
 
-for i in true 1
-do
-	test_expect_success "commit.verbose=$i and --verbose omitted" "
+for i in true 1; do
+  test_expect_success "commit.verbose=$i and --verbose omitted" "
 		git -c commit.verbose=$i commit --amend &&
 		test_line_count = 1 out
 	"
 done
 
-for i in false -2 -1 0
-do
-	test_expect_success "commit.verbose=$i and --verbose omitted" "
+for i in false -2 -1 0; do
+  test_expect_success "commit.verbose=$i and --verbose omitted" "
 		git -c commit.verbose=$i commit --amend &&
 		test_line_count = 0 out
 	"
 done
 
-for i in 2 3
-do
-	test_expect_success "commit.verbose=$i and --verbose omitted" "
+for i in 2 3; do
+  test_expect_success "commit.verbose=$i and --verbose omitted" "
 		git -c commit.verbose=$i commit --amend &&
 		test_line_count = 2 out
 	"
 done
 
-for i in true false -2 -1 0 1 2 3
-do
-	test_expect_success "commit.verbose=$i and --verbose" "
+for i in true false -2 -1 0 1 2 3; do
+  test_expect_success "commit.verbose=$i and --verbose" "
 		git -c commit.verbose=$i commit --amend --verbose &&
 		test_line_count = 1 out
 	"
 
-	test_expect_success "commit.verbose=$i and --no-verbose" "
+  test_expect_success "commit.verbose=$i and --no-verbose" "
 		git -c commit.verbose=$i commit --amend --no-verbose &&
 		test_line_count = 0 out
 	"
 
-	test_expect_success "commit.verbose=$i and -v -v" "
+  test_expect_success "commit.verbose=$i and -v -v" "
 		git -c commit.verbose=$i commit --amend -v -v &&
 		test_line_count = 2 out
 	"

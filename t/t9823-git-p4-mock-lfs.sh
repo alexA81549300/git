@@ -4,48 +4,48 @@ test_description='Clone repositories and store files in Mock LFS'
 
 . ./lib-git-p4.sh
 
-test_file_is_not_in_mock_lfs () {
-	FILE="$1" &&
-	CONTENT="$2" &&
-	echo "$CONTENT" >expect_content &&
-	test_path_is_file "$FILE" &&
-	test_cmp expect_content "$FILE"
+test_file_is_not_in_mock_lfs() {
+  FILE="$1" \
+    && CONTENT="$2" \
+    && echo "$CONTENT" >expect_content \
+    && test_path_is_file "$FILE" \
+    && test_cmp expect_content "$FILE"
 }
 
-test_file_is_in_mock_lfs () {
-	FILE="$1" &&
-	CONTENT="$2" &&
-	LOCAL_STORAGE=".git/mock-storage/local/$CONTENT" &&
-	SERVER_STORAGE=".git/mock-storage/remote/$CONTENT" &&
-	echo "pointer-$CONTENT" >expect_pointer &&
-	echo "$CONTENT" >expect_content &&
-	test_path_is_file "$FILE" &&
-	test_path_is_file "$LOCAL_STORAGE" &&
-	test_path_is_file "$SERVER_STORAGE" &&
-	test_cmp expect_pointer "$FILE" &&
-	test_cmp expect_content "$LOCAL_STORAGE" &&
-	test_cmp expect_content "$SERVER_STORAGE"
+test_file_is_in_mock_lfs() {
+  FILE="$1" \
+    && CONTENT="$2" \
+    && LOCAL_STORAGE=".git/mock-storage/local/$CONTENT" \
+    && SERVER_STORAGE=".git/mock-storage/remote/$CONTENT" \
+    && echo "pointer-$CONTENT" >expect_pointer \
+    && echo "$CONTENT" >expect_content \
+    && test_path_is_file "$FILE" \
+    && test_path_is_file "$LOCAL_STORAGE" \
+    && test_path_is_file "$SERVER_STORAGE" \
+    && test_cmp expect_pointer "$FILE" \
+    && test_cmp expect_content "$LOCAL_STORAGE" \
+    && test_cmp expect_content "$SERVER_STORAGE"
 }
 
-test_file_is_deleted_in_mock_lfs () {
-	FILE="$1" &&
-	CONTENT="$2" &&
-	LOCAL_STORAGE=".git/mock-storage/local/$CONTENT" &&
-	SERVER_STORAGE=".git/mock-storage/remote/$CONTENT" &&
-	echo "pointer-$CONTENT" >expect_pointer &&
-	echo "$CONTENT" >expect_content &&
-	test_path_is_missing "$FILE" &&
-	test_path_is_file "$LOCAL_STORAGE" &&
-	test_path_is_file "$SERVER_STORAGE" &&
-	test_cmp expect_content "$LOCAL_STORAGE" &&
-	test_cmp expect_content "$SERVER_STORAGE"
+test_file_is_deleted_in_mock_lfs() {
+  FILE="$1" \
+    && CONTENT="$2" \
+    && LOCAL_STORAGE=".git/mock-storage/local/$CONTENT" \
+    && SERVER_STORAGE=".git/mock-storage/remote/$CONTENT" \
+    && echo "pointer-$CONTENT" >expect_pointer \
+    && echo "$CONTENT" >expect_content \
+    && test_path_is_missing "$FILE" \
+    && test_path_is_file "$LOCAL_STORAGE" \
+    && test_path_is_file "$SERVER_STORAGE" \
+    && test_cmp expect_content "$LOCAL_STORAGE" \
+    && test_cmp expect_content "$SERVER_STORAGE"
 }
 
-test_file_count_in_dir () {
-	DIR="$1" &&
-	EXPECTED_COUNT="$2" &&
-	find "$DIR" -type f >actual &&
-	test_line_count = $EXPECTED_COUNT actual
+test_file_count_in_dir() {
+  DIR="$1" \
+    && EXPECTED_COUNT="$2" \
+    && find "$DIR" -type f >actual \
+    && test_line_count = $EXPECTED_COUNT actual
 }
 
 test_expect_success 'start p4d' '

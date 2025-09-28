@@ -7,12 +7,12 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-check_revlist () {
-	rev_list_args="$1" &&
-	shift &&
-	git rev-parse "$@" >expect &&
-	git rev-list $rev_list_args --all >actual &&
-	test_cmp expect actual
+check_revlist() {
+  rev_list_args="$1" \
+    && shift \
+    && git rev-parse "$@" >expect \
+    && git rev-list $rev_list_args --all >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success setup '

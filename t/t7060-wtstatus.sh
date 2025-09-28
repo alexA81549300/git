@@ -124,7 +124,6 @@ test_expect_success 'git diff-index --cached -C shows 2 copies + 1 unmerged' '
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status when conflicts with add and rm advice (deleted by them)' '
 	git reset --hard &&
 	git checkout main &&
@@ -154,7 +153,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'prepare for conflicts' '
 	git reset --hard &&
 	git checkout -b conflict &&
@@ -166,7 +164,6 @@ test_expect_success 'prepare for conflicts' '
 	git mv main.txt sub_second.txt &&
 	git commit -m "main.txt renamed in sub_second.txt"
 '
-
 
 test_expect_success 'status when conflicts with add and rm advice (both deleted)' '
 	test_must_fail git merge conflict &&
@@ -187,7 +184,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status when conflicts with only rm advice (both deleted)' '
 	git reset --hard conflict_second &&

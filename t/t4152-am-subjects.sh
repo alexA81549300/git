@@ -5,9 +5,9 @@ test_description='test subject preservation with format-patch | am'
 . ./test-lib.sh
 
 make_patches() {
-	type=$1
-	subject=$2
-	test_expect_success "create patches with $type subject" '
+  type=$1
+  subject=$2
+  test_expect_success "create patches with $type subject" '
 		git reset --hard baseline &&
 		echo $type >file &&
 		git commit -a -m "$subject" &&
@@ -17,10 +17,10 @@ make_patches() {
 }
 
 check_subject() {
-	git reset --hard baseline &&
-	git am $2 $1.patch &&
-	git log -1 --pretty=format:%B >actual &&
-	test_cmp expect actual
+  git reset --hard baseline \
+    && git am $2 $1.patch \
+    && git log -1 --pretty=format:%B >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'setup baseline commit' '

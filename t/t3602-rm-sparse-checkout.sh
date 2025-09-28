@@ -27,9 +27,8 @@ test_expect_success 'setup' "
 	cat sparse_entry_b_error sparse_hint >b_error_and_hint
 "
 
-for opt in "" -f --dry-run
-do
-	test_expect_success "rm${opt:+ $opt} does not remove sparse entries" '
+for opt in "" -f --dry-run; do
+  test_expect_success "rm${opt:+ $opt} does not remove sparse entries" '
 		git sparse-checkout set --no-cone a &&
 		test_must_fail git rm $opt b 2>stderr &&
 		test_cmp b_error_and_hint stderr &&

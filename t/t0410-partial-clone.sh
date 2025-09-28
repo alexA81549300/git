@@ -10,23 +10,24 @@ test_description='partial clone'
 # verify the out-of-sync commit graph.
 GIT_TEST_COMMIT_GRAPH=0
 
-delete_object () {
-	rm $1/.git/objects/$(echo $2 | sed -e 's|^..|&/|')
+delete_object() {
+  rm $1/.git/objects/$(echo $2 | sed -e 's|^..|&/|')
 }
 
-pack_as_from_promisor () {
-	HASH=$(git -C repo pack-objects .git/objects/pack/pack) &&
-	>repo/.git/objects/pack/pack-$HASH.promisor &&
-	echo $HASH
+pack_as_from_promisor() {
+  HASH=$(git -C repo pack-objects .git/objects/pack/pack) \
+    && >repo/.git/objects/pack/pack-$HASH.promisor \
+    && echo $HASH
 }
 
-promise_and_delete () {
-	HASH=$(git -C repo rev-parse "$1") &&
-	git -C repo tag -a -m message my_annotated_tag "$HASH" &&
-	git -C repo rev-parse my_annotated_tag | pack_as_from_promisor &&
-	# tag -d prints a message to stdout, so redirect it
-	git -C repo tag -d my_annotated_tag >/dev/null &&
-	delete_object repo "$HASH"
+promise_and_delete() {
+  HASH=$(git -C repo rev-parse "$1") \
+    && git -C repo tag -a -m message my_annotated_tag "$HASH" \
+    && git -C repo rev-parse my_annotated_tag | pack_as_from_promisor \
+    &&
+    # tag -d prints a message to stdout, so redirect it
+    git -C repo tag -d my_annotated_tag >/dev/null \
+    && delete_object repo "$HASH"
 }
 
 test_expect_success 'extensions.partialclone without filter' '
@@ -553,20 +554,18 @@ test_expect_success 'gc does not repack promisor objects if there are none' '
 	test_line_count = 1 packlist
 '
 
-repack_and_check () {
-	rm -rf repo2 &&
-	cp -r repo repo2 &&
-	if test x"$1" = "x--must-fail"
-	then
-		shift
-		test_must_fail git -C repo2 repack $1 -d
-	else
-		git -C repo2 repack $1 -d
-	fi &&
-	git -C repo2 fsck &&
-
-	git -C repo2 cat-file -e $2 &&
-	git -C repo2 cat-file -e $3
+repack_and_check() {
+  rm -rf repo2 \
+    && cp -r repo repo2 \
+    && if test x"$1" = "x--must-fail"; then
+      shift
+      test_must_fail git -C repo2 repack $1 -d
+    else
+      git -C repo2 repack $1 -d
+    fi \
+    && git -C repo2 fsck \
+    && git -C repo2 cat-file -e $2 \
+    && git -C repo2 cat-file -e $3
 }
 
 test_expect_success 'repack -d does not irreversibly delete promisor objects' '

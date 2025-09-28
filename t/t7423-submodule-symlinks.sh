@@ -32,11 +32,11 @@ test_expect_success SYMLINKS,CASE_INSENSITIVE_FS 'git submodule update must not 
 '
 
 prepare_symlink_to_repo() {
-	rm -rf a &&
-	mkdir a &&
-	git init a/target &&
-	git -C a/target fetch ../../upstream &&
-	ln -s target a/sm
+  rm -rf a \
+    && mkdir a \
+    && git init a/target \
+    && git -C a/target fetch ../../upstream \
+    && ln -s target a/sm
 }
 
 test_expect_success SYMLINKS 'git restore --recurse-submodules must not be confused by a symlink' '

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-last_shelved_change () {
-	p4 changes -s shelved -m1 | cut -d " " -f 2
+last_shelved_change() {
+  p4 changes -s shelved -m1 | cut -d " " -f 2
 }
 
 test_description='git p4 unshelve'
@@ -110,10 +110,10 @@ EOF
 	)
 '
 
-shelve_one_file () {
-	description="Change to be unshelved" &&
-	file="$1" &&
-	p4 shelve -i <<EOF
+shelve_one_file() {
+  description="Change to be unshelved" \
+    && file="$1" \
+    && p4 shelve -i <<EOF
 Change: new
 Description:
 	$description

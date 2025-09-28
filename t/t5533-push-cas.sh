@@ -7,53 +7,53 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-setup_srcdst_basic () {
-	rm -fr src dst &&
-	git clone --no-local . src &&
-	git clone --no-local src dst &&
-	(
-		cd src && git checkout HEAD^0
-	)
+setup_srcdst_basic() {
+  rm -fr src dst \
+    && git clone --no-local . src \
+    && git clone --no-local src dst \
+    && (
+      cd src && git checkout HEAD^0
+    )
 }
 
 # For tests with "--force-if-includes".
-setup_src_dup_dst () {
-	rm -fr src dup dst &&
-	git init --bare dst &&
-	git clone --no-local dst src &&
-	git clone --no-local dst dup
-	(
-		cd src &&
-		test_commit A &&
-		test_commit B &&
-		test_commit C &&
-		git push origin
-	) &&
-	(
-		cd dup &&
-		git fetch &&
-		git merge origin/main &&
-		git switch -c branch main~2 &&
-		test_commit D &&
-		test_commit E &&
-		git push origin --all
-	) &&
-	(
-		cd src &&
-		git switch main &&
-		git fetch --all &&
-		git branch branch --track origin/branch &&
-		git rebase origin/main
-	) &&
-	(
-		cd dup &&
-		git switch main &&
-		test_commit F &&
-		test_commit G &&
-		git switch branch &&
-		test_commit H &&
-		git push origin --all
-	)
+setup_src_dup_dst() {
+  rm -fr src dup dst \
+    && git init --bare dst \
+    && git clone --no-local dst src \
+    && git clone --no-local dst dup
+  (
+    cd src \
+      && test_commit A \
+      && test_commit B \
+      && test_commit C \
+      && git push origin
+  ) \
+    && (
+      cd dup \
+        && git fetch \
+        && git merge origin/main \
+        && git switch -c branch main~2 \
+        && test_commit D \
+        && test_commit E \
+        && git push origin --all
+    ) \
+    && (
+      cd src \
+        && git switch main \
+        && git fetch --all \
+        && git branch branch --track origin/branch \
+        && git rebase origin/main
+    ) \
+    && (
+      cd dup \
+        && git switch main \
+        && test_commit F \
+        && test_commit G \
+        && git switch branch \
+        && test_commit H \
+        && git push origin --all
+    )
 }
 
 test_expect_success setup '

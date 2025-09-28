@@ -2,12 +2,11 @@
 
 test_description='apply same filename'
 
-
 . ./test-lib.sh
 
-modify () {
-	sed -e "$1" < "$2" > "$2".x &&
-	mv "$2".x "$2"
+modify() {
+  sed -e "$1" <"$2" >"$2".x \
+    && mv "$2".x "$2"
 }
 
 test_expect_success setup '

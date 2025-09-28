@@ -16,26 +16,24 @@ failing, and produces maximally sane output in git.'
 # git-p4 directly with the Python 3 interpreter to ensure that we use that
 # version even if Git was compiled with Python 2.
 python_target_binary=$(which python3)
-if test -n "$python_target_binary"
-then
-	mkdir temp_python
-	PATH="$(pwd)/temp_python:$PATH"
-	export PATH
+if test -n "$python_target_binary"; then
+  mkdir temp_python
+  PATH="$(pwd)/temp_python:$PATH"
+  export PATH
 
-	write_script temp_python/git-p4-python3 <<-EOF
+  write_script temp_python/git-p4-python3 <<-EOF
 	exec "$python_target_binary" "$(git --exec-path)/git-p4" "\$@"
 	EOF
 fi
 
 git p4-python3 >err
-if ! grep 'valid commands' err
-then
-	skip_all="skipping python3 git p4 tests; python3 not available"
-	test_done
+if ! grep 'valid commands' err; then
+  skip_all="skipping python3 git p4 tests; python3 not available"
+  test_done
 fi
 
-remove_user_cache () {
-	rm "$HOME/.gitp4-usercache.txt" || true
+remove_user_cache() {
+  rm "$HOME/.gitp4-usercache.txt" || true
 }
 
 test_expect_success 'start p4d' '
@@ -197,7 +195,6 @@ test_expect_success 'check cp-1252 contents on later sync after clone with fallb
 ############################
 ## / END REPEATED SECTION ##
 ############################
-
 
 test_expect_success 'fallback (both utf-8 and cp-1252 contents handled) is the default with python3' '
 	test_when_finished cleanup_git &&

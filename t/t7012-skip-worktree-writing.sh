@@ -54,25 +54,25 @@ test_expect_success 'read-tree removes worktree, dirty case' '
 '
 
 setup_absent() {
-	test -f 1 && rm 1
-	git update-index --remove 1 &&
-	git update-index --add --cacheinfo 100644 $EMPTY_BLOB 1 &&
-	git update-index --skip-worktree 1
+  test -f 1 && rm 1
+  git update-index --remove 1 \
+    && git update-index --add --cacheinfo 100644 $EMPTY_BLOB 1 \
+    && git update-index --skip-worktree 1
 }
 
 setup_dirty() {
-	git update-index --force-remove 1 &&
-	echo dirty > 1 &&
-	git update-index --add --cacheinfo 100644 $EMPTY_BLOB 1 &&
-	git update-index --skip-worktree 1
+  git update-index --force-remove 1 \
+    && echo dirty >1 \
+    && git update-index --add --cacheinfo 100644 $EMPTY_BLOB 1 \
+    && git update-index --skip-worktree 1
 }
 
 test_dirty() {
-	echo "100644 $EMPTY_BLOB 0	1" > expected &&
-	git ls-files --stage 1 > result &&
-	test_cmp expected result &&
-	echo dirty > expected
-	test_cmp expected 1
+  echo "100644 $EMPTY_BLOB 0	1" >expected \
+    && git ls-files --stage 1 >result \
+    && test_cmp expected result \
+    && echo dirty >expected
+  test_cmp expected 1
 }
 
 cat >expected <<EOF

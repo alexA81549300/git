@@ -9,7 +9,6 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-
 test_tick
 cat >input <<INPUT_END
 commit refs/heads/main
@@ -363,16 +362,15 @@ test_expect_success 'verify that later N commands override earlier M commands' '
 '
 
 # Write fast-import commands to create the given number of commits
-fast_import_commits () {
-	my_ref=$1
-	my_num_commits=$2
-	my_append_to_file=$3
-	my_i=0
-	while test $my_i -lt $my_num_commits
-	do
-		my_i=$(($my_i + 1))
-		test_tick
-		cat >>"$my_append_to_file" <<INPUT_END
+fast_import_commits() {
+  my_ref=$1
+  my_num_commits=$2
+  my_append_to_file=$3
+  my_i=0
+  while test $my_i -lt $my_num_commits; do
+    my_i=$(($my_i + 1))
+    test_tick
+    cat >>"$my_append_to_file" <<INPUT_END
 commit $my_ref
 mark :$my_i
 committer $GIT_COMMITTER_NAME <$GIT_COMMITTER_EMAIL> $GIT_COMMITTER_DATE
@@ -386,18 +384,18 @@ file contents in commit #$my_i
 EOF
 
 INPUT_END
-	done
+  done
 }
 
 # Write fast-import commands to create the given number of notes annotating
 # the commits created by fast_import_commits()
-fast_import_notes () {
-	my_notes_ref=$1
-	my_num_commits=$2
-	my_append_to_file=$3
-	my_note_append=$4
-	test_tick
-	cat >>"$my_append_to_file" <<INPUT_END
+fast_import_notes() {
+  my_notes_ref=$1
+  my_num_commits=$2
+  my_append_to_file=$3
+  my_note_append=$4
+  test_tick
+  cat >>"$my_append_to_file" <<INPUT_END
 commit $my_notes_ref
 committer $GIT_COMMITTER_NAME <$GIT_COMMITTER_EMAIL> $GIT_COMMITTER_DATE
 data <<COMMIT
@@ -406,20 +404,18 @@ COMMIT
 
 INPUT_END
 
-	my_i=0
-	while test $my_i -lt $my_num_commits
-	do
-		my_i=$(($my_i + 1))
-		cat >>"$my_append_to_file" <<INPUT_END
+  my_i=0
+  while test $my_i -lt $my_num_commits; do
+    my_i=$(($my_i + 1))
+    cat >>"$my_append_to_file" <<INPUT_END
 N inline :$my_i
 data <<EOF
 note for commit #$my_i$my_note_append
 EOF
 
 INPUT_END
-	done
+  done
 }
-
 
 rm input expect
 num_commits=400
@@ -454,13 +450,12 @@ EOF
 INPUT_END
 # Finally create the expected output from all these notes and commits
 i=$num_commits
-while test $i -gt 0
-do
-	cat >>expect <<EXPECT_END
+while test $i -gt 0; do
+  cat >>expect <<EXPECT_END
     commit #$i
     note for commit #$i
 EXPECT_END
-	i=$(($i - 1))
+  i=$(($i - 1))
 done
 
 test_expect_success 'add lots of commits and notes' '
@@ -529,15 +524,15 @@ test_expect_success 'verify that importing a notes tree respects the fanout sche
 	done
 '
 
-cat >>expect_non-note1 << EOF
+cat >>expect_non-note1 <<EOF
 This is not a note, but rather a regular file residing in a notes tree
 EOF
 
-cat >>expect_non-note2 << EOF
+cat >>expect_non-note2 <<EOF
 Non-note file
 EOF
 
-cat >>expect_non-note3 << EOF
+cat >>expect_non-note3 <<EOF
 Another non-note file
 EOF
 
@@ -566,20 +561,19 @@ INPUT_END
 rm expect
 i=$num_commits
 j=0
-while test $j -lt 3
-do
-	cat >>input <<INPUT_END
+while test $j -lt 3; do
+  cat >>input <<INPUT_END
 N inline refs/heads/many_commits~$j
 data <<EOF
 changed note for commit #$i
 EOF
 INPUT_END
-	cat >>expect <<EXPECT_END
+  cat >>expect <<EXPECT_END
     commit #$i
     changed note for commit #$i
 EXPECT_END
-	i=$(($i - 1))
-	j=$(($j + 1))
+  i=$(($i - 1))
+  j=$(($j + 1))
 done
 
 test_expect_success 'change a few existing notes' '
@@ -617,27 +611,24 @@ from refs/notes/many_notes^0
 INPUT_END
 
 i=$(($num_commits - $remaining_notes))
-for sha1 in $(git rev-list -n $i refs/heads/many_commits)
-do
-	cat >>input <<INPUT_END
+for sha1 in $(git rev-list -n $i refs/heads/many_commits); do
+  cat >>input <<INPUT_END
 N $ZERO_OID $sha1
 INPUT_END
 done
 
 i=$num_commits
 rm expect
-while test $i -gt 0
-do
-	cat >>expect <<EXPECT_END
+while test $i -gt 0; do
+  cat >>expect <<EXPECT_END
     commit #$i
 EXPECT_END
-	if test $i -le $remaining_notes
-	then
-		cat >>expect <<EXPECT_END
+  if test $i -le $remaining_notes; then
+    cat >>expect <<EXPECT_END
     note for commit #$i
 EXPECT_END
-	fi
-	i=$(($i - 1))
+  fi
+  i=$(($i - 1))
 done
 
 test_expect_success 'remove lots of notes' '
@@ -678,7 +669,6 @@ test_expect_success 'verify that non-notes are untouched by a fanout change' '
 
 '
 
-
 rm input expect
 num_notes_refs=10
 num_commits=16
@@ -687,32 +677,28 @@ some_commits=8
 fast_import_commits "refs/heads/more_commits" $num_commits input
 # Create one note per above commit per notes ref
 i=0
-while test $i -lt $num_notes_refs
-do
-	i=$(($i + 1))
-	fast_import_notes "refs/notes/more_notes_$i" $num_commits input
+while test $i -lt $num_notes_refs; do
+  i=$(($i + 1))
+  fast_import_notes "refs/notes/more_notes_$i" $num_commits input
 done
 # Trigger branch reloading in git-fast-import by repeating the note creation
 i=0
-while test $i -lt $num_notes_refs
-do
-	i=$(($i + 1))
-	fast_import_notes "refs/notes/more_notes_$i" $some_commits input " (2)"
+while test $i -lt $num_notes_refs; do
+  i=$(($i + 1))
+  fast_import_notes "refs/notes/more_notes_$i" $some_commits input " (2)"
 done
 # Finally create the expected output from the notes in refs/notes/more_notes_1
 i=$num_commits
-while test $i -gt 0
-do
-	note_data="note for commit #$i"
-	if test $i -le $some_commits
-	then
-		note_data="$note_data (2)"
-	fi
-	cat >>expect <<EXPECT_END
+while test $i -gt 0; do
+  note_data="note for commit #$i"
+  if test $i -le $some_commits; then
+    note_data="$note_data (2)"
+  fi
+  cat >>expect <<EXPECT_END
     commit #$i
     $note_data
 EXPECT_END
-	i=$(($i - 1))
+  i=$(($i - 1))
 done
 
 test_expect_success "add notes to $num_commits commits in each of $num_notes_refs refs" '

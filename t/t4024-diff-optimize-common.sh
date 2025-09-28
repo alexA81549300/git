@@ -4,94 +4,90 @@ test_description='common tail optimization'
 
 . ./test-lib.sh
 
-z=zzzzzzzz ;# 8
-z="$z$z$z$z$z$z$z$z" ;# 64
-z="$z$z$z$z$z$z$z$z" ;# 512
-z="$z$z$z$z" ;# 2048
-z2047=$(expr "$z" : '.\(.*\)') ; #2047
+z=zzzzzzzz                     # 8
+z="$z$z$z$z$z$z$z$z"           # 64
+z="$z$z$z$z$z$z$z$z"           # 512
+z="$z$z$z$z"                   # 2048
+z2047=$(expr "$z" : '.\(.*\)') #2047
 
-x=zzzzzzzzzz			;# 10
-y="$x$x$x$x$x$x$x$x$x$x"	;# 100
-z="$y$y$y$y$y$y$y$y$y$y"	;# 1000
+x=zzzzzzzzzz             # 10
+y="$x$x$x$x$x$x$x$x$x$x" # 100
+z="$y$y$y$y$y$y$y$y$y$y" # 1000
 z1000=$z
 z100=$y
 z10=$x
 
 zs() {
-	count="$1"
-	while test "$count" -ge 1000
-	do
-		count=$(($count - 1000))
-		printf "%s" $z1000
-	done
-	while test "$count" -ge 100
-	do
-		count=$(($count - 100))
-		printf "%s" $z100
-	done
-	while test "$count" -ge 10
-	do
-		count=$(($count - 10))
-		printf "%s" $z10
-	done
-	while test "$count" -ge 1
-	do
-		count=$(($count - 1))
-		printf "z"
-	done
+  count="$1"
+  while test "$count" -ge 1000; do
+    count=$(($count - 1000))
+    printf "%s" $z1000
+  done
+  while test "$count" -ge 100; do
+    count=$(($count - 100))
+    printf "%s" $z100
+  done
+  while test "$count" -ge 10; do
+    count=$(($count - 10))
+    printf "%s" $z10
+  done
+  while test "$count" -ge 1; do
+    count=$(($count - 1))
+    printf "z"
+  done
 }
 
-zc () {
-	sed -e "/^index/d" \
-		-e "s/$z1000/Q/g" \
-		-e "s/QQQQQQQQQ/Z9000/g" \
-		-e "s/QQQQQQQQ/Z8000/g" \
-		-e "s/QQQQQQQ/Z7000/g" \
-		-e "s/QQQQQQ/Z6000/g" \
-		-e "s/QQQQQ/Z5000/g" \
-		-e "s/QQQQ/Z4000/g" \
-		-e "s/QQQ/Z3000/g" \
-		-e "s/QQ/Z2000/g" \
-		-e "s/Q/Z1000/g" \
-		-e "s/$z100/Q/g" \
-		-e "s/QQQQQQQQQ/Z900/g" \
-		-e "s/QQQQQQQQ/Z800/g" \
-		-e "s/QQQQQQQ/Z700/g" \
-		-e "s/QQQQQQ/Z600/g" \
-		-e "s/QQQQQ/Z500/g" \
-		-e "s/QQQQ/Z400/g" \
-		-e "s/QQQ/Z300/g" \
-		-e "s/QQ/Z200/g" \
-		-e "s/Q/Z100/g" \
-		-e "s/000Z//g" \
-		-e "s/$z10/Q/g" \
-		-e "s/QQQQQQQQQ/Z90/g" \
-		-e "s/QQQQQQQQ/Z80/g" \
-		-e "s/QQQQQQQ/Z70/g" \
-		-e "s/QQQQQQ/Z60/g" \
-		-e "s/QQQQQ/Z50/g" \
-		-e "s/QQQQ/Z40/g" \
-		-e "s/QQQ/Z30/g" \
-		-e "s/QQ/Z20/g" \
-		-e "s/Q/Z10/g" \
-		-e "s/00Z//g" \
-		-e "s/z/Q/g" \
-		-e "s/QQQQQQQQQ/Z9/g" \
-		-e "s/QQQQQQQQ/Z8/g" \
-		-e "s/QQQQQQQ/Z7/g" \
-		-e "s/QQQQQQ/Z6/g" \
-		-e "s/QQQQQ/Z5/g" \
-		-e "s/QQQQ/Z4/g" \
-		-e "s/QQQ/Z3/g" \
-		-e "s/QQ/Z2/g" \
-		-e "s/Q/Z1/g" \
-		-e "s/0Z//g" \
-	;
+zc() {
+  sed -e "/^index/d" \
+    -e "s/$z1000/Q/g" \
+    -e "s/QQQQQQQQQ/Z9000/g" \
+    -e "s/QQQQQQQQ/Z8000/g" \
+    -e "s/QQQQQQQ/Z7000/g" \
+    -e "s/QQQQQQ/Z6000/g" \
+    -e "s/QQQQQ/Z5000/g" \
+    -e "s/QQQQ/Z4000/g" \
+    -e "s/QQQ/Z3000/g" \
+    -e "s/QQ/Z2000/g" \
+    -e "s/Q/Z1000/g" \
+    -e "s/$z100/Q/g" \
+    -e "s/QQQQQQQQQ/Z900/g" \
+    -e "s/QQQQQQQQ/Z800/g" \
+    -e "s/QQQQQQQ/Z700/g" \
+    -e "s/QQQQQQ/Z600/g" \
+    -e "s/QQQQQ/Z500/g" \
+    -e "s/QQQQ/Z400/g" \
+    -e "s/QQQ/Z300/g" \
+    -e "s/QQ/Z200/g" \
+    -e "s/Q/Z100/g" \
+    -e "s/000Z//g" \
+    -e "s/$z10/Q/g" \
+    -e "s/QQQQQQQQQ/Z90/g" \
+    -e "s/QQQQQQQQ/Z80/g" \
+    -e "s/QQQQQQQ/Z70/g" \
+    -e "s/QQQQQQ/Z60/g" \
+    -e "s/QQQQQ/Z50/g" \
+    -e "s/QQQQ/Z40/g" \
+    -e "s/QQQ/Z30/g" \
+    -e "s/QQ/Z20/g" \
+    -e "s/Q/Z10/g" \
+    -e "s/00Z//g" \
+    -e "s/z/Q/g" \
+    -e "s/QQQQQQQQQ/Z9/g" \
+    -e "s/QQQQQQQQ/Z8/g" \
+    -e "s/QQQQQQQ/Z7/g" \
+    -e "s/QQQQQQ/Z6/g" \
+    -e "s/QQQQQ/Z5/g" \
+    -e "s/QQQQ/Z4/g" \
+    -e "s/QQQ/Z3/g" \
+    -e "s/QQ/Z2/g" \
+    -e "s/Q/Z1/g" \
+    -e "s/0Z//g" \
+    ;
 }
 
-expect_pattern () {
-	cnt="$1"
-	cat <<EOF
+expect_pattern() {
+  cnt="$1"
+  cat <<EOF
 diff --git a/file-a$cnt b/file-a$cnt
 --- a/file-a$cnt
 +++ b/file-a$cnt

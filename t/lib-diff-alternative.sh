@@ -2,7 +2,7 @@
 # histogram, etc).
 
 test_diff_frobnitz() {
-	cat >file1 <<\EOF
+  cat >file1 <<\EOF
 #include <stdio.h>
 
 // Frobs foo heartily
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 }
 EOF
 
-	cat >file2 <<\EOF
+  cat >file2 <<\EOF
 #include <stdio.h>
 
 int fib(int n)
@@ -59,9 +59,9 @@ int main(int argc, char **argv)
 }
 EOF
 
-	file1=$(git rev-parse --short $(git hash-object file1))
-	file2=$(git rev-parse --short $(git hash-object file2))
-	cat >expect <<EOF
+  file1=$(git rev-parse --short $(git hash-object file1))
+  file2=$(git rev-parse --short $(git hash-object file2))
+  cat >expect <<EOF
 diff --git a/file1 b/file2
 index $file1..$file2 100644
 --- a/file1
@@ -105,14 +105,14 @@ index $file1..$file2 100644
  }
 EOF
 
-	cat >expect_diffstat <<EOF
+  cat >expect_diffstat <<EOF
  file1 => file2 | 21 ++++++++++-----------
  1 file changed, 10 insertions(+), 11 deletions(-)
 EOF
 
-	STRATEGY=$1
+  STRATEGY=$1
 
-	test_expect_success "setup attributes files for tests with $STRATEGY" '
+  test_expect_success "setup attributes files for tests with $STRATEGY" '
 		git checkout -b master &&
 		echo "file* diff=driver" >.gitattributes &&
 		git add file1 file2 .gitattributes &&
@@ -125,43 +125,43 @@ EOF
 		git clone --bare --no-local . bare.git
 	'
 
-	test_expect_success "$STRATEGY diff from attributes" '
+  test_expect_success "$STRATEGY diff from attributes" '
 		test_must_fail git -c diff.driver.algorithm=$STRATEGY diff --no-index file1 file2 > output &&
 		test_cmp expect output
 	'
 
-	test_expect_success "diff from attributes with bare repo with source" '
+  test_expect_success "diff from attributes with bare repo with source" '
 		git -C bare.git --attr-source=branchA -c diff.driver.algorithm=myers \
 			-c diff.driverA.algorithm=$STRATEGY \
 			diff HEAD:file1 HEAD:file2 >output &&
 		test_cmp expect output
 	'
 
-	test_expect_success "diff from attributes with bare repo with invalid source" '
+  test_expect_success "diff from attributes with bare repo with invalid source" '
 		test_must_fail git -C bare.git --attr-source=invalid-branch diff \
 			HEAD:file1 HEAD:file2
 	'
 
-	test_expect_success "$STRATEGY diff from attributes has valid diffstat" '
+  test_expect_success "$STRATEGY diff from attributes has valid diffstat" '
 		echo "file* diff=driver" >.gitattributes &&
 		git config diff.driver.algorithm "$STRATEGY" &&
 		test_must_fail git diff --stat --no-index file1 file2 > output &&
 		test_cmp expect_diffstat output
 	'
 
-	test_expect_success "$STRATEGY diff" '
+  test_expect_success "$STRATEGY diff" '
 		test_must_fail git diff --no-index "--diff-algorithm=$STRATEGY" file1 file2 > output &&
 		test_cmp expect output
 	'
 
-	test_expect_success "$STRATEGY diff command line precedence before attributes" '
+  test_expect_success "$STRATEGY diff command line precedence before attributes" '
 		echo "file* diff=driver" >.gitattributes &&
 		git config diff.driver.algorithm myers &&
 		test_must_fail git diff --no-index "--diff-algorithm=$STRATEGY" file1 file2 > output &&
 		test_cmp expect output
 	'
 
-	test_expect_success "$STRATEGY diff attributes precedence before config" '
+  test_expect_success "$STRATEGY diff attributes precedence before config" '
 		git config diff.algorithm default &&
 		echo "file* diff=driver" >.gitattributes &&
 		git config diff.driver.algorithm "$STRATEGY" &&
@@ -169,7 +169,7 @@ EOF
 		test_cmp expect output
 	'
 
-	test_expect_success "$STRATEGY diff output is valid" '
+  test_expect_success "$STRATEGY diff output is valid" '
 		mv file2 expect &&
 		git apply < output &&
 		test_cmp expect file2
@@ -177,7 +177,7 @@ EOF
 }
 
 test_diff_unique() {
-	cat >uniq1 <<\EOF
+  cat >uniq1 <<\EOF
 1
 2
 3
@@ -186,7 +186,7 @@ test_diff_unique() {
 6
 EOF
 
-	cat >uniq2 <<\EOF
+  cat >uniq2 <<\EOF
 a
 b
 c
@@ -195,9 +195,9 @@ e
 f
 EOF
 
-	uniq1=$(git rev-parse --short $(git hash-object uniq1))
-	uniq2=$(git rev-parse --short $(git hash-object uniq2))
-	cat >expect <<EOF
+  uniq1=$(git rev-parse --short $(git hash-object uniq1))
+  uniq2=$(git rev-parse --short $(git hash-object uniq2))
+  cat >expect <<EOF
 diff --git a/uniq1 b/uniq2
 index $uniq1..$uniq2 100644
 --- a/uniq1
@@ -217,11 +217,10 @@ index $uniq1..$uniq2 100644
 +f
 EOF
 
-	STRATEGY=$1
+  STRATEGY=$1
 
-	test_expect_success 'completely different files' '
+  test_expect_success 'completely different files' '
 		test_must_fail git diff --no-index "--$STRATEGY" uniq1 uniq2 > output &&
 		test_cmp expect output
 	'
 }
-

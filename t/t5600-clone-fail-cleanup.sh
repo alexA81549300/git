@@ -15,11 +15,11 @@ wrote.
 
 . ./test-lib.sh
 
-corrupt_repo () {
-	test_when_finished "rmdir foo/.git/objects.bak" &&
-	mkdir foo/.git/objects.bak/ &&
-	test_when_finished "mv foo/.git/objects.bak/* foo/.git/objects/" &&
-	mv foo/.git/objects/* foo/.git/objects.bak/
+corrupt_repo() {
+  test_when_finished "rmdir foo/.git/objects.bak" \
+    && mkdir foo/.git/objects.bak/ \
+    && test_when_finished "mv foo/.git/objects.bak/* foo/.git/objects/" \
+    && mv foo/.git/objects/* foo/.git/objects.bak/
 }
 
 test_expect_success 'clone of non-existent source should fail' '

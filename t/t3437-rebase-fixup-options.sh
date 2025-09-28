@@ -20,9 +20,9 @@ to the "fixup" command that works with "fixup!", "fixup -C" works with
 
 EMPTY=""
 
-get_author () {
-	rev="$1" &&
-	git log -1 --pretty=format:"%an %ae %at" "$rev"
+get_author() {
+  rev="$1" \
+    && git log -1 --pretty=format:"%an %ae %at" "$rev"
 }
 
 test_expect_success 'setup' '

@@ -418,7 +418,6 @@ test_expect_failure GPGSSH 'show double signature with custom format (TODO)' '
 	test_cmp expect actual
 '
 
-
 test_expect_failure GPGSSH 'verify-commit verifies multiply signed commits (TODO)' '
 	git init multiply-signed &&
 	cd multiply-signed &&

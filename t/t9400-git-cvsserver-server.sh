@@ -14,18 +14,17 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 if ! test_have_prereq PERL; then
-	skip_all='skipping git cvsserver tests, perl not available'
-	test_done
+  skip_all='skipping git cvsserver tests, perl not available'
+  test_done
 fi
 cvs >/dev/null 2>&1
-if test $? -ne 1
-then
-    skip_all='skipping git-cvsserver tests, cvs not found'
-    test_done
+if test $? -ne 1; then
+  skip_all='skipping git-cvsserver tests, cvs not found'
+  test_done
 fi
 perl -e 'use DBI; use DBD::SQLite' >/dev/null 2>&1 || {
-    skip_all='skipping git-cvsserver tests, Perl SQLite interface unavailable'
-    test_done
+  skip_all='skipping git-cvsserver tests, Perl SQLite interface unavailable'
+  test_done
 }
 
 WORKDIR=$PWD
@@ -36,11 +35,10 @@ CVSWORK="$PWD/cvswork"
 CVS_SERVER=git-cvsserver
 export CVSROOT CVS_SERVER
 
-if perl -e 'exit(1) if not defined crypt("", "cv")'
-then
-	PWDHASH='lac2ItudM3.KM'
+if perl -e 'exit(1) if not defined crypt("", "cv")'; then
+  PWDHASH='lac2ItudM3.KM'
 else
-	PWDHASH='$2b$10$t8fGvE/a9eLmfOLzsZme2uOa2QtoMYwIxq9wZA6aBKtF1Yb7FJIzi'
+  PWDHASH='$2b$10$t8fGvE/a9eLmfOLzsZme2uOa2QtoMYwIxq9wZA6aBKtF1Yb7FJIzi'
 fi
 
 rm -rf "$CVSWORK" "$SERVERDIR"
@@ -76,7 +74,7 @@ test_expect_success 'basic checkout' '
 # PSERVER AUTHENTICATION
 #------------------------
 
-cat >request-anonymous  <<EOF
+cat >request-anonymous <<EOF
 BEGIN AUTH REQUEST
 $SERVERDIR
 anonymous
@@ -84,7 +82,7 @@ anonymous
 END AUTH REQUEST
 EOF
 
-cat >request-git  <<EOF
+cat >request-git <<EOF
 BEGIN AUTH REQUEST
 $SERVERDIR
 git
@@ -151,10 +149,9 @@ test_expect_success 'pserver authentication failure (login/non-anonymous user)' 
 	sed -ne \$p log | grep "^I HATE YOU\$"
 '
 
-
 # misuse pserver authentication for testing of req_Root
 
-cat >request-relative  <<EOF
+cat >request-relative <<EOF
 BEGIN AUTH REQUEST
 gitcvs.git
 anonymous
@@ -162,7 +159,7 @@ anonymous
 END AUTH REQUEST
 EOF
 
-cat >request-conflict  <<EOF
+cat >request-conflict <<EOF
 BEGIN AUTH REQUEST
 $SERVERDIR
 anonymous
@@ -205,7 +202,7 @@ test_expect_success 'req_Root failure (w/o strict-paths)' '
 	! git-cvsserver pserver "$WORKDIR/gitcvs" <request-anonymous >log 2>&1
 '
 
-cat >request-base  <<EOF
+cat >request-base <<EOF
 BEGIN AUTH REQUEST
 /gitcvs.git
 anonymous
@@ -301,17 +298,16 @@ test_expect_success 'gitcvs.ext.dbname' '
 	cmp "$SERVERDIR/gitcvs.main.sqlite" "$SERVERDIR/gitcvs1.ext.main.sqlite"
 '
 
-
 #------------
 # CVS UPDATE
 #------------
 
 rm -fr "$SERVERDIR"
-cd "$WORKDIR" &&
-git clone -q --bare "$WORKDIR/.git" "$SERVERDIR" >/dev/null 2>&1 &&
-GIT_DIR="$SERVERDIR" git config --bool gitcvs.enabled true &&
-GIT_DIR="$SERVERDIR" git config gitcvs.logfile "$SERVERDIR/gitcvs.log" ||
-exit 1
+cd "$WORKDIR" \
+  && git clone -q --bare "$WORKDIR/.git" "$SERVERDIR" >/dev/null 2>&1 \
+  && GIT_DIR="$SERVERDIR" git config --bool gitcvs.enabled true \
+  && GIT_DIR="$SERVERDIR" git config gitcvs.logfile "$SERVERDIR/gitcvs.log" \
+  || exit 1
 
 test_expect_success 'cvs update (create new file)' '
 	echo testfile1 >testfile1 &&
@@ -433,8 +429,7 @@ LINE 0
 >>>>>>> merge.1.3
 EOF
 
-for i in 1 2 3 4 5 6 7 8
-do
+for i in 1 2 3 4 5 6 7 8; do
   echo Line $i >>expected.C
 done
 
@@ -556,7 +551,7 @@ test_expect_success 'cvs co -c (shows module database)' '
 # log output is improved.  The test is just to ensure it doesn't
 # accidentally get worse.
 
-sed -e 's/^x//' -e 's/SP$/ /' > "$WORKDIR/expect" <<EOF
+sed -e 's/^x//' -e 's/SP$/ /' >"$WORKDIR/expect" <<EOF
 x
 xRCS file: $WORKDIR/gitcvs.git/main/merge,v
 xWorking file: merge

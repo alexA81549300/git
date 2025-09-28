@@ -14,66 +14,65 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-marked_as () {
-    foundEntry="$(grep "^/$2/" "$1/CVS/Entries")"
-    if [ x"$foundEntry" = x"" ] ; then
-       echo "NOT FOUND: $1 $2 1 $3" >> "${WORKDIR}/marked.log"
-       return 1
-    fi
-    test x"$(grep "^/$2/" "$1/CVS/Entries" | cut -d/ -f5)" = x"$3"
-    stat=$?
-    echo "$1 $2 $stat '$3'" >> "${WORKDIR}/marked.log"
-    return $stat
+marked_as() {
+  foundEntry="$(grep "^/$2/" "$1/CVS/Entries")"
+  if [ x"$foundEntry" = x"" ]; then
+    echo "NOT FOUND: $1 $2 1 $3" >>"${WORKDIR}/marked.log"
+    return 1
+  fi
+  test x"$(grep "^/$2/" "$1/CVS/Entries" | cut -d/ -f5)" = x"$3"
+  stat=$?
+  echo "$1 $2 $stat '$3'" >>"${WORKDIR}/marked.log"
+  return $stat
 }
 
 not_present() {
-    foundEntry="$(grep "^/$2/" "$1/CVS/Entries")"
-    if [ -r "$1/$2" ] ; then
-        echo "Error: File still exists: $1 $2" >> "${WORKDIR}/marked.log"
-        return 1;
-    fi
-    if [ x"$foundEntry" != x"" ] ; then
-        echo "Error: should not have found: $1 $2" >> "${WORKDIR}/marked.log"
-        return 1;
-    else
-        echo "Correctly not found: $1 $2" >> "${WORKDIR}/marked.log"
-        return 0;
-    fi
+  foundEntry="$(grep "^/$2/" "$1/CVS/Entries")"
+  if [ -r "$1/$2" ]; then
+    echo "Error: File still exists: $1 $2" >>"${WORKDIR}/marked.log"
+    return 1
+  fi
+  if [ x"$foundEntry" != x"" ]; then
+    echo "Error: should not have found: $1 $2" >>"${WORKDIR}/marked.log"
+    return 1
+  else
+    echo "Correctly not found: $1 $2" >>"${WORKDIR}/marked.log"
+    return 0
+  fi
 }
 
 check_status_options() {
-    (cd "$1" &&
-    GIT_CONFIG="$git_config" cvs -Q status "$2" > "${WORKDIR}/status.out" 2>&1
-    )
-    if [ x"$?" != x"0" ] ; then
-	echo "Error from cvs status: $1 $2" >> "${WORKDIR}/marked.log"
-	return 1;
-    fi
-    got="$(sed -n -e 's/^[ 	]*Sticky Options:[ 	]*//p' "${WORKDIR}/status.out")"
-    expect="$3"
-    if [ x"$expect" = x"" ] ; then
-	expect="(none)"
-    fi
-    test x"$got" = x"$expect"
-    stat=$?
-    echo "cvs status: $1 $2 $stat '$3' '$got'" >> "${WORKDIR}/marked.log"
-    return $stat
+  (
+    cd "$1" \
+      && GIT_CONFIG="$git_config" cvs -Q status "$2" >"${WORKDIR}/status.out" 2>&1
+  )
+  if [ x"$?" != x"0" ]; then
+    echo "Error from cvs status: $1 $2" >>"${WORKDIR}/marked.log"
+    return 1
+  fi
+  got="$(sed -n -e 's/^[ 	]*Sticky Options:[ 	]*//p' "${WORKDIR}/status.out")"
+  expect="$3"
+  if [ x"$expect" = x"" ]; then
+    expect="(none)"
+  fi
+  test x"$got" = x"$expect"
+  stat=$?
+  echo "cvs status: $1 $2 $stat '$3' '$got'" >>"${WORKDIR}/marked.log"
+  return $stat
 }
 
 cvs >/dev/null 2>&1
-if test $? -ne 1
-then
-    skip_all='skipping git-cvsserver tests, cvs not found'
-    test_done
+if test $? -ne 1; then
+  skip_all='skipping git-cvsserver tests, cvs not found'
+  test_done
 fi
-if ! test_have_prereq PERL
-then
-    skip_all='skipping git-cvsserver tests, perl not available'
-    test_done
+if ! test_have_prereq PERL; then
+  skip_all='skipping git-cvsserver tests, perl not available'
+  test_done
 fi
 perl -e 'use DBI; use DBD::SQLite' >/dev/null 2>&1 || {
-    skip_all='skipping git-cvsserver tests, Perl SQLite interface unavailable'
-    test_done
+  skip_all='skipping git-cvsserver tests, Perl SQLite interface unavailable'
+  test_done
 }
 
 unset GIT_DIR GIT_CONFIG
@@ -336,7 +335,7 @@ test_expect_success 'update subdir of other copy (guess)' '
     not_present cvswork2 simpleText.c
 '
 
-echo "starting update/merge" >> "${WORKDIR}/marked.log"
+echo "starting update/merge" >>"${WORKDIR}/marked.log"
 test_expect_success 'update/merge full other copy (guess)' '
     git pull gitcvs.git main &&
     sed "s/3/replaced_3/" < multilineTxt.c > ml.temp &&

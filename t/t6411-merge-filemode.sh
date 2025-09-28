@@ -20,17 +20,17 @@ test_expect_success 'set up mode change in one branch' '
 	git commit -m b1
 '
 
-do_one_mode () {
-	strategy=$1
-	us=$2
-	them=$3
-	test_expect_success "resolve single mode change ($strategy, $us)" '
+do_one_mode() {
+  strategy=$1
+  us=$2
+  them=$3
+  test_expect_success "resolve single mode change ($strategy, $us)" '
 		git checkout -f $us &&
 		git merge -s $strategy $them &&
 		git ls-files -s file1 | grep ^100755
 	'
 
-	test_expect_success FILEMODE "verify executable bit on file ($strategy, $us)" '
+  test_expect_success FILEMODE "verify executable bit on file ($strategy, $us)" '
 		test -x file1
 	'
 }
@@ -57,9 +57,9 @@ test_expect_success 'set up mode change in both branches' '
 	EOF
 '
 
-do_both_modes () {
-	strategy=$1
-	test_expect_success "detect conflict on double mode change ($strategy)" '
+do_both_modes() {
+  strategy=$1
+  test_expect_success "detect conflict on double mode change ($strategy)" '
 		git reset --hard &&
 		git checkout -f a2 &&
 		test_must_fail git merge -s $strategy b2 &&
@@ -68,7 +68,7 @@ do_both_modes () {
 		git ls-files -s file2 | grep ^100755
 	'
 
-	test_expect_success FILEMODE "verify executable bit on file ($strategy)" '
+  test_expect_success FILEMODE "verify executable bit on file ($strategy)" '
 		test -x file2
 	'
 }
@@ -84,11 +84,11 @@ test_expect_success 'set up delete/modechange scenario' '
 	git commit -m deletion
 '
 
-do_delete_modechange () {
-	strategy=$1
-	us=$2
-	them=$3
-	test_expect_success "detect delete/modechange conflict ($strategy, $us)" '
+do_delete_modechange() {
+  strategy=$1
+  us=$2
+  them=$3
+  test_expect_success "detect delete/modechange conflict ($strategy, $us)" '
 		git reset --hard &&
 		git checkout $us &&
 		test_must_fail git merge -s $strategy $them

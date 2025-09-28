@@ -8,25 +8,25 @@ test_description='git status with file system watcher'
 # "git update-index --fsmonitor" can be used to get the extension written
 # before testing the results.
 
-clean_repo () {
-	git reset --hard HEAD &&
-	git clean -fd
+clean_repo() {
+  git reset --hard HEAD \
+    && git clean -fd
 }
 
-dirty_repo () {
-	: >untracked &&
-	: >dir1/untracked &&
-	: >dir2/untracked &&
-	echo 1 >modified &&
-	echo 2 >dir1/modified &&
-	echo 3 >dir2/modified &&
-	echo 4 >new &&
-	echo 5 >dir1/new &&
-	echo 6 >dir2/new
+dirty_repo() {
+  : >untracked \
+    && : >dir1/untracked \
+    && : >dir2/untracked \
+    && echo 1 >modified \
+    && echo 2 >dir1/modified \
+    && echo 3 >dir2/modified \
+    && echo 4 >new \
+    && echo 5 >dir1/new \
+    && echo 6 >dir2/new
 }
 
-write_integration_script () {
-	test_hook --setup --clobber fsmonitor-test<<-\EOF
+write_integration_script() {
+  test_hook --setup --clobber fsmonitor-test <<-\EOF
 	if test "$#" -ne 2
 	then
 		echo "$0: exactly 2 arguments expected"
@@ -136,9 +136,8 @@ H dir2/tracked
 h modified
 H tracked
 EOF
-
-# test that "update-index --fsmonitor-valid" sets the fsmonitor valid bit
-test_expect_success 'update-index --fsmonitor-valid" sets the fsmonitor valid bit' '
+  # test that "update-index --fsmonitor-valid" sets the fsmonitor valid bit
+  test_expect_success 'update-index --fsmonitor-valid" sets the fsmonitor valid bit' '
 	test_hook fsmonitor-test<<-\EOF &&
 		printf "last_update_token\0"
 	EOF
@@ -158,9 +157,8 @@ H dir2/tracked
 H modified
 H tracked
 EOF
-
-# test that "update-index --no-fsmonitor-valid" clears the fsmonitor valid bit
-test_expect_success 'update-index --no-fsmonitor-valid" clears the fsmonitor valid bit' '
+  # test that "update-index --no-fsmonitor-valid" clears the fsmonitor valid bit
+  test_expect_success 'update-index --no-fsmonitor-valid" clears the fsmonitor valid bit' '
 	git update-index --no-fsmonitor-valid dir1/modified &&
 	git update-index --no-fsmonitor-valid dir2/modified &&
 	git update-index --no-fsmonitor-valid modified &&
@@ -176,9 +174,8 @@ H dir2/tracked
 H modified
 H tracked
 EOF
-
-# test that all files returned by the script get flagged as invalid
-test_expect_success 'all files returned by integration script get flagged as invalid' '
+  # test that all files returned by the script get flagged as invalid
+  test_expect_success 'all files returned by integration script get flagged as invalid' '
 	write_integration_script &&
 	dirty_repo &&
 	git update-index --fsmonitor &&
@@ -197,9 +194,8 @@ H modified
 h new
 H tracked
 EOF
-
-# test that newly added files are marked valid
-test_expect_success 'newly added files are marked valid' '
+  # test that newly added files are marked valid
+  test_expect_success 'newly added files are marked valid' '
 	test_hook --setup --clobber fsmonitor-test<<-\EOF &&
 		printf "last_update_token\0"
 	EOF
@@ -221,9 +217,8 @@ H modified
 h new
 h tracked
 EOF
-
-# test that all unmodified files get marked valid
-test_expect_success 'all unmodified files get marked valid' '
+  # test that all unmodified files get marked valid
+  test_expect_success 'all unmodified files get marked valid' '
 	# modified files result in update-index returning 1
 	test_must_fail git update-index --refresh --force-write-index &&
 	git ls-files -f >actual &&
@@ -238,9 +233,8 @@ h dir2/tracked
 h modified
 h tracked
 EOF
-
-# test that *only* files returned by the integration script get flagged as invalid
-test_expect_success '*only* files returned by the integration script get flagged as invalid' '
+  # test that *only* files returned by the integration script get flagged as invalid
+  test_expect_success '*only* files returned by the integration script get flagged as invalid' '
 	test_hook --clobber fsmonitor-test<<-\EOF &&
 	printf "last_update_token\0"
 	printf "dir1/modified\0"
@@ -273,9 +267,8 @@ test_expect_success 'refresh_index() invalidates fsmonitor cache' '
 
 # test fsmonitor with and without preloadIndex
 preload_values="false true"
-for preload_val in $preload_values
-do
-	test_expect_success "setup preloadIndex to $preload_val" '
+for preload_val in $preload_values; do
+  test_expect_success "setup preloadIndex to $preload_val" '
 		git config core.preloadIndex $preload_val &&
 		if test $preload_val = true
 		then
@@ -285,18 +278,17 @@ do
 		fi
 	'
 
-	# test fsmonitor with and without the untracked cache (if available)
-	uc_values="false"
-	test_have_prereq UNTRACKED_CACHE && uc_values="false true"
-	for uc_val in $uc_values
-	do
-		test_expect_success "setup untracked cache to $uc_val" '
+  # test fsmonitor with and without the untracked cache (if available)
+  uc_values="false"
+  test_have_prereq UNTRACKED_CACHE && uc_values="false true"
+  for uc_val in $uc_values; do
+    test_expect_success "setup untracked cache to $uc_val" '
 			git config core.untrackedcache $uc_val
 		'
 
-		# Status is well tested elsewhere so we'll just ensure that the results are
-		# the same when using core.fsmonitor.
-		test_expect_success 'compare status with and without fsmonitor' '
+    # Status is well tested elsewhere so we'll just ensure that the results are
+    # the same when using core.fsmonitor.
+    test_expect_success 'compare status with and without fsmonitor' '
 			write_integration_script &&
 			clean_repo &&
 			dirty_repo &&
@@ -308,9 +300,9 @@ do
 			test_cmp expect actual
 		'
 
-		# Make sure it's actually skipping the check for modified and untracked
-		# (if enabled) files unless it is told about them.
-		test_expect_success "status doesn't detect unreported modifications" '
+    # Make sure it's actually skipping the check for modified and untracked
+    # (if enabled) files unless it is told about them.
+    test_expect_success "status doesn't detect unreported modifications" '
 			test_hook --clobber fsmonitor-test<<-\EOF &&
 			printf "last_update_token\0"
 			:>marker
@@ -333,7 +325,7 @@ do
 			fi &&
 			rm -f marker
 		'
-	done
+  done
 done
 
 # test that splitting the index doesn't interfere
@@ -425,14 +417,14 @@ test_expect_success 'status succeeds after staging/unstaging' '
 # check_sparse_index_behavior [!]
 # If "!" is supplied, then we verify that we do not call ensure_full_index
 # during a call to 'git status'. Otherwise, we verify that we _do_ call it.
-check_sparse_index_behavior () {
-	git -C full status --porcelain=v2 >expect &&
-	GIT_TRACE2_EVENT="$(pwd)/trace2.txt" \
-		git -C sparse status --porcelain=v2 >actual &&
-	test_region $1 index ensure_full_index trace2.txt &&
-	test_region fsm_hook query trace2.txt &&
-	test_cmp expect actual &&
-	rm trace2.txt
+check_sparse_index_behavior() {
+  git -C full status --porcelain=v2 >expect \
+    && GIT_TRACE2_EVENT="$(pwd)/trace2.txt" \
+      git -C sparse status --porcelain=v2 >actual \
+    && test_region $1 index ensure_full_index trace2.txt \
+    && test_region fsm_hook query trace2.txt \
+    && test_cmp expect actual \
+    && rm trace2.txt
 }
 
 test_expect_success 'status succeeds with sparse index' '

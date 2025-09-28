@@ -12,16 +12,14 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-if git http-push > /dev/null 2>&1 || [ $? -eq 128 ]
-then
-	skip_all="skipping test, USE_CURL_MULTI is not defined"
-	test_done
+if git http-push >/dev/null 2>&1 || [ $? -eq 128 ]; then
+  skip_all="skipping test, USE_CURL_MULTI is not defined"
+  test_done
 fi
 
-if test_have_prereq !REFFILES
-then
-	skip_all='skipping test; dumb HTTP protocol not supported with reftable.'
-	test_done
+if test_have_prereq !REFFILES; then
+  skip_all='skipping test; dumb HTTP protocol not supported with reftable.'
+  test_done
 fi
 
 LIB_HTTPD_DAV=t
@@ -174,7 +172,7 @@ test_expect_success 'PUT and MOVE sends object to URLs with SHA-1 hash suffix' '
 '
 
 test_http_push_nonff "$HTTPD_DOCUMENT_ROOT_PATH"/test_repo.git \
-	"$ROOT_PATH"/test_repo_clone main
+  "$ROOT_PATH"/test_repo_clone main
 
 test_expect_success 'push to password-protected repository (user in URL)' '
 	test_commit pw-user &&

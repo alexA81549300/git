@@ -49,9 +49,9 @@ test_expect_success 'git diff-files --raw' '
 	test_cmp expect actual.files
 '
 
-expect_from_to () {
-	printf "%sSubproject commit %s\n+Subproject commit %s\n" \
-		"-" "$1" "$2"
+expect_from_to() {
+  printf "%sSubproject commit %s\n+Subproject commit %s\n" \
+    "-" "$1" "$2"
 }
 
 test_expect_success 'git diff HEAD' '
@@ -285,7 +285,5 @@ test_expect_success 'combined (with submodule)' '
 	git diff >actual &&
 	test_cmp expect.withsub actual
 '
-
-
 
 test_done

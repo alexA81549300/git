@@ -211,38 +211,33 @@ test_expect_success 'rebase --apply describes fake ancestor base' '
 	)
 '
 
-test_setup_zdiff3 () {
-	git init zdiff3 &&
-	(
-		cd zdiff3 &&
-
-		test_write_lines 1 2 3 4 5 6 7 8 9 >basic &&
-		test_write_lines 1 2 3 AA 4 5 BB 6 7 8 >middle-common &&
-		test_write_lines 1 2 3 4 5 6 7 8 9 >interesting &&
-		test_write_lines 1 2 3 4 5 6 7 8 9 >evil &&
-
-		git add basic middle-common interesting evil &&
-		git commit -m base &&
-
-		git branch left &&
-		git branch right &&
-
-		git checkout left &&
-		test_write_lines 1 2 3 4 A B C D E 7 8 9 >basic &&
-		test_write_lines 1 2 3 CC 4 5 DD 6 7 8 >middle-common &&
-		test_write_lines 1 2 3 4 A B C D E F G H I J 7 8 9 >interesting &&
-		test_write_lines 1 2 3 4 X A B C 7 8 9 >evil &&
-		git add -u &&
-		git commit -m letters &&
-
-		git checkout right &&
-		test_write_lines 1 2 3 4 A X C Y E 7 8 9 >basic &&
-		test_write_lines 1 2 3 EE 4 5 FF 6 7 8 >middle-common &&
-		test_write_lines 1 2 3 4 A B C 5 6 G H I J 7 8 9 >interesting &&
-		test_write_lines 1 2 3 4 Y A B C B C 7 8 9 >evil &&
-		git add -u &&
-		git commit -m permuted
-	)
+test_setup_zdiff3() {
+  git init zdiff3 \
+    && (
+      cd zdiff3 \
+        && test_write_lines 1 2 3 4 5 6 7 8 9 >basic \
+        && test_write_lines 1 2 3 AA 4 5 BB 6 7 8 >middle-common \
+        && test_write_lines 1 2 3 4 5 6 7 8 9 >interesting \
+        && test_write_lines 1 2 3 4 5 6 7 8 9 >evil \
+        && git add basic middle-common interesting evil \
+        && git commit -m base \
+        && git branch left \
+        && git branch right \
+        && git checkout left \
+        && test_write_lines 1 2 3 4 A B C D E 7 8 9 >basic \
+        && test_write_lines 1 2 3 CC 4 5 DD 6 7 8 >middle-common \
+        && test_write_lines 1 2 3 4 A B C D E F G H I J 7 8 9 >interesting \
+        && test_write_lines 1 2 3 4 X A B C 7 8 9 >evil \
+        && git add -u \
+        && git commit -m letters \
+        && git checkout right \
+        && test_write_lines 1 2 3 4 A X C Y E 7 8 9 >basic \
+        && test_write_lines 1 2 3 EE 4 5 FF 6 7 8 >middle-common \
+        && test_write_lines 1 2 3 4 A B C 5 6 G H I J 7 8 9 >interesting \
+        && test_write_lines 1 2 3 4 Y A B C B C 7 8 9 >evil \
+        && git add -u \
+        && git commit -m permuted
+    )
 }
 
 test_expect_success 'check zdiff3 markers' '

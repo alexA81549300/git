@@ -7,7 +7,6 @@ test_description='git apply --whitespace=strip and configuration file.
 
 '
 
-
 . ./test-lib.sh
 
 test_expect_success setup '
@@ -20,32 +19,25 @@ test_expect_success setup '
 '
 
 # Also handcraft GNU diff output; note this has trailing whitespace.
-tr '_' ' ' >gpatch.file <<\EOF &&
+tr '_' ' ' >gpatch.file <<\EOF && sed -e 's|file1|sub/&|' gpatch.file >gpatch-sub.file && sed -e '
+	/^--- /s|file1|a/sub/&|
+	/^+++ /s|file1|b/sub/&|
+' gpatch.file >gpatch-ab-sub.file && check_result() {
 --- file1	2007-02-21 01:04:24.000000000 -0800
 +++ file1+	2007-02-21 01:07:44.000000000 -0800
 @@ -1 +1 @@
 -A
 +B_
 EOF
-
-sed -e 's|file1|sub/&|' gpatch.file >gpatch-sub.file &&
-sed -e '
-	/^--- /s|file1|a/sub/&|
-	/^+++ /s|file1|b/sub/&|
-' gpatch.file >gpatch-ab-sub.file &&
-
-check_result () {
-	if grep " " "$1"
-	then
-		echo "Eh?"
-		false
-	elif grep B "$1"
-	then
-		echo Happy
-	else
-		echo "Huh?"
-		false
-	fi
+  if grep " " "$1"; then
+    echo "Eh?"
+    false
+  elif grep B "$1"; then
+    echo Happy
+  else
+    echo "Huh?"
+    false
+  fi
 }
 
 test_expect_success 'apply --whitespace=strip' '

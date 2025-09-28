@@ -332,8 +332,8 @@ test_expect_success '--recurse-submodules submodules ignore super project worktr
 	! grep "bad boolean config value" err
 '
 
-test_incompatible_with_recurse_submodules () {
-	test_expect_success "--recurse-submodules and $1 are incompatible" "
+test_incompatible_with_recurse_submodules() {
+  test_expect_success "--recurse-submodules and $1 are incompatible" "
 		test_must_fail git ls-files --recurse-submodules $1 2>actual &&
 		test_grep 'unsupported mode' actual
 	"

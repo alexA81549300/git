@@ -5,7 +5,6 @@
 
 test_description='git apply submodule tests'
 
-
 . ./test-lib.sh
 
 test_expect_success setup '

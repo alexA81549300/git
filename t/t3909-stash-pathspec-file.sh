@@ -17,13 +17,13 @@ test_expect_success setup '
 	git tag checkpoint
 '
 
-restore_checkpoint () {
-	git reset --hard checkpoint
+restore_checkpoint() {
+  git reset --hard checkpoint
 }
 
-verify_expect () {
-	git stash show --name-status >actual &&
-	test_cmp expect actual
+verify_expect() {
+  git stash show --name-status >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'simplest' '

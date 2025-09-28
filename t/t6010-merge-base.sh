@@ -17,25 +17,20 @@ GIT_AUTHOR_NAME='A U Thor'
 GIT_AUTHOR_EMAIL=git@au.thor.xz
 export GIT_COMMITTER_EMAIL GIT_COMMITTER_NAME GIT_AUTHOR_NAME GIT_AUTHOR_EMAIL
 
-doit () {
-	OFFSET=$1 &&
-	NAME=$2 &&
-	shift 2 &&
-
-	PARENTS= &&
-	for P
-	do
-		PARENTS="${PARENTS}-p $P "
-	done &&
-
-	GIT_COMMITTER_DATE="$(($M + $OFFSET)) $Z" &&
-	GIT_AUTHOR_DATE=$GIT_COMMITTER_DATE &&
-	export GIT_COMMITTER_DATE GIT_AUTHOR_DATE &&
-
-	commit=$(echo $NAME | git commit-tree $T $PARENTS) &&
-
-	git update-ref "refs/tags/$NAME" "$commit" &&
-	echo $commit
+doit() {
+  OFFSET=$1 \
+    && NAME=$2 \
+    && shift 2 \
+    && PARENTS= \
+    && for P; do
+      PARENTS="${PARENTS}-p $P "
+    done \
+    && GIT_COMMITTER_DATE="$(($M + $OFFSET)) $Z" \
+    && GIT_AUTHOR_DATE=$GIT_COMMITTER_DATE \
+    && export GIT_COMMITTER_DATE GIT_AUTHOR_DATE \
+    && commit=$(echo $NAME | git commit-tree $T $PARENTS) \
+    && git update-ref "refs/tags/$NAME" "$commit" \
+    && echo $commit
 }
 
 test_expect_success 'setup' '

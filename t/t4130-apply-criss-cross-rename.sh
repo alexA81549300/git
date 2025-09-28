@@ -5,12 +5,11 @@ test_description='git apply handling criss-cross rename patch.'
 . ./test-lib.sh
 
 create_file() {
-	cnt=0
-	while test $cnt -le 100
-	do
-		cnt=$(($cnt + 1))
-		echo "$2" >> "$1"
-	done
+  cnt=0
+  while test $cnt -le 100; do
+    cnt=$(($cnt + 1))
+    echo "$2" >>"$1"
+  done
 }
 
 test_expect_success 'setup' '

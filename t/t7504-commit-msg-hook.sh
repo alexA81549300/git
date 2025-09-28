@@ -16,7 +16,7 @@ test_expect_success 'with no hook' '
 '
 
 # set up fake editor for interactive editing
-cat > fake-editor <<'EOF'
+cat >fake-editor <<'EOF'
 #!/bin/sh
 cp FAKE_MSG "$1"
 exit 0
@@ -100,10 +100,10 @@ test_expect_success 'setup: commit-msg hook that always fails' '
 	EOF
 '
 
-commit_msg_is () {
-	printf "%s" "$1" >expect &&
-	git log --pretty=format:%s%b -1 >actual &&
-	test_cmp expect actual
+commit_msg_is() {
+  printf "%s" "$1" >expect \
+    && git log --pretty=format:%s%b -1 >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'with failing hook' '
@@ -178,7 +178,6 @@ test_expect_success 'setup: commit-msg hook made non-executable' '
 	git_dir="$(git rev-parse --git-dir)" &&
 	chmod -x "$git_dir/hooks/commit-msg"
 '
-
 
 test_expect_success POSIXPERM 'with non-executable hook' '
 
@@ -290,7 +289,7 @@ test_expect_failure 'merge --continue remembers --no-verify' '
 '
 
 # set up fake editor to replace `pick` by `reword`
-cat > reword-editor <<'EOF'
+cat >reword-editor <<'EOF'
 #!/bin/sh
 mv "$1" "$1".bup &&
 sed 's/^pick/reword/' <"$1".bup >"$1"
@@ -305,6 +304,5 @@ test_expect_success 'hook is called for reword during `rebase -i`' '
 	commit_msg_is "new message"
 
 '
-
 
 test_done

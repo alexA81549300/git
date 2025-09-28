@@ -5,7 +5,7 @@ test_description='git blame textconv support'
 . ./test-lib.sh
 
 find_blame() {
-	sed -e 's/^[^(]*//'
+  sed -e 's/^[^(]*//'
 }
 
 cat >helper <<'EOF'

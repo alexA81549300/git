@@ -4,27 +4,25 @@ test_description='submodules handle mixed ref storage formats'
 
 . ./test-lib.sh
 
-test_ref_format () {
-	echo "$2" >expect &&
-	git -C "$1" rev-parse --show-ref-format >actual &&
-	test_cmp expect actual
+test_ref_format() {
+  echo "$2" >expect \
+    && git -C "$1" rev-parse --show-ref-format >actual \
+    && test_cmp expect actual
 }
 
-for OTHER_FORMAT in files reftable
-do
-	if test "$OTHER_FORMAT" = "$GIT_DEFAULT_REF_FORMAT"
-	then
-		continue
-	fi
+for OTHER_FORMAT in files reftable; do
+  if test "$OTHER_FORMAT" = "$GIT_DEFAULT_REF_FORMAT"; then
+    continue
+  fi
 
-test_expect_success 'setup' '
+  test_expect_success 'setup' '
 	git config set --global protocol.file.allow always &&
 	# Some tests migrate the ref storage format, which does not work with
 	# reflogs at the time of writing these tests.
 	git config set --global core.logAllRefUpdates false
 '
 
-test_expect_success 'add existing repository with different ref storage format' '
+  test_expect_success 'add existing repository with different ref storage format' '
 	test_when_finished "rm -rf parent" &&
 
 	git init parent &&
@@ -37,7 +35,7 @@ test_expect_success 'add existing repository with different ref storage format' 
 	)
 '
 
-test_expect_success 'add submodules with different ref storage format' '
+  test_expect_success 'add submodules with different ref storage format' '
 	test_when_finished "rm -rf submodule upstream" &&
 
 	git init submodule &&
@@ -48,7 +46,7 @@ test_expect_success 'add submodules with different ref storage format' '
 	test_ref_format upstream/submodule "$OTHER_FORMAT"
 '
 
-test_expect_success 'recursive clone propagates ref storage format' '
+  test_expect_success 'recursive clone propagates ref storage format' '
 	test_when_finished "rm -rf submodule upstream downstream" &&
 
 	git init submodule &&
@@ -71,7 +69,7 @@ test_expect_success 'recursive clone propagates ref storage format' '
 	test_ref_format downstream/submodule "$OTHER_FORMAT"
 '
 
-test_expect_success 'clone submodules with different ref storage format' '
+  test_expect_success 'clone submodules with different ref storage format' '
 	test_when_finished "rm -rf submodule upstream downstream" &&
 
 	git init submodule &&
@@ -86,7 +84,7 @@ test_expect_success 'clone submodules with different ref storage format' '
 	test_ref_format downstream/submodule "$OTHER_FORMAT"
 '
 
-test_expect_success 'status with mixed submodule ref storages' '
+  test_expect_success 'status with mixed submodule ref storages' '
 	test_when_finished "rm -rf submodule main" &&
 
 	git init submodule &&
@@ -108,7 +106,7 @@ test_expect_success 'status with mixed submodule ref storages' '
 	test_cmp expect actual
 '
 
-test_expect_success 'recursive pull with mixed formats' '
+  test_expect_success 'recursive pull with mixed formats' '
 	test_when_finished "rm -rf submodule upstream downstream" &&
 
 	# Set up the initial structure with an upstream repository that has a

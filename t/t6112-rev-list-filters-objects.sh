@@ -63,7 +63,6 @@ test_expect_success 'verify emitted+omitted == all' '
 	test_cmp expected observed
 '
 
-
 # Test blob:limit=<n>[kmg] filter.
 # We boundary test around the size parameter.  The filter is strictly less than
 # the value, so size 500 and 1000 should have the same results, but 1001 should
@@ -370,12 +369,11 @@ test_expect_success 'verify skipping tree iteration when not collecting omits' '
 
 # Test tree:# filters.
 
-expect_has () {
-	commit=$1 &&
-	name=$2 &&
-
-	hash=$(git -C r3 rev-parse $commit:$name) &&
-	grep "^$hash $name$" actual
+expect_has() {
+  commit=$1 \
+    && name=$2 \
+    && hash=$(git -C r3 rev-parse $commit:$name) \
+    && grep "^$hash $name$" actual
 }
 
 test_expect_success 'verify tree:1 includes root trees' '
@@ -450,14 +448,13 @@ test_expect_success 'combine:... with URL encoding' '
 	test_line_count = 5 actual
 '
 
-expect_invalid_filter_spec () {
-	spec="$1" &&
-	err="$2" &&
-
-	test_must_fail git -C r3 rev-list --objects --filter="$spec" HEAD \
-		>actual 2>actual_stderr &&
-	test_must_be_empty actual &&
-	test_grep "$err" actual_stderr
+expect_invalid_filter_spec() {
+  spec="$1" \
+    && err="$2" \
+    && test_must_fail git -C r3 rev-list --objects --filter="$spec" HEAD \
+      >actual 2>actual_stderr \
+    && test_must_be_empty actual \
+    && test_grep "$err" actual_stderr
 }
 
 test_expect_success 'combine:... while URL-encoding things that should not be' '
@@ -576,14 +573,13 @@ test_expect_success 'setup r4' '
 	git -C r4 commit -m "commit msg"
 '
 
-expect_has_with_different_name () {
-	repo=$1 &&
-	name=$2 &&
-
-	hash=$(git -C $repo rev-parse HEAD:$name) &&
-	! grep "^$hash $name$" actual &&
-	grep "^$hash " actual &&
-	! grep "~$hash" actual
+expect_has_with_different_name() {
+  repo=$1 \
+    && name=$2 \
+    && hash=$(git -C $repo rev-parse HEAD:$name) \
+    && ! grep "^$hash $name$" actual \
+    && grep "^$hash " actual \
+    && ! grep "~$hash" actual
 }
 
 test_expect_success 'test tree:# filter provisional omit for blob and tree' '

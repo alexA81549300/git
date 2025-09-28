@@ -8,47 +8,46 @@ export GIT_TEST_FATAL_REGISTER_SUBMODULE_ODB
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-submodule-update.sh
 
-reset_branch_to_HEAD () {
-	git branch -D "$1" &&
-	git checkout -b "$1" HEAD &&
-	git branch --set-upstream-to="origin/$1" "$1"
+reset_branch_to_HEAD() {
+  git branch -D "$1" \
+    && git checkout -b "$1" HEAD \
+    && git branch --set-upstream-to="origin/$1" "$1"
 }
 
-git_pull () {
-	reset_branch_to_HEAD "$1" &&
-	may_only_be_test_must_fail "$2" &&
-	$2 git pull
+git_pull() {
+  reset_branch_to_HEAD "$1" \
+    && may_only_be_test_must_fail "$2" \
+    && $2 git pull
 }
 
 # pulls without conflicts
 test_submodule_switch_func "git_pull"
 
-git_pull_ff () {
-	reset_branch_to_HEAD "$1" &&
-	may_only_be_test_must_fail "$2" &&
-	$2 git pull --ff
+git_pull_ff() {
+  reset_branch_to_HEAD "$1" \
+    && may_only_be_test_must_fail "$2" \
+    && $2 git pull --ff
 }
 
 test_submodule_switch_func "git_pull_ff"
 
-git_pull_ff_only () {
-	reset_branch_to_HEAD "$1" &&
-	may_only_be_test_must_fail "$2" &&
-	$2 git pull --ff-only
+git_pull_ff_only() {
+  reset_branch_to_HEAD "$1" \
+    && may_only_be_test_must_fail "$2" \
+    && $2 git pull --ff-only
 }
 
 test_submodule_switch_func "git_pull_ff_only"
 
-git_pull_noff () {
-	reset_branch_to_HEAD "$1" &&
-	may_only_be_test_must_fail "$2" &&
-	$2 git pull --no-ff
+git_pull_noff() {
+  reset_branch_to_HEAD "$1" \
+    && may_only_be_test_must_fail "$2" \
+    && $2 git pull --no-ff
 }
 
-if test "$GIT_TEST_MERGE_ALGORITHM" != ort
-then
-	KNOWN_FAILURE_NOFF_MERGE_DOESNT_CREATE_EMPTY_SUBMODULE_DIR=1
-	KNOWN_FAILURE_NOFF_MERGE_ATTEMPTS_TO_MERGE_REMOVED_SUBMODULE_FILES=1
+if test "$GIT_TEST_MERGE_ALGORITHM" != ort; then
+  KNOWN_FAILURE_NOFF_MERGE_DOESNT_CREATE_EMPTY_SUBMODULE_DIR=1
+  KNOWN_FAILURE_NOFF_MERGE_ATTEMPTS_TO_MERGE_REMOVED_SUBMODULE_FILES=1
 fi
 test_submodule_switch_func "git_pull_noff"
 

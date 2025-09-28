@@ -6,11 +6,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-packed_objects () {
-	git show-index <"$1" >tmp-object-list &&
-	cut -d' ' -f2 tmp-object-list | sort &&
-	rm tmp-object-list
- }
+packed_objects() {
+  git show-index <"$1" >tmp-object-list \
+    && cut -d' ' -f2 tmp-object-list | sort \
+    && rm tmp-object-list
+}
 
 test_expect_success 'setup for --stdin-packs tests' '
 	git init stdin-packs &&

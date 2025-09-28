@@ -14,7 +14,7 @@ test_expect_success 'setup directories and test repo' '
 	'
 
 test_expect_success 'checkout working copy from svn' \
-	'svn_cmd co "$svnrepo" test_wc'
+  'svn_cmd co "$svnrepo" test_wc'
 
 test_expect_success 'set some properties to create an unhandled.log file' '
 	(
@@ -37,9 +37,8 @@ test_expect_success 'git svn gc runs' 'git svn gc'
 
 test_expect_success 'git svn index removed' '! test -f .git/svn/refs/remotes/git-svn/index'
 
-if test -r .git/svn/refs/remotes/git-svn/unhandled.log.gz
-then
-	test_expect_success 'git svn gc produces a valid gzip file' '
+if test -r .git/svn/refs/remotes/git-svn/unhandled.log.gz; then
+  test_expect_success 'git svn gc produces a valid gzip file' '
 		 gunzip .git/svn/refs/remotes/git-svn/unhandled.log.gz
 		'
 fi

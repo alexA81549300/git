@@ -46,8 +46,8 @@ test_expect_success 'setup showEmail tests' '
 	EOF
 '
 
-find_blame () {
-	sed -e 's/^[^(]*//'
+find_blame() {
+  sed -e 's/^[^(]*//'
 }
 
 test_expect_success 'blame with no options and no config' '

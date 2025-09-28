@@ -7,11 +7,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-advance () {
-	echo "$1" >"$1" &&
-	git add "$1" &&
-	test_tick &&
-	git commit -m "$1"
+advance() {
+  echo "$1" >"$1" \
+    && git add "$1" \
+    && test_tick \
+    && git commit -m "$1"
 }
 
 test_expect_success setup '

@@ -286,12 +286,11 @@ test_expect_success TTY 'git config --list defaults to paging' '
 	test_path_is_file paginated.out
 '
 
-
 # A colored commit log will begin with an appropriate ANSI escape
 # for the first color; the text "commit" comes later.
 colorful() {
-	read firstline <$1
-	! expr "$firstline" : "[a-zA-Z]" >/dev/null
+  read firstline <$1
+  ! expr "$firstline" : "[a-zA-Z]" >/dev/null
 }
 
 test_expect_success 'tests can detect color' '
@@ -362,23 +361,22 @@ test_expect_success TTY 'colors are sent to pager for external commands' '
 #	your_test expect_(success|failure) [test_must_fail] 'git foo'
 #
 parse_args() {
-	test_expectation="test_$1"
-	shift
-	if test "$1" = test_must_fail
-	then
-		full_command="test_must_fail test_terminal "
-		shift
-	else
-		full_command="test_terminal "
-	fi
-	cmd=$1
-	full_command="$full_command $1"
+  test_expectation="test_$1"
+  shift
+  if test "$1" = test_must_fail; then
+    full_command="test_must_fail test_terminal "
+    shift
+  else
+    full_command="test_terminal "
+  fi
+  cmd=$1
+  full_command="$full_command $1"
 }
 
 test_default_pager() {
-	parse_args "$@"
+  parse_args "$@"
 
-	$test_expectation SIMPLEPAGER,TTY "$cmd - default pager is used by default" "
+  $test_expectation SIMPLEPAGER,TTY "$cmd - default pager is used by default" "
 		sane_unset PAGER GIT_PAGER &&
 		test_unconfig core.pager &&
 		rm -f default_pager_used &&
@@ -397,9 +395,9 @@ test_default_pager() {
 }
 
 test_PAGER_overrides() {
-	parse_args "$@"
+  parse_args "$@"
 
-	$test_expectation TTY "$cmd - PAGER overrides default pager" "
+  $test_expectation TTY "$cmd - PAGER overrides default pager" "
 		sane_unset GIT_PAGER &&
 		test_unconfig core.pager &&
 		rm -f PAGER_used &&
@@ -411,21 +409,21 @@ test_PAGER_overrides() {
 }
 
 test_core_pager_overrides() {
-	if_local_config=
-	used_if_wanted='overrides PAGER'
-	test_core_pager "$@"
+  if_local_config=
+  used_if_wanted='overrides PAGER'
+  test_core_pager "$@"
 }
 
 test_local_config_ignored() {
-	if_local_config='! '
-	used_if_wanted='is not used'
-	test_core_pager "$@"
+  if_local_config='! '
+  used_if_wanted='is not used'
+  test_core_pager "$@"
 }
 
 test_core_pager() {
-	parse_args "$@"
+  parse_args "$@"
 
-	$test_expectation TTY "$cmd - repository-local core.pager setting $used_if_wanted" "
+  $test_expectation TTY "$cmd - repository-local core.pager setting $used_if_wanted" "
 		sane_unset GIT_PAGER &&
 		rm -f core.pager_used &&
 		PAGER=wc &&
@@ -437,21 +435,21 @@ test_core_pager() {
 }
 
 test_core_pager_subdir() {
-	if_local_config=
-	used_if_wanted='overrides PAGER'
-	test_pager_subdir_helper "$@"
+  if_local_config=
+  used_if_wanted='overrides PAGER'
+  test_pager_subdir_helper "$@"
 }
 
 test_no_local_config_subdir() {
-	if_local_config='! '
-	used_if_wanted='is not used'
-	test_pager_subdir_helper "$@"
+  if_local_config='! '
+  used_if_wanted='is not used'
+  test_pager_subdir_helper "$@"
 }
 
 test_pager_subdir_helper() {
-	parse_args "$@"
+  parse_args "$@"
 
-	$test_expectation TTY "$cmd - core.pager $used_if_wanted from subdirectory" "
+  $test_expectation TTY "$cmd - core.pager $used_if_wanted from subdirectory" "
 		sane_unset GIT_PAGER &&
 		rm -f core.pager_used &&
 		rm -fr sub &&
@@ -469,9 +467,9 @@ test_pager_subdir_helper() {
 }
 
 test_GIT_PAGER_overrides() {
-	parse_args "$@"
+  parse_args "$@"
 
-	$test_expectation TTY "$cmd - GIT_PAGER overrides core.pager" "
+  $test_expectation TTY "$cmd - GIT_PAGER overrides core.pager" "
 		rm -f GIT_PAGER_used &&
 		test_config core.pager wc &&
 		GIT_PAGER='wc >GIT_PAGER_used' &&
@@ -482,9 +480,9 @@ test_GIT_PAGER_overrides() {
 }
 
 test_doesnt_paginate() {
-	parse_args "$@"
+  parse_args "$@"
 
-	$test_expectation TTY "no pager for '$cmd'" "
+  $test_expectation TTY "no pager for '$cmd'" "
 		rm -f GIT_PAGER_used &&
 		GIT_PAGER='wc >GIT_PAGER_used' &&
 		export GIT_PAGER &&
@@ -494,11 +492,11 @@ test_doesnt_paginate() {
 }
 
 test_pager_choices() {
-	test_default_pager        expect_success "$@"
-	test_PAGER_overrides      expect_success "$@"
-	test_core_pager_overrides expect_success "$@"
-	test_core_pager_subdir    expect_success "$@"
-	test_GIT_PAGER_overrides  expect_success "$@"
+  test_default_pager expect_success "$@"
+  test_PAGER_overrides expect_success "$@"
+  test_core_pager_overrides expect_success "$@"
+  test_core_pager_subdir expect_success "$@"
+  test_GIT_PAGER_overrides expect_success "$@"
 }
 
 test_expect_success 'setup: some aliases' '
@@ -506,32 +504,32 @@ test_expect_success 'setup: some aliases' '
 	git config alias.true "!true"
 '
 
-test_pager_choices                       'git log'
-test_pager_choices                       'git -p log'
-test_pager_choices                       'git aliasedlog'
+test_pager_choices 'git log'
+test_pager_choices 'git -p log'
+test_pager_choices 'git aliasedlog'
 
-test_default_pager        expect_success 'git -p aliasedlog'
-test_PAGER_overrides      expect_success 'git -p aliasedlog'
+test_default_pager expect_success 'git -p aliasedlog'
+test_PAGER_overrides expect_success 'git -p aliasedlog'
 test_core_pager_overrides expect_success 'git -p aliasedlog'
-test_core_pager_subdir    expect_success 'git -p aliasedlog'
-test_GIT_PAGER_overrides  expect_success 'git -p aliasedlog'
+test_core_pager_subdir expect_success 'git -p aliasedlog'
+test_GIT_PAGER_overrides expect_success 'git -p aliasedlog'
 
-test_default_pager        expect_success 'git -p true'
-test_PAGER_overrides      expect_success 'git -p true'
+test_default_pager expect_success 'git -p true'
+test_PAGER_overrides expect_success 'git -p true'
 test_core_pager_overrides expect_success 'git -p true'
-test_core_pager_subdir    expect_success 'git -p true'
-test_GIT_PAGER_overrides  expect_success 'git -p true'
+test_core_pager_subdir expect_success 'git -p true'
+test_GIT_PAGER_overrides expect_success 'git -p true'
 
-test_default_pager        expect_success test_must_fail 'git -p request-pull'
-test_PAGER_overrides      expect_success test_must_fail 'git -p request-pull'
+test_default_pager expect_success test_must_fail 'git -p request-pull'
+test_PAGER_overrides expect_success test_must_fail 'git -p request-pull'
 test_core_pager_overrides expect_success test_must_fail 'git -p request-pull'
-test_core_pager_subdir    expect_success test_must_fail 'git -p request-pull'
-test_GIT_PAGER_overrides  expect_success test_must_fail 'git -p request-pull'
+test_core_pager_subdir expect_success test_must_fail 'git -p request-pull'
+test_GIT_PAGER_overrides expect_success test_must_fail 'git -p request-pull'
 
-test_default_pager        expect_success test_must_fail 'git -p'
-test_PAGER_overrides      expect_success test_must_fail 'git -p'
+test_default_pager expect_success test_must_fail 'git -p'
+test_PAGER_overrides expect_success test_must_fail 'git -p'
 test_local_config_ignored expect_failure test_must_fail 'git -p'
-test_GIT_PAGER_overrides  expect_success test_must_fail 'git -p'
+test_GIT_PAGER_overrides expect_success test_must_fail 'git -p'
 
 test_expect_success TTY 'core.pager in repo config works and retains cwd' '
 	sane_unset GIT_PAGER &&
@@ -555,19 +553,19 @@ test_expect_success TTY 'core.pager is found via alias in subdirectory' '
 	)
 '
 
-test_doesnt_paginate      expect_failure test_must_fail 'git -p nonsense'
+test_doesnt_paginate expect_failure test_must_fail 'git -p nonsense'
 
-test_pager_choices                       'git shortlog'
+test_pager_choices 'git shortlog'
 test_expect_success 'setup: configure shortlog not to paginate' '
 	git config pager.shortlog false
 '
-test_doesnt_paginate      expect_success 'git shortlog'
+test_doesnt_paginate expect_success 'git shortlog'
 test_no_local_config_subdir expect_success 'git shortlog'
-test_default_pager        expect_success 'git -p shortlog'
-test_core_pager_subdir    expect_success 'git -p shortlog'
+test_default_pager expect_success 'git -p shortlog'
+test_core_pager_subdir expect_success 'git -p shortlog'
 
-test_core_pager_subdir    expect_success test_must_fail \
-					 'git -p apply </dev/null'
+test_core_pager_subdir expect_success test_must_fail \
+  'git -p apply </dev/null'
 
 test_expect_success TTY 'command-specific pager' '
 	sane_unset PAGER GIT_PAGER &&

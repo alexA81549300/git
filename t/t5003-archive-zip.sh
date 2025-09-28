@@ -17,56 +17,56 @@ test_lazy_prereq UNZIP_CONVERT '
 '
 
 check_zip() {
-	zipfile=$1.zip
-	listfile=$1.lst
-	dir=$1
-	dir_with_prefix=$dir/$2
+  zipfile=$1.zip
+  listfile=$1.lst
+  dir=$1
+  dir_with_prefix=$dir/$2
 
-	test_expect_success UNZIP " extract ZIP archive" '
+  test_expect_success UNZIP " extract ZIP archive" '
 		(mkdir $dir && cd $dir && "$GIT_UNZIP" ../$zipfile)
 	'
 
-	test_expect_success UNZIP " validate filenames" "
+  test_expect_success UNZIP " validate filenames" "
 		(cd ${dir_with_prefix}a && find .) | sort >$listfile &&
 		test_cmp a.lst $listfile
 	"
 
-	test_expect_success UNZIP " validate file contents" "
+  test_expect_success UNZIP " validate file contents" "
 		diff -r a ${dir_with_prefix}a
 	"
 
-	dir=eol_$1
-	dir_with_prefix=$dir/$2
-	extracted=${dir_with_prefix}a
-	original=a
+  dir=eol_$1
+  dir_with_prefix=$dir/$2
+  extracted=${dir_with_prefix}a
+  original=a
 
-	test_expect_success UNZIP_CONVERT " extract ZIP archive with EOL conversion" '
+  test_expect_success UNZIP_CONVERT " extract ZIP archive with EOL conversion" '
 		(mkdir $dir && cd $dir && "$GIT_UNZIP" -a ../$zipfile)
 	'
 
-	test_expect_success UNZIP_CONVERT " validate that text files are converted" "
+  test_expect_success UNZIP_CONVERT " validate that text files are converted" "
 		test_cmp_bin $extracted/text.cr $extracted/text.crlf &&
 		test_cmp_bin $extracted/text.cr $extracted/text.lf
 	"
 
-	test_expect_success UNZIP_CONVERT " validate that binary files are unchanged" "
+  test_expect_success UNZIP_CONVERT " validate that binary files are unchanged" "
 		test_cmp_bin $original/binary.cr   $extracted/binary.cr &&
 		test_cmp_bin $original/binary.crlf $extracted/binary.crlf &&
 		test_cmp_bin $original/binary.lf   $extracted/binary.lf
 	"
 
-	test_expect_success UNZIP_CONVERT " validate that diff files are converted" "
+  test_expect_success UNZIP_CONVERT " validate that diff files are converted" "
 		test_cmp_bin $extracted/diff.cr $extracted/diff.crlf &&
 		test_cmp_bin $extracted/diff.cr $extracted/diff.lf
 	"
 
-	test_expect_success UNZIP_CONVERT " validate that -diff files are unchanged" "
+  test_expect_success UNZIP_CONVERT " validate that -diff files are unchanged" "
 		test_cmp_bin $original/nodiff.cr   $extracted/nodiff.cr &&
 		test_cmp_bin $original/nodiff.crlf $extracted/nodiff.crlf &&
 		test_cmp_bin $original/nodiff.lf   $extracted/nodiff.lf
 	"
 
-	test_expect_success UNZIP_CONVERT " validate that custom diff is unchanged " "
+  test_expect_success UNZIP_CONVERT " validate that custom diff is unchanged " "
 		test_cmp_bin $original/custom.cr   $extracted/custom.cr &&
 		test_cmp_bin $original/custom.crlf $extracted/custom.crlf &&
 		test_cmp_bin $original/custom.lf   $extracted/custom.lf
@@ -74,18 +74,18 @@ check_zip() {
 }
 
 check_added() {
-	dir=$1
-	path_in_fs=$2
-	path_in_archive=$3
+  dir=$1
+  path_in_fs=$2
+  path_in_archive=$3
 
-	test_expect_success UNZIP " validate extra file $path_in_archive" '
+  test_expect_success UNZIP " validate extra file $path_in_archive" '
 		diff -r $path_in_fs $dir/$path_in_archive
 	'
 }
 
 test_expect_success \
-    'populate workdir' \
-    'mkdir a &&
+  'populate workdir' \
+  'mkdir a &&
      echo simple textfile >a/a &&
      mkdir a/bin &&
      cp /bin/sh a/bin &&
@@ -120,8 +120,8 @@ test_expect_success 'prepare file list' '
 '
 
 test_expect_success \
-    'add ignored file' \
-    'echo ignore me >a/ignored &&
+  'add ignored file' \
+  'echo ignore me >a/ignored &&
      mkdir .git/info &&
      echo ignored export-ignore >.git/info/attributes'
 
@@ -150,25 +150,25 @@ test_expect_success 'create bare clone' '
 '
 
 test_expect_success \
-    'remove ignored file' \
-    'rm a/ignored'
+  'remove ignored file' \
+  'rm a/ignored'
 
 test_expect_success \
-    'git archive --format=zip' \
-    'git archive --format=zip HEAD >d.zip'
+  'git archive --format=zip' \
+  'git archive --format=zip HEAD >d.zip'
 
 check_zip d
 
 test_expect_success \
-    'git archive --format=zip in a bare repo' \
-    '(cd bare.git && git archive --format=zip HEAD) >d1.zip'
+  'git archive --format=zip in a bare repo' \
+  '(cd bare.git && git archive --format=zip HEAD) >d1.zip'
 
 test_expect_success \
-    'git archive --format=zip vs. the same in a bare repo' \
-    'test_cmp_bin d.zip d1.zip'
+  'git archive --format=zip vs. the same in a bare repo' \
+  'test_cmp_bin d.zip d1.zip'
 
 test_expect_success 'git archive --format=zip with --output' \
-    'git archive --format=zip --output=d2.zip HEAD &&
+  'git archive --format=zip --output=d2.zip HEAD &&
     test_cmp_bin d.zip d2.zip'
 
 test_expect_success 'git archive with --output, inferring format (local)' '
@@ -182,8 +182,8 @@ test_expect_success 'git archive with --output, inferring format (remote)' '
 '
 
 test_expect_success \
-    'git archive --format=zip with prefix' \
-    'git archive --format=zip --prefix=prefix/ HEAD >e.zip'
+  'git archive --format=zip with prefix' \
+  'git archive --format=zip --prefix=prefix/ HEAD >e.zip'
 
 check_zip e prefix/
 

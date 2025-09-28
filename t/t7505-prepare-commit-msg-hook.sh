@@ -99,7 +99,7 @@ exit 0
 EOF
 '
 
-echo dummy template > "$(git rev-parse --git-dir)/template"
+echo dummy template >"$(git rev-parse --git-dir)/template"
 
 test_expect_success 'with hook (-m)' '
 
@@ -209,10 +209,10 @@ test_expect_success 'with hook and editor (merge)' '
 	test "$(git log -1 --pretty=format:%s)" = "merge"
 '
 
-test_rebase () {
-	expect=$1 &&
-	mode=$2 &&
-	test_expect_$expect "with hook (rebase ${mode:--i})" '
+test_rebase() {
+  expect=$1 \
+    && mode=$2 \
+    && test_expect_$expect "with hook (rebase ${mode:--i})" '
 		test_when_finished "\
 			git rebase --abort
 			git checkout -f main

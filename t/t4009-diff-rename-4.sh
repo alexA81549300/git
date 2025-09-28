@@ -8,11 +8,11 @@ test_description='Same rename detection as t4003 but testing diff-raw -z.
 '
 
 . ./test-lib.sh
-. "$TEST_DIRECTORY"/lib-diff.sh ;# test-lib chdir's into trash
+. "$TEST_DIRECTORY"/lib-diff.sh # test-lib chdir's into trash
 
 test_expect_success \
-    'prepare reference tree' \
-    'COPYING_test_data >COPYING &&
+  'prepare reference tree' \
+  'COPYING_test_data >COPYING &&
      echo frotz >rezrov &&
     git update-index --add COPYING rezrov &&
     orig=$(git hash-object COPYING) &&
@@ -20,8 +20,8 @@ test_expect_success \
     echo $tree'
 
 test_expect_success \
-    'prepare work tree' \
-    'sed -e 's/HOWEVER/However/' <COPYING >COPYING.1 &&
+  'prepare work tree' \
+  'sed -e 's/HOWEVER/However/' <COPYING >COPYING.1 &&
     sed -e 's/GPL/G.P.L/g' <COPYING >COPYING.2 &&
     rm -f COPYING &&
     c1=$(git hash-object COPYING.1) &&
@@ -45,14 +45,14 @@ COPYING.2
 EOF
 
 test_expect_success \
-    'validate output from rename/copy detection (#1)' \
-    'compare_diff_raw_z current expected'
+  'validate output from rename/copy detection (#1)' \
+  'compare_diff_raw_z current expected'
 
 ################################################################
 
 test_expect_success \
-    'prepare work tree again' \
-    'mv COPYING.2 COPYING &&
+  'prepare work tree again' \
+  'mv COPYING.2 COPYING &&
      git update-index --add --remove COPYING COPYING.1 COPYING.2'
 
 # tree has COPYING and rezrov.  work tree has COPYING and COPYING.1,
@@ -70,8 +70,8 @@ COPYING.1
 EOF
 
 test_expect_success \
-    'validate output from rename/copy detection (#2)' \
-    'compare_diff_raw_z current expected'
+  'validate output from rename/copy detection (#2)' \
+  'compare_diff_raw_z current expected'
 
 ################################################################
 
@@ -81,8 +81,8 @@ test_expect_success \
 # nows how to say Copy.
 
 test_expect_success \
-    'prepare work tree once again' \
-    'COPYING_test_data >COPYING &&
+  'prepare work tree once again' \
+  'COPYING_test_data >COPYING &&
      git update-index --add --remove COPYING COPYING.1'
 
 git diff-index -z -C --find-copies-harder $tree >current
@@ -93,7 +93,7 @@ COPYING.1
 EOF
 
 test_expect_success \
-    'validate output from rename/copy detection (#3)' \
-    'compare_diff_raw_z current expected'
+  'validate output from rename/copy detection (#3)' \
+  'compare_diff_raw_z current expected'
 
 test_done

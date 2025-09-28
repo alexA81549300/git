@@ -6,16 +6,15 @@ test_description='fetch handles conflicting refspecs correctly'
 
 D=$(pwd)
 
-setup_repository () {
-	git init "$1" && (
-		cd "$1" &&
-		git config remote.origin.url "$D" &&
-		shift &&
-		for refspec in "$@"
-		do
-			git config --add remote.origin.fetch "$refspec"
-		done
-	)
+setup_repository() {
+  git init "$1" && (
+    cd "$1" \
+      && git config remote.origin.url "$D" \
+      && shift \
+      && for refspec in "$@"; do
+        git config --add remote.origin.fetch "$refspec"
+      done
+  )
 }
 
 test_expect_success 'setup' '

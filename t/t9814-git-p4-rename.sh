@@ -221,7 +221,7 @@ test_lazy_prereq P4D_HAVE_CONFIGURABLE_RUN_MOVE_ALLOW '
 
 # If move can be disabled, turn it off and test p4 move handling
 test_expect_success P4D_HAVE_CONFIGURABLE_RUN_MOVE_ALLOW \
-		    'do not use p4 move when administratively disabled' '
+  'do not use p4 move when administratively disabled' '
 	test_when_finished "p4 configure set run.move.allow=1" &&
 	p4 configure set run.move.allow=0 &&
 	(

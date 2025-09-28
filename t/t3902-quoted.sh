@@ -12,23 +12,21 @@ GN='純'
 HT='	'
 DQ='"'
 
-test_have_prereq MINGW ||
-echo foo 2>/dev/null > "Name and an${HT}HT"
-if ! test -f "Name and an${HT}HT"
-then
-	# FAT/NTFS does not allow tabs in filenames
-	skip_all='Your filesystem does not allow tabs in filenames'
-	test_done
+test_have_prereq MINGW \
+  || echo foo 2>/dev/null >"Name and an${HT}HT"
+if ! test -f "Name and an${HT}HT"; then
+  # FAT/NTFS does not allow tabs in filenames
+  skip_all='Your filesystem does not allow tabs in filenames'
+  test_done
 fi
 
-for_each_name () {
-	for name in \
-	    Name "Name and a${LF}LF" "Name and an${HT}HT" "Name${DQ}" \
-	    "$FN$HT$GN" "$FN$LF$GN" "$FN $GN" "$FN$GN" "$FN$DQ$GN" \
-	    "With SP in it" "$FN/file"
-	do
-		eval "$1"
-	done
+for_each_name() {
+  for name in \
+    Name "Name and a${LF}LF" "Name and an${HT}HT" "Name${DQ}" \
+    "$FN$HT$GN" "$FN$LF$GN" "$FN $GN" "$FN$GN" "$FN$DQ$GN" \
+    "With SP in it" "$FN/file"; do
+    eval "$1"
+  done
 }
 
 test_expect_success 'setup' '

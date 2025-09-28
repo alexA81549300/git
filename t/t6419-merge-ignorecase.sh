@@ -7,10 +7,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-if ! test_have_prereq CASE_INSENSITIVE_FS
-then
-	skip_all='skipping case insensitive tests - case sensitive file system'
-	test_done
+if ! test_have_prereq CASE_INSENSITIVE_FS; then
+  skip_all='skipping case insensitive tests - case sensitive file system'
+  test_done
 fi
 
 test_expect_success 'merge with case-changing rename' '

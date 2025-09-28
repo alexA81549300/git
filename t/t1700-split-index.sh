@@ -18,9 +18,9 @@ sane_unset GIT_TEST_INDEX_THREADS
 
 # Create a file named as $1 with content read from stdin.
 # Set the file's mtime to a few seconds in the past to avoid racy situations.
-create_non_racy_file () {
-	cat >"$1" &&
-	test-tool chmtime =-5 "$1"
+create_non_racy_file() {
+  cat >"$1" \
+    && test-tool chmtime =-5 "$1"
 }
 
 test_expect_success 'setup' '
@@ -424,9 +424,8 @@ test_expect_success POSIXPERM 'same mode for index & split index' '
 	)
 '
 
-while read -r mode modebits
-do
-	test_expect_success POSIXPERM "split index respects core.sharedrepository $mode" '
+while read -r mode modebits; do
+  test_expect_success POSIXPERM "split index respects core.sharedrepository $mode" '
 		# Remove existing shared index files
 		git config core.splitIndex false &&
 		git update-index --force-remove one &&

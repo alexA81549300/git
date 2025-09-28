@@ -7,11 +7,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 count() {
-	i=1
-	while test $i -le $1; do
-		echo $i
-		i=$(($i + 1))
-	done
+  i=1
+  while test $i -le $1; do
+    echo $i
+    i=$(($i + 1))
+  done
 }
 
 test_expect_success 'setup (initial)' '
@@ -22,15 +22,15 @@ test_expect_success 'setup (initial)' '
 '
 
 make_text() {
-	echo $1: $2
-	for i in $(count 20); do
-		echo $1: $i
-	done
-	echo $1: $3
+  echo $1: $2
+  for i in $(count 20); do
+    echo $1: $i
+  done
+  echo $1: $3
 }
 
 test_rename() {
-	test_expect_success "rename ($1, $2)" '
+  test_expect_success "rename ($1, $2)" '
 	n='$1' &&
 	expect='$2' &&
 	git checkout -f main &&

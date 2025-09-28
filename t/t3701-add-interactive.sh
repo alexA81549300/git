@@ -9,17 +9,16 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 SP=" "
 
-diff_cmp () {
-	for x
-	do
-		sed  -e '/^index/s/[0-9a-f]*[1-9a-f][0-9a-f]*\.\./1234567../' \
-		     -e '/^index/s/\.\.[0-9a-f]*[1-9a-f][0-9a-f]*/..9abcdef/' \
-		     -e '/^index/s/ 00*\.\./ 0000000../' \
-		     -e '/^index/s/\.\.00*$/..0000000/' \
-		     -e '/^index/s/\.\.00* /..0000000 /' \
-		     "$x" >"$x.filtered"
-	done
-	test_cmp "$1.filtered" "$2.filtered"
+diff_cmp() {
+  for x; do
+    sed -e '/^index/s/[0-9a-f]*[1-9a-f][0-9a-f]*\.\./1234567../' \
+      -e '/^index/s/\.\.[0-9a-f]*[1-9a-f][0-9a-f]*/..9abcdef/' \
+      -e '/^index/s/ 00*\.\./ 0000000../' \
+      -e '/^index/s/\.\.00*$/..0000000/' \
+      -e '/^index/s/\.\.00* /..0000000 /' \
+      "$x" >"$x.filtered"
+  done
+  test_cmp "$1.filtered" "$2.filtered"
 }
 
 # This function uses a trick to manipulate the interactive add to use color:
@@ -29,17 +28,17 @@ diff_cmp () {
 # suppressed despite that environment variable if the `TERM` variable
 # indicates a dumb terminal, so we set that variable, too.
 
-force_color () {
-	# The first element of $@ may be a shell function, as a result POSIX
-	# does not guarantee that "one-shot assignment" will not persist after
-	# the function call. Thus, we prevent these variables from escaping
-	# this function's context with this subshell.
-	(
-		GIT_PAGER_IN_USE=true &&
-		TERM=vt100 &&
-		export GIT_PAGER_IN_USE TERM &&
-		"$@"
-	)
+force_color() {
+  # The first element of $@ may be a shell function, as a result POSIX
+  # does not guarantee that "one-shot assignment" will not persist after
+  # the function call. Thus, we prevent these variables from escaping
+  # this function's context with this subshell.
+  (
+    GIT_PAGER_IN_USE=true \
+      && TERM=vt100 \
+      && export GIT_PAGER_IN_USE TERM \
+      && "$@"
+  )
 }
 
 test_expect_success 'unknown command' '
@@ -305,7 +304,6 @@ test_expect_success FILEMODE 'stage mode but not hunk' '
 	git diff --cached file | grep "new mode" &&
 	git diff          file | grep "+content"
 '
-
 
 test_expect_success FILEMODE 'stage mode and hunk' '
 	git reset --hard &&
@@ -1130,14 +1128,10 @@ test_expect_success 'checkout -p works with pathological context lines' '
 
 # This should be called from a subshell as it sets a temporary editor
 setup_new_file() {
-	write_script new-file-editor.sh <<-\EOF &&
+  write_script new-file-editor.sh <<-\EOF && test_set_editor "$(pwd)/new-file-editor.sh" && test_write_lines a b c d e f >new-file && test_write_lines a b d e f >new-file-expect && test_write_lines "@@ -0,0 +1,6 @@" +a +b +c +d +e +f >patch-expect
 	sed /^#/d "$1" >patch &&
 	sed /^+c/d patch >"$1"
 	EOF
-	test_set_editor "$(pwd)/new-file-editor.sh" &&
-	test_write_lines a b c d e f >new-file &&
-	test_write_lines a b d e f >new-file-expect &&
-	test_write_lines "@@ -0,0 +1,6 @@" +a +b +c +d +e +f >patch-expect
 }
 
 test_expect_success 'add -N followed by add -p patch editing' '

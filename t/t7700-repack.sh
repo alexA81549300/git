@@ -10,44 +10,43 @@ test_description='git repack works correctly'
 GIT_TEST_MULTI_PACK_INDEX=0
 GIT_TEST_MULTI_PACK_INDEX_WRITE_INCREMENTAL=0
 
-commit_and_pack () {
-	test_commit "$@" 1>&2 &&
-	incrpackid=$(git pack-objects --all --unpacked --incremental .git/objects/pack/pack </dev/null) &&
-	# Remove any loose object(s) created by test_commit, since they have
-	# already been packed. Leaving these around can create subtly different
-	# packs with `pack-objects`'s `--unpacked` option.
-	git prune-packed 1>&2 &&
-	echo pack-${incrpackid}.pack
+commit_and_pack() {
+  test_commit "$@" 1>&2 \
+    && incrpackid=$(git pack-objects --all --unpacked --incremental .git/objects/pack/pack </dev/null) \
+    &&
+    # Remove any loose object(s) created by test_commit, since they have
+    # already been packed. Leaving these around can create subtly different
+    # packs with `pack-objects`'s `--unpacked` option.
+    git prune-packed 1>&2 \
+    && echo pack-${incrpackid}.pack
 }
 
-test_no_missing_in_packs () {
-	myidx=$(ls -1 .git/objects/pack/*.idx) &&
-	test_path_is_file "$myidx" &&
-	git verify-pack -v alt_objects/pack/*.idx >orig.raw &&
-	sed -n -e "s/^\($OID_REGEX\).*/\1/p" orig.raw | sort >orig &&
-	git verify-pack -v $myidx >dest.raw &&
-	cut -d" " -f1 dest.raw | sort >dest &&
-	comm -23 orig dest >missing &&
-	test_must_be_empty missing
+test_no_missing_in_packs() {
+  myidx=$(ls -1 .git/objects/pack/*.idx) \
+    && test_path_is_file "$myidx" \
+    && git verify-pack -v alt_objects/pack/*.idx >orig.raw \
+    && sed -n -e "s/^\($OID_REGEX\).*/\1/p" orig.raw | sort >orig \
+    && git verify-pack -v $myidx >dest.raw \
+    && cut -d" " -f1 dest.raw | sort >dest \
+    && comm -23 orig dest >missing \
+    && test_must_be_empty missing
 }
 
 # we expect $packid and $oid to be defined
-test_has_duplicate_object () {
-	want_duplicate_object="$1"
-	found_duplicate_object=false
-	for p in .git/objects/pack/*.idx
-	do
-		idx=$(basename $p)
-		test "pack-$packid.idx" = "$idx" && continue
-		git verify-pack -v $p >packlist || return $?
-		if grep "^$oid" packlist
-		then
-			found_duplicate_object=true
-			echo "DUPLICATE OBJECT FOUND"
-			break
-		fi
-	done &&
-	test "$want_duplicate_object" = "$found_duplicate_object"
+test_has_duplicate_object() {
+  want_duplicate_object="$1"
+  found_duplicate_object=false
+  for p in .git/objects/pack/*.idx; do
+    idx=$(basename $p)
+    test "pack-$packid.idx" = "$idx" && continue
+    git verify-pack -v $p >packlist || return $?
+    if grep "^$oid" packlist; then
+      found_duplicate_object=true
+      echo "DUPLICATE OBJECT FOUND"
+      break
+    fi
+  done \
+    && test "$want_duplicate_object" = "$found_duplicate_object"
 }
 
 test_expect_success 'objects in packs marked .keep are not repacked' '
@@ -378,29 +377,30 @@ test_expect_success 'repacking with two filters works' '
 	)
 '
 
-prepare_for_keep_packs () {
-	git init keep-packs &&
-	(
-		cd keep-packs &&
-		test_commit foo &&
-		test_commit bar
-	) &&
-	git clone --no-local --bare keep-packs keep-packs.git &&
-	(
-		cd keep-packs.git &&
-
-		# Create two packs
-		# The first pack will contain all of the objects except one blob
-		git rev-list --objects --all >objs &&
-		grep -v "bar.t" objs | git pack-objects pack &&
-		# The second pack will contain the excluded object and be kept
-		packid=$(grep "bar.t" objs | git pack-objects pack) &&
-		>pack-$packid.keep &&
-
-		# Replace the existing pack with the 2 new ones
-		rm -f objects/pack/pack* &&
-		mv pack-* objects/pack/
-	)
+prepare_for_keep_packs() {
+  git init keep-packs \
+    && (
+      cd keep-packs \
+        && test_commit foo \
+        && test_commit bar
+    ) \
+    && git clone --no-local --bare keep-packs keep-packs.git \
+    && (
+      cd keep-packs.git \
+        &&
+        # Create two packs
+        # The first pack will contain all of the objects except one blob
+        git rev-list --objects --all >objs \
+        && grep -v "bar.t" objs | git pack-objects pack \
+        &&
+        # The second pack will contain the excluded object and be kept
+        packid=$(grep "bar.t" objs | git pack-objects pack) \
+        && >pack-$packid.keep \
+        &&
+        # Replace the existing pack with the 2 new ones
+        rm -f objects/pack/pack* \
+        && mv pack-* objects/pack/
+    )
 }
 
 test_expect_success '--filter works with .keep packs' '
@@ -662,9 +662,9 @@ test_expect_success '--write-midx with preferred bitmap tips' '
 # and that file should contain the name of a .idx
 # file. Send the list of objects in that .idx file
 # into stdout.
-get_sorted_objects_from_pack () {
-	git show-index <$(cat "$1") >raw &&
-	cut -d" " -f2 raw
+get_sorted_objects_from_pack() {
+  git show-index <$(cat "$1") >raw \
+    && cut -d" " -f2 raw
 }
 
 test_expect_success '--write-midx -b packs non-kept objects' '
@@ -793,19 +793,19 @@ test_expect_success 'setup for update-server-info' '
 	test_commit -C update-server-info message
 '
 
-test_server_info_present () {
-	test_path_is_file update-server-info/.git/objects/info/packs &&
-	test_path_is_file update-server-info/.git/info/refs
+test_server_info_present() {
+  test_path_is_file update-server-info/.git/objects/info/packs \
+    && test_path_is_file update-server-info/.git/info/refs
 }
 
-test_server_info_missing () {
-	test_path_is_missing update-server-info/.git/objects/info/packs &&
-	test_path_is_missing update-server-info/.git/info/refs
+test_server_info_missing() {
+  test_path_is_missing update-server-info/.git/objects/info/packs \
+    && test_path_is_missing update-server-info/.git/info/refs
 }
 
-test_server_info_cleanup () {
-	rm -f update-server-info/.git/objects/info/packs update-server-info/.git/info/refs &&
-	test_server_info_missing
+test_server_info_cleanup() {
+  rm -f update-server-info/.git/objects/info/packs update-server-info/.git/info/refs \
+    && test_server_info_missing
 }
 
 test_expect_success 'updates server info by default' '

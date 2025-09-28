@@ -20,15 +20,15 @@ test_perf 'git clone' '
 	git clone "file://$(pwd)/to-clone" git-clone
 '
 
-test_compare_perf () {
-	command=$1
-	shift
-	args=$*
-	test_perf "$command $args (scalar)" "
+test_compare_perf() {
+  command=$1
+  shift
+  args=$*
+  test_perf "$command $args (scalar)" "
 		$command -C scalar-clone/src $args
 	"
 
-	test_perf "$command $args (non-scalar)" "
+  test_perf "$command $args (non-scalar)" "
 		$command -C git-clone $args
 	"
 }

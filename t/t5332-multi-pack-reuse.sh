@@ -10,44 +10,39 @@ GIT_TEST_MULTI_PACK_INDEX_WRITE_INCREMENTAL=0
 objdir=.git/objects
 packdir=$objdir/pack
 
-test_pack_reused () {
-	test_trace2_data pack-objects pack-reused "$1"
+test_pack_reused() {
+  test_trace2_data pack-objects pack-reused "$1"
 }
 
-test_packs_reused () {
-	test_trace2_data pack-objects packs-reused "$1"
+test_packs_reused() {
+  test_trace2_data pack-objects packs-reused "$1"
 }
-
 
 # pack_position <object> </path/to/pack.idx
-pack_position () {
-	git show-index >objects &&
-	grep "$1" objects | cut -d" " -f1
+pack_position() {
+  git show-index >objects \
+    && grep "$1" objects | cut -d" " -f1
 }
 
 # test_pack_objects_reused_all <pack-reused> <packs-reused>
-test_pack_objects_reused_all () {
-	: >trace2.txt &&
-	GIT_TRACE2_EVENT="$PWD/trace2.txt" \
-		git pack-objects --stdout --revs --all --delta-base-offset \
-		>got.pack &&
-
-	test_pack_reused "$1" <trace2.txt &&
-	test_packs_reused "$2" <trace2.txt &&
-
-	git index-pack --strict -o got.idx got.pack
+test_pack_objects_reused_all() {
+  : >trace2.txt \
+    && GIT_TRACE2_EVENT="$PWD/trace2.txt" \
+      git pack-objects --stdout --revs --all --delta-base-offset \
+      >got.pack \
+    && test_pack_reused "$1" <trace2.txt \
+    && test_packs_reused "$2" <trace2.txt \
+    && git index-pack --strict -o got.idx got.pack
 }
 
 # test_pack_objects_reused <pack-reused> <packs-reused>
-test_pack_objects_reused () {
-	: >trace2.txt &&
-	GIT_TRACE2_EVENT="$PWD/trace2.txt" \
-		git pack-objects --stdout --revs >got.pack &&
-
-	test_pack_reused "$1" <trace2.txt &&
-	test_packs_reused "$2" <trace2.txt &&
-
-	git index-pack --strict -o got.idx got.pack
+test_pack_objects_reused() {
+  : >trace2.txt \
+    && GIT_TRACE2_EVENT="$PWD/trace2.txt" \
+      git pack-objects --stdout --revs >got.pack \
+    && test_pack_reused "$1" <trace2.txt \
+    && test_packs_reused "$2" <trace2.txt \
+    && git index-pack --strict -o got.idx got.pack
 }
 
 test_expect_success 'preferred pack is reused for single-pack reuse' '

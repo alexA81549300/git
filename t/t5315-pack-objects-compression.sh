@@ -13,9 +13,8 @@ test_expect_success setup '
 	test -f .git/objects/$ob/$ject
 '
 
-while read expect config
-do
-	test_expect_success "pack-objects with $config" '
+while read expect config; do
+  test_expect_success "pack-objects with $config" '
 		test_when_finished "rm -f pack-*.*" &&
 		git $config pack-objects pack <object-name &&
 		sz=$(test_file_size pack-*.pack) &&

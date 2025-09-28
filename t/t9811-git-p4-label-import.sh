@@ -218,7 +218,7 @@ test_expect_success 'use git config to enable import/export of tags' '
 '
 
 p4_head_revision() {
-	p4 changes -m 1 "$@" | awk '{print $2}'
+  p4 changes -m 1 "$@" | awk '{print $2}'
 }
 
 # Importing a label that references a P4 commit that

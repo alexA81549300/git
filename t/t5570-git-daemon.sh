@@ -34,10 +34,10 @@ test_expect_success 'daemon rejects invalid --max-connections values' '
 
 start_git_daemon
 
-check_verbose_connect () {
-	test_grep -F "Looking up 127.0.0.1 ..." stderr &&
-	test_grep -F "Connecting to 127.0.0.1 (port " stderr &&
-	test_grep -F "done." stderr
+check_verbose_connect() {
+  test_grep -F "Looking up 127.0.0.1 ..." stderr \
+    && test_grep -F "Connecting to 127.0.0.1 (port " stderr \
+    && test_grep -F "done." stderr
 }
 
 test_expect_success 'setup repository' '
@@ -136,62 +136,59 @@ test_expect_success 'client refuses to ask for repo with newline' '
 	test_grep newline.is.forbidden stderr
 '
 
-test_remote_error()
-{
-	do_export=YesPlease
-	while test $# -gt 0
-	do
-		case $1 in
-		-x)
-			shift
-			chmod -x "$GIT_DAEMON_DOCUMENT_ROOT_PATH/repo.git"
-			;;
-		-n)
-			shift
-			do_export=
-			;;
-		*)
-			break
-		esac
-	done
+test_remote_error() {
+  do_export=YesPlease
+  while test $# -gt 0; do
+    case $1 in
+      -x)
+        shift
+        chmod -x "$GIT_DAEMON_DOCUMENT_ROOT_PATH/repo.git"
+        ;;
+      -n)
+        shift
+        do_export=
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
 
-	msg=$1
-	shift
-	cmd=$1
-	shift
-	repo=$1
-	shift || error "invalid number of arguments"
+  msg=$1
+  shift
+  cmd=$1
+  shift
+  repo=$1
+  shift || error "invalid number of arguments"
 
-	if test -x "$GIT_DAEMON_DOCUMENT_ROOT_PATH/$repo"
-	then
-		if test -n "$do_export"
-		then
-			: >"$GIT_DAEMON_DOCUMENT_ROOT_PATH/$repo/git-daemon-export-ok"
-		else
-			rm -f "$GIT_DAEMON_DOCUMENT_ROOT_PATH/$repo/git-daemon-export-ok"
-		fi
-	fi
+  if test -x "$GIT_DAEMON_DOCUMENT_ROOT_PATH/$repo"; then
+    if test -n "$do_export"; then
+      : >"$GIT_DAEMON_DOCUMENT_ROOT_PATH/$repo/git-daemon-export-ok"
+    else
+      rm -f "$GIT_DAEMON_DOCUMENT_ROOT_PATH/$repo/git-daemon-export-ok"
+    fi
+  fi
 
-	test_must_fail git "$cmd" "$GIT_DAEMON_URL/$repo" "$@" 2>output &&
-	test_grep "fatal: remote error: $msg: /$repo" output &&
-	ret=$?
-	chmod +x "$GIT_DAEMON_DOCUMENT_ROOT_PATH/repo.git"
-	(exit $ret)
+  test_must_fail git "$cmd" "$GIT_DAEMON_URL/$repo" "$@" 2>output \
+    && test_grep "fatal: remote error: $msg: /$repo" output \
+    && ret=$?
+  chmod +x "$GIT_DAEMON_DOCUMENT_ROOT_PATH/repo.git"
+  (exit $ret)
 }
 
 msg="access denied or repository not exported"
 test_expect_success 'clone non-existent' "test_remote_error    '$msg' clone nowhere.git"
-test_expect_success 'push disabled'      "test_remote_error    '$msg' push  repo.git main"
+test_expect_success 'push disabled' "test_remote_error    '$msg' push  repo.git main"
 test_expect_success 'read access denied' "test_remote_error -x '$msg' fetch repo.git"
-test_expect_success 'not exported'       "test_remote_error -n '$msg' fetch repo.git"
+test_expect_success 'not exported' "test_remote_error -n '$msg' fetch repo.git"
 
 stop_git_daemon
 start_git_daemon --informative-errors
 
 test_expect_success 'clone non-existent' "test_remote_error    'no such repository'      clone nowhere.git"
-test_expect_success 'push disabled'      "test_remote_error    'service not enabled'     push  repo.git main"
+test_expect_success 'push disabled' "test_remote_error    'service not enabled'     push  repo.git main"
 test_expect_success 'read access denied' "test_remote_error -x 'no such repository'      fetch repo.git"
-test_expect_success 'not exported'       "test_remote_error -n 'repository not exported' fetch repo.git"
+test_expect_success 'not exported' "test_remote_error -n 'repository not exported' fetch repo.git"
 
 stop_git_daemon
 start_git_daemon --interpolated-path="$GIT_DAEMON_DOCUMENT_ROOT_PATH/%H%D"

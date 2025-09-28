@@ -13,39 +13,38 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 test_tick
 
-if test_have_prereq ICONV
-then
-	# Tested non-UTF-8 encoding
-	test_encoding="ISO8859-1"
+if test_have_prereq ICONV; then
+  # Tested non-UTF-8 encoding
+  test_encoding="ISO8859-1"
 
-	# String "added" in German
-	# (translated with Google Translate),
-	# encoded in UTF-8, used as a commit log message below.
-	added_utf8_part=$(printf "\303\274")
-	added_utf8_part_iso88591=$(echo "$added_utf8_part" | iconv -f utf-8 -t $test_encoding)
-	added=$(printf "added (hinzugef${added_utf8_part}gt) foo")
-	added_iso88591=$(echo "$added" | iconv -f utf-8 -t $test_encoding)
-	# same but "changed"
-	changed_utf8_part=$(printf "\303\244")
-	changed_utf8_part_iso88591=$(echo "$changed_utf8_part" | iconv -f utf-8 -t $test_encoding)
-	changed=$(printf "changed (ge${changed_utf8_part}ndert) foo")
-	changed_iso88591=$(echo "$changed" | iconv -f utf-8 -t $test_encoding)
+  # String "added" in German
+  # (translated with Google Translate),
+  # encoded in UTF-8, used as a commit log message below.
+  added_utf8_part=$(printf "\303\274")
+  added_utf8_part_iso88591=$(echo "$added_utf8_part" | iconv -f utf-8 -t $test_encoding)
+  added=$(printf "added (hinzugef${added_utf8_part}gt) foo")
+  added_iso88591=$(echo "$added" | iconv -f utf-8 -t $test_encoding)
+  # same but "changed"
+  changed_utf8_part=$(printf "\303\244")
+  changed_utf8_part_iso88591=$(echo "$changed_utf8_part" | iconv -f utf-8 -t $test_encoding)
+  changed=$(printf "changed (ge${changed_utf8_part}ndert) foo")
+  changed_iso88591=$(echo "$changed" | iconv -f utf-8 -t $test_encoding)
 else
-	# Tested non-UTF-8 encoding
-	test_encoding="UTF-8"
+  # Tested non-UTF-8 encoding
+  test_encoding="UTF-8"
 
-	# String "added" in German
-	# (translated with Google Translate),
-	# encoded in UTF-8, used as a commit log message below.
-	added_utf8_part="u"
-	added_utf8_part_iso88591="u"
-	added=$(printf "added (hinzugef${added_utf8_part}gt) foo")
-	added_iso88591="$added"
-	# same but "changed"
-	changed_utf8_part="a"
-	changed_utf8_part_iso88591="a"
-	changed=$(printf "changed (ge${changed_utf8_part}ndert) foo")
-	changed_iso88591="$changed"
+  # String "added" in German
+  # (translated with Google Translate),
+  # encoded in UTF-8, used as a commit log message below.
+  added_utf8_part="u"
+  added_utf8_part_iso88591="u"
+  added=$(printf "added (hinzugef${added_utf8_part}gt) foo")
+  added_iso88591="$added"
+  # same but "changed"
+  changed_utf8_part="a"
+  changed_utf8_part_iso88591="a"
+  changed=$(printf "changed (ge${changed_utf8_part}ndert) foo")
+  changed_iso88591="$changed"
 fi
 
 # Count of char to truncate
@@ -75,44 +74,46 @@ test_expect_success 'setup' '
 '
 
 # usage: test_format [argument...] name format_string [success|failure] [prereq] <expected_output
-test_format () {
-	local args=
-	while true
-	do
-		case "$1" in
-		--*)
-			args="$args $1"
-			shift;;
-		*)
-			break;;
-		esac
-	done
-	cat >expect.$1
-	test_expect_${3:-success} $4 "format $1" "
+test_format() {
+  local args=
+  while true; do
+    case "$1" in
+      --*)
+        args="$args $1"
+        shift
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+  cat >expect.$1
+  test_expect_${3:-success} $4 "format $1" "
 		git rev-list $args --pretty=format:'$2' main >output.$1 &&
 		test_cmp expect.$1 output.$1
 	"
 }
 
 # usage: test_pretty [argument...] name format_name [failure] <expected_output
-test_pretty () {
-	local args=
-	while true
-	do
-		case "$1" in
-		--*)
-			args="$args $1"
-			shift;;
-		*)
-			break;;
-		esac
-	done
-	cat >expect.$1
-	test_expect_${3:-success} "pretty $1 (without --no-commit-header)" "
+test_pretty() {
+  local args=
+  while true; do
+    case "$1" in
+      --*)
+        args="$args $1"
+        shift
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+  cat >expect.$1
+  test_expect_${3:-success} "pretty $1 (without --no-commit-header)" "
 		git rev-list $args --pretty='$2' main >output.$1 &&
 		test_cmp expect.$1 output.$1
 	"
-	test_expect_${3:-success} "pretty $1 (with --no-commit-header)" "
+  test_expect_${3:-success} "pretty $1 (with --no-commit-header)" "
 		git rev-list $args --no-commit-header --pretty='$2' main >output.$1 &&
 		test_cmp expect.$1 output.$1
 	"
@@ -123,15 +124,15 @@ BASIC_COLOR='%Credfoo%Creset'
 COLOR='%C(red)foo%C(reset)'
 AUTO_COLOR='%C(auto,red)foo%C(auto,reset)'
 ALWAYS_COLOR='%C(always,red)foo%C(always,reset)'
-has_color () {
-	test_decode_color <"$1" >decoded &&
-	echo "<RED>foo<RESET>" >expect &&
-	test_cmp expect decoded
+has_color() {
+  test_decode_color <"$1" >decoded \
+    && echo "<RED>foo<RESET>" >expect \
+    && test_cmp expect decoded
 }
 
-has_no_color () {
-	echo foo >expect &&
-	test_cmp expect "$1"
+has_no_color() {
+  echo foo >expect \
+    && test_cmp expect "$1"
 }
 
 test_format percent %%h <<EOF
@@ -304,43 +305,42 @@ test_expect_success 'advanced colors' '
 '
 
 for spec in \
-	"%Cred:$BASIC_COLOR" \
-	"%C(...):$COLOR" \
-	"%C(auto,...):$AUTO_COLOR"
-do
-	desc=${spec%%:*}
-	color=${spec#*:}
-	test_expect_success "$desc does not enable color by default" '
+  "%Cred:$BASIC_COLOR" \
+  "%C(...):$COLOR" \
+  "%C(auto,...):$AUTO_COLOR"; do
+  desc=${spec%%:*}
+  color=${spec#*:}
+  test_expect_success "$desc does not enable color by default" '
 		git log --format=$color -1 >actual &&
 		has_no_color actual
 	'
 
-	test_expect_success "$desc enables colors for color.diff" '
+  test_expect_success "$desc enables colors for color.diff" '
 		git -c color.diff=always log --format=$color -1 >actual &&
 		has_color actual
 	'
 
-	test_expect_success "$desc enables colors for color.ui" '
+  test_expect_success "$desc enables colors for color.ui" '
 		git -c color.ui=always log --format=$color -1 >actual &&
 		has_color actual
 	'
 
-	test_expect_success "$desc respects --color" '
+  test_expect_success "$desc respects --color" '
 		git log --format=$color -1 --color >actual &&
 		has_color actual
 	'
 
-	test_expect_success "$desc respects --no-color" '
+  test_expect_success "$desc respects --no-color" '
 		git -c color.ui=always log --format=$color -1 --no-color >actual &&
 		has_no_color actual
 	'
 
-	test_expect_success TTY "$desc respects --color=auto (stdout is tty)" '
+  test_expect_success TTY "$desc respects --color=auto (stdout is tty)" '
 		test_terminal git log --format=$color -1 --color=auto >actual &&
 		has_color actual
 	'
 
-	test_expect_success "$desc respects --color=auto (stdout not tty)" '
+  test_expect_success "$desc respects --color=auto (stdout not tty)" '
 		(
 			TERM=vt100 && export TERM &&
 			git log --format=$color -1 --color=auto >actual &&
@@ -378,7 +378,7 @@ test_expect_success 'rev-list %C(auto,...) respects --color' '
 	test_cmp expect actual
 '
 
-iconv -f utf-8 -t $test_encoding > commit-msg <<EOF
+iconv -f utf-8 -t $test_encoding >commit-msg <<EOF
 Test printing of complex bodies
 
 This commit message is much longer than the others,

@@ -13,34 +13,29 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 #   <repo> is the relative path to the repo to be migrated.
 #   <format> is the ref format to be migrated to.
 #   <skip_reflog_verify> (true or false) whether to skip reflog verification.
-test_migration () {
-	repo=$1 &&
-	format=$2 &&
-	skip_reflog_verify=${3:-false} &&
-	git -C "$repo" for-each-ref --include-root-refs \
-		--format='%(refname) %(objectname) %(symref)' >expect &&
-	if ! $skip_reflog_verify
-	then
-	   git -C "$repo" reflog --all >expect_logs &&
-	   git -C "$repo" reflog list >expect_log_list
-	fi &&
-
-	git -C "$repo" refs migrate --ref-format="$2" &&
-
-	git -C "$repo" for-each-ref --include-root-refs \
-		--format='%(refname) %(objectname) %(symref)' >actual &&
-	test_cmp expect actual &&
-	if ! $skip_reflog_verify
-	then
-		git -C "$repo" reflog --all >actual_logs &&
-		git -C "$repo" reflog list >actual_log_list &&
-		test_cmp expect_logs actual_logs &&
-		test_cmp expect_log_list actual_log_list
-	fi &&
-
-	git -C "$repo" rev-parse --show-ref-format >actual &&
-	echo "$format" >expect &&
-	test_cmp expect actual
+test_migration() {
+  repo=$1 \
+    && format=$2 \
+    && skip_reflog_verify=${3:-false} \
+    && git -C "$repo" for-each-ref --include-root-refs \
+      --format='%(refname) %(objectname) %(symref)' >expect \
+    && if ! $skip_reflog_verify; then
+      git -C "$repo" reflog --all >expect_logs \
+        && git -C "$repo" reflog list >expect_log_list
+    fi \
+    && git -C "$repo" refs migrate --ref-format="$2" \
+    && git -C "$repo" for-each-ref --include-root-refs \
+      --format='%(refname) %(objectname) %(symref)' >actual \
+    && test_cmp expect actual \
+    && if ! $skip_reflog_verify; then
+      git -C "$repo" reflog --all >actual_logs \
+        && git -C "$repo" reflog list >actual_log_list \
+        && test_cmp expect_logs actual_logs \
+        && test_cmp expect_log_list actual_log_list
+    fi \
+    && git -C "$repo" rev-parse --show-ref-format >actual \
+    && echo "$format" >expect \
+    && test_cmp expect actual
 }
 
 test_expect_success 'setup' '
@@ -79,16 +74,13 @@ test_expect_success "unknown ref storage format" '
 '
 
 ref_formats="files reftable"
-for from_format in $ref_formats
-do
-	for to_format in $ref_formats
-	do
-		if test "$from_format" = "$to_format"
-		then
-			continue
-		fi
+for from_format in $ref_formats; do
+  for to_format in $ref_formats; do
+    if test "$from_format" = "$to_format"; then
+      continue
+    fi
 
-		test_expect_success "$from_format: migration to same format fails" '
+    test_expect_success "$from_format: migration to same format fails" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_must_fail git -C repo refs migrate \
@@ -99,7 +91,7 @@ do
 			test_cmp expect err
 		'
 
-		test_expect_success "$from_format -> $to_format: migration with worktree fails" '
+    test_expect_success "$from_format -> $to_format: migration with worktree fails" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			git -C repo worktree add wt &&
@@ -111,20 +103,20 @@ do
 			test_cmp expect err
 		'
 
-		test_expect_success "$from_format -> $to_format: unborn HEAD" '
+    test_expect_success "$from_format -> $to_format: unborn HEAD" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_migration repo "$to_format"
 		'
 
-		test_expect_success "$from_format -> $to_format: single ref" '
+    test_expect_success "$from_format -> $to_format: single ref" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_commit -C repo initial &&
 			test_migration repo "$to_format"
 		'
 
-		test_expect_success "$from_format -> $to_format: bare repository" '
+    test_expect_success "$from_format -> $to_format: bare repository" '
 			test_when_finished "rm -rf repo repo.git" &&
 			git init --ref-format=$from_format repo &&
 			test_commit -C repo initial &&
@@ -132,7 +124,7 @@ do
 			test_migration repo.git "$to_format"
 		'
 
-		test_expect_success "$from_format -> $to_format: dangling symref" '
+    test_expect_success "$from_format -> $to_format: dangling symref" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_commit -C repo initial &&
@@ -143,7 +135,7 @@ do
 			test_cmp expect actual
 		'
 
-		test_expect_success "$from_format -> $to_format: broken ref" '
+    test_expect_success "$from_format -> $to_format: broken ref" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_commit -C repo initial &&
@@ -155,7 +147,7 @@ do
 			test_cmp expect actual
 		'
 
-		test_expect_success "$from_format -> $to_format: pseudo-refs" '
+    test_expect_success "$from_format -> $to_format: pseudo-refs" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_commit -C repo initial &&
@@ -163,7 +155,7 @@ do
 			test_migration repo "$to_format"
 		'
 
-		test_expect_success "$from_format -> $to_format: special refs are left alone" '
+    test_expect_success "$from_format -> $to_format: special refs are left alone" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_commit -C repo initial &&
@@ -173,7 +165,7 @@ do
 			test_path_is_file repo/.git/MERGE_HEAD
 		'
 
-		test_expect_success "$from_format -> $to_format: a bunch of refs" '
+    test_expect_success "$from_format -> $to_format: a bunch of refs" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 
@@ -191,7 +183,7 @@ do
 			test_migration repo "$to_format"
 		'
 
-		test_expect_success "$from_format -> $to_format: dry-run migration does not modify repository" '
+    test_expect_success "$from_format -> $to_format: dry-run migration does not modify repository" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_commit -C repo initial &&
@@ -204,7 +196,7 @@ do
 			test_cmp expect actual
 		'
 
-		test_expect_success "$from_format -> $to_format: reflogs of symrefs with target deleted" '
+    test_expect_success "$from_format -> $to_format: reflogs of symrefs with target deleted" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_commit -C repo initial &&
@@ -217,7 +209,7 @@ do
 			test_migration repo "$to_format"
 		'
 
-		test_expect_success "$from_format -> $to_format: reflogs order is retained" '
+    test_expect_success "$from_format -> $to_format: reflogs order is retained" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			test_commit --date "100005000 +0700" --no-tag -C repo initial &&
@@ -225,7 +217,7 @@ do
 			test_migration repo "$to_format"
 		'
 
-		test_expect_success "$from_format -> $to_format: stash is retained" '
+    test_expect_success "$from_format -> $to_format: stash is retained" '
 			test_when_finished "rm -rf repo" &&
 			git init --ref-format=$from_format repo &&
 			(
@@ -241,7 +233,7 @@ do
 				test_cmp expect.reflog actual.reflog
 			)
 		'
-	done
+  done
 done
 
 test_expect_success 'multiple reftable blocks with multiple entries' '

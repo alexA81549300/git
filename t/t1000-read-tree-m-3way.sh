@@ -128,9 +128,9 @@ cat >expected <<\EOF
 100644 X 0	Z/NN
 EOF
 
-check_result () {
-	git ls-files --stage | sed -e 's/ '"$OID_REGEX"' / X /' >current &&
-	test_cmp expected current
+check_result() {
+  git ls-files --stage | sed -e 's/ '"$OID_REGEX"' / X /' >current \
+    && test_cmp expected current
 }
 
 # This is done on an empty work directory, which is the normal

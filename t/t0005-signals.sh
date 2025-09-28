@@ -29,11 +29,10 @@ test_expect_success !MINGW 'signals are propagated using shell convention' '
 	test_expect_code 143 git sigterm
 '
 
-large_git () {
-	for i in $(test_seq 1 100)
-	do
-		git diff --cached --binary || return
-	done
+large_git() {
+  for i in $(test_seq 1 100); do
+    git diff --cached --binary || return
+  done
 }
 
 test_expect_success 'create blob' '

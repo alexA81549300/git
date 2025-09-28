@@ -7,10 +7,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-if ! test_have_prereq PERL
-then
-	skip_all='skipping request-pull tests, perl not available'
-	test_done
+if ! test_have_prereq PERL; then
+  skip_all='skipping request-pull tests, perl not available'
+  test_done
 fi
 
 test_expect_success 'setup' '

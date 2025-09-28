@@ -11,8 +11,8 @@ branch_merge=ba5312da19c6fdb6c6747d479f58932aae6e900c^{commit}
 export branch_merge
 
 git rev-parse --verify $branch_merge >/dev/null 2>&1 || {
-	skip_all='skipping because $branch_merge was not found'
-	test_done
+  skip_all='skipping because $branch_merge was not found'
+  test_done
 }
 
 write_script swap-first-two.sh <<\EOF

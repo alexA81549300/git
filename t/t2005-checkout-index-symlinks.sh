@@ -11,13 +11,13 @@ file if core.symlinks is false.'
 . ./test-lib.sh
 
 test_expect_success \
-'preparation' '
+  'preparation' '
 git config core.symlinks false &&
 l=$(printf file | git hash-object -t blob -w --stdin) &&
 echo "120000 $l	symlink" | git update-index --index-info'
 
 test_expect_success \
-'the checked-out symlink must be a file' '
+  'the checked-out symlink must be a file' '
 git checkout-index symlink &&
 test -f symlink'
 

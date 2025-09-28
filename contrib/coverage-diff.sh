@@ -13,8 +13,8 @@
 V1=$1
 V2=$2
 
-diff_lines () {
-	perl -e '
+diff_lines() {
+  perl -e '
 		my $line_num;
 		while (<>) {
 			# Hunk header?  Grab the beginning in postimage.
@@ -47,43 +47,40 @@ files=$(git diff --name-only "$V1" "$V2" -- \*.c)
 # create empty file
 >coverage-data.txt
 
-for file in $files
-do
-	git diff "$V1" "$V2" -- "$file" |
-	diff_lines |
-	sort >new_lines.txt
+for file in $files; do
+  git diff "$V1" "$V2" -- "$file" \
+    | diff_lines \
+    | sort >new_lines.txt
 
-	if ! test -s new_lines.txt
-	then
-		continue
-	fi
+  if ! test -s new_lines.txt; then
+    continue
+  fi
 
-	hash_file=$(echo $file | sed "s/\//\#/")
+  hash_file=$(echo $file | sed "s/\//\#/")
 
-	if ! test -s "$hash_file.gcov"
-	then
-		continue
-	fi
+  if ! test -s "$hash_file.gcov"; then
+    continue
+  fi
 
-	sed -ne '/#####:/{
+  sed -ne '/#####:/{
 			s/    #####://
 			s/:.*//
 			s/ //g
 			p
-		}' "$hash_file.gcov" |
-	sort >uncovered_lines.txt
+		}' "$hash_file.gcov" \
+    | sort >uncovered_lines.txt
 
-	comm -12 uncovered_lines.txt new_lines.txt |
-	sed -e 's/$/\)/' -e 's/^/ /' >uncovered_new_lines.txt
+  comm -12 uncovered_lines.txt new_lines.txt \
+    | sed -e 's/$/\)/' -e 's/^/ /' >uncovered_new_lines.txt
 
-	grep -q '[^[:space:]]' <uncovered_new_lines.txt &&
-	echo $file >>coverage-data.txt &&
-	git blame -s "$V2" -- "$file" |
-	sed 's/\t//g' |
-	grep -f uncovered_new_lines.txt >>coverage-data.txt &&
-	echo >>coverage-data.txt
+  grep -q '[^[:space:]]' <uncovered_new_lines.txt \
+    && echo $file >>coverage-data.txt \
+    && git blame -s "$V2" -- "$file" \
+    | sed 's/\t//g' \
+      | grep -f uncovered_new_lines.txt >>coverage-data.txt \
+    && echo >>coverage-data.txt
 
-	rm -f new_lines.txt uncovered_lines.txt uncovered_new_lines.txt
+  rm -f new_lines.txt uncovered_lines.txt uncovered_new_lines.txt
 done
 
 cat coverage-data.txt
@@ -93,11 +90,10 @@ echo "Commits introducing uncovered code:"
 commit_list=$(awk '/^[0-9a-f]{7,}/ { print $1 }' coverage-data.txt | sort -u)
 
 (
-	for commit in $commit_list
-	do
-		git log --no-decorate --pretty=format:'%an      %h: %s' -1 $commit
-		echo
-	done
+  for commit in $commit_list; do
+    git log --no-decorate --pretty=format:'%an      %h: %s' -1 $commit
+    echo
+  done
 ) | sort
 
 rm coverage-data.txt

@@ -10,8 +10,8 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . "$TEST_DIRECTORY/lib-terminal.sh"
 . "$TEST_DIRECTORY/lib-log-graph.sh"
 
-test_cmp_graph () {
-	lib_test_cmp_graph --format=%s "$@"
+test_cmp_graph() {
+  lib_test_cmp_graph --format=%s "$@"
 }
 
 test_expect_success setup '
@@ -47,14 +47,14 @@ test_expect_success setup '
 
 '
 
-printf "sixth\nfifth\nfourth\nthird\nsecond\ninitial" > expect
+printf "sixth\nfifth\nfourth\nthird\nsecond\ninitial" >expect
 test_expect_success 'pretty' '
 
 	git log --pretty="format:%s" > actual &&
 	test_cmp expect actual
 '
 
-printf "sixth\nfifth\nfourth\nthird\nsecond\ninitial\n" > expect
+printf "sixth\nfifth\nfourth\nthird\nsecond\ninitial\n" >expect
 test_expect_success 'pretty (tformat)' '
 
 	git log --pretty="tformat:%s" > actual &&
@@ -73,7 +73,7 @@ test_expect_success 'format' '
 	test_cmp expect actual
 '
 
-cat > expect << EOF
+cat >expect <<EOF
  This is
   the sixth
   commit.
@@ -94,12 +94,12 @@ test_expect_success 'format %w(,1,2)' '
 	test_cmp expect actual
 '
 
-cat > expect << EOF
-$(git rev-parse --short :/sixth  ) sixth
-$(git rev-parse --short :/fifth  ) fifth
-$(git rev-parse --short :/fourth ) fourth
-$(git rev-parse --short :/third  ) third
-$(git rev-parse --short :/second ) second
+cat >expect <<EOF
+$(git rev-parse --short :/sixth) sixth
+$(git rev-parse --short :/fifth) fifth
+$(git rev-parse --short :/fourth) fourth
+$(git rev-parse --short :/third) third
+$(git rev-parse --short :/second) second
 $(git rev-parse --short :/initial) initial
 EOF
 test_expect_success 'oneline' '
@@ -211,9 +211,9 @@ test_expect_success 'git config log.follow is overridden by --no-follow' '
 
 # Note that these commits are intentionally listed out of order.
 last_three="$(git rev-parse :/fourth :/sixth :/fifth)"
-cat > expect << EOF
-$(git rev-parse --short :/sixth ) sixth
-$(git rev-parse --short :/fifth ) fifth
+cat >expect <<EOF
+$(git rev-parse --short :/sixth) sixth
+$(git rev-parse --short :/fifth) fifth
 $(git rev-parse --short :/fourth) fourth
 EOF
 test_expect_success 'git log --no-walk <commits> sorts by commit time' '
@@ -226,9 +226,9 @@ test_expect_success 'git log --no-walk=sorted <commits> sorts by commit time' '
 	test_cmp expect actual
 '
 
-cat > expect << EOF
-=== $(git rev-parse --short :/sixth ) sixth
-=== $(git rev-parse --short :/fifth ) fifth
+cat >expect <<EOF
+=== $(git rev-parse --short :/sixth) sixth
+=== $(git rev-parse --short :/fifth) fifth
 === $(git rev-parse --short :/fourth) fourth
 EOF
 test_expect_success 'git log --line-prefix="=== " --no-walk <commits> sorts by commit time' '
@@ -236,10 +236,10 @@ test_expect_success 'git log --line-prefix="=== " --no-walk <commits> sorts by c
 	test_cmp expect actual
 '
 
-cat > expect << EOF
+cat >expect <<EOF
 $(git rev-parse --short :/fourth) fourth
-$(git rev-parse --short :/sixth ) sixth
-$(git rev-parse --short :/fifth ) fifth
+$(git rev-parse --short :/sixth) sixth
+$(git rev-parse --short :/fifth) fifth
 EOF
 test_expect_success 'git log --no-walk=unsorted <commits> leaves list of commits as given' '
 	git log --no-walk=unsorted --oneline $last_three > actual &&
@@ -264,16 +264,15 @@ test_expect_success 'log --grep' '
 	test_cmp expect actual
 '
 
-for noop_opt in --invert-grep --all-match
-do
-	test_expect_success "log $noop_opt without --grep is a NOOP" '
+for noop_opt in --invert-grep --all-match; do
+  test_expect_success "log $noop_opt without --grep is a NOOP" '
 		git log >expect &&
 		git log $noop_opt >actual &&
 		test_cmp expect actual
 	'
 done
 
-cat > expect << EOF
+cat >expect <<EOF
 second
 initial
 EOF
@@ -486,14 +485,13 @@ test_expect_success !FAIL_PREREQS 'log with various grep.patternType configurati
 	)
 '
 
-for cmd in show whatchanged reflog format-patch
-do
-	case "$cmd" in
-	format-patch) myarg="HEAD~.." ;;
-	*) myarg= ;;
-	esac
+for cmd in show whatchanged reflog format-patch; do
+  case "$cmd" in
+    format-patch) myarg="HEAD~.." ;;
+    *) myarg= ;;
+  esac
 
-	test_expect_success "$cmd: understands grep.patternType, like 'log'" '
+  test_expect_success "$cmd: understands grep.patternType, like 'log'" '
 		git init "pattern-type-$cmd" &&
 		(
 			cd "pattern-type-$cmd" &&
@@ -560,7 +558,7 @@ test_expect_success '-c color.grep.matchSelected log --grep' '
 	test_cmp expect actual
 '
 
-cat > expect <<EOF
+cat >expect <<EOF
 * Second
 * sixth
 * fifth
@@ -574,7 +572,7 @@ test_expect_success 'simple log --graph' '
 	test_cmp_graph
 '
 
-cat > expect <<EOF
+cat >expect <<EOF
 123 * Second
 123 * sixth
 123 * fifth
@@ -596,7 +594,7 @@ test_expect_success 'set up merge history' '
 	git merge side
 '
 
-cat > expect <<\EOF
+cat >expect <<\EOF
 *   Merge branch 'side'
 |\
 | * side-2
@@ -615,7 +613,7 @@ test_expect_success 'log --graph with merge' '
 	test_cmp_graph --date-order
 '
 
-cat > expect <<\EOF
+cat >expect <<\EOF
 | | | *   Merge branch 'side'
 | | | |\
 | | | | * side-2
@@ -634,7 +632,7 @@ test_expect_success 'log --graph --line-prefix="| | | " with merge' '
 	test_cmp_graph --line-prefix="| | | " --date-order
 '
 
-cat > expect.colors <<\EOF
+cat >expect.colors <<\EOF
 *   Merge branch 'side'
 <BLUE>|<RESET><CYAN>\<RESET>
 <BLUE>|<RESET> * side-2
@@ -664,7 +662,7 @@ test_expect_success 'diff-tree --graph' '
 	grep "one" actual
 '
 
-cat > expect <<\EOF
+cat >expect <<\EOF
 *   commit main
 |\  Merge: A B
 | | Author: A U Thor <author@example.com>
@@ -748,7 +746,7 @@ test_expect_success 'set up more tangled history' '
 	git merge reach
 '
 
-cat > expect <<\EOF
+cat >expect <<\EOF
 *   Merge tag 'reach'
 |\
 | \
@@ -2241,7 +2239,6 @@ test_expect_success GPGSM 'log --graph --show-signature for merged tag x509 bad 
 	grep "^| | gpgsm: Signature made" actual &&
 	grep "^| | gpgsm: invalid signature" actual
 '
-
 
 test_expect_success GPG '--no-show-signature overrides --show-signature' '
 	git log -1 --show-signature --no-show-signature signed >actual &&

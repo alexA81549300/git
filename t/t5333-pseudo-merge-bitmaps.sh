@@ -6,29 +6,29 @@ GIT_TEST_MULTI_PACK_INDEX_WRITE_BITMAP=0
 
 . ./test-lib.sh
 
-test_pseudo_merges () {
-	test-tool bitmap dump-pseudo-merges
+test_pseudo_merges() {
+  test-tool bitmap dump-pseudo-merges
 }
 
-test_pseudo_merge_commits () {
-	test-tool bitmap dump-pseudo-merge-commits "$1"
+test_pseudo_merge_commits() {
+  test-tool bitmap dump-pseudo-merge-commits "$1"
 }
 
-test_pseudo_merges_satisfied () {
-	test_trace2_data bitmap pseudo_merges_satisfied "$1"
+test_pseudo_merges_satisfied() {
+  test_trace2_data bitmap pseudo_merges_satisfied "$1"
 }
 
-test_pseudo_merges_cascades () {
-	test_trace2_data bitmap pseudo_merges_cascades "$1"
+test_pseudo_merges_cascades() {
+  test_trace2_data bitmap pseudo_merges_cascades "$1"
 }
 
-test_pseudo_merges_reused () {
-	test_trace2_data pack-bitmap-write building_bitmaps_pseudo_merge_reused "$1"
+test_pseudo_merges_reused() {
+  test_trace2_data pack-bitmap-write building_bitmaps_pseudo_merge_reused "$1"
 }
 
-tag_everything () {
-	git rev-list --all --no-object-names >in &&
-	perl -lne '
+tag_everything() {
+  git rev-list --all --no-object-names >in \
+    && perl -lne '
 		print "create refs/tags/" . $. . " " . $1 if /([0-9a-f]+)/
 	' <in | git update-ref --stdin
 }

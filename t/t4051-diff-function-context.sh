@@ -6,36 +6,36 @@ test_description='diff function context'
 
 dir="$TEST_DIRECTORY/t4051"
 
-commit_and_tag () {
-	tag=$1 &&
-	shift &&
-	git add "$@" &&
-	test_tick &&
-	git commit -m "$tag" &&
-	git tag "$tag"
+commit_and_tag() {
+  tag=$1 \
+    && shift \
+    && git add "$@" \
+    && test_tick \
+    && git commit -m "$tag" \
+    && git tag "$tag"
 }
 
-first_context_line () {
-	awk '
+first_context_line() {
+  awk '
 		found {print; exit}
 		/^@@/ {found = 1}
 	'
 }
 
-last_context_line () {
-	sed -ne \$p
+last_context_line() {
+  sed -ne \$p
 }
 
-check_diff () {
-	name=$1
-	desc=$2
-	options="-W $3"
+check_diff() {
+  name=$1
+  desc=$2
+  options="-W $3"
 
-	test_expect_success "$desc" '
+  test_expect_success "$desc" '
 		git diff $options "$name^" "$name" >"$name.diff"
 	'
 
-	test_expect_success ' diff applies' '
+  test_expect_success ' diff applies' '
 		test_when_finished "git reset --hard" &&
 		git checkout --detach "$name^" &&
 		git apply --index "$name.diff" &&

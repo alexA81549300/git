@@ -4,12 +4,12 @@ test_description='tagopt variable affects "git fetch" and is overridden by comma
 
 . ./test-lib.sh
 
-setup_clone () {
-	git clone --mirror . $1 &&
-	git remote add remote_$1 $1 &&
-	(cd $1 &&
-	git tag tag_$1 &&
-	git branch branch_$1)
+setup_clone() {
+  git clone --mirror . $1 \
+    && git remote add remote_$1 $1 \
+    && (cd $1 \
+      && git tag tag_$1 \
+      && git branch branch_$1)
 }
 
 test_expect_success setup '

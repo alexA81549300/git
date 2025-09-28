@@ -73,25 +73,27 @@ test_expect_success 'test help' '
 
 mv expect expect.err
 
-check () {
-	what="$1" &&
-	shift &&
-	expect="$1" &&
-	shift &&
-	test-tool parse-options --expect="$what $expect" "$@"
+check() {
+  what="$1" \
+    && shift \
+    && expect="$1" \
+    && shift \
+    && test-tool parse-options --expect="$what $expect" "$@"
 }
 
 check_unknown_i18n() {
-	case "$1" in
-	--*)
-		echo error: unknown option \`${1#--}\' >expect ;;
-	-*)
-		echo error: unknown switch \`${1#-}\' >expect ;;
-	esac &&
-	cat expect.err >>expect &&
-	test_must_fail test-tool parse-options $* >output 2>output.err &&
-	test_must_be_empty output &&
-	test_cmp expect output.err
+  case "$1" in
+    --*)
+      echo error: unknown option \`${1#--}\' >expect
+      ;;
+    -*)
+      echo error: unknown switch \`${1#-}\' >expect
+      ;;
+  esac \
+    && cat expect.err >>expect \
+    && test_must_fail test-tool parse-options $* >output 2>output.err \
+    && test_must_be_empty output \
+    && test_cmp expect output.err
 }
 
 test_expect_success 'OPT_BOOL() #1' 'check boolean: 1 --yes'
@@ -566,9 +568,8 @@ test_expect_success 'NO_INTERNAL_HELP works for -h' '
 	grep "^usage: " err
 '
 
-for help_opt in help help-all
-do
-	test_expect_success "NO_INTERNAL_HELP works for --$help_opt" "
+for help_opt in help help-all; do
+  test_expect_success "NO_INTERNAL_HELP works for --$help_opt" "
 		test_expect_code 129 test-tool parse-options-flags --no-internal-help cmd --$help_opt 2>err &&
 		grep '^error: unknown option \`'$help_opt\' err &&
 		grep '^usage: ' err

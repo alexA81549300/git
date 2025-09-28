@@ -85,7 +85,6 @@ test_expect_success 'push with customized color' '
 	grep "<BOLD;GREEN>success<RESET>:" decoded
 '
 
-
 test_expect_success 'error in customized color' '
 	git --git-dir child/.git -c color.remote=always -c color.remote.error=i-am-not-a-color push -f origin HEAD:refs/heads/error-customized-color 2>output &&
 	test_decode_color <output >decoded &&

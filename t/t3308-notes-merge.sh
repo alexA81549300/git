@@ -55,14 +55,14 @@ commit_sha3=$(git rev-parse 3rd^{commit})
 commit_sha4=$(git rev-parse 4th^{commit})
 commit_sha5=$(git rev-parse 5th^{commit})
 
-verify_notes () {
-	notes_ref="$1"
-	git -c core.notesRef="refs/notes/$notes_ref" notes |
-		sort >"output_notes_$notes_ref" &&
-	test_cmp "expect_notes_$notes_ref" "output_notes_$notes_ref" &&
-	git -c core.notesRef="refs/notes/$notes_ref" log --format="%H %s%n%N" \
-		>"output_log_$notes_ref" &&
-	test_cmp "expect_log_$notes_ref" "output_log_$notes_ref"
+verify_notes() {
+  notes_ref="$1"
+  git -c core.notesRef="refs/notes/$notes_ref" notes \
+    | sort >"output_notes_$notes_ref" \
+    && test_cmp "expect_notes_$notes_ref" "output_notes_$notes_ref" \
+    && git -c core.notesRef="refs/notes/$notes_ref" log --format="%H %s%n%N" \
+      >"output_log_$notes_ref" \
+    && test_cmp "expect_log_$notes_ref" "output_log_$notes_ref"
 }
 
 cat <<EOF | sort >expect_notes_x

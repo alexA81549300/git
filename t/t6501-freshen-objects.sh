@@ -32,51 +32,50 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 # We care about reachability, so we do not want to use
 # the normal test_commit, which creates extra tags.
-add () {
-	echo "$1" >"$1" &&
-	git add "$1"
+add() {
+  echo "$1" >"$1" \
+    && git add "$1"
 }
-commit () {
-	test_tick &&
-	add "$1" &&
-	git commit -m "$1"
-}
-
-maybe_repack () {
-	case "$title" in
-	loose)
-		: skip repack
-		;;
-	repack)
-		git repack -ad
-		;;
-	bitmap)
-		git repack -adb
-		;;
-	*)
-		echo >&2 "unknown test type in maybe_repack"
-		return 1
-		;;
-	esac
+commit() {
+  test_tick \
+    && add "$1" \
+    && git commit -m "$1"
 }
 
-for title in loose repack bitmap
-do
-	test_expect_success "make repo completely empty ($title)" '
+maybe_repack() {
+  case "$title" in
+    loose)
+      : skip repack
+      ;;
+    repack)
+      git repack -ad
+      ;;
+    bitmap)
+      git repack -adb
+      ;;
+    *)
+      echo >&2 "unknown test type in maybe_repack"
+      return 1
+      ;;
+  esac
+}
+
+for title in loose repack bitmap; do
+  test_expect_success "make repo completely empty ($title)" '
 		rm -rf .git &&
 		git init
 	'
 
-	test_expect_success "disable reflogs ($title)" '
+  test_expect_success "disable reflogs ($title)" '
 		git config core.logallrefupdates false &&
 		git reflog expire --expire=all --all
 	'
 
-	test_expect_success "setup basic history ($title)" '
+  test_expect_success "setup basic history ($title)" '
 		commit base
 	'
 
-	test_expect_success "create and abandon some objects ($title)" '
+  test_expect_success "create and abandon some objects ($title)" '
 		git checkout -b experiment &&
 		commit abandon &&
 		maybe_repack &&
@@ -84,11 +83,11 @@ do
 		git branch -D experiment
 	'
 
-	test_expect_success "simulate time passing ($title)" '
+  test_expect_success "simulate time passing ($title)" '
 		test-tool chmtime --get -86400 $(find .git/objects -type f)
 	'
 
-	test_expect_success "start writing new commit with old blob ($title)" '
+  test_expect_success "start writing new commit with old blob ($title)" '
 		tree=$(
 			GIT_INDEX_FILE=index.tmp &&
 			export GIT_INDEX_FILE &&
@@ -99,26 +98,26 @@ do
 		)
 	'
 
-	test_expect_success "simultaneous gc ($title)" '
+  test_expect_success "simultaneous gc ($title)" '
 		git gc --no-cruft --prune=12.hours.ago
 	'
 
-	test_expect_success "finish writing out commit ($title)" '
+  test_expect_success "finish writing out commit ($title)" '
 		commit=$(echo foo | git commit-tree -p HEAD $tree) &&
 		git update-ref HEAD $commit
 	'
 
-	# "abandon" blob should have been rescued by reference from new tree
-	test_expect_success "repository passes fsck ($title)" '
+  # "abandon" blob should have been rescued by reference from new tree
+  test_expect_success "repository passes fsck ($title)" '
 		git fsck
 	'
 
-	test_expect_success "abandon objects again ($title)" '
+  test_expect_success "abandon objects again ($title)" '
 		git reset --hard HEAD^ &&
 		test-tool chmtime --get -86400 $(find .git/objects -type f)
 	'
 
-	test_expect_success "start writing new commit with same tree ($title)" '
+  test_expect_success "start writing new commit with same tree ($title)" '
 		tree=$(
 			GIT_INDEX_FILE=index.tmp &&
 			export GIT_INDEX_FILE &&
@@ -129,12 +128,12 @@ do
 		)
 	'
 
-	test_expect_success "simultaneous gc ($title)" '
+  test_expect_success "simultaneous gc ($title)" '
 		git gc --no-cruft --prune=12.hours.ago
 	'
 
-	# tree should have been refreshed by write-tree
-	test_expect_success "finish writing out commit ($title)" '
+  # tree should have been refreshed by write-tree
+  test_expect_success "finish writing out commit ($title)" '
 		commit=$(echo foo | git commit-tree -p HEAD $tree) &&
 		git update-ref HEAD $commit
 	'

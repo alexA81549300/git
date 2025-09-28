@@ -23,12 +23,12 @@ comment text
 EOF
 
 test_expect_success \
-    'test preparation: write empty tree' \
-    'git write-tree >treeid'
+  'test preparation: write empty tree' \
+  'git write-tree >treeid'
 
 test_expect_success \
-    'construct commit' \
-    'echo comment text |
+  'construct commit' \
+  'echo comment text |
      GIT_AUTHOR_NAME="Author Name" \
      GIT_AUTHOR_EMAIL="author@email" \
      GIT_AUTHOR_DATE="2005-05-26 23:00" \
@@ -38,13 +38,12 @@ test_expect_success \
      TZ=GMT git commit-tree $(cat treeid) >commitid 2>/dev/null'
 
 test_expect_success \
-    'read commit' \
-    'git cat-file commit $(cat commitid) >commit'
+  'read commit' \
+  'git cat-file commit $(cat commitid) >commit'
 
 test_expect_success \
-    'compare commit' \
-    'test_cmp expected commit'
-
+  'compare commit' \
+  'test_cmp expected commit'
 
 test_expect_success 'flags and then non flags' '
 	test_tick &&

@@ -16,26 +16,24 @@ failing, and produces maximally sane output in git.'
 # git-p4 directly with the Python 2 interpreter to ensure that we use that
 # version even if Git was compiled with Python 3.
 python_target_binary=$(which python2)
-if test -n "$python_target_binary"
-then
-	mkdir temp_python
-	PATH="$(pwd)/temp_python:$PATH"
-	export PATH
+if test -n "$python_target_binary"; then
+  mkdir temp_python
+  PATH="$(pwd)/temp_python:$PATH"
+  export PATH
 
-	write_script temp_python/git-p4-python2 <<-EOF
+  write_script temp_python/git-p4-python2 <<-EOF
 	exec "$python_target_binary" "$(git --exec-path)/git-p4" "\$@"
 	EOF
 fi
 
 git p4-python2 >err
-if ! grep 'valid commands' err
-then
-	skip_all="skipping python2 git p4 tests; python2 not available"
-	test_done
+if ! grep 'valid commands' err; then
+  skip_all="skipping python2 git p4 tests; python2 not available"
+  test_done
 fi
 
-remove_user_cache () {
-	rm "$HOME/.gitp4-usercache.txt" || true
+remove_user_cache() {
+  rm "$HOME/.gitp4-usercache.txt" || true
 }
 
 test_expect_success 'start p4d' '

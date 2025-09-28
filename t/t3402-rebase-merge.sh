@@ -12,9 +12,8 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 T="A quick brown fox
 jumps over the lazy dog."
-for i in 1 2 3 4 5 6 7 8 9 10
-do
-	echo "$i $T"
+for i in 1 2 3 4 5 6 7 8 9 10; do
+  echo "$i $T"
 done >original
 
 test_expect_success setup '

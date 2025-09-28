@@ -15,13 +15,13 @@ test_expect_success 'setup' '
 	git commit -m one
 '
 
-check_diff () {
-	dir=$1
-	shift
-	expect=$1
-	shift
-	short_blob=$(git rev-parse --short $blob_file2)
-	cat >expected <<-EOF
+check_diff() {
+  dir=$1
+  shift
+  expect=$1
+  shift
+  short_blob=$(git rev-parse --short $blob_file2)
+  cat >expected <<-EOF
 	diff --git a/$expect b/$expect
 	new file mode 100644
 	index 0000000..$short_blob
@@ -30,72 +30,71 @@ check_diff () {
 	@@ -0,0 +1 @@
 	+other content
 	EOF
-	test_expect_success "-p $*" "
+  test_expect_success "-p $*" "
 		git -C '$dir' diff -p $* HEAD^ >actual &&
 		test_cmp expected actual
 	"
 }
 
-check_numstat () {
-	dir=$1
-	shift
-	expect=$1
-	shift
-	cat >expected <<-EOF
+check_numstat() {
+  dir=$1
+  shift
+  expect=$1
+  shift
+  cat >expected <<-EOF
 	1	0	$expect
 	EOF
-	test_expect_success "--numstat $*" "
+  test_expect_success "--numstat $*" "
 		echo '1	0	$expect' >expected &&
 		git -C '$dir' diff --numstat $* HEAD^ >actual &&
 		test_cmp expected actual
 	"
 }
 
-check_stat () {
-	dir=$1
-	shift
-	expect=$1
-	shift
-	cat >expected <<-EOF
+check_stat() {
+  dir=$1
+  shift
+  expect=$1
+  shift
+  cat >expected <<-EOF
 	 $expect | 1 +
 	 1 file changed, 1 insertion(+)
 	EOF
-	test_expect_success "--stat $*" "
+  test_expect_success "--stat $*" "
 		git -C '$dir' diff --stat $* HEAD^ >actual &&
 		test_cmp expected actual
 	"
 }
 
-check_raw () {
-	dir=$1
-	shift
-	expect=$1
-	shift
-	cat >expected <<-EOF
+check_raw() {
+  dir=$1
+  shift
+  expect=$1
+  shift
+  cat >expected <<-EOF
 	:000000 100644 $ZERO_OID $blob_file2 A	$expect
 	EOF
-	test_expect_success "--raw $*" "
+  test_expect_success "--raw $*" "
 		git -C '$dir' diff --no-abbrev --raw $* HEAD^ >actual &&
 		test_cmp expected actual
 	"
 }
 
-for type in diff numstat stat raw
-do
-	check_$type . file2 --relative=subdir/
-	check_$type . file2 --relative=subdir
-	check_$type subdir file2 --relative
-	check_$type . dir/file2 --relative=sub
+for type in diff numstat stat raw; do
+  check_$type . file2 --relative=subdir/
+  check_$type . file2 --relative=subdir
+  check_$type subdir file2 --relative
+  check_$type . dir/file2 --relative=sub
 done
 
-check_diff_relative_option () {
-	dir=$1
-	shift
-	expect=$1
-	shift
-	relative_opt=$1
-	shift
-	test_expect_success "config diff.relative $relative_opt -p $*" "
+check_diff_relative_option() {
+  dir=$1
+  shift
+  expect=$1
+  shift
+  relative_opt=$1
+  shift
+  test_expect_success "config diff.relative $relative_opt -p $*" "
 		short_blob=\$(git rev-parse --short $blob_file2) &&
 		cat >expected <<-EOF &&
 		diff --git a/$expect b/$expect
@@ -112,14 +111,14 @@ check_diff_relative_option () {
 	"
 }
 
-check_diff_no_relative_option () {
-	dir=$1
-	shift
-	expect=$1
-	shift
-	relative_opt=$1
-	shift
-	test_expect_success "config diff.relative $relative_opt -p $*" "
+check_diff_no_relative_option() {
+  dir=$1
+  shift
+  expect=$1
+  shift
+  relative_opt=$1
+  shift
+  test_expect_success "config diff.relative $relative_opt -p $*" "
 		short_blob_file1=\$(git rev-parse --short $blob_file1) &&
 		short_blob_file2=\$(git rev-parse --short $blob_file2) &&
 		cat >expected <<-EOF &&

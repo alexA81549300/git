@@ -21,9 +21,9 @@ test_expect_success 'disable reflogs' '
 	git reflog expire --expire=all --all
 '
 
-create_bogus_ref () {
-	test-tool ref-store main update-ref msg "refs/heads/bogus..name" $bogus $ZERO_OID REF_SKIP_REFNAME_VERIFICATION &&
-	test_when_finished "test-tool ref-store main delete-refs REF_NO_DEREF msg refs/heads/bogus..name"
+create_bogus_ref() {
+  test-tool ref-store main update-ref msg "refs/heads/bogus..name" $bogus $ZERO_OID REF_SKIP_REFNAME_VERIFICATION \
+    && test_when_finished "test-tool ref-store main delete-refs REF_NO_DEREF msg refs/heads/bogus..name"
 }
 
 test_expect_success 'create history reachable only from a bogus-named ref' '
@@ -58,7 +58,6 @@ test_expect_success 'GIT_REF_PARANOIA=0 overrides safety' '
 	create_bogus_ref &&
 	GIT_REF_PARANOIA=0 git repack -adk
 '
-
 
 test_expect_success 'destructive repack keeps packed object' '
 	create_bogus_ref &&

@@ -13,27 +13,25 @@ objdir=.git/objects
 
 HASH_LEN=$(test_oid rawsz)
 
-midx_read_expect () {
-	NUM_PACKS=$1
-	NUM_OBJECTS=$2
-	NUM_CHUNKS=$3
-	OBJECT_DIR=$4
-	EXTRA_CHUNKS="$5"
-	{
-		cat <<-EOF &&
+midx_read_expect() {
+  NUM_PACKS=$1
+  NUM_OBJECTS=$2
+  NUM_CHUNKS=$3
+  OBJECT_DIR=$4
+  EXTRA_CHUNKS="$5"
+  {
+    cat <<-EOF && if test $NUM_PACKS -ge 1; then
 		header: 4d494458 1 $HASH_LEN $NUM_CHUNKS $NUM_PACKS
 		chunks: pack-names oid-fanout oid-lookup object-offsets$EXTRA_CHUNKS
 		num_objects: $NUM_OBJECTS
 		packs:
 		EOF
-		if test $NUM_PACKS -ge 1
-		then
-			ls $OBJECT_DIR/pack/ | grep idx | sort
-		fi &&
-		printf "object-dir: $OBJECT_DIR\n"
-	} >expect &&
-	test-tool read-midx $OBJECT_DIR >actual &&
-	test_cmp expect actual
+      ls $OBJECT_DIR/pack/ | grep idx | sort
+    fi \
+      && printf "object-dir: $OBJECT_DIR\n"
+  } >expect \
+    && test-tool read-midx $OBJECT_DIR >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'setup' '
@@ -60,38 +58,38 @@ test_expect_success SHA1 'warn if a midx contains no oid' '
 	rm $objdir/pack/multi-pack-index
 '
 
-generate_objects () {
-	i=$1
-	iii=$(printf '%03i' $i)
-	{
-		test-tool genrandom "bar" 200 &&
-		test-tool genrandom "baz $iii" 50
-	} >wide_delta_$iii &&
-	{
-		test-tool genrandom "foo"$i 100 &&
-		test-tool genrandom "foo"$(( $i + 1 )) 100 &&
-		test-tool genrandom "foo"$(( $i + 2 )) 100
-	} >deep_delta_$iii &&
-	{
-		echo $iii &&
-		test-tool genrandom "$iii" 8192
-	} >file_$iii &&
-	git update-index --add file_$iii deep_delta_$iii wide_delta_$iii
+generate_objects() {
+  i=$1
+  iii=$(printf '%03i' $i)
+  {
+    test-tool genrandom "bar" 200 \
+      && test-tool genrandom "baz $iii" 50
+  } >wide_delta_$iii \
+    && {
+      test-tool genrandom "foo"$i 100 \
+        && test-tool genrandom "foo"$(($i + 1)) 100 \
+        && test-tool genrandom "foo"$(($i + 2)) 100
+    } >deep_delta_$iii \
+    && {
+      echo $iii \
+        && test-tool genrandom "$iii" 8192
+    } >file_$iii \
+    && git update-index --add file_$iii deep_delta_$iii wide_delta_$iii
 }
 
-commit_and_list_objects () {
-	{
-		echo 101 &&
-		test-tool genrandom 100 8192;
-	} >file_101 &&
-	git update-index --add file_101 &&
-	tree=$(git write-tree) &&
-	commit=$(git commit-tree $tree -p HEAD</dev/null) &&
-	{
-		echo $tree &&
-		git ls-tree $tree | sed -e "s/.* \\([0-9a-f]*\\)	.*/\\1/"
-	} >obj-list &&
-	git reset --hard $commit
+commit_and_list_objects() {
+  {
+    echo 101 \
+      && test-tool genrandom 100 8192
+  } >file_101 \
+    && git update-index --add file_101 \
+    && tree=$(git write-tree) \
+    && commit=$(git commit-tree $tree -p HEAD </dev/null) \
+    && {
+      echo $tree \
+        && git ls-tree $tree | sed -e "s/.* \\([0-9a-f]*\\)	.*/\\1/"
+    } >obj-list \
+    && git reset --hard $commit
 }
 
 test_expect_success 'create objects' '
@@ -374,23 +372,22 @@ test_expect_success 'verify with the --no-progress option' '
 
 # usage: corrupt_midx_and_verify <pos> <data> <objdir> <string>
 corrupt_midx_and_verify() {
-	POS=$1 &&
-	DATA="${2:-\0}" &&
-	OBJDIR=$3 &&
-	GREPSTR="$4" &&
-	COMMAND="$5" &&
-	if test -z "$COMMAND"
-	then
-		COMMAND="git multi-pack-index verify --object-dir=$OBJDIR"
-	fi &&
-	FILE=$OBJDIR/pack/multi-pack-index &&
-	chmod a+w $FILE &&
-	test_when_finished mv midx-backup $FILE &&
-	cp $FILE midx-backup &&
-	printf "$DATA" | dd of="$FILE" bs=1 seek="$POS" conv=notrunc &&
-	test_must_fail $COMMAND 2>test_err &&
-	grep -v "^+" test_err >err &&
-	test_grep "$GREPSTR" err
+  POS=$1 \
+    && DATA="${2:-\0}" \
+    && OBJDIR=$3 \
+    && GREPSTR="$4" \
+    && COMMAND="$5" \
+    && if test -z "$COMMAND"; then
+      COMMAND="git multi-pack-index verify --object-dir=$OBJDIR"
+    fi \
+    && FILE=$OBJDIR/pack/multi-pack-index \
+    && chmod a+w $FILE \
+    && test_when_finished mv midx-backup $FILE \
+    && cp $FILE midx-backup \
+    && printf "$DATA" | dd of="$FILE" bs=1 seek="$POS" conv=notrunc \
+    && test_must_fail $COMMAND 2>test_err \
+    && grep -v "^+" test_err >err \
+    && test_grep "$GREPSTR" err
 }
 
 test_expect_success 'verify bad signature' '
@@ -408,7 +405,7 @@ MIDX_BYTE_CHUNK_OFFSET=$(($MIDX_HEADER_SIZE + 4))
 MIDX_NUM_CHUNKS=5
 MIDX_CHUNK_LOOKUP_WIDTH=12
 MIDX_OFFSET_PACKNAMES=$(($MIDX_HEADER_SIZE + \
-			 $MIDX_NUM_CHUNKS * $MIDX_CHUNK_LOOKUP_WIDTH))
+  $MIDX_NUM_CHUNKS * $MIDX_CHUNK_LOOKUP_WIDTH))
 MIDX_BYTE_PACKNAME_ORDER=$(($MIDX_OFFSET_PACKNAMES + 2))
 MIDX_OFFSET_OID_FANOUT=$(($MIDX_OFFSET_PACKNAMES + $(test_oid packnameoff)))
 MIDX_OID_FANOUT_WIDTH=4
@@ -609,11 +606,11 @@ test_expect_success 'multi-pack-index in an alternate' '
 compare_results_with_midx "with alternate (remote midx)"
 
 # usage: corrupt_data <file> <pos> [<data>]
-corrupt_data () {
-	file=$1
-	pos=$2
-	data="${3:-\0}"
-	printf "$data" | dd of="$file" bs=1 seek="$pos" conv=notrunc
+corrupt_data() {
+  file=$1
+  pos=$2
+  data="${3:-\0}"
+  printf "$data" | dd of="$file" bs=1 seek="$pos" conv=notrunc
 }
 
 # Force 64-bit offsets by manipulating the idx file.
@@ -1113,11 +1110,11 @@ test_expect_success 'repack with delta islands' '
 	)
 '
 
-corrupt_chunk () {
-	midx=.git/objects/pack/multi-pack-index &&
-	test_when_finished "rm -rf $midx" &&
-	git repack -ad --write-midx &&
-	corrupt_chunk_file $midx "$@"
+corrupt_chunk() {
+  midx=.git/objects/pack/multi-pack-index \
+    && test_when_finished "rm -rf $midx" \
+    && git repack -ad --write-midx \
+    && corrupt_chunk_file $midx "$@"
 }
 
 test_expect_success 'reader notices too-small oid fanout chunk' '

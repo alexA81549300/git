@@ -32,30 +32,36 @@ test_expect_success 'fetch revisions from svn' '
 	git svn fetch
 	'
 
-set_props () {
-	subdir="$1"
-	file="$2"
-	shift;shift;
-	(cd "$subdir" &&
-		while [ $# -gt 0 ] ; do
-			git svn propset "$1" "$2" "$file" || exit 1
-			shift;shift;
-		done &&
-		echo hello >> "$file" &&
-		git commit -m "testing propset" "$file")
+set_props() {
+  subdir="$1"
+  file="$2"
+  shift
+  shift
+  (cd "$subdir" \
+    && while [ $# -gt 0 ]; do
+      git svn propset "$1" "$2" "$file" || exit 1
+      shift
+      shift
+    done \
+    && echo hello >>"$file" \
+    && git commit -m "testing propset" "$file")
 }
 
-confirm_props () {
-	subdir="$1"
-	file="$2"
-	shift;shift;
-	(set -e ; cd "svn_project/$subdir" &&
-		while [ $# -gt 0 ] ; do
-			test "$(svn_cmd propget "$1" "$file")" = "$2" || exit 1
-			shift;shift;
-		done)
+confirm_props() {
+  subdir="$1"
+  file="$2"
+  shift
+  shift
+  (
+    set -e
+    cd "svn_project/$subdir" \
+      && while [ $# -gt 0 ]; do
+        test "$(svn_cmd propget "$1" "$file")" = "$2" || exit 1
+        shift
+        shift
+      done
+  )
 }
-
 
 #The current implementation has a restriction:
 #svn propset will be taken as a delta for svn dcommit only

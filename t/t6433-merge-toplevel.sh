@@ -7,10 +7,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-t3033_reset () {
-	git checkout -B main two &&
-	git branch -f left three &&
-	git branch -f right four
+t3033_reset() {
+  git checkout -B main two \
+    && git branch -f left three \
+    && git branch -f right four
 }
 
 test_expect_success setup '

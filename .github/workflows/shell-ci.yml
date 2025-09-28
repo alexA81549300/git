@@ -1,0 +1,13 @@
+name: shell-ci
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shell lint
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y shellcheck shfmt
+          find . -type f -name "*.sh" -print0 | xargs -0 -r shellcheck -x
+          find . -type f -name "*.sh" -print0 | xargs -0 -r shfmt -d

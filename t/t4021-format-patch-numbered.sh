@@ -24,30 +24,30 @@ test_expect_success setup '
 # Each of these gets used multiple times.
 
 test_num_no_numbered() {
-	cnt=$(grep "^Subject: \[PATCH\]" $1 | wc -l) &&
-	test $cnt = $2
+  cnt=$(grep "^Subject: \[PATCH\]" $1 | wc -l) \
+    && test $cnt = $2
 }
 
 test_single_no_numbered() {
-	test_num_no_numbered $1 1
+  test_num_no_numbered $1 1
 }
 
 test_no_numbered() {
-	test_num_no_numbered $1 2
+  test_num_no_numbered $1 2
 }
 
 test_single_cover_letter_numbered() {
-	grep "^Subject: \[PATCH 0/1\]" $1 &&
-	grep "^Subject: \[PATCH 1/1\]" $1
+  grep "^Subject: \[PATCH 0/1\]" $1 \
+    && grep "^Subject: \[PATCH 1/1\]" $1
 }
 
 test_single_numbered() {
-	grep "^Subject: \[PATCH 1/1\]" $1
+  grep "^Subject: \[PATCH 1/1\]" $1
 }
 
 test_numbered() {
-	grep "^Subject: \[PATCH 1/2\]" $1 &&
-	grep "^Subject: \[PATCH 2/2\]" $1
+  grep "^Subject: \[PATCH 1/2\]" $1 \
+    && grep "^Subject: \[PATCH 2/2\]" $1
 }
 
 test_expect_success 'single patch defaults to no numbers' '
@@ -135,7 +135,5 @@ test_expect_success 'Use --no-numbered and --cover-letter single patch' '
 	git format-patch --no-numbered --stdout --cover-letter HEAD~1 >patch10 &&
 	test_no_numbered patch10
 '
-
-
 
 test_done

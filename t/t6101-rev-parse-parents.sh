@@ -11,10 +11,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 TEST_CREATE_REPO_NO_TEMPLATE=1
 . ./test-lib.sh
 
-test_cmp_rev_output () {
-	git rev-parse --verify "$1" >expect &&
-	eval "$2" >actual &&
-	test_cmp expect actual
+test_cmp_rev_output() {
+  git rev-parse --verify "$1" >expect \
+    && eval "$2" >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'setup' '

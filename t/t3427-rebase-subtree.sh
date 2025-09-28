@@ -11,7 +11,7 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . "$TEST_DIRECTORY"/lib-rebase.sh
 
 commit_message() {
-	git log --pretty=format:%s -1 "$1"
+  git log --pretty=format:%s -1 "$1"
 }
 
 # There are a few bugs in the rebase with regards to the subtree strategy, and

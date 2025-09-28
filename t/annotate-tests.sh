@@ -1,34 +1,46 @@
 # This file isn't used as a test script directly, instead it is
 # sourced from t8001-annotate.sh and t8002-blame.sh.
 
-if test_have_prereq MINGW
-then
-  sanitize_L () {
-	echo "$1" | sed 'sX\(^-L\|,\)\^\?/X&\\;*Xg'
+if test_have_prereq MINGW; then
+  sanitize_L() {
+    echo "$1" | sed 'sX\(^-L\|,\)\^\?/X&\\;*Xg'
   }
 else
-  sanitize_L () {
-	echo "$1"
+  sanitize_L() {
+    echo "$1"
   }
 fi
 
-check_count () {
-	head= &&
-	file='file' &&
-	options= &&
-	while :
-	do
-		case "$1" in
-		-h) head="$2"; shift; shift ;;
-		-f) file="$2"; shift; shift ;;
-		-L*) options="$options $(sanitize_L "$1")"; shift ;;
-		-*) options="$options $1"; shift ;;
-		*) break ;;
-		esac
-	done &&
-	echo "$PROG $options $file $head" >&4 &&
-	$PROG $options $file $head >actual &&
-	perl -e '
+check_count() {
+  head= \
+    && file='file' \
+    && options= \
+    && while :; do
+      case "$1" in
+        -h)
+          head="$2"
+          shift
+          shift
+          ;;
+        -f)
+          file="$2"
+          shift
+          shift
+          ;;
+        -L*)
+          options="$options $(sanitize_L "$1")"
+          shift
+          ;;
+        -*)
+          options="$options $1"
+          shift
+          ;;
+        *) break ;;
+      esac
+    done \
+    && echo "$PROG $options $file $head" >&4 \
+    && $PROG $options $file $head >actual \
+    && perl -e '
 		my %expect = (@ARGV);
 		my %count = map { $_ => 0 } keys %expect;
 		while (<STDIN>) {
@@ -56,8 +68,8 @@ check_count () {
 	' "$@" <actual
 }
 
-get_progress_result () {
-	tr '\015' '\012' | tail -n 1
+get_progress_result() {
+  tr '\015' '\012' | tail -n 1
 }
 
 test_expect_success 'setup A lines' '

@@ -32,9 +32,8 @@ test_expect_success 'enter "large" codepath, with small core.bigFileThreshold' '
 '
 
 # add a large file with different settings
-while read expect config
-do
-	test_expect_success "add with $config" '
+while read expect config; do
+  test_expect_success "add with $config" '
 		test_when_finished "rm -f .git/objects/pack/pack-*.* .git/index" &&
 		git $config add large1 &&
 		sz=$(test_file_size .git/objects/pack/pack-*.pack) &&

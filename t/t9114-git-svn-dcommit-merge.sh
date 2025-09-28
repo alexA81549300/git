@@ -7,8 +7,8 @@ test_description='git svn dcommit handles merges'
 
 . ./lib-git-svn.sh
 
-big_text_block () {
-cat << EOF
+big_text_block() {
+  cat <<EOF
 #
 # (C) Copyright 2000 - 2005
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.

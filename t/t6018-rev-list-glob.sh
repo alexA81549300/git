@@ -7,18 +7,18 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-commit () {
-	test_tick &&
-	echo $1 > foo &&
-	git add foo &&
-	git commit -m "$1"
+commit() {
+  test_tick \
+    && echo $1 >foo \
+    && git add foo \
+    && git commit -m "$1"
 }
 
-compare () {
-	# Split arguments on whitespace.
-	git $1 $2 >expected &&
-	git $1 $3 >actual &&
-	test_cmp expected actual
+compare() {
+  # Split arguments on whitespace.
+  git $1 $2 >expected \
+    && git $1 $3 >actual \
+    && test_cmp expected actual
 }
 
 test_expect_success 'setup' '
@@ -186,42 +186,40 @@ test_expect_success 'rev-parse --exclude=ref with --remotes=glob' '
 	compare rev-parse "--exclude=upstream/x --remotes=upstream/*" "upstream/one upstream/two"
 '
 
-for section in fetch receive uploadpack
-do
-	test_expect_success "rev-parse --exclude-hidden=$section with --all" '
+for section in fetch receive uploadpack; do
+  test_expect_success "rev-parse --exclude-hidden=$section with --all" '
 		compare "-c transfer.hideRefs=refs/remotes/ rev-parse" "--branches --tags" "--exclude-hidden=$section --all"
 	'
 
-	test_expect_success "rev-parse --exclude-hidden=$section with --all" '
+  test_expect_success "rev-parse --exclude-hidden=$section with --all" '
 		compare "-c transfer.hideRefs=refs/heads/subspace/ rev-parse" "--exclude=refs/heads/subspace/* --all" "--exclude-hidden=$section --all"
 	'
 
-	test_expect_success "rev-parse --exclude-hidden=$section with --glob" '
+  test_expect_success "rev-parse --exclude-hidden=$section with --glob" '
 		compare "-c transfer.hideRefs=refs/heads/subspace/ rev-parse" "--exclude=refs/heads/subspace/* --glob=refs/heads/*" "--exclude-hidden=$section --glob=refs/heads/*"
 	'
 
-	test_expect_success "rev-parse --exclude-hidden=$section can be passed once per pseudo-ref" '
+  test_expect_success "rev-parse --exclude-hidden=$section can be passed once per pseudo-ref" '
 		compare "-c transfer.hideRefs=refs/remotes/ rev-parse" "--branches --tags --branches --tags" "--exclude-hidden=$section --all --exclude-hidden=$section --all"
 	'
 
-	test_expect_success "rev-parse --exclude-hidden=$section can only be passed once per pseudo-ref" '
+  test_expect_success "rev-parse --exclude-hidden=$section can only be passed once per pseudo-ref" '
 		echo "fatal: --exclude-hidden= passed more than once" >expected &&
 		test_must_fail git rev-parse --exclude-hidden=$section --exclude-hidden=$section 2>err &&
 		test_cmp expected err
 	'
 
-	for pseudoopt in branches tags remotes
-	do
-		test_expect_success "rev-parse --exclude-hidden=$section fails with --$pseudoopt" '
+  for pseudoopt in branches tags remotes; do
+    test_expect_success "rev-parse --exclude-hidden=$section fails with --$pseudoopt" '
 			test_must_fail git rev-parse --exclude-hidden=$section --$pseudoopt 2>err &&
 			test_grep "error: options .--exclude-hidden. and .--$pseudoopt. cannot be used together" err
 		'
 
-		test_expect_success "rev-parse --exclude-hidden=$section fails with --$pseudoopt=pattern" '
+    test_expect_success "rev-parse --exclude-hidden=$section fails with --$pseudoopt=pattern" '
 			test_must_fail git rev-parse --exclude-hidden=$section --$pseudoopt=pattern 2>err &&
 			test_grep "error: options .--exclude-hidden. and .--$pseudoopt. cannot be used together" err
 		'
-	done
+  done
 done
 
 test_expect_success 'rev-list --exclude=glob with --branches=glob' '

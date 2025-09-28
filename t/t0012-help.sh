@@ -4,18 +4,18 @@ test_description='help'
 
 . ./test-lib.sh
 
-configure_help () {
-	test_config help.format html &&
-
-	# Unless the path has "://" in it, Git tries to make sure
-	# the documentation directory locally exists. Avoid it as
-	# we are only interested in seeing an attempt to correctly
-	# invoke a help browser in this test.
-	test_config help.htmlpath test://html &&
-
-	# Name a custom browser
-	test_config browser.test.cmd ./test-browser &&
-	test_config help.browser test
+configure_help() {
+  test_config help.format html \
+    &&
+    # Unless the path has "://" in it, Git tries to make sure
+    # the documentation directory locally exists. Avoid it as
+    # we are only interested in seeing an attempt to correctly
+    # invoke a help browser in this test.
+    test_config help.htmlpath test://html \
+    &&
+    # Name a custom browser
+    test_config browser.test.cmd ./test-browser \
+    && test_config help.browser test
 }
 
 test_expect_success "setup" '
@@ -51,25 +51,23 @@ test_expect_success 'invalid usage' '
 	test_expect_code 129 git help --config-sections-for-completion add
 '
 
-for opt in '-a' '-g' '-c' '--config-for-completion' '--config-sections-for-completion'
-do
-	test_expect_success "invalid usage of '$opt' with [-i|-m|-w]" '
+for opt in '-a' '-g' '-c' '--config-for-completion' '--config-sections-for-completion'; do
+  test_expect_success "invalid usage of '$opt' with [-i|-m|-w]" '
 		git help $opt &&
 		test_expect_code 129 git help $opt -i &&
 		test_expect_code 129 git help $opt -m &&
 		test_expect_code 129 git help $opt -w
 	'
 
-	if test "$opt" = "-a"
-	then
-		continue
-	fi
+  if test "$opt" = "-a"; then
+    continue
+  fi
 
-	test_expect_success "invalid usage of '$opt' with --no-external-commands" '
+  test_expect_success "invalid usage of '$opt' with --no-external-commands" '
 		test_expect_code 129 git help $opt --no-external-commands
 	'
 
-	test_expect_success "invalid usage of '$opt' with --no-aliases" '
+  test_expect_success "invalid usage of '$opt' with --no-aliases" '
 		test_expect_code 129 git help $opt --no-external-commands
 	'
 done
@@ -172,22 +170,20 @@ test_expect_success 'git help --config-sections-for-completion' '
 	test_cmp human.munged sections
 '
 
-test_section_spacing () {
-	cat >expect &&
-	"$@" >out &&
-	grep -E "(^[^ ]|^$)" out >actual
+test_section_spacing() {
+  cat >expect \
+    && "$@" >out \
+    && grep -E "(^[^ ]|^$)" out >actual
 }
 
-test_section_spacing_trailer () {
-	test_section_spacing "$@" &&
-	test_expect_code 1 git >out &&
-	sed -n '/list available subcommands/,$p' <out >>expect
+test_section_spacing_trailer() {
+  test_section_spacing "$@" \
+    && test_expect_code 1 git >out \
+    && sed -n '/list available subcommands/,$p' <out >>expect
 }
 
-
-for cmd in git "git help"
-do
-	test_expect_success "'$cmd' section spacing" '
+for cmd in git "git help"; do
+  test_expect_success "'$cmd' section spacing" '
 		test_section_spacing_trailer git help <<-\EOF &&
 		usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]
 
@@ -249,9 +245,8 @@ test_expect_success 'generate builtin list' '
 	git --list-cmds=builtins >builtins
 '
 
-while read builtin
-do
-	test_expect_success "$builtin can handle -h" '
+while read builtin; do
+  test_expect_success "$builtin can handle -h" '
 		(
 			GIT_CEILING_DIRECTORIES=$(pwd) &&
 			export GIT_CEILING_DIRECTORIES &&

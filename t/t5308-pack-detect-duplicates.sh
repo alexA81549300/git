@@ -33,13 +33,13 @@ MISSING_SHA1=$(test_oid missing_oid)
 # $1 is the name of the packfile to create
 #
 # $2 is the number of times to duplicate each object
-create_pack () {
-	pack_header "$((2 * $2))" >"$1" &&
-	for i in $(test_seq 1 "$2"); do
-		pack_obj $LO_SHA1 &&
-		pack_obj $HI_SHA1
-	done >>"$1" &&
-	pack_trailer "$1"
+create_pack() {
+  pack_header "$((2 * $2))" >"$1" \
+    && for i in $(test_seq 1 "$2"); do
+      pack_obj $LO_SHA1 \
+        && pack_obj $HI_SHA1
+    done >>"$1" \
+    && pack_trailer "$1"
 }
 
 # double-check that create_pack actually works

@@ -7,48 +7,46 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-check_resolve_undo () {
-	msg=$1
-	shift
-	while case $# in
-	0)	break ;;
-	1|2|3)	die "Bug in check-resolve-undo test" ;;
-	esac
-	do
-		path=$1
-		shift
-		for stage in 1 2 3
-		do
-			sha1=$1
-			shift
-			case "$sha1" in
-			'') continue ;;
-			esac
-			sha1=$(git rev-parse --verify "$sha1")
-			printf "100644 %s %s\t%s\n" $sha1 $stage $path
-		done
-	done >"$msg.expect" &&
-	git ls-files --resolve-undo >"$msg.actual" &&
-	test_cmp "$msg.expect" "$msg.actual"
+check_resolve_undo() {
+  msg=$1
+  shift
+  while case $# in
+    0) break ;;
+    1 | 2 | 3) die "Bug in check-resolve-undo test" ;;
+  esac do
+    path=$1
+    shift
+    for stage in 1 2 3; do
+      sha1=$1
+      shift
+      case "$sha1" in
+        '') continue ;;
+      esac
+      sha1=$(git rev-parse --verify "$sha1")
+      printf "100644 %s %s\t%s\n" $sha1 $stage $path
+    done
+  done >"$msg.expect" \
+    && git ls-files --resolve-undo >"$msg.actual" \
+    && test_cmp "$msg.expect" "$msg.actual"
 }
 
-prime_resolve_undo () {
-	git reset --hard &&
-	git checkout second^0 &&
-	test_tick &&
-	test_must_fail git merge third^0 &&
-	check_resolve_undo empty &&
-
-	# how should the conflict be resolved?
-	case "$1" in
-	remove)
-		rm -f file/le && git rm fi/le
-		;;
-	*) # modify
-		echo different >fi/le && git add fi/le
-		;;
-	esac
-	check_resolve_undo recorded fi/le initial:fi/le second:fi/le third:fi/le
+prime_resolve_undo() {
+  git reset --hard \
+    && git checkout second^0 \
+    && test_tick \
+    && test_must_fail git merge third^0 \
+    && check_resolve_undo empty \
+    &&
+    # how should the conflict be resolved?
+    case "$1" in
+      remove)
+        rm -f file/le && git rm fi/le
+        ;;
+      *) # modify
+        echo different >fi/le && git add fi/le
+        ;;
+    esac
+  check_resolve_undo recorded fi/le initial:fi/le second:fi/le third:fi/le
 }
 
 test_expect_success setup '

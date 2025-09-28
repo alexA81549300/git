@@ -192,7 +192,7 @@ test_lazy_prereq GPGSSH_VERIFYTIME '
 '
 
 sanitize_pgp() {
-	perl -ne '
+  perl -ne '
 		/^-----END PGP/ and $in_pgp = 0;
 		print unless $in_pgp;
 		/^-----BEGIN PGP/ and $in_pgp = 1;

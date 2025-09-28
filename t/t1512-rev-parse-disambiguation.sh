@@ -25,14 +25,14 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-test_cmp_failed_rev_parse () {
-	dir=$1
-	rev=$2
+test_cmp_failed_rev_parse() {
+  dir=$1
+  rev=$2
 
-	cat >expect &&
-	test_must_fail git -C "$dir" rev-parse "$rev" 2>actual.raw &&
-	sed "s/\($rev\)[0-9a-f]*/\1.../" <actual.raw >actual &&
-	test_cmp expect actual
+  cat >expect \
+    && test_must_fail git -C "$dir" rev-parse "$rev" 2>actual.raw \
+    && sed "s/\($rev\)[0-9a-f]*/\1.../" <actual.raw >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'ambiguous blob output' '
@@ -106,10 +106,9 @@ test_expect_success POSIXPERM 'ambigous zlib corrupt loose blob' '
 	EOF
 '
 
-if ! test_have_prereq SHA1
-then
-	skip_all='not using SHA-1 for objects'
-	test_done
+if ! test_have_prereq SHA1; then
+  skip_all='not using SHA-1 for objects'
+  test_done
 fi
 
 test_expect_success 'blob and tree' '

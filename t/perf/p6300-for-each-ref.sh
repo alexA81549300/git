@@ -44,32 +44,32 @@ test_expect_success "setup" '
 	done | git fast-import
 '
 
-test_for_each_ref () {
-	title="for-each-ref"
-	if test $# -gt 0; then
-		title="$title ($1)"
-		shift
-	fi
-	args="$@"
+test_for_each_ref() {
+  title="for-each-ref"
+  if test $# -gt 0; then
+    title="$title ($1)"
+    shift
+  fi
+  args="$@"
 
-	test_perf "$title" "
+  test_perf "$title" "
 		for i in \$(test_seq $test_iteration_count); do
 			git for-each-ref $args >/dev/null
 		done
 	"
 }
 
-run_tests () {
-	test_for_each_ref "$1"
-	test_for_each_ref "$1, no sort" --no-sort
-	test_for_each_ref "$1, --count=1" --count=1
-	test_for_each_ref "$1, --count=1, no sort" --no-sort --count=1
-	test_for_each_ref "$1, tags" refs/tags/
-	test_for_each_ref "$1, tags, no sort" --no-sort refs/tags/
-	test_for_each_ref "$1, tags, dereferenced" '--format="%(refname) %(objectname) %(*objectname)"' refs/tags/
-	test_for_each_ref "$1, tags, dereferenced, no sort" --no-sort '--format="%(refname) %(objectname) %(*objectname)"' refs/tags/
+run_tests() {
+  test_for_each_ref "$1"
+  test_for_each_ref "$1, no sort" --no-sort
+  test_for_each_ref "$1, --count=1" --count=1
+  test_for_each_ref "$1, --count=1, no sort" --no-sort --count=1
+  test_for_each_ref "$1, tags" refs/tags/
+  test_for_each_ref "$1, tags, no sort" --no-sort refs/tags/
+  test_for_each_ref "$1, tags, dereferenced" '--format="%(refname) %(objectname) %(*objectname)"' refs/tags/
+  test_for_each_ref "$1, tags, dereferenced, no sort" --no-sort '--format="%(refname) %(objectname) %(*objectname)"' refs/tags/
 
-	test_perf "for-each-ref ($1, tags) + cat-file --batch-check (dereferenced)" "
+  test_perf "for-each-ref ($1, tags) + cat-file --batch-check (dereferenced)" "
 		for i in \$(test_seq $test_iteration_count); do
 			git for-each-ref --format='%(objectname)^{} %(refname) %(objectname)' refs/tags/ | \
 				git cat-file --batch-check='%(objectname) %(rest)' >/dev/null

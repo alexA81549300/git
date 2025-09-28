@@ -66,17 +66,17 @@ test_expect_success 'change submodule' '
 	)
 '
 
-reset_submodule_urls () {
-	(
-		root=$(pwd) &&
-		cd super-clone/submodule &&
-		git config remote.origin.url "$root/submodule"
-	) &&
-	(
-		root=$(pwd) &&
-		cd super-clone/submodule/sub-submodule &&
-		git config remote.origin.url "$root/submodule"
-	)
+reset_submodule_urls() {
+  (
+    root=$(pwd) \
+      && cd super-clone/submodule \
+      && git config remote.origin.url "$root/submodule"
+  ) \
+    && (
+      root=$(pwd) \
+        && cd super-clone/submodule/sub-submodule \
+        && git config remote.origin.url "$root/submodule"
+    )
 }
 
 test_expect_success 'change submodule url' '
@@ -350,6 +350,5 @@ test_expect_success '"git submodule sync" handles origin URL of the form ../foo/
 		)
 	)
 '
-
 
 test_done

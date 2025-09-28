@@ -19,14 +19,14 @@ test_expect_success 'setup' '
 '
 
 try_filename() {
-	desc=$1
-	postimage=$2
-	prereq=${3:-}
-	exp1=${4:-success}
-	exp2=${5:-success}
-	exp3=${6:-success}
+  desc=$1
+  postimage=$2
+  prereq=${3:-}
+  exp1=${4:-success}
+  exp2=${5:-success}
+  exp3=${6:-success}
 
-	test_expect_$exp1 $prereq "$desc, git-style file creation patch" "
+  test_expect_$exp1 $prereq "$desc, git-style file creation patch" "
 		echo postimage >expected &&
 		reset_preimage &&
 		rm -f '$postimage' &&
@@ -34,7 +34,7 @@ try_filename() {
 		test_cmp expected '$postimage'
 	"
 
-	test_expect_$exp2 $prereq "$desc, traditional patch" "
+  test_expect_$exp2 $prereq "$desc, traditional patch" "
 		echo postimage >expected &&
 		reset_preimage &&
 		echo preimage >'$postimage' &&
@@ -42,7 +42,7 @@ try_filename() {
 		test_cmp expected '$postimage'
 	"
 
-	test_expect_$exp3 $prereq "$desc, traditional file creation patch" "
+  test_expect_$exp3 $prereq "$desc, traditional file creation patch" "
 		echo postimage >expected &&
 		reset_preimage &&
 		rm -f '$postimage' &&
@@ -51,11 +51,11 @@ try_filename() {
 	"
 }
 
-try_filename 'plain'            'postimage.txt'
-try_filename 'with spaces'      'post image.txt'
-try_filename 'with tab'         'post	image.txt' FUNNYNAMES
-try_filename 'with backslash'   'post\image.txt' BSLASHPSPEC
-try_filename 'with quote'       '"postimage".txt' FUNNYNAMES success failure success
+try_filename 'plain' 'postimage.txt'
+try_filename 'with spaces' 'post image.txt'
+try_filename 'with tab' 'post	image.txt' FUNNYNAMES
+try_filename 'with backslash' 'post\image.txt' BSLASHPSPEC
+try_filename 'with quote' '"postimage".txt' FUNNYNAMES success failure success
 
 test_expect_success 'whitespace-damaged traditional patch' '
 	echo postimage >expected &&

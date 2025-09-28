@@ -3,7 +3,7 @@
 test_description='test moved svn branch with missing empty files'
 
 . ./lib-git-svn.sh
-test_expect_success 'load svn dumpfile'  '
+test_expect_success 'load svn dumpfile' '
 	svnadmin load "$rawsvnrepo" < "${TEST_DIRECTORY}/t9135/svn.dump"
 	'
 

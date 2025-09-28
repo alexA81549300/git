@@ -10,9 +10,9 @@ test_expect_success 'setup' '
 '
 
 check_at() {
-	echo "$2" >expect &&
-	git log -1 --format=%s "$1" >actual &&
-	test_cmp expect actual
+  echo "$2" >expect \
+    && git log -1 --format=%s "$1" >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success '@{0} shows current' '

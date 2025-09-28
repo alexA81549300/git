@@ -24,8 +24,8 @@ taking too long to set up and run the tests.
 
 # make a long nonsense history on branch $1, consisting of $2 commits, each
 # with a unique file pointing to the blob at $2.
-create_history () {
-	perl -le '
+create_history() {
+  perl -le '
 		my ($branch, $n, $blob) = @ARGV;
 		for (1..$n) {
 			print "commit refs/heads/$branch";
@@ -34,15 +34,15 @@ create_history () {
 			print "foo";
 			print "M 100644 $blob $_";
 		}
-	' "$@" |
-	git fast-import --date-format=now
+	' "$@" \
+    | git fast-import --date-format=now
 }
 
 # make a series of tags, one per commit in the revision range given by $@
-create_tags () {
-	git rev-list "$@" |
-	perl -lne 'print "create refs/tags/$. $_"' |
-	git update-ref --stdin
+create_tags() {
+  git rev-list "$@" \
+    | perl -lne 'print "create refs/tags/$. $_"' \
+    | git update-ref --stdin
 }
 
 test_expect_success 'create parent and child' '

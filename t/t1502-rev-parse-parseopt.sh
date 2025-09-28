@@ -4,10 +4,10 @@ test_description='test git rev-parse --parseopt'
 
 . ./test-lib.sh
 
-check_invalid_long_option () {
-	spec="$1"
-	opt="$2"
-	test_expect_success "test --parseopt invalid switch $opt help output for $spec" '
+check_invalid_long_option() {
+  spec="$1"
+  opt="$2"
+  test_expect_success "test --parseopt invalid switch $opt help output for $spec" '
 		{
 			cat <<-\EOF &&
 			error: unknown option `'${opt#--}\''

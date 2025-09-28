@@ -4,10 +4,9 @@ test_description='commit graph with 64-bit timestamps'
 
 . ./test-lib.sh
 
-if ! test_have_prereq TIME_IS_64BIT || ! test_have_prereq TIME_T_IS_64BIT
-then
-	skip_all='skipping 64-bit timestamp tests'
-	test_done
+if ! test_have_prereq TIME_IS_64BIT || ! test_have_prereq TIME_T_IS_64BIT; then
+  skip_all='skipping 64-bit timestamp tests'
+  test_done
 fi
 
 . "$TEST_DIRECTORY"/lib-commit-graph.sh

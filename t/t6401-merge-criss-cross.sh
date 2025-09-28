@@ -6,7 +6,6 @@
 # See https://lore.kernel.org/git/Pine.LNX.4.44.0504271254120.4678-100000@wax.eds.org/ for a
 # nice description of what this is about.
 
-
 test_description='Test criss-cross merge'
 
 . ./test-lib.sh

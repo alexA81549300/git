@@ -5,61 +5,56 @@ test_description=gitattributes
 TEST_CREATE_REPO_NO_TEMPLATE=1
 . ./test-lib.sh
 
-attr_check_basic () {
-	path="$1" expect="$2" git_opts="$3" &&
-
-	git $git_opts check-attr test -- "$path" >actual 2>err &&
-	echo "$path: test: $expect" >expect &&
-	test_cmp expect actual
+attr_check_basic() {
+  path="$1" expect="$2" git_opts="$3" \
+    && git $git_opts check-attr test -- "$path" >actual 2>err \
+    && echo "$path: test: $expect" >expect \
+    && test_cmp expect actual
 }
 
-attr_check () {
-	attr_check_basic "$@" &&
-	test_must_be_empty err
+attr_check() {
+  attr_check_basic "$@" \
+    && test_must_be_empty err
 }
 
-attr_check_object_mode_basic () {
-	path="$1" &&
-	expect="$2" &&
-	check_opts="$3" &&
-	git check-attr $check_opts builtin_objectmode -- "$path" >actual 2>err &&
-	echo "$path: builtin_objectmode: $expect" >expect &&
-	test_cmp expect actual
+attr_check_object_mode_basic() {
+  path="$1" \
+    && expect="$2" \
+    && check_opts="$3" \
+    && git check-attr $check_opts builtin_objectmode -- "$path" >actual 2>err \
+    && echo "$path: builtin_objectmode: $expect" >expect \
+    && test_cmp expect actual
 }
 
-attr_check_object_mode () {
-	attr_check_object_mode_basic "$@" &&
-	test_must_be_empty err
+attr_check_object_mode() {
+  attr_check_object_mode_basic "$@" \
+    && test_must_be_empty err
 }
 
-attr_check_quote () {
-	path="$1" quoted_path="$2" expect="$3" &&
-
-	git check-attr test -- "$path" >actual &&
-	echo "\"$quoted_path\": test: $expect" >expect &&
-	test_cmp expect actual
+attr_check_quote() {
+  path="$1" quoted_path="$2" expect="$3" \
+    && git check-attr test -- "$path" >actual \
+    && echo "\"$quoted_path\": test: $expect" >expect \
+    && test_cmp expect actual
 }
 
-attr_check_source () {
-	path="$1" expect="$2" source="$3" git_opts="$4" &&
+attr_check_source() {
+  path="$1" expect="$2" source="$3" git_opts="$4" \
+    && echo "$path: test: $expect" >expect \
+    && git $git_opts check-attr --source $source test -- "$path" >actual 2>err \
+    && test_cmp expect actual \
+    && test_must_be_empty err \
+    && git $git_opts --attr-source="$source" check-attr test -- "$path" >actual 2>err \
+    && test_cmp expect actual \
+    && test_must_be_empty err
 
-	echo "$path: test: $expect" >expect &&
+  git $git_opts -c "attr.tree=$source" check-attr test -- "$path" >actual 2>err \
+    && test_cmp expect actual \
+    && test_must_be_empty err
 
-	git $git_opts check-attr --source $source test -- "$path" >actual 2>err &&
-	test_cmp expect actual &&
-	test_must_be_empty err &&
-
-	git $git_opts --attr-source="$source" check-attr test -- "$path" >actual 2>err &&
-	test_cmp expect actual &&
-	test_must_be_empty err
-
-	git $git_opts -c "attr.tree=$source" check-attr test -- "$path" >actual 2>err &&
-	test_cmp expect actual &&
-	test_must_be_empty err
-
-	GIT_ATTR_SOURCE="$source" git $git_opts check-attr test -- "$path" >actual 2>err &&
-	test_cmp expect actual &&
-	test_must_be_empty err
+  GIT_ATTR_SOURCE="$source" git $git_opts check-attr test -- "$path" >actual 2>err \
+    && test_cmp expect actual \
+    && test_must_be_empty err
 }
 
 test_expect_success 'open-quoted pathname' '

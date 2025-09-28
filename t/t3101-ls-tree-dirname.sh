@@ -40,9 +40,9 @@ test_expect_success 'setup' '
 	echo $tree
 '
 
-test_output () {
-	sed -e "s/ $OID_REGEX	/ X	/" <current >check &&
-	test_cmp expected check
+test_output() {
+  sed -e "s/ $OID_REGEX	/ X	/" <current >check \
+    && test_cmp expected check
 }
 
 test_expect_success 'ls-tree plain' '
@@ -208,9 +208,8 @@ EOF
 	test_cmp expected check
 '
 
-for opt in --name-only --name-status
-do
-	test_expect_success "ls-tree $opt" '
+for opt in --name-only --name-status; do
+  test_expect_success "ls-tree $opt" '
 		git ls-tree $opt $tree >current &&
 		cat >expected <<-\EOF &&
 		1.txt
@@ -223,7 +222,7 @@ do
 		test_output
 	'
 
-	test_expect_success "ls-tree $opt -r" '
+  test_expect_success "ls-tree $opt -r" '
 		git ls-tree $opt -r $tree >current &&
 		cat >expected <<-\EOF &&
 		1.txt

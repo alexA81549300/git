@@ -1,4 +1,4 @@
-# Refs of upstream : main(A)  
+# Refs of upstream : main(A)
 # Refs of workbench: main(A)  tags/v123
 # git-push         : main(B)             next(A)
 test_expect_success "git-push ($PROTOCOL/porcelain)" '

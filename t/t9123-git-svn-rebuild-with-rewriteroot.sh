@@ -8,9 +8,10 @@ test_description='git svn respects rewriteRoot during rebuild'
 . ./lib-git-svn.sh
 
 mkdir import
-(cd import
-	touch foo
-	svn_cmd import -m 'import for git svn' . "$svnrepo" >/dev/null
+(
+  cd import
+  touch foo
+  svn_cmd import -m 'import for git svn' . "$svnrepo" >/dev/null
 )
 rm -rf import
 
@@ -29,4 +30,3 @@ test_expect_success 'rebuild rev_map' '
 	'
 
 test_done
-

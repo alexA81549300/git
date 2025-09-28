@@ -205,16 +205,16 @@ test_expect_success 'setup rerere database' '
 	git reset --hard topic@{1}
 '
 
-prepare () {
-	rm -fr .git/rebase-* &&
-	git reset --hard commit-new-file-F3-on-topic-branch &&
-	git checkout main &&
-	test_config rerere.enabled true
+prepare() {
+  rm -fr .git/rebase-* \
+    && git reset --hard commit-new-file-F3-on-topic-branch \
+    && git checkout main \
+    && test_config rerere.enabled true
 }
 
-test_rerere_autoupdate () {
-	action=$1 &&
-	test_expect_success "rebase $action --continue remembers --rerere-autoupdate" '
+test_rerere_autoupdate() {
+  action=$1 \
+    && test_expect_success "rebase $action --continue remembers --rerere-autoupdate" '
 		prepare &&
 		test_must_fail git rebase $action --rerere-autoupdate main topic &&
 		test_cmp expected-F2 F2 &&
@@ -225,7 +225,7 @@ test_rerere_autoupdate () {
 		git rebase --continue
 	'
 
-	test_expect_success "rebase $action --continue honors rerere.autoUpdate" '
+  test_expect_success "rebase $action --continue honors rerere.autoUpdate" '
 		prepare &&
 		test_config rerere.autoupdate true &&
 		test_must_fail git rebase $action main topic &&
@@ -237,7 +237,7 @@ test_rerere_autoupdate () {
 		git rebase --continue
 	'
 
-	test_expect_success "rebase $action --continue remembers --no-rerere-autoupdate" '
+  test_expect_success "rebase $action --continue remembers --no-rerere-autoupdate" '
 		prepare &&
 		test_config rerere.autoupdate true &&
 		test_must_fail git rebase $action --no-rerere-autoupdate main topic &&
@@ -328,24 +328,24 @@ test_expect_success 'there is no --no-reschedule-failed-exec in an ongoing rebas
 	test_expect_code 129 git rebase --edit-todo --no-reschedule-failed-exec
 '
 
-test_orig_head_helper () {
-	test_when_finished 'git rebase --abort &&
+test_orig_head_helper() {
+  test_when_finished 'git rebase --abort &&
 		git checkout topic &&
-		git reset --hard commit-new-file-F2-on-topic-branch' &&
-	git update-ref -d ORIG_HEAD &&
-	test_must_fail git rebase "$@" &&
-	test_cmp_rev ORIG_HEAD commit-new-file-F2-on-topic-branch
+		git reset --hard commit-new-file-F2-on-topic-branch' \
+    && git update-ref -d ORIG_HEAD \
+    && test_must_fail git rebase "$@" \
+    && test_cmp_rev ORIG_HEAD commit-new-file-F2-on-topic-branch
 }
 
-test_orig_head () {
-	type=$1
-	test_expect_success "rebase $type sets ORIG_HEAD correctly" '
+test_orig_head() {
+  type=$1
+  test_expect_success "rebase $type sets ORIG_HEAD correctly" '
 		git checkout topic &&
 		git reset --hard commit-new-file-F2-on-topic-branch &&
 		test_orig_head_helper $type main
 	'
 
-	test_expect_success "rebase $type <upstream> <branch> sets ORIG_HEAD correctly" '
+  test_expect_success "rebase $type <upstream> <branch> sets ORIG_HEAD correctly" '
 		git checkout main &&
 		test_orig_head_helper $type main topic
 	'

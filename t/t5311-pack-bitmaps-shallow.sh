@@ -18,17 +18,16 @@ test_description='check bitmap operation with shallow repositories'
 # the tree for A. But in a shallow one, we've grafted away
 # A, and fetching A to B requires that the other side send
 # us the tree for file=1.
-test_shallow_bitmaps () {
-	writeLookupTable=false
+test_shallow_bitmaps() {
+  writeLookupTable=false
 
-	for i in "$@"
-	do
-		case $i in
-		"pack.writeBitmapLookupTable") writeLookupTable=true;;
-		esac
-	done
+  for i in "$@"; do
+    case $i in
+      "pack.writeBitmapLookupTable") writeLookupTable=true ;;
+    esac
+  done
 
-	test_expect_success 'setup shallow repo' '
+  test_expect_success 'setup shallow repo' '
 		rm -rf * .git &&
 		git init &&
 		git config pack.writeBitmapLookupTable '"$writeLookupTable"' &&
@@ -42,11 +41,11 @@ test_shallow_bitmaps () {
 		git commit -a -m repeat
 	'
 
-	test_expect_success 'turn on bitmaps in the parent' '
+  test_expect_success 'turn on bitmaps in the parent' '
 		git repack -adb
 	'
 
-	test_expect_success 'shallow fetch from bitmapped repo' '
+  test_expect_success 'shallow fetch from bitmapped repo' '
 		(cd shallow.git && git fetch)
 	'
 }

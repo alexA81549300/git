@@ -184,10 +184,10 @@ test_expect_success 'advice from failed revert' '
 	test_cmp expected actual
 '
 
-test_expect_subject () {
-	echo "$1" >expect &&
-	git log -1 --pretty=%s >actual &&
-	test_cmp expect actual
+test_expect_subject() {
+  echo "$1" >expect \
+    && git log -1 --pretty=%s >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'titles of fresh reverts' '

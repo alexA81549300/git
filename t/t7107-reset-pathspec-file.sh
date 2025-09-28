@@ -16,18 +16,17 @@ test_expect_success setup '
 	git tag checkpoint
 '
 
-restore_checkpoint () {
-	git reset --hard checkpoint
+restore_checkpoint() {
+  git reset --hard checkpoint
 }
 
-verify_expect () {
-	git status --porcelain -- fileA.t fileB.t fileC.t fileD.t >actual &&
-	if test "x$1" = 'x!'
-	then
-		! test_cmp expect actual
-	else
-		test_cmp expect actual
-	fi
+verify_expect() {
+  git status --porcelain -- fileA.t fileB.t fileC.t fileD.t >actual \
+    && if test "x$1" = 'x!'; then
+      ! test_cmp expect actual
+    else
+      test_cmp expect actual
+    fi
 }
 
 test_expect_success '--pathspec-from-file from stdin' '

@@ -7,7 +7,6 @@ test_description='git apply with new style GNU diff with empty context
 
 '
 
-
 . ./test-lib.sh
 
 test_expect_success setup '

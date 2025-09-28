@@ -8,9 +8,9 @@ test_description='test config file include directives'
 # caller needs to make sure git commands are run from a subdirectory
 # though or real_path() will not be called.
 force_setup_explicit_git_dir() {
-    GIT_DIR="$(pwd)/.git"
-    GIT_WORK_TREE="$(pwd)"
-    export GIT_DIR GIT_WORK_TREE
+  GIT_DIR="$(pwd)/.git"
+  GIT_WORK_TREE="$(pwd)"
+  export GIT_DIR GIT_WORK_TREE
 }
 
 test_expect_success 'include file by absolute path' '

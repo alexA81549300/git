@@ -8,7 +8,7 @@ test_description='More rename detection
 '
 
 . ./test-lib.sh
-. "$TEST_DIRECTORY"/lib-diff.sh ;# test-lib chdir's into trash
+. "$TEST_DIRECTORY"/lib-diff.sh # test-lib chdir's into trash
 
 test_expect_success 'prepare reference tree' '
 	COPYING_test_data >COPYING &&
@@ -110,7 +110,7 @@ test_expect_success 'prepare work tree once again' '
 # git diff-index as well, should not be mentioned.
 
 GIT_DIFF_OPTS=--unified=0 \
-    git diff-index -C --find-copies-harder -p $tree >current
+  git diff-index -C --find-copies-harder -p $tree >current
 cat >expected <<\EOF
 diff --git a/COPYING b/COPYING.1
 copy from COPYING

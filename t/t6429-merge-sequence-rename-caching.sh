@@ -21,7 +21,6 @@ test_description="remember regular & dir renames in sequence of merges"
 #         use 'test-tool fast-rebase'.
 #
 
-
 #
 # In the following simple testcase:
 #   Base:     numbers_1, values_1
@@ -365,34 +364,31 @@ test_expect_success 'cached dir rename does not prevent noticing later conflict'
 '
 
 # Helper for the next two tests
-test_setup_upstream_rename () {
-	git init $1 &&
-	(
-		cd $1 &&
-
-		test_seq 3 8 >somefile &&
-		test_seq 3 8 >relevant-rename &&
-		git add somefile relevant-rename &&
-		mkdir olddir &&
-		test_write_lines a b c d e f g >olddir/a &&
-		test_write_lines z y x w v u t >olddir/b &&
-		git add olddir &&
-		git commit -m orig &&
-
-		git branch upstream &&
-		git branch topic &&
-
-		git switch upstream &&
-		test_seq 1 8 >somefile &&
-		test_seq 1 8 >relevant-rename &&
-		git add somefile relevant-rename &&
-		git mv relevant-rename renamed &&
-		echo h >>olddir/a &&
-		echo s >>olddir/b &&
-		git add olddir &&
-		git mv olddir newdir &&
-		git commit -m "Dir renamed"
-	)
+test_setup_upstream_rename() {
+  git init $1 \
+    && (
+      cd $1 \
+        && test_seq 3 8 >somefile \
+        && test_seq 3 8 >relevant-rename \
+        && git add somefile relevant-rename \
+        && mkdir olddir \
+        && test_write_lines a b c d e f g >olddir/a \
+        && test_write_lines z y x w v u t >olddir/b \
+        && git add olddir \
+        && git commit -m orig \
+        && git branch upstream \
+        && git branch topic \
+        && git switch upstream \
+        && test_seq 1 8 >somefile \
+        && test_seq 1 8 >relevant-rename \
+        && git add somefile relevant-rename \
+        && git mv relevant-rename renamed \
+        && echo h >>olddir/a \
+        && echo s >>olddir/b \
+        && git add olddir \
+        && git mv olddir newdir \
+        && git commit -m "Dir renamed"
+    )
 }
 
 #
@@ -539,35 +535,31 @@ test_expect_success 'dir rename unneeded, then rename existing file into old dir
 '
 
 # Helper for the next two tests
-test_setup_topic_rename () {
-	git init $1 &&
-	(
-		cd $1 &&
-
-		test_seq 3 8 >somefile &&
-		mkdir olddir &&
-		test_seq 3 8 >olddir/a &&
-		echo b >olddir/b &&
-		git add olddir somefile &&
-		git commit -m orig &&
-
-		git branch upstream &&
-		git branch topic &&
-
-		git switch topic &&
-		test_seq 1 8 >somefile &&
-		test_seq 1 8 >olddir/a &&
-		git add somefile olddir/a &&
-		git mv olddir newdir &&
-		git commit -m "Dir renamed" &&
-
-		test_seq 1 10 >somefile &&
-		git add somefile &&
-		mkdir olddir &&
-		>olddir/unrelated-file &&
-		git add olddir &&
-		git commit -m "Unrelated file in recreated old dir"
-	)
+test_setup_topic_rename() {
+  git init $1 \
+    && (
+      cd $1 \
+        && test_seq 3 8 >somefile \
+        && mkdir olddir \
+        && test_seq 3 8 >olddir/a \
+        && echo b >olddir/b \
+        && git add olddir somefile \
+        && git commit -m orig \
+        && git branch upstream \
+        && git branch topic \
+        && git switch topic \
+        && test_seq 1 8 >somefile \
+        && test_seq 1 8 >olddir/a \
+        && git add somefile olddir/a \
+        && git mv olddir newdir \
+        && git commit -m "Dir renamed" \
+        && test_seq 1 10 >somefile \
+        && git add somefile \
+        && mkdir olddir \
+        && >olddir/unrelated-file \
+        && git add olddir \
+        && git commit -m "Unrelated file in recreated old dir"
+    )
 }
 
 #

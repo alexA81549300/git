@@ -1,9 +1,8 @@
 #!/bin/sh
 
-if test $# -lt 2
-then
-	echo "USAGE: $0 <CLAR_DECLS_H> <OUTPUT>" 2>&1
-	exit 1
+if test $# -lt 2; then
+  echo "USAGE: $0 <CLAR_DECLS_H> <OUTPUT>" 2>&1
+  exit 1
 fi
 
 CLAR_DECLS_H="$1"

@@ -34,10 +34,9 @@ test_expect_success 'git diff-files -p after editing work tree.' '
 '
 
 # that's as far as it comes
-if [ "$(git config --get core.filemode)" = false ]
-then
-	say 'filemode disabled on the filesystem'
-	test_done
+if [ "$(git config --get core.filemode)" = false ]; then
+  say 'filemode disabled on the filesystem'
+  test_done
 fi
 
 cat >expected <<\EOF
@@ -95,27 +94,25 @@ test_expect_success 'git diff-files --patch --no-patch does not show the patch' 
 	test_must_be_empty err
 '
 
-
 # Smudge path2/path3 so that dirstat has something to show
 date >path2/path3
 
 for format in stat raw numstat shortstat summary \
-	dirstat cumulative dirstat-by-file \
-	patch-with-raw patch-with-stat compact-summary
-do
-	test_expect_success "--no-patch in 'git diff-files --no-patch --$format' is a no-op" '
+  dirstat cumulative dirstat-by-file \
+  patch-with-raw patch-with-stat compact-summary; do
+  test_expect_success "--no-patch in 'git diff-files --no-patch --$format' is a no-op" '
 		git diff-files --no-patch "--$format" >actual &&
 		git diff-files "--$format" >expect &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "--no-patch clears all previous ones" '
+  test_expect_success "--no-patch clears all previous ones" '
 		git diff-files --$format -s -p >actual &&
 		git diff-files -p >expect &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "--no-patch in 'git diff --no-patch --$format' is a no-op" '
+  test_expect_success "--no-patch in 'git diff --no-patch --$format' is a no-op" '
 		git diff --no-patch "--$format" >actual &&
 		git diff "--$format" >expect &&
 		test_cmp expect actual

@@ -13,14 +13,14 @@ test_expect_success 'start p4d' '
 # a list of files in file "files".
 #
 check_files_exist() {
-	ok=0 &&
-	num=$# &&
-	for arg ; do
-		test_path_is_file "$arg" &&
-		ok=$(($ok + 1))
-	done &&
-	test $ok -eq $num &&
-	test_line_count = $num files
+  ok=0 \
+    && num=$# \
+    && for arg; do
+      test_path_is_file "$arg" \
+        && ok=$(($ok + 1))
+    done \
+    && test $ok -eq $num \
+    && test_line_count = $num files
 }
 
 #
@@ -28,23 +28,23 @@ check_files_exist() {
 # those) exist.
 #
 client_verify() {
-	(
-		cd "$cli" &&
-		p4 sync &&
-		find . -type f ! -name files >files &&
-		check_files_exist "$@"
-	)
+  (
+    cd "$cli" \
+      && p4 sync \
+      && find . -type f ! -name files >files \
+      && check_files_exist "$@"
+  )
 }
 
 #
 # Make sure the named files, exactly, exist.
 #
 git_verify() {
-	(
-		cd "$git" &&
-		git ls-files >files &&
-		check_files_exist "$@"
-	)
+  (
+    cd "$git" \
+      && git ls-files >files \
+      && check_files_exist "$@"
+  )
 }
 
 # //depot
@@ -55,17 +55,17 @@ git_verify() {
 #     - file21
 #     - file22
 init_depot() {
-	for d in 1 2 ; do
-		mkdir -p dir$d &&
-		for f in 1 2 ; do
-			echo dir$d/file$d$f >dir$d/file$d$f &&
-			p4 add dir$d/file$d$f &&
-			p4 submit -d "dir$d/file$d$f"
-		done
-	done &&
-	find . -type f ! -name files >files &&
-	check_files_exist dir1/file11 dir1/file12 \
-			  dir2/file21 dir2/file22
+  for d in 1 2; do
+    mkdir -p dir$d \
+      && for f in 1 2; do
+        echo dir$d/file$d$f >dir$d/file$d$f \
+          && p4 add dir$d/file$d$f \
+          && p4 submit -d "dir$d/file$d$f"
+      done
+  done \
+    && find . -type f ! -name files >files \
+    && check_files_exist dir1/file11 dir1/file12 \
+      dir2/file21 dir2/file22
 }
 
 test_expect_success 'init depot' '

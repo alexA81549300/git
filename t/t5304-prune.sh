@@ -9,16 +9,16 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-day=$((60*60*24))
-week=$(($day*7))
+day=$((60 * 60 * 24))
+week=$(($day * 7))
 
 add_blob() {
-	before=$(git count-objects | sed "s/ .*//") &&
-	BLOB=$(echo aleph_0 | git hash-object -w --stdin) &&
-	BLOB_FILE=.git/objects/$(echo $BLOB | sed "s/^../&\//") &&
-	test $((1 + $before)) = $(git count-objects | sed "s/ .*//") &&
-	test_path_is_file $BLOB_FILE &&
-	test-tool chmtime =+0 $BLOB_FILE
+  before=$(git count-objects | sed "s/ .*//") \
+    && BLOB=$(echo aleph_0 | git hash-object -w --stdin) \
+    && BLOB_FILE=.git/objects/$(echo $BLOB | sed "s/^../&\//") \
+    && test $((1 + $before)) = $(git count-objects | sed "s/ .*//") \
+    && test_path_is_file $BLOB_FILE \
+    && test-tool chmtime =+0 $BLOB_FILE
 }
 
 test_expect_success setup '

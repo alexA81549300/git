@@ -24,18 +24,17 @@ test_expect_success 'checking for a working acl setup' '
 	fi
 '
 
-if test -z "$LOGNAME"
-then
-	LOGNAME="${USER:-$(id -u -n)}"
+if test -z "$LOGNAME"; then
+  LOGNAME="${USER:-$(id -u -n)}"
 fi
 
-check_perms_and_acl () {
-	test -r "$1" &&
-	getfacl "$1" > actual &&
-	grep -q "user:root:rwx" actual &&
-	grep -q "user:${LOGNAME}:rwx" actual &&
-	grep -E "mask::?r--" actual > /dev/null 2>&1 &&
-	grep -q "group::---" actual || false
+check_perms_and_acl() {
+  test -r "$1" \
+    && getfacl "$1" >actual \
+    && grep -q "user:root:rwx" actual \
+    && grep -q "user:${LOGNAME}:rwx" actual \
+    && grep -E "mask::?r--" actual >/dev/null 2>&1 \
+    && grep -q "group::---" actual || false
 }
 
 dirs_to_set="./ .git/ .git/objects/ .git/objects/pack/"

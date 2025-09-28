@@ -41,7 +41,7 @@ merge_c1_to_c2_cmds='
 	test 3 = $(git ls-files | wc -l)
 '
 
-test_expect_success 'merge c1 to c2'        "$merge_c1_to_c2_cmds"
+test_expect_success 'merge c1 to c2' "$merge_c1_to_c2_cmds"
 
 test_expect_success 'merge c1 to c2, again' "$merge_c1_to_c2_cmds"
 

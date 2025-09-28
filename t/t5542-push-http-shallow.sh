@@ -10,9 +10,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 start_httpd
 
 commit() {
-	echo "$1" >tracked &&
-	git add tracked &&
-	git commit -m "$1"
+  echo "$1" >tracked \
+    && git add tracked \
+    && git commit -m "$1"
 }
 
 test_expect_success 'setup' '

@@ -359,9 +359,8 @@ test_expect_success 'pack-refs does not drop broken refs during deletion' '
 	test_cmp expect actual
 '
 
-for command in "git pack-refs --all --auto" "git maintenance run --task=pack-refs --auto"
-do
-	test_expect_success "$command does not repack below 16 refs without packed-refs" '
+for command in "git pack-refs --all --auto" "git maintenance run --task=pack-refs --auto"; do
+  test_expect_success "$command does not repack below 16 refs without packed-refs" '
 		test_when_finished "rm -rf repo" &&
 		git init repo &&
 		(
@@ -384,7 +383,7 @@ do
 		)
 	'
 
-	test_expect_success "$command does not repack below 16 refs with small packed-refs" '
+  test_expect_success "$command does not repack below 16 refs with small packed-refs" '
 		test_when_finished "rm -rf repo" &&
 		git init repo &&
 		(
@@ -408,7 +407,7 @@ do
 		)
 	'
 
-	test_expect_success "$command scales with size of packed-refs" '
+  test_expect_success "$command scales with size of packed-refs" '
 		test_when_finished "rm -rf repo" &&
 		git init repo &&
 		(

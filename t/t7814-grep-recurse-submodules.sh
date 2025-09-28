@@ -344,9 +344,8 @@ test_expect_success 'grep from a subdir' '
 	test_cmp expect actual
 '
 
-test_incompatible_with_recurse_submodules ()
-{
-	test_expect_success "--recurse-submodules and $1 are incompatible" "
+test_incompatible_with_recurse_submodules() {
+  test_expect_success "--recurse-submodules and $1 are incompatible" "
 		test_must_fail git grep -e. --recurse-submodules $1 2>actual &&
 		test_grep 'not supported with --recurse-submodules' actual
 	"
@@ -425,11 +424,11 @@ test_expect_success 'grep --recurse-submodules with submodules without .gitmodul
 	test_cmp expect actual
 '
 
-reset_and_clean () {
-	git reset --hard &&
-	git clean -fd &&
-	git submodule foreach --recursive 'git reset --hard' &&
-	git submodule foreach --recursive 'git clean -fd'
+reset_and_clean() {
+  git reset --hard \
+    && git clean -fd \
+    && git submodule foreach --recursive 'git reset --hard' \
+    && git submodule foreach --recursive 'git clean -fd'
 }
 
 test_expect_success 'grep --recurse-submodules without --cached considers worktree modifications' '

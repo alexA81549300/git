@@ -2,7 +2,6 @@
 
 test_description='applying patch with mode bits'
 
-
 . ./test-lib.sh
 
 test_expect_success setup '

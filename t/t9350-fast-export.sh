@@ -219,7 +219,7 @@ test_expect_success 'import/export-marks' '
 
 '
 
-cat > signed-tag-import << EOF
+cat >signed-tag-import <<EOF
 tag sign-your-name
 from $(git rev-parse HEAD)
 tagger C O Mitter <committer@example.com> 1112911993 -0700
@@ -312,8 +312,10 @@ test_expect_success 'submodule fast-export | fast-import' '
 
 '
 
-GIT_AUTHOR_NAME='A U Thor'; export GIT_AUTHOR_NAME
-GIT_COMMITTER_NAME='C O Mitter'; export GIT_COMMITTER_NAME
+GIT_AUTHOR_NAME='A U Thor'
+export GIT_AUTHOR_NAME
+GIT_COMMITTER_NAME='C O Mitter'
+export GIT_COMMITTER_NAME
 
 test_expect_success 'setup copies' '
 
@@ -365,7 +367,7 @@ test_expect_success 'fast-export | fast-import when main is tagged' '
 
 '
 
-cat > tag-content << EOF
+cat >tag-content <<EOF
 object $(git rev-parse HEAD)
 type commit
 tag rosten
@@ -403,7 +405,7 @@ test_expect_success 'setup for limiting exports by PATH' '
 	)
 '
 
-cat > limit-by-paths/expected << EOF
+cat >limit-by-paths/expected <<EOF
 blob
 mark :1
 data 3
@@ -428,7 +430,7 @@ test_expect_success ICONV 'dropping tag of filtered out object' '
 )
 '
 
-cat >> limit-by-paths/expected << EOF
+cat >>limit-by-paths/expected <<EOF
 tag mytag
 from :2
 tagger C O Mitter <committer@example.com> 1112912713 -0700
@@ -461,7 +463,7 @@ test_expect_success 'rewrite tag predating pathspecs to nothing' '
 	)
 '
 
-cat > limit-by-paths/expected << EOF
+cat >limit-by-paths/expected <<EOF
 blob
 mark :1
 data 4
@@ -492,7 +494,7 @@ test_expect_failure 'no exact-ref revisions included' '
 	)
 '
 
-test_expect_success 'path limiting with import-marks does not lose unmodified files'        '
+test_expect_success 'path limiting with import-marks does not lose unmodified files' '
 	git checkout -b simple marks~2 &&
 	git fast-export --export-marks=marks simple -- file > /dev/null &&
 	echo more content >> file &&
@@ -529,7 +531,7 @@ test_expect_success 'avoid corrupt stream with non-existent mark' '
 	)
 '
 
-test_expect_success 'full-tree re-shows unmodified files'        '
+test_expect_success 'full-tree re-shows unmodified files' '
 	git checkout -f simple &&
 	git fast-export --full-tree simple >actual &&
 	test $(grep -c file0 actual) -eq 3
@@ -544,7 +546,7 @@ test_expect_success 'set-up a few more tags for tag export tests' '
 	git tag -a tag-obj_tag-obj -m "tagging a tag" tree_tag-obj
 '
 
-test_expect_success 'tree_tag'        '
+test_expect_success 'tree_tag' '
 	mkdir result &&
 	(cd result && git init) &&
 	git fast-export tree_tag > fe-stream &&
@@ -556,8 +558,8 @@ test_expect_success 'tree_tag'        '
 # they are omitting the one tag we asked them to export (because the
 # tags resolve to a tree).  They exist just to make sure we do not
 # abort but instead just warn.
-test_expect_success 'tree_tag-obj'    'git fast-export tree_tag-obj'
-test_expect_success 'tag-obj_tag'     'git fast-export tag-obj_tag'
+test_expect_success 'tree_tag-obj' 'git fast-export tree_tag-obj'
+test_expect_success 'tag-obj_tag' 'git fast-export tag-obj_tag'
 test_expect_success 'tag-obj_tag-obj' 'git fast-export tag-obj_tag-obj'
 
 test_expect_success 'handling tags of blobs' '
@@ -587,7 +589,7 @@ test_expect_success 'handling nested tags' '
 	test_line_count = 2 tag_lines
 '
 
-test_expect_success 'directory becomes symlink'        '
+test_expect_success 'directory becomes symlink' '
 	git init dirtosymlink &&
 	git init result &&
 	(
@@ -649,7 +651,7 @@ test_expect_success 'test bidirectionality' '
 	git fast-import --export-marks=marks-cur --import-marks-if-exists=marks-cur
 '
 
-cat > expected << EOF
+cat >expected <<EOF
 blob
 mark :13
 data 5
@@ -679,7 +681,7 @@ test_expect_success ICONV 'avoid uninteresting refs' '
 	test_cmp expected actual
 '
 
-cat > expected << EOF
+cat >expected <<EOF
 reset refs/heads/main
 from :14
 
@@ -758,7 +760,6 @@ test_expect_success 'merge commit gets exported with --import-marks' '
 		grep Yeah out
 	)
 '
-
 
 test_expect_success 'fast-export --first-parent outputs all revisions output by revision walk' '
 	git init first-parent &&

@@ -110,9 +110,8 @@ test_expect_success setup '
 # Note that `patch` can successfully apply all patches when run
 # with the --ignore-whitespace option.
 
-for t in 1 2 3 4
-do
-	test_expect_success 'apply with ws expansion (t=$t)' '
+for t in 1 2 3 4; do
+  test_expect_success 'apply with ws expansion (t=$t)' '
 		git apply patch$t.patch &&
 		test_cmp expect-$t test-$t
 	'

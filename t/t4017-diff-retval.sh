@@ -142,9 +142,8 @@ test_expect_success 'option errors are not confused by --exit-code' '
 	grep '^usage:' err
 '
 
-for option in --exit-code --quiet
-do
-	test_expect_success "git diff $option returns 1 for changed binary file" "
+for option in --exit-code --quiet; do
+  test_expect_success "git diff $option returns 1 for changed binary file" "
 		test_when_finished 'rm -f .gitattributes' &&
 		git reset --hard &&
 		echo a binary >.gitattributes &&
@@ -152,14 +151,14 @@ do
 		test_expect_code 1 git diff $option
 	"
 
-	test_expect_success "git diff $option returns 1 for copied file" "
+  test_expect_success "git diff $option returns 1 for copied file" "
 		git reset --hard &&
 		cp a copy &&
 		git add copy &&
 		test_expect_code 1 git diff $option --cached --find-copies-harder
 	"
 
-	test_expect_success "git diff $option returns 1 for renamed file" "
+  test_expect_success "git diff $option returns 1 for renamed file" "
 		git reset --hard &&
 		git mv a renamed &&
 		test_expect_code 1 git diff $option --cached
@@ -176,15 +175,13 @@ test_expect_success 'setup dirty subrepo' '
 	test_commit -C subrepo another-subrepo-file
 '
 
-for option in --exit-code --quiet
-do
-	for submodule_format in diff log short
-	do
-		opts="$option --submodule=$submodule_format" &&
-		test_expect_success "git diff $opts returns 1 for dirty subrepo" "
+for option in --exit-code --quiet; do
+  for submodule_format in diff log short; do
+    opts="$option --submodule=$submodule_format" \
+      && test_expect_success "git diff $opts returns 1 for dirty subrepo" "
 			test_expect_code 1 git diff $opts
 		"
-	done
+  done
 done
 
 test_done

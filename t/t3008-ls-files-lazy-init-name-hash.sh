@@ -4,10 +4,9 @@ test_description='Test the lazy init name hash with various folder structures'
 
 . ./test-lib.sh
 
-if test 1 -eq $(test-tool online-cpus)
-then
-	skip_all='skipping lazy-init tests, single cpu'
-	test_done
+if test 1 -eq $(test-tool online-cpus); then
+  skip_all='skipping lazy-init tests, single cpu'
+  test_done
 fi
 
 LAZY_THREAD_COST=2000

@@ -185,9 +185,8 @@ test_expect_success 'show branch --merge-base with N arguments' '
 '
 
 # incompatible options
-while read combo
-do
-	test_expect_success "show-branch $combo (should fail)" '
+while read combo; do
+  test_expect_success "show-branch $combo (should fail)" '
 		test_must_fail git show-branch $combo 2>error &&
 		grep -e "cannot be used together" -e "usage:" error
 	'
@@ -199,9 +198,8 @@ done <<\EOF
 EOF
 
 # unnegatable options
-for opt in topo-order date-order reflog
-do
-	test_expect_success "show-branch --no-$opt (should fail)" '
+for opt in topo-order date-order reflog; do
+  test_expect_success "show-branch --no-$opt (should fail)" '
 		test_must_fail git show-branch --no-$opt 2>err &&
 		grep "unknown option .no-$opt." err
 	'

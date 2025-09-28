@@ -22,35 +22,35 @@
 
 test_skip_test_preamble=t
 
-start_test_output () {
-	test -n "$GIT_TEST_TEE_OUTPUT_FILE" ||
-	die "--github-workflow-markup requires --verbose-log"
-	github_markup_output="${GIT_TEST_TEE_OUTPUT_FILE%.out}.markup"
-	>$github_markup_output
-	GIT_TEST_TEE_OFFSET=0
+start_test_output() {
+  test -n "$GIT_TEST_TEE_OUTPUT_FILE" \
+    || die "--github-workflow-markup requires --verbose-log"
+  github_markup_output="${GIT_TEST_TEE_OUTPUT_FILE%.out}.markup"
+  >$github_markup_output
+  GIT_TEST_TEE_OFFSET=0
 }
 
 # No need to override start_test_case_output
 
-finalize_test_case_output () {
-	test_case_result=$1
-	shift
-	case "$test_case_result" in
-	failure)
-		echo >>$github_markup_output "::error::failed: $this_test.$test_count $1"
-		;;
-	fixed)
-		echo >>$github_markup_output "::notice::fixed: $this_test.$test_count $1"
-		;;
-	ok|broken)
-		# Exit without printing the "ok" or ""broken" tests
-		return
-		;;
-	esac
-	echo >>$github_markup_output "::group::$test_case_result: $this_test.$test_count $*"
-	test-tool >>$github_markup_output path-utils skip-n-bytes \
-		"$GIT_TEST_TEE_OUTPUT_FILE" $GIT_TEST_TEE_OFFSET
-	echo >>$github_markup_output "::endgroup::"
+finalize_test_case_output() {
+  test_case_result=$1
+  shift
+  case "$test_case_result" in
+    failure)
+      echo >>$github_markup_output "::error::failed: $this_test.$test_count $1"
+      ;;
+    fixed)
+      echo >>$github_markup_output "::notice::fixed: $this_test.$test_count $1"
+      ;;
+    ok | broken)
+      # Exit without printing the "ok" or ""broken" tests
+      return
+      ;;
+  esac
+  echo >>$github_markup_output "::group::$test_case_result: $this_test.$test_count $*"
+  test-tool >>$github_markup_output path-utils skip-n-bytes \
+    "$GIT_TEST_TEE_OUTPUT_FILE" $GIT_TEST_TEE_OFFSET
+  echo >>$github_markup_output "::endgroup::"
 }
 
 # No need to override finalize_test_output

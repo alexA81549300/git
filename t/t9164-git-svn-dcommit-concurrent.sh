@@ -7,8 +7,6 @@ test_description='concurrent git svn dcommit'
 
 . ./lib-git-svn.sh
 
-
-
 test_expect_success 'setup svn repository' '
 	svn_cmd checkout "$svnrepo" work.svn &&
 	(
@@ -20,9 +18,8 @@ test_expect_success 'setup svn repository' '
 	svn_cmd checkout "$svnrepo" work-auto-commits.svn
 '
 N=0
-next_N()
-{
-	N=$(( $N + 1 ))
+next_N() {
+  N=$(($N + 1))
 }
 
 # Setup SVN repository hooks to emulate SVN failures or concurrent commits
@@ -36,26 +33,28 @@ next_N()
 # the hook should be applied for (each time the hook is run, the given
 # number is decreased by one until it gets 0, in which case the hook
 # will execute its real action)
-setup_hook()
-{
-	hook_type="$1"  # "pre-commit" or "post-commit"
-	skip_revs="$2"
-	[ "$hook_type" = "pre-commit" ] ||
-		[ "$hook_type" = "post-commit" ] ||
-		{ echo "ERROR: invalid argument ($hook_type)" \
-			"passed to setup_hook" >&2 ; return 1; }
-	echo "cnt=$skip_revs" > "$hook_type-counter"
-	rm -f "$rawsvnrepo/hooks/"*-commit # drop previous hooks
+setup_hook() {
+  hook_type="$1" # "pre-commit" or "post-commit"
+  skip_revs="$2"
+  [ "$hook_type" = "pre-commit" ] \
+    || [ "$hook_type" = "post-commit" ] \
+    || {
+      echo "ERROR: invalid argument ($hook_type)" \
+        "passed to setup_hook" >&2
+      return 1
+    }
+  echo "cnt=$skip_revs" >"$hook_type-counter"
+  rm -f "$rawsvnrepo/hooks/"*-commit # drop previous hooks
 
-	# Subversion hooks run with an empty environment by default. We thus
-	# need to propagate PATH so that we can find executables.
-	cat >"$rawsvnrepo/conf/hooks-env" <<-EOF
+  # Subversion hooks run with an empty environment by default. We thus
+  # need to propagate PATH so that we can find executables.
+  cat >"$rawsvnrepo/conf/hooks-env" <<-EOF
 	[default]
 	PATH = ${PATH}
 	EOF
 
-	hook="$rawsvnrepo/hooks/$hook_type"
-	cat > "$hook" <<- 'EOF1'
+  hook="$rawsvnrepo/hooks/$hook_type"
+  cat >"$hook" <<-'EOF1'
 		#!/bin/sh
 		set -e
 		cd "$1/.."  # "$1" is repository location
@@ -68,11 +67,11 @@ setup_hook()
 		echo "cnt=$cnt" > ./$hook-counter
 		[ "$cnt" = "0" ] || exit 0
 EOF1
-	if [ "$hook_type" = "pre-commit" ]; then
-		echo "echo 'commit disallowed' >&2; exit 1" >>"$hook"
-	else
-		echo "svnconf=\"$svnconf\"" >>"$hook"
-		cat >>"$hook" <<- 'EOF2'
+  if [ "$hook_type" = "pre-commit" ]; then
+    echo "echo 'commit disallowed' >&2; exit 1" >>"$hook"
+  else
+    echo "svnconf=\"$svnconf\"" >>"$hook"
+    cat >>"$hook" <<-'EOF2'
 			cd work-auto-commits.svn
 			svn up --config-dir "$svnconf"
 			echo "$$" >> auto_updated_file
@@ -80,16 +79,15 @@ EOF1
 				-m "auto-committing concurrent change"
 			exit 0
 EOF2
-	fi
-	chmod 755 "$hook"
+  fi
+  chmod 755 "$hook"
 }
 
-check_contents()
-{
-	gitdir="$1"
-	(cd ../work.svn && svn_cmd up) &&
-	test_cmp file ../work.svn/file &&
-	test_cmp auto_updated_file ../work.svn/auto_updated_file
+check_contents() {
+  gitdir="$1"
+  (cd ../work.svn && svn_cmd up) \
+    && test_cmp file ../work.svn/file \
+    && test_cmp auto_updated_file ../work.svn/auto_updated_file
 }
 
 test_expect_success 'check if post-commit hook creates a concurrent commit' '
@@ -154,12 +152,11 @@ test_expect_success 'dcommit concurrent change in non-changed file' '
 '
 
 # An utility function used in the following test
-delete_first_line()
-{
-	file="$1" &&
-	sed 1d < "$file" > "${file}.tmp" &&
-	rm "$file" &&
-	mv "${file}.tmp" "$file"
+delete_first_line() {
+  file="$1" \
+    && sed 1d <"$file" >"${file}.tmp" \
+    && rm "$file" \
+    && mv "${file}.tmp" "$file"
 }
 
 test_expect_success 'dcommit concurrent non-conflicting change' '

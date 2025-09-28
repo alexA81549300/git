@@ -95,31 +95,29 @@ test_expect_success 'index.skipHash config option' '
 	git -C sub fsck
 '
 
-test_index_version () {
-	INDEX_VERSION_CONFIG=$1 &&
-	FEATURE_MANY_FILES=$2 &&
-	ENV_VAR_VERSION=$3
-	EXPECTED_OUTPUT_VERSION=$4 &&
-	(
-		rm -f .git/index &&
-		rm -f .git/config &&
-		if test "$INDEX_VERSION_CONFIG" -ne 0
-		then
-			git config --add index.version $INDEX_VERSION_CONFIG
-		fi &&
-		git config --add feature.manyFiles $FEATURE_MANY_FILES
-		if test "$ENV_VAR_VERSION" -ne 0
-		then
-			GIT_INDEX_VERSION=$ENV_VAR_VERSION &&
-			export GIT_INDEX_VERSION
-		else
-			unset GIT_INDEX_VERSION
-		fi &&
-		git add a &&
-		echo $EXPECTED_OUTPUT_VERSION >expect &&
-		git update-index --show-index-version >actual &&
-		test_cmp expect actual
-	)
+test_index_version() {
+  INDEX_VERSION_CONFIG=$1 \
+    && FEATURE_MANY_FILES=$2 \
+    && ENV_VAR_VERSION=$3
+  EXPECTED_OUTPUT_VERSION=$4 \
+    && (
+      rm -f .git/index \
+        && rm -f .git/config \
+        && if test "$INDEX_VERSION_CONFIG" -ne 0; then
+          git config --add index.version $INDEX_VERSION_CONFIG
+        fi \
+        && git config --add feature.manyFiles $FEATURE_MANY_FILES
+      if test "$ENV_VAR_VERSION" -ne 0; then
+        GIT_INDEX_VERSION=$ENV_VAR_VERSION \
+          && export GIT_INDEX_VERSION
+      else
+        unset GIT_INDEX_VERSION
+      fi \
+        && git add a \
+        && echo $EXPECTED_OUTPUT_VERSION >expect \
+        && git update-index --show-index-version >actual \
+        && test_cmp expect actual
+    )
 }
 
 test_expect_success 'index version config precedence' '

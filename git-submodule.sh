@@ -64,95 +64,92 @@ for_status=
 #
 # optional branch is stored in global branch variable
 #
-cmd_add()
-{
-	# parse $args after "submodule ... add".
-	while test $# -ne 0
-	do
-		case "$1" in
-		-b | --branch)
-			case "$2" in '') usage ;; esac
-			branch="--branch=$2"
-			shift
-			;;
-		-b* | --branch=*)
-			branch="$1"
-			;;
-		-f | --force)
-			force=$1
-			;;
-		-q|--quiet)
-			quiet=$1
-			;;
-		--progress)
-			progress=$1
-			;;
-		--reference)
-			case "$2" in '') usage ;; esac
-			reference="--reference=$2"
-			shift
-			;;
-		--reference=*)
-			reference="$1"
-			;;
-		--ref-format)
-			case "$2" in '') usage ;; esac
-			ref_format="--ref-format=$2"
-			shift
-			;;
-		--ref-format=*)
-			ref_format="$1"
-			;;
-		--dissociate)
-			dissociate=$1
-			;;
-		--name)
-			case "$2" in '') usage ;; esac
-			name="--name=$2"
-			shift
-			;;
-		--name=*)
-			name="$1"
-			;;
-		--depth)
-			case "$2" in '') usage ;; esac
-			depth="--depth=$2"
-			shift
-			;;
-		--depth=*)
-			depth="$1"
-			;;
-		--)
-			shift
-			break
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
+cmd_add() {
+  # parse $args after "submodule ... add".
+  while test $# -ne 0; do
+    case "$1" in
+      -b | --branch)
+        case "$2" in '') usage ;; esac
+        branch="--branch=$2"
+        shift
+        ;;
+      -b* | --branch=*)
+        branch="$1"
+        ;;
+      -f | --force)
+        force=$1
+        ;;
+      -q | --quiet)
+        quiet=$1
+        ;;
+      --progress)
+        progress=$1
+        ;;
+      --reference)
+        case "$2" in '') usage ;; esac
+        reference="--reference=$2"
+        shift
+        ;;
+      --reference=*)
+        reference="$1"
+        ;;
+      --ref-format)
+        case "$2" in '') usage ;; esac
+        ref_format="--ref-format=$2"
+        shift
+        ;;
+      --ref-format=*)
+        ref_format="$1"
+        ;;
+      --dissociate)
+        dissociate=$1
+        ;;
+      --name)
+        case "$2" in '') usage ;; esac
+        name="--name=$2"
+        shift
+        ;;
+      --name=*)
+        name="$1"
+        ;;
+      --depth)
+        case "$2" in '') usage ;; esac
+        depth="--depth=$2"
+        shift
+        ;;
+      --depth=*)
+        depth="$1"
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
 
-	if test -z "$1"
-	then
-		usage
-	fi
+  if test -z "$1"; then
+    usage
+  fi
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper add \
-		$quiet \
-		$force \
-		$progress \
-		${branch:+"$branch"} \
-		${reference:+"$reference"} \
-		${ref_format:+"$ref_format"} \
-		$dissociate \
-		${name:+"$name"} \
-		${depth:+"$depth"} \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper add \
+    $quiet \
+    $force \
+    $progress \
+    ${branch:+"$branch"} \
+    ${reference:+"$reference"} \
+    ${ref_format:+"$ref_format"} \
+    $dissociate \
+    ${name:+"$name"} \
+    ${depth:+"$depth"} \
+    -- \
+    "$@"
 }
 
 #
@@ -161,33 +158,31 @@ cmd_add()
 #
 # $@ = command to execute
 #
-cmd_foreach()
-{
-	# parse $args after "submodule ... foreach".
-	while test $# -ne 0
-	do
-		case "$1" in
-		-q|--quiet)
-			quiet=$1
-			;;
-		--recursive)
-			recursive=$1
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
+cmd_foreach() {
+  # parse $args after "submodule ... foreach".
+  while test $# -ne 0; do
+    case "$1" in
+      -q | --quiet)
+        quiet=$1
+        ;;
+      --recursive)
+        recursive=$1
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper foreach \
-		$quiet \
-		$recursive \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper foreach \
+    $quiet \
+    $recursive \
+    -- \
+    "$@"
 }
 
 #
@@ -195,73 +190,69 @@ cmd_foreach()
 #
 # $@ = requested paths (default to all)
 #
-cmd_init()
-{
-	# parse $args after "submodule ... init".
-	while test $# -ne 0
-	do
-		case "$1" in
-		-q|--quiet)
-			quiet=$1
-			;;
-		--)
-			shift
-			break
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
+cmd_init() {
+  # parse $args after "submodule ... init".
+  while test $# -ne 0; do
+    case "$1" in
+      -q | --quiet)
+        quiet=$1
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper init \
-		$quiet \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper init \
+    $quiet \
+    -- \
+    "$@"
 }
 
 #
 # Unregister submodules from .git/config and remove their work tree
 #
-cmd_deinit()
-{
-	# parse $args after "submodule ... deinit".
-	while test $# -ne 0
-	do
-		case "$1" in
-		-f|--force)
-			force=$1
-			;;
-		-q|--quiet)
-			quiet=$1
-			;;
-		--all)
-			all=$1
-			;;
-		--)
-			shift
-			break
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
+cmd_deinit() {
+  # parse $args after "submodule ... deinit".
+  while test $# -ne 0; do
+    case "$1" in
+      -f | --force)
+        force=$1
+        ;;
+      -q | --quiet)
+        quiet=$1
+        ;;
+      --all)
+        all=$1
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper deinit \
-		$quiet \
-		$force \
-		$all \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper deinit \
+    $quiet \
+    $force \
+    $all \
+    -- \
+    "$@"
 }
 
 #
@@ -269,133 +260,131 @@ cmd_deinit()
 #
 # $@ = requested paths (default to all)
 #
-cmd_update()
-{
-	# parse $args after "submodule ... update".
-	while test $# -ne 0
-	do
-		case "$1" in
-		-q|--quiet)
-			quiet=$1
-			;;
-		-v|--verbose)
-			quiet=
-			;;
-		--progress)
-			progress=$1
-			;;
-		-i|--init)
-			init=$1
-			;;
-		--require-init)
-			require_init=$1
-			;;
-		--remote)
-			remote=$1
-			;;
-		-N|--no-fetch)
-			no_fetch=$1
-			;;
-		-f|--force)
-			force=$1
-			;;
-		-r|--rebase)
-			rebase=$1
-			;;
-		--ref-format)
-			case "$2" in '') usage ;; esac
-			ref_format="--ref-format=$2"
-			shift
-			;;
-		--ref-format=*)
-			ref_format="$1"
-			;;
-		--reference)
-			case "$2" in '') usage ;; esac
-			reference="--reference=$2"
-			shift
-			;;
-		--reference=*)
-			reference="$1"
-			;;
-		--dissociate)
-			dissociate=$1
-			;;
-		-m|--merge)
-			merge=$1
-			;;
-		--recursive)
-			recursive=$1
-			;;
-		--checkout)
-			checkout=$1
-			;;
-		--recommend-shallow|--no-recommend-shallow)
-			recommend_shallow=$1
-			;;
-		--depth)
-			case "$2" in '') usage ;; esac
-			depth="--depth=$2"
-			shift
-			;;
-		--depth=*)
-			depth="$1"
-			;;
-		-j|--jobs)
-			case "$2" in '') usage ;; esac
-			jobs="--jobs=$2"
-			shift
-			;;
-		-j*|--jobs=*)
-			jobs="$1"
-			;;
-		--single-branch|--no-single-branch)
-			single_branch=$1
-			;;
-		--filter)
-			case "$2" in '') usage ;; esac
-			filter="--filter=$2"
-			shift
-			;;
-		--filter=*)
-			filter="$1"
-			;;
-		--)
-			shift
-			break
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
+cmd_update() {
+  # parse $args after "submodule ... update".
+  while test $# -ne 0; do
+    case "$1" in
+      -q | --quiet)
+        quiet=$1
+        ;;
+      -v | --verbose)
+        quiet=
+        ;;
+      --progress)
+        progress=$1
+        ;;
+      -i | --init)
+        init=$1
+        ;;
+      --require-init)
+        require_init=$1
+        ;;
+      --remote)
+        remote=$1
+        ;;
+      -N | --no-fetch)
+        no_fetch=$1
+        ;;
+      -f | --force)
+        force=$1
+        ;;
+      -r | --rebase)
+        rebase=$1
+        ;;
+      --ref-format)
+        case "$2" in '') usage ;; esac
+        ref_format="--ref-format=$2"
+        shift
+        ;;
+      --ref-format=*)
+        ref_format="$1"
+        ;;
+      --reference)
+        case "$2" in '') usage ;; esac
+        reference="--reference=$2"
+        shift
+        ;;
+      --reference=*)
+        reference="$1"
+        ;;
+      --dissociate)
+        dissociate=$1
+        ;;
+      -m | --merge)
+        merge=$1
+        ;;
+      --recursive)
+        recursive=$1
+        ;;
+      --checkout)
+        checkout=$1
+        ;;
+      --recommend-shallow | --no-recommend-shallow)
+        recommend_shallow=$1
+        ;;
+      --depth)
+        case "$2" in '') usage ;; esac
+        depth="--depth=$2"
+        shift
+        ;;
+      --depth=*)
+        depth="$1"
+        ;;
+      -j | --jobs)
+        case "$2" in '') usage ;; esac
+        jobs="--jobs=$2"
+        shift
+        ;;
+      -j* | --jobs=*)
+        jobs="$1"
+        ;;
+      --single-branch | --no-single-branch)
+        single_branch=$1
+        ;;
+      --filter)
+        case "$2" in '') usage ;; esac
+        filter="--filter=$2"
+        shift
+        ;;
+      --filter=*)
+        filter="$1"
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper update \
-		$quiet \
-		$force \
-		$progress \
-		$remote \
-		$recursive \
-		$init \
-		$no_fetch \
-		$rebase \
-		$merge \
-		$checkout \
-		${ref_format:+"$ref_format"} \
-		${reference:+"$reference"} \
-		$dissociate \
-		${depth:+"$depth"} \
-		$require_init \
-		$single_branch \
-		$recommend_shallow \
-		$jobs \
-		$filter \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper update \
+    $quiet \
+    $force \
+    $progress \
+    $remote \
+    $recursive \
+    $init \
+    $no_fetch \
+    $rebase \
+    $merge \
+    $checkout \
+    ${ref_format:+"$ref_format"} \
+    ${reference:+"$reference"} \
+    $dissociate \
+    ${depth:+"$depth"} \
+    $require_init \
+    $single_branch \
+    $recommend_shallow \
+    $jobs \
+    $filter \
+    -- \
+    "$@"
 }
 
 #
@@ -404,44 +393,43 @@ cmd_update()
 # $@ = requested path
 #
 cmd_set_branch() {
-	# parse $args after "submodule ... set-branch".
-	while test $# -ne 0
-	do
-		case "$1" in
-		-q|--quiet)
-			# we don't do anything with this but we need to accept it
-			;;
-		-d|--default)
-			default=$1
-			;;
-		-b|--branch)
-			case "$2" in '') usage ;; esac
-			branch="--branch=$2"
-			shift
-			;;
-		-b*|--branch=*)
-			branch="$1"
-			;;
-		--)
-			shift
-			break
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
+  # parse $args after "submodule ... set-branch".
+  while test $# -ne 0; do
+    case "$1" in
+      -q | --quiet)
+        # we don't do anything with this but we need to accept it
+        ;;
+      -d | --default)
+        default=$1
+        ;;
+      -b | --branch)
+        case "$2" in '') usage ;; esac
+        branch="--branch=$2"
+        shift
+        ;;
+      -b* | --branch=*)
+        branch="$1"
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper set-branch \
-		$quiet \
-		${branch:+"$branch"} \
-		$default \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper set-branch \
+    $quiet \
+    ${branch:+"$branch"} \
+    $default \
+    -- \
+    "$@"
 }
 
 #
@@ -450,31 +438,30 @@ cmd_set_branch() {
 # $@ = requested path, requested url
 #
 cmd_set_url() {
-	# parse $args after "submodule ... set-url".
-	while test $# -ne 0
-	do
-		case "$1" in
-		-q|--quiet)
-			quiet=$1
-			;;
-		--)
-			shift
-			break
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
+  # parse $args after "submodule ... set-url".
+  while test $# -ne 0; do
+    case "$1" in
+      -q | --quiet)
+        quiet=$1
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper set-url \
-		$quiet \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper set-url \
+    $quiet \
+    -- \
+    "$@"
 }
 
 #
@@ -486,48 +473,47 @@ cmd_set_url() {
 # $@ = [commit (default 'HEAD'),] requested paths (default all)
 #
 cmd_summary() {
-	# parse $args after "submodule ... summary".
-	while test $# -ne 0
-	do
-		case "$1" in
-		--cached)
-			cached=$1
-			;;
-		--files)
-			files=$1
-			;;
-		--for-status)
-			for_status=$1
-			;;
-		-n|--summary-limit)
-			case "$2" in '') usage ;; esac
-			summary_limit="--summary-limit=$2"
-			shift
-			;;
-		-n*|--summary-limit=*)
-			summary_limit="$1"
-			;;
-		--)
-			shift
-			break
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
+  # parse $args after "submodule ... summary".
+  while test $# -ne 0; do
+    case "$1" in
+      --cached)
+        cached=$1
+        ;;
+      --files)
+        files=$1
+        ;;
+      --for-status)
+        for_status=$1
+        ;;
+      -n | --summary-limit)
+        case "$2" in '') usage ;; esac
+        summary_limit="--summary-limit=$2"
+        shift
+        ;;
+      -n* | --summary-limit=*)
+        summary_limit="$1"
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper summary \
-		$files \
-		$cached \
-		$for_status \
-		${summary_limit:+"$summary_limit"} \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper summary \
+    $files \
+    $cached \
+    $for_status \
+    ${summary_limit:+"$summary_limit"} \
+    -- \
+    "$@"
 }
 #
 # List all submodules, prefixed with:
@@ -539,41 +525,39 @@ cmd_summary() {
 #
 # $@ = requested paths (default to all)
 #
-cmd_status()
-{
-	# parse $args after "submodule ... status".
-	while test $# -ne 0
-	do
-		case "$1" in
-		-q|--quiet)
-			quiet=$1
-			;;
-		--cached)
-			cached=$1
-			;;
-		--recursive)
-			recursive=$1
-			;;
-		--)
-			shift
-			break
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
+cmd_status() {
+  # parse $args after "submodule ... status".
+  while test $# -ne 0; do
+    case "$1" in
+      -q | --quiet)
+        quiet=$1
+        ;;
+      --cached)
+        cached=$1
+        ;;
+      --recursive)
+        recursive=$1
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper status \
-		$quiet \
-		$cached \
-		$recursive \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper status \
+    $quiet \
+    $cached \
+    $recursive \
+    -- \
+    "$@"
 }
 
 #
@@ -581,43 +565,40 @@ cmd_status()
 # This makes the value for remote.$remote.url match the value
 # specified in .gitmodules.
 #
-cmd_sync()
-{
-	# parse $args after "submodule ... sync".
-	while test $# -ne 0
-	do
-		case "$1" in
-		-q|--quiet)
-			quiet=$1
-			shift
-			;;
-		--recursive)
-			recursive=$1
-			shift
-			;;
-		--)
-			shift
-			break
-			;;
-		-*)
-			usage
-			;;
-		*)
-			break
-			;;
-		esac
-	done
+cmd_sync() {
+  # parse $args after "submodule ... sync".
+  while test $# -ne 0; do
+    case "$1" in
+      -q | --quiet)
+        quiet=$1
+        shift
+        ;;
+      --recursive)
+        recursive=$1
+        shift
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
 
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper sync \
-		$quiet \
-		$recursive \
-		-- \
-		"$@"
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper sync \
+    $quiet \
+    $recursive \
+    -- \
+    "$@"
 }
 
-cmd_absorbgitdirs()
-{
-	git ${wt_prefix:+-C "$wt_prefix"} submodule--helper absorbgitdirs "$@"
+cmd_absorbgitdirs() {
+  git ${wt_prefix:+-C "$wt_prefix"} submodule--helper absorbgitdirs "$@"
 }
 
 # This loop parses the command line arguments to find the
@@ -626,46 +607,42 @@ cmd_absorbgitdirs()
 # Subcommand specific options such as --branch and --cached are
 # parsed here as well, for backward compatibility.
 
-while test $# != 0 && test -z "$command"
-do
-	case "$1" in
-	add | foreach | init | deinit | update | set-branch | set-url | status | summary | sync | absorbgitdirs)
-		command=$1
-		;;
-	-q|--quiet)
-		quiet=$1
-		;;
-	--cached)
-		cached=$1
-		;;
-	--)
-		break
-		;;
-	-*)
-		usage
-		;;
-	*)
-		break
-		;;
-	esac
-	shift
+while test $# != 0 && test -z "$command"; do
+  case "$1" in
+    add | foreach | init | deinit | update | set-branch | set-url | status | summary | sync | absorbgitdirs)
+      command=$1
+      ;;
+    -q | --quiet)
+      quiet=$1
+      ;;
+    --cached)
+      cached=$1
+      ;;
+    --)
+      break
+      ;;
+    -*)
+      usage
+      ;;
+    *)
+      break
+      ;;
+  esac
+  shift
 done
 
 # No command word defaults to "status"
-if test -z "$command"
-then
-    if test $# = 0
-    then
-	command=status
-    else
-	usage
-    fi
+if test -z "$command"; then
+  if test $# = 0; then
+    command=status
+  else
+    usage
+  fi
 fi
 
 # "--cached" is accepted only by "status" and "summary"
-if test -n "$cached" && test "$command" != status && test "$command" != summary
-then
-	usage
+if test -n "$cached" && test "$command" != status && test "$command" != summary; then
+  usage
 fi
 
 "cmd_$(echo $command | sed -e s/-/_/g)" "$@"

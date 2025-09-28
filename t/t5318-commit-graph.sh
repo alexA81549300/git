@@ -442,11 +442,11 @@ GRAPH_CHUNK_LOOKUP_WIDTH=12
 GRAPH_CHUNK_LOOKUP_ROWS=5
 GRAPH_BYTE_OID_FANOUT_ID=$GRAPH_CHUNK_LOOKUP_OFFSET
 GRAPH_BYTE_OID_LOOKUP_ID=$(($GRAPH_CHUNK_LOOKUP_OFFSET + \
-			    1 * $GRAPH_CHUNK_LOOKUP_WIDTH))
+  1 * $GRAPH_CHUNK_LOOKUP_WIDTH))
 GRAPH_BYTE_COMMIT_DATA_ID=$(($GRAPH_CHUNK_LOOKUP_OFFSET + \
-			     2 * $GRAPH_CHUNK_LOOKUP_WIDTH))
+  2 * $GRAPH_CHUNK_LOOKUP_WIDTH))
 GRAPH_FANOUT_OFFSET=$(($GRAPH_CHUNK_LOOKUP_OFFSET + \
-		       $GRAPH_CHUNK_LOOKUP_WIDTH * $GRAPH_CHUNK_LOOKUP_ROWS))
+  $GRAPH_CHUNK_LOOKUP_WIDTH * $GRAPH_CHUNK_LOOKUP_ROWS))
 GRAPH_BYTE_FANOUT1=$(($GRAPH_FANOUT_OFFSET + 4 * 4))
 GRAPH_BYTE_FANOUT2=$(($GRAPH_FANOUT_OFFSET + 4 * 255))
 GRAPH_OID_LOOKUP_OFFSET=$(($GRAPH_FANOUT_OFFSET + 4 * 256))
@@ -462,29 +462,28 @@ GRAPH_BYTE_COMMIT_GENERATION=$(($GRAPH_COMMIT_DATA_OFFSET + $HASH_LEN + 11))
 GRAPH_BYTE_COMMIT_GENERATION_LAST=$(($GRAPH_BYTE_COMMIT_GENERATION + $(($NUM_COMMITS - 1)) * $GRAPH_COMMIT_DATA_WIDTH))
 GRAPH_BYTE_COMMIT_DATE=$(($GRAPH_COMMIT_DATA_OFFSET + $HASH_LEN + 12))
 GRAPH_OCTOPUS_DATA_OFFSET=$(($GRAPH_COMMIT_DATA_OFFSET + \
-			     $GRAPH_COMMIT_DATA_WIDTH * $NUM_COMMITS))
+  $GRAPH_COMMIT_DATA_WIDTH * $NUM_COMMITS))
 GRAPH_BYTE_OCTOPUS=$(($GRAPH_OCTOPUS_DATA_OFFSET + 4))
 GRAPH_BYTE_FOOTER=$(($GRAPH_OCTOPUS_DATA_OFFSET + 4 * $NUM_OCTOPUS_EDGES))
 
 corrupt_graph_setup() {
-	test_when_finished mv commit-graph-backup full/$objdir/info/commit-graph &&
-	cp full/$objdir/info/commit-graph commit-graph-backup &&
-	chmod u+w full/$objdir/info/commit-graph
+  test_when_finished mv commit-graph-backup full/$objdir/info/commit-graph \
+    && cp full/$objdir/info/commit-graph commit-graph-backup \
+    && chmod u+w full/$objdir/info/commit-graph
 }
 
 corrupt_graph_verify() {
-	grepstr=$1
-	test_must_fail git -C full commit-graph verify 2>test_err &&
-	grep -v "^+" test_err >err &&
-	test_grep "$grepstr" err &&
-	if test "$2" != "no-copy"
-	then
-		cp full/$objdir/info/commit-graph commit-graph-pre-write-test
-	fi &&
-	git -C full status --short &&
-	GIT_TEST_COMMIT_GRAPH_DIE_ON_PARSE=true git -C full commit-graph write &&
-	chmod u+w full/$objdir/info/commit-graph &&
-	git -C full commit-graph verify
+  grepstr=$1
+  test_must_fail git -C full commit-graph verify 2>test_err \
+    && grep -v "^+" test_err >err \
+    && test_grep "$grepstr" err \
+    && if test "$2" != "no-copy"; then
+      cp full/$objdir/info/commit-graph commit-graph-pre-write-test
+    fi \
+    && git -C full status --short \
+    && GIT_TEST_COMMIT_GRAPH_DIE_ON_PARSE=true git -C full commit-graph write \
+    && chmod u+w full/$objdir/info/commit-graph \
+    && git -C full commit-graph verify
 }
 
 # usage: corrupt_graph_and_verify <position> <data> <string> [<zero_pos>]
@@ -494,16 +493,16 @@ corrupt_graph_verify() {
 # and places the output in the file 'err'. Test 'err' for
 # the given string.
 corrupt_graph_and_verify() {
-	pos=$1
-	data="${2:-\0}"
-	grepstr=$3
-	corrupt_graph_setup &&
-	orig_size=$(wc -c <full/$objdir/info/commit-graph) &&
-	zero_pos=${4:-${orig_size}} &&
-	printf "$data" | dd of="full/$objdir/info/commit-graph" bs=1 seek="$pos" conv=notrunc &&
-	dd of="full/$objdir/info/commit-graph" bs=1 seek="$zero_pos" if=/dev/null &&
-	test-tool genzeros $(($orig_size - $zero_pos)) >>"full/$objdir/info/commit-graph" &&
-	corrupt_graph_verify "$grepstr"
+  pos=$1
+  data="${2:-\0}"
+  grepstr=$3
+  corrupt_graph_setup \
+    && orig_size=$(wc -c <full/$objdir/info/commit-graph) \
+    && zero_pos=${4:-${orig_size}} \
+    && printf "$data" | dd of="full/$objdir/info/commit-graph" bs=1 seek="$pos" conv=notrunc \
+    && dd of="full/$objdir/info/commit-graph" bs=1 seek="$zero_pos" if=/dev/null \
+    && test-tool genzeros $(($orig_size - $zero_pos)) >>"full/$objdir/info/commit-graph" \
+    && corrupt_graph_verify "$grepstr"
 
 }
 
@@ -823,18 +822,18 @@ test_expect_success 'overflow during generation version upgrade' '
 	)
 '
 
-corrupt_chunk () {
-	graph=full/.git/objects/info/commit-graph &&
-	test_when_finished "rm -rf $graph" &&
-	git -C full commit-graph write --reachable &&
-	corrupt_chunk_file $graph "$@"
+corrupt_chunk() {
+  graph=full/.git/objects/info/commit-graph \
+    && test_when_finished "rm -rf $graph" \
+    && git -C full commit-graph write --reachable \
+    && corrupt_chunk_file $graph "$@"
 }
 
-check_corrupt_chunk () {
-	corrupt_chunk "$@" &&
-	git -C full -c core.commitGraph=false log >expect.out &&
-	git -C full -c core.commitGraph=true log >out 2>err &&
-	test_cmp expect.out out
+check_corrupt_chunk() {
+  corrupt_chunk "$@" \
+    && git -C full -c core.commitGraph=false log >expect.out \
+    && git -C full -c core.commitGraph=true log >out 2>err \
+    && test_cmp expect.out out
 }
 
 test_expect_success 'reader notices too-small oid fanout chunk' '

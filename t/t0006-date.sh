@@ -5,17 +5,17 @@ test_description='test date parsing and printing'
 . ./test-lib.sh
 
 # arbitrary reference time: 2009-08-30 19:20:00
-GIT_TEST_DATE_NOW=1251660000; export GIT_TEST_DATE_NOW
+GIT_TEST_DATE_NOW=1251660000
+export GIT_TEST_DATE_NOW
 
-if test_have_prereq TIME_IS_64BIT,TIME_T_IS_64BIT
-then
-	test_set_prereq HAVE_64BIT_TIME
+if test_have_prereq TIME_IS_64BIT,TIME_T_IS_64BIT; then
+  test_set_prereq HAVE_64BIT_TIME
 fi
 
 check_relative() {
-	t=$(($GIT_TEST_DATE_NOW - $1))
-	echo "$t -> $2" >expect
-	test_expect_${3:-success} "relative date ($2)" "
+  t=$(($GIT_TEST_DATE_NOW - $1))
+  echo "$t -> $2" >expect
+  test_expect_${3:-success} "relative date ($2)" "
 	test-tool date relative $t >actual &&
 	test_cmp expect actual
 	"
@@ -33,13 +33,13 @@ check_relative 630000000 '20 years ago'
 check_relative 31449600 '12 months ago'
 check_relative 62985600 '2 years ago'
 
-check_show () {
-	format=$1
-	time=$2
-	expect=$3
-	prereqs=$4
-	zone=$5
-	test_expect_success $prereqs "show date ($format:$time)" '
+check_show() {
+  format=$1
+  time=$2
+  expect=$3
+  prereqs=$4
+  zone=$5
+  test_expect_success $prereqs "show date ($format:$time)" '
 		echo "$time -> $expect" >expect &&
 		TZ=${zone:-$TZ} test-tool date show:"$format" "$time" >actual &&
 		test_cmp expect actual
@@ -84,13 +84,13 @@ check_show raw "$TIME" '1466000000 -0200'
 
 # arbitrary time absurdly far in the future
 FUTURE="5758122296 -0400"
-check_show iso       "$FUTURE" "2152-06-19 18:24:56 -0400" HAVE_64BIT_TIME
+check_show iso "$FUTURE" "2152-06-19 18:24:56 -0400" HAVE_64BIT_TIME
 check_show iso-local "$FUTURE" "2152-06-19 22:24:56 +0000" HAVE_64BIT_TIME
 
 REQUIRE_64BIT_TIME=
-check_parse () {
-	echo "$1 -> $2" >expect
-	test_expect_success $REQUIRE_64BIT_TIME "parse date ($1${3:+ TZ=$3}) -> $2" "
+check_parse() {
+  echo "$1 -> $2" >expect
+  test_expect_success $REQUIRE_64BIT_TIME "parse date ($1${3:+ TZ=$3}) -> $2" "
 		TZ=${3:-$TZ} test-tool date parse '$1' >actual &&
 		test_cmp expect actual
 	"
@@ -156,8 +156,8 @@ check_parse '2100-00-00 00:00:00 +11' bad
 REQUIRE_64BIT_TIME=
 
 check_approxidate() {
-	echo "$1 -> $2 +0000" >expect
-	test_expect_${3:-success} "parse approxidate ($1)" "
+  echo "$1 -> $2 +0000" >expect
+  test_expect_${3:-success} "parse approxidate ($1)" "
 	test-tool date approxidate '$1' >actual &&
 	test_cmp expect actual
 	"
@@ -196,21 +196,21 @@ check_approxidate '2008-12-01' '2008-12-01 19:20:00'
 check_approxidate '2009-12-01' '2009-12-01 19:20:00'
 
 check_date_format_human() {
-	t=$(($GIT_TEST_DATE_NOW - $1))
-	echo "$t -> $2" >expect
-	test_expect_success "human date $t" '
+  t=$(($GIT_TEST_DATE_NOW - $1))
+  echo "$t -> $2" >expect
+  test_expect_success "human date $t" '
 		test-tool date human $t >actual &&
 		test_cmp expect actual
 '
 }
 
-check_date_format_human 18000 "5 hours ago" # 5 hours ago
-check_date_format_human 432000 "Tue Aug 25 19:20" # 5 days ago
+check_date_format_human 18000 "5 hours ago"        # 5 hours ago
+check_date_format_human 432000 "Tue Aug 25 19:20"  # 5 days ago
 check_date_format_human 1728000 "Mon Aug 10 19:20" # 3 weeks ago
 check_date_format_human 13000000 "Thu Apr 2 08:13" # 5 months ago
-check_date_format_human 31449600 "Aug 31 2008" # 12 months ago
-check_date_format_human 37500000 "Jun 22 2008" # 1 year, 2 months ago
-check_date_format_human 55188000 "Dec 1 2007" # 1 year, 9 months ago
-check_date_format_human 630000000 "Sep 13 1989" # 20 years ago
+check_date_format_human 31449600 "Aug 31 2008"     # 12 months ago
+check_date_format_human 37500000 "Jun 22 2008"     # 1 year, 2 months ago
+check_date_format_human 55188000 "Dec 1 2007"      # 1 year, 9 months ago
+check_date_format_human 630000000 "Sep 13 1989"    # 20 years ago
 
 test_done

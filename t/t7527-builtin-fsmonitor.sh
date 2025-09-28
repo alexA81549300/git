@@ -4,82 +4,71 @@ test_description='built-in file system watcher'
 
 . ./test-lib.sh
 
-if ! test_have_prereq FSMONITOR_DAEMON
-then
-	skip_all="fsmonitor--daemon is not supported on this platform"
-	test_done
+if ! test_have_prereq FSMONITOR_DAEMON; then
+  skip_all="fsmonitor--daemon is not supported on this platform"
+  test_done
 fi
 
-stop_daemon_delete_repo () {
-	r=$1 &&
-	test_might_fail git -C $r fsmonitor--daemon stop &&
-	rm -rf $1
+stop_daemon_delete_repo() {
+  r=$1 \
+    && test_might_fail git -C $r fsmonitor--daemon stop \
+    && rm -rf $1
 }
 
-start_daemon () {
-	r= tf= t2= tk= &&
-
-	while test "$#" -ne 0
-	do
-		case "$1" in
-		-C)
-			r="-C ${2?}"
-			shift
-			;;
-		--tf)
-			tf="${2?}"
-			shift
-			;;
-		--t2)
-			t2="${2?}"
-			shift
-			;;
-		--tk)
-			tk="${2?}"
-			shift
-			;;
-		-*)
-			BUG "error: unknown option: '$1'"
-			;;
-		*)
-			BUG "error: unbound argument: '$1'"
-			;;
-		esac
-		shift
-	done &&
-
-	(
-		if test -n "$tf"
-		then
-			GIT_TRACE_FSMONITOR="$tf"
-			export GIT_TRACE_FSMONITOR
-		fi &&
-
-		if test -n "$t2"
-		then
-			GIT_TRACE2_PERF="$t2"
-			export GIT_TRACE2_PERF
-		fi &&
-
-		if test -n "$tk"
-		then
-			GIT_TEST_FSMONITOR_TOKEN="$tk"
-			export GIT_TEST_FSMONITOR_TOKEN
-		fi &&
-
-		git $r fsmonitor--daemon start &&
-		git $r fsmonitor--daemon status
-	)
+start_daemon() {
+  r= tf= t2= tk= \
+    && while test "$#" -ne 0; do
+      case "$1" in
+        -C)
+          r="-C ${2?}"
+          shift
+          ;;
+        --tf)
+          tf="${2?}"
+          shift
+          ;;
+        --t2)
+          t2="${2?}"
+          shift
+          ;;
+        --tk)
+          tk="${2?}"
+          shift
+          ;;
+        -*)
+          BUG "error: unknown option: '$1'"
+          ;;
+        *)
+          BUG "error: unbound argument: '$1'"
+          ;;
+      esac
+      shift
+    done \
+    && (
+      if test -n "$tf"; then
+        GIT_TRACE_FSMONITOR="$tf"
+        export GIT_TRACE_FSMONITOR
+      fi \
+        && if test -n "$t2"; then
+          GIT_TRACE2_PERF="$t2"
+          export GIT_TRACE2_PERF
+        fi \
+        && if test -n "$tk"; then
+          GIT_TEST_FSMONITOR_TOKEN="$tk"
+          export GIT_TEST_FSMONITOR_TOKEN
+        fi \
+        && git $r fsmonitor--daemon start \
+        && git $r fsmonitor--daemon status
+    )
 }
 
 # Is a Trace2 data event present with the given catetory and key?
 # We do not care what the value is.
 #
-have_t2_data_event () {
-	c=$1 &&
-	k=$2 &&
-
-	grep -e '"event":"data".*"category":"'"$c"'".*"key":"'"$k"'"'
+have_t2_data_event() {
+  c=$1 \
+    && k=$2 \
+    && grep -e '"event":"data".*"category":"'"$c"'".*"key":"'"$k"'"'
 }
 
 test_expect_success 'explicit daemon start and stop' '
@@ -139,19 +128,16 @@ test_expect_success 'implicit daemon start' '
 #
 IMPLICIT_TIMEOUT=5
 
-verify_implicit_shutdown () {
-	r=$1 &&
+verify_implicit_shutdown() {
+  r=$1 \
+    && k=0 \
+    && while test "$k" -lt $IMPLICIT_TIMEOUT; do
+      git -C $r fsmonitor--daemon status || return 0
 
-	k=0 &&
-	while test "$k" -lt $IMPLICIT_TIMEOUT
-	do
-		git -C $r fsmonitor--daemon status || return 0
-
-		sleep 1
-		k=$(( $k + 1 ))
-	done &&
-
-	return 1
+      sleep 1
+      k=$(($k + 1))
+    done \
+    && return 1
 }
 
 test_expect_success 'implicit daemon stop (delete .git)' '
@@ -318,8 +304,8 @@ test_expect_success 'setup' '
 # The test already explicitly stopped (or tried to stop) the daemon.
 # This is here in case something else fails first.
 #
-redundant_stop_daemon () {
-	test_might_fail git fsmonitor--daemon stop
+redundant_stop_daemon() {
+  test_might_fail git fsmonitor--daemon stop
 }
 
 test_expect_success 'update-index implicitly starts daemon' '
@@ -354,53 +340,53 @@ test_expect_success 'status implicitly starts daemon' '
 	test_subcommand git fsmonitor--daemon start <.git/trace_implicit_2
 '
 
-edit_files () {
-	echo 1 >modified &&
-	echo 2 >dir1/modified &&
-	echo 3 >dir2/modified &&
-	>dir1/untracked
+edit_files() {
+  echo 1 >modified \
+    && echo 2 >dir1/modified \
+    && echo 3 >dir2/modified \
+    && >dir1/untracked
 }
 
-delete_files () {
-	rm -f delete &&
-	rm -f dir1/delete &&
-	rm -f dir2/delete
+delete_files() {
+  rm -f delete \
+    && rm -f dir1/delete \
+    && rm -f dir2/delete
 }
 
-create_files () {
-	echo 1 >new &&
-	echo 2 >dir1/new &&
-	echo 3 >dir2/new
+create_files() {
+  echo 1 >new \
+    && echo 2 >dir1/new \
+    && echo 3 >dir2/new
 }
 
-rename_files () {
-	mv rename renamed &&
-	mv dir1/rename dir1/renamed &&
-	mv dir2/rename dir2/renamed
+rename_files() {
+  mv rename renamed \
+    && mv dir1/rename dir1/renamed \
+    && mv dir2/rename dir2/renamed
 }
 
-file_to_directory () {
-	rm -f delete &&
-	mkdir delete &&
-	echo 1 >delete/new
+file_to_directory() {
+  rm -f delete \
+    && mkdir delete \
+    && echo 1 >delete/new
 }
 
-directory_to_file () {
-	rm -rf dir1 &&
-	echo 1 >dir1
+directory_to_file() {
+  rm -rf dir1 \
+    && echo 1 >dir1
 }
 
 move_directory_contents_deeper() {
-	mkdir T1/_new_ &&
-	mv T1/[A-Z]* T1/_new_
+  mkdir T1/_new_ \
+    && mv T1/[A-Z]* T1/_new_
 }
 
 move_directory_up() {
-	mv T1/T2/T3 T1
+  mv T1/T2/T3 T1
 }
 
 move_directory() {
-	mv T1/T2/T3 T1/T2/NewT3
+  mv T1/T2/T3 T1/T2/NewT3
 }
 
 # The next few test cases confirm that our fsmonitor daemon sees each type
@@ -415,11 +401,11 @@ move_directory() {
 # We `reset` and `clean` at the bottom of each test (and before stopping the
 # daemon) because these commands might implicitly restart the daemon.
 
-clean_up_repo_and_stop_daemon () {
-	git reset --hard HEAD &&
-	git clean -fd &&
-	test_might_fail git fsmonitor--daemon stop &&
-	rm -f .git/trace
+clean_up_repo_and_stop_daemon() {
+  git reset --hard HEAD \
+    && git clean -fd \
+    && test_might_fail git fsmonitor--daemon stop \
+    && rm -f .git/trace
 }
 
 test_expect_success 'edit some files' '
@@ -620,39 +606,36 @@ test_expect_success 'Matrix: setup for untracked-cache,fsmonitor matrix' '
 	test_might_fail git fsmonitor--daemon stop
 '
 
-matrix_clean_up_repo () {
-	git reset --hard HEAD &&
-	git clean -fd
+matrix_clean_up_repo() {
+  git reset --hard HEAD \
+    && git clean -fd
 }
 
-matrix_try () {
-	uc=$1 &&
-	fsm=$2 &&
-	fn=$3 &&
-
-	if test $uc = true && test $fsm = false
-	then
-		# The untracked-cache is buggy when FSMonitor is
-		# DISABLED, so skip the tests for this matrix
-		# combination.
-		#
-		# We've observed random, occasional test failures on
-		# Windows and MacOS when the UC is turned on and FSM
-		# is turned off.  These are rare, but they do happen
-		# indicating that it is probably a race condition within
-		# the untracked cache itself.
-		#
-		# It usually happens when a test does F/D trickery and
-		# then the NEXT test fails because of extra status
-		# output from stale UC data from the previous test.
-		#
-		# Since FSMonitor is not involved in the error, skip
-		# the tests for this matrix combination.
-		#
-		return 0
-	fi &&
-
-	test_expect_success "Matrix[uc:$uc][fsm:$fsm] $fn" '
+matrix_try() {
+  uc=$1 \
+    && fsm=$2 \
+    && fn=$3 \
+    && if test $uc = true && test $fsm = false; then
+      # The untracked-cache is buggy when FSMonitor is
+      # DISABLED, so skip the tests for this matrix
+      # combination.
+      #
+      # We've observed random, occasional test failures on
+      # Windows and MacOS when the UC is turned on and FSM
+      # is turned off.  These are rare, but they do happen
+      # indicating that it is probably a race condition within
+      # the untracked cache itself.
+      #
+      # It usually happens when a test does F/D trickery and
+      # then the NEXT test fails because of extra status
+      # output from stale UC data from the previous test.
+      #
+      # Since FSMonitor is not involved in the error, skip
+      # the tests for this matrix combination.
+      #
+      return 0
+    fi \
+    && test_expect_success "Matrix[uc:$uc][fsm:$fsm] $fn" '
 		matrix_clean_up_repo &&
 		$fn &&
 		if test $uc = false && test $fsm = false
@@ -667,59 +650,54 @@ matrix_try () {
 
 uc_values="false"
 test_have_prereq UNTRACKED_CACHE && uc_values="false true"
-for uc_val in $uc_values
-do
-	if test $uc_val = false
-	then
-		test_expect_success "Matrix[uc:$uc_val] disable untracked cache" '
+for uc_val in $uc_values; do
+  if test $uc_val = false; then
+    test_expect_success "Matrix[uc:$uc_val] disable untracked cache" '
 			git config core.untrackedcache false &&
 			git update-index --no-untracked-cache
 		'
-	else
-		test_expect_success "Matrix[uc:$uc_val] enable untracked cache" '
+  else
+    test_expect_success "Matrix[uc:$uc_val] enable untracked cache" '
 			git config core.untrackedcache true &&
 			git update-index --untracked-cache
 		'
-	fi
+  fi
 
-	fsm_values="false true"
-	for fsm_val in $fsm_values
-	do
-		if test $fsm_val = false
-		then
-			test_expect_success "Matrix[uc:$uc_val][fsm:$fsm_val] disable fsmonitor" '
+  fsm_values="false true"
+  for fsm_val in $fsm_values; do
+    if test $fsm_val = false; then
+      test_expect_success "Matrix[uc:$uc_val][fsm:$fsm_val] disable fsmonitor" '
 				test_unconfig core.fsmonitor &&
 				git update-index --no-fsmonitor &&
 				test_might_fail git fsmonitor--daemon stop
 			'
-		else
-			test_expect_success "Matrix[uc:$uc_val][fsm:$fsm_val] enable fsmonitor" '
+    else
+      test_expect_success "Matrix[uc:$uc_val][fsm:$fsm_val] enable fsmonitor" '
 				git config core.fsmonitor true &&
 				git fsmonitor--daemon start &&
 				git update-index --fsmonitor
 			'
-		fi
+    fi
 
-		matrix_try $uc_val $fsm_val edit_files
-		matrix_try $uc_val $fsm_val delete_files
-		matrix_try $uc_val $fsm_val create_files
-		matrix_try $uc_val $fsm_val rename_files
-		matrix_try $uc_val $fsm_val file_to_directory
-		matrix_try $uc_val $fsm_val directory_to_file
+    matrix_try $uc_val $fsm_val edit_files
+    matrix_try $uc_val $fsm_val delete_files
+    matrix_try $uc_val $fsm_val create_files
+    matrix_try $uc_val $fsm_val rename_files
+    matrix_try $uc_val $fsm_val file_to_directory
+    matrix_try $uc_val $fsm_val directory_to_file
 
-		matrix_try $uc_val $fsm_val move_directory_contents_deeper
-		matrix_try $uc_val $fsm_val move_directory_up
-		matrix_try $uc_val $fsm_val move_directory
+    matrix_try $uc_val $fsm_val move_directory_contents_deeper
+    matrix_try $uc_val $fsm_val move_directory_up
+    matrix_try $uc_val $fsm_val move_directory
 
-		if test $fsm_val = true
-		then
-			test_expect_success "Matrix[uc:$uc_val][fsm:$fsm_val] disable fsmonitor at end" '
+    if test $fsm_val = true; then
+      test_expect_success "Matrix[uc:$uc_val][fsm:$fsm_val] disable fsmonitor at end" '
 				test_unconfig core.fsmonitor &&
 				git update-index --no-fsmonitor &&
 				test_might_fail git fsmonitor--daemon stop
 			'
-		fi
-	done
+    fi
+  done
 done
 
 # Test Unicode UTF-8 characters in the pathname of the working
@@ -729,9 +707,8 @@ done
 u1=$(printf "u_c3_a6__\xC3\xA6")
 u2=$(printf "u_e2_99_ab__\xE2\x99\xAB")
 u_values="$u1 $u2"
-for u in $u_values
-do
-	test_expect_success "unicode in repo root path: $u" '
+for u in $u_values; do
+  test_expect_success "unicode in repo root path: $u" '
 		test_when_finished "stop_daemon_delete_repo $u" &&
 
 		git init "$u" &&
@@ -769,53 +746,49 @@ done
 # submodule so that we get a summary of the status *within* the
 # submodule.
 
-create_super () {
-	super="$1" &&
-
-	git init "$super" &&
-	echo x >"$super/file_1" &&
-	echo y >"$super/file_2" &&
-	echo z >"$super/file_3" &&
-	mkdir "$super/dir_1" &&
-	echo a >"$super/dir_1/file_11" &&
-	echo b >"$super/dir_1/file_12" &&
-	mkdir "$super/dir_1/dir_2" &&
-	echo a >"$super/dir_1/dir_2/file_21" &&
-	echo b >"$super/dir_1/dir_2/file_22" &&
-	git -C "$super" add . &&
-	git -C "$super" commit -m "initial $super commit"
+create_super() {
+  super="$1" \
+    && git init "$super" \
+    && echo x >"$super/file_1" \
+    && echo y >"$super/file_2" \
+    && echo z >"$super/file_3" \
+    && mkdir "$super/dir_1" \
+    && echo a >"$super/dir_1/file_11" \
+    && echo b >"$super/dir_1/file_12" \
+    && mkdir "$super/dir_1/dir_2" \
+    && echo a >"$super/dir_1/dir_2/file_21" \
+    && echo b >"$super/dir_1/dir_2/file_22" \
+    && git -C "$super" add . \
+    && git -C "$super" commit -m "initial $super commit"
 }
 
-create_sub () {
-	sub="$1" &&
-
-	git init "$sub" &&
-	echo x >"$sub/file_x" &&
-	echo y >"$sub/file_y" &&
-	echo z >"$sub/file_z" &&
-	mkdir "$sub/dir_x" &&
-	echo a >"$sub/dir_x/file_a" &&
-	echo b >"$sub/dir_x/file_b" &&
-	mkdir "$sub/dir_x/dir_y" &&
-	echo a >"$sub/dir_x/dir_y/file_a" &&
-	echo b >"$sub/dir_x/dir_y/file_b" &&
-	git -C "$sub" add . &&
-	git -C "$sub" commit -m "initial $sub commit"
+create_sub() {
+  sub="$1" \
+    && git init "$sub" \
+    && echo x >"$sub/file_x" \
+    && echo y >"$sub/file_y" \
+    && echo z >"$sub/file_z" \
+    && mkdir "$sub/dir_x" \
+    && echo a >"$sub/dir_x/file_a" \
+    && echo b >"$sub/dir_x/file_b" \
+    && mkdir "$sub/dir_x/dir_y" \
+    && echo a >"$sub/dir_x/dir_y/file_a" \
+    && echo b >"$sub/dir_x/dir_y/file_b" \
+    && git -C "$sub" add . \
+    && git -C "$sub" commit -m "initial $sub commit"
 }
 
-my_match_and_clean () {
-	git -C super --no-optional-locks status --porcelain=v2 >actual.with &&
-	git -C super --no-optional-locks -c core.fsmonitor=false \
-		status --porcelain=v2 >actual.without &&
-	test_cmp actual.with actual.without &&
-
-	git -C super --no-optional-locks diff-index --name-status HEAD >actual.with &&
-	git -C super --no-optional-locks -c core.fsmonitor=false \
-		diff-index --name-status HEAD >actual.without &&
-	test_cmp actual.with actual.without &&
-
-	git -C super/dir_1/dir_2/sub reset --hard &&
-	git -C super/dir_1/dir_2/sub clean -d -f
+my_match_and_clean() {
+  git -C super --no-optional-locks status --porcelain=v2 >actual.with \
+    && git -C super --no-optional-locks -c core.fsmonitor=false \
+      status --porcelain=v2 >actual.without \
+    && test_cmp actual.with actual.without \
+    && git -C super --no-optional-locks diff-index --name-status HEAD >actual.with \
+    && git -C super --no-optional-locks -c core.fsmonitor=false \
+      diff-index --name-status HEAD >actual.without \
+    && test_cmp actual.with actual.without \
+    && git -C super/dir_1/dir_2/sub reset --hard \
+    && git -C super/dir_1/dir_2/sub clean -d -f
 }
 
 test_expect_success 'submodule setup' '
@@ -907,39 +880,35 @@ test_expect_success "submodule absorbgitdirs implicitly starts daemon" '
 	test_subcommand git fsmonitor--daemon start <super-sub.trace
 '
 
-start_git_in_background () {
-	git "$@" &
-	git_pid=$!
-	git_pgid=$(ps -o pgid= -p $git_pid)
-	nr_tries_left=10
-	while true
-	do
-		if test $nr_tries_left -eq 0
-		then
-			kill -- -$git_pgid
-			exit 1
-		fi
-		sleep 1
-		nr_tries_left=$(($nr_tries_left - 1))
-	done >/dev/null 2>&1 &
-	watchdog_pid=$!
-	wait $git_pid
+start_git_in_background() {
+  git "$@" &
+  git_pid=$!
+  git_pgid=$(ps -o pgid= -p $git_pid)
+  nr_tries_left=10
+  while true; do
+    if test $nr_tries_left -eq 0; then
+      kill -- -$git_pgid
+      exit 1
+    fi
+    sleep 1
+    nr_tries_left=$(($nr_tries_left - 1))
+  done >/dev/null 2>&1 &
+  watchdog_pid=$!
+  wait $git_pid
 }
 
-stop_git () {
-	while kill -0 -- -$git_pgid
-	do
-		kill -- -$git_pgid
-		sleep 1
-	done
+stop_git() {
+  while kill -0 -- -$git_pgid; do
+    kill -- -$git_pgid
+    sleep 1
+  done
 }
 
-stop_watchdog () {
-	while kill -0 $watchdog_pid
-	do
-		kill $watchdog_pid
-		sleep 1
-	done
+stop_watchdog() {
+  while kill -0 $watchdog_pid; do
+    kill $watchdog_pid
+    sleep 1
+  done
 }
 
 test_expect_success !MINGW "submodule implicitly starts daemon by pull" '

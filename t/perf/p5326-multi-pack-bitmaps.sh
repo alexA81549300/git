@@ -4,40 +4,40 @@ test_description='Tests performance using midx bitmaps'
 . ./perf-lib.sh
 . "${TEST_DIRECTORY}/perf/lib-bitmap.sh"
 
-test_bitmap () {
-	local enabled="$1"
+test_bitmap() {
+  local enabled="$1"
 
-	test_expect_success "remove existing repo (lookup=$enabled)" '
+  test_expect_success "remove existing repo (lookup=$enabled)" '
 		rm -fr * .git
 	'
 
-	test_perf_large_repo
+  test_perf_large_repo
 
-	# we need to create the tag up front such that it is covered by the repack and
-	# thus by generated bitmaps.
-	test_expect_success 'create tags' '
+  # we need to create the tag up front such that it is covered by the repack and
+  # thus by generated bitmaps.
+  test_expect_success 'create tags' '
 		git tag --message="tag pointing to HEAD" perf-tag HEAD
 	'
 
-	test_expect_success "use lookup table: $enabled" '
+  test_expect_success "use lookup table: $enabled" '
 		git config pack.writeBitmapLookupTable '"$enabled"'
 	'
 
-	test_expect_success "start with bitmapped pack (lookup=$enabled)" '
+  test_expect_success "start with bitmapped pack (lookup=$enabled)" '
 		git repack -adb
 	'
 
-	test_perf "setup multi-pack index (lookup=$enabled)" '
+  test_perf "setup multi-pack index (lookup=$enabled)" '
 		git multi-pack-index write --bitmap
 	'
 
-	test_expect_success "drop pack bitmap (lookup=$enabled)" '
+  test_expect_success "drop pack bitmap (lookup=$enabled)" '
 		rm -f .git/objects/pack/pack-*.bitmap
 	'
 
-	test_full_bitmap
+  test_full_bitmap
 
-	test_expect_success "create partial bitmap state (lookup=$enabled)" '
+  test_expect_success "create partial bitmap state (lookup=$enabled)" '
 		# pick a commit to represent the repo tip in the past
 		cutoff=$(git rev-list HEAD~100 -1) &&
 		orig_tip=$(git rev-parse HEAD) &&
@@ -58,7 +58,7 @@ test_bitmap () {
 		git update-ref HEAD $orig_tip
 	'
 
-	test_partial_bitmap
+  test_partial_bitmap
 }
 
 test_bitmap false

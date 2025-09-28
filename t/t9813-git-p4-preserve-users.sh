@@ -20,23 +20,23 @@ test_expect_success 'create files' '
 '
 
 p4_grant_admin() {
-	name=$1 &&
-	{
-		p4 protect -o &&
-		echo "    admin user $name * //depot/..."
-	} | p4 protect -i
+  name=$1 \
+    && {
+      p4 protect -o \
+      && echo "    admin user $name * //depot/..."
+    } | p4 protect -i
 }
 
 p4_check_commit_author() {
-	file=$1 user=$2 &&
-	p4 changes -m 1 //depot/$file | grep -q $user
+  file=$1 user=$2 \
+    && p4 changes -m 1 //depot/$file | grep -q $user
 }
 
 make_change_by_user() {
-	file=$1 name=$2 email=$3 &&
-	echo "username: a change by $name" >>"$file" &&
-	git add "$file" &&
-	git commit --author "$name <$email>" -m "a change by $name"
+  file=$1 name=$2 email=$3 \
+    && echo "username: a change by $name" >>"$file" \
+    && git add "$file" \
+    && git commit --author "$name <$email>" -m "a change by $name"
 }
 
 # Test username support, submitting as user 'alice'

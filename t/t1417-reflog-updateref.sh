@@ -23,12 +23,12 @@ test_expect_success 'setup' '
 	)
 '
 
-test_reflog_updateref () {
-	exp=$1
-	shift
-	args="$@"
+test_reflog_updateref() {
+  exp=$1
+  shift
+  args="$@"
 
-	test_expect_success "get '$exp' with '$args'"  '
+  test_expect_success "get '$exp' with '$args'" '
 		test_when_finished "rm -rf copy" &&
 		cp -R repo copy &&
 
@@ -52,10 +52,10 @@ test_reflog_updateref B git reflog delete --updateref --rewrite HEAD@{0}
 test_reflog_updateref B git reflog delete --updateref --rewrite HEAD@{1}
 test_reflog_updateref C git reflog delete --updateref --rewrite main@{0}
 test_reflog_updateref B git reflog delete --updateref --rewrite main@{1}
-test_reflog_updateref B test_must_fail git reflog expire  HEAD@{0}
-test_reflog_updateref B test_must_fail git reflog expire  HEAD@{1}
-test_reflog_updateref B test_must_fail git reflog expire  main@{0}
-test_reflog_updateref B test_must_fail git reflog expire  main@{1}
+test_reflog_updateref B test_must_fail git reflog expire HEAD@{0}
+test_reflog_updateref B test_must_fail git reflog expire HEAD@{1}
+test_reflog_updateref B test_must_fail git reflog expire main@{0}
+test_reflog_updateref B test_must_fail git reflog expire main@{1}
 test_reflog_updateref B test_must_fail git reflog expire --updateref HEAD@{0}
 test_reflog_updateref B test_must_fail git reflog expire --updateref HEAD@{1}
 test_reflog_updateref B test_must_fail git reflog expire --updateref main@{0}

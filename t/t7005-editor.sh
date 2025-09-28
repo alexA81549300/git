@@ -13,23 +13,20 @@ test_expect_success 'determine default editor' '
 
 '
 
-if ! expr "$vi" : '[a-z]*$' >/dev/null
-then
-	vi=
+if ! expr "$vi" : '[a-z]*$' >/dev/null; then
+  vi=
 fi
 
-for i in GIT_EDITOR core_editor EDITOR VISUAL $vi
-do
-	cat >e-$i.sh <<-EOF
+for i in GIT_EDITOR core_editor EDITOR VISUAL $vi; do
+  cat >e-$i.sh <<-EOF
 	#!$SHELL_PATH
 	echo "Edited by $i" >"\$1"
 	EOF
-	chmod +x e-$i.sh
+  chmod +x e-$i.sh
 done
 
-if ! test -z "$vi"
-then
-	mv e-$vi.sh $vi
+if ! test -z "$vi"; then
+  mv e-$vi.sh $vi
 fi
 
 test_expect_success setup '
@@ -67,21 +64,20 @@ test_expect_success 'dumb should prefer EDITOR to VISUAL' '
 
 TERM=vt100
 export TERM
-for i in $vi EDITOR VISUAL core_editor GIT_EDITOR
-do
-	echo "Edited by $i" >expect
-	unset EDITOR VISUAL GIT_EDITOR
-	git config --unset-all core.editor
-	case "$i" in
-	core_editor)
-		git config core.editor ./e-core_editor.sh
-		;;
-	[A-Z]*)
-		eval "$i=./e-$i.sh"
-		export $i
-		;;
-	esac
-	test_expect_success "Using $i" '
+for i in $vi EDITOR VISUAL core_editor GIT_EDITOR; do
+  echo "Edited by $i" >expect
+  unset EDITOR VISUAL GIT_EDITOR
+  git config --unset-all core.editor
+  case "$i" in
+    core_editor)
+      git config core.editor ./e-core_editor.sh
+      ;;
+    [A-Z]*)
+      eval "$i=./e-$i.sh"
+      export $i
+      ;;
+  esac
+  test_expect_success "Using $i" '
 		git --exec-path=. commit --amend &&
 		git show -s --pretty=oneline |
 		sed -e "s/^[0-9a-f]* //" >actual &&
@@ -91,19 +87,18 @@ done
 
 unset EDITOR VISUAL GIT_EDITOR
 git config --unset-all core.editor
-for i in $vi EDITOR VISUAL core_editor GIT_EDITOR
-do
-	echo "Edited by $i" >expect
-	case "$i" in
-	core_editor)
-		git config core.editor ./e-core_editor.sh
-		;;
-	[A-Z]*)
-		eval "$i=./e-$i.sh"
-		export $i
-		;;
-	esac
-	test_expect_success "Using $i (override)" '
+for i in $vi EDITOR VISUAL core_editor GIT_EDITOR; do
+  echo "Edited by $i" >expect
+  case "$i" in
+    core_editor)
+      git config core.editor ./e-core_editor.sh
+      ;;
+    [A-Z]*)
+      eval "$i=./e-$i.sh"
+      export $i
+      ;;
+  esac
+  test_expect_success "Using $i (override)" '
 		git --exec-path=. commit --amend &&
 		git show -s --pretty=oneline |
 		sed -e "s/^[0-9a-f]* //" >actual &&

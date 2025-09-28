@@ -13,17 +13,15 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-difftool_test_setup ()
-{
-	test_config diff.tool test-tool &&
-	test_config difftool.test-tool.cmd 'cat "$LOCAL"' &&
-	test_config difftool.bogus-tool.cmd false
+difftool_test_setup() {
+  test_config diff.tool test-tool \
+    && test_config difftool.test-tool.cmd 'cat "$LOCAL"' \
+    && test_config difftool.bogus-tool.cmd false
 }
 
-prompt_given ()
-{
-	prompt="$1"
-	test "$prompt" = "Launch 'test-tool' [Y/n]? branch"
+prompt_given() {
+  prompt="$1"
+  test "$prompt" = "Launch 'test-tool' [Y/n]? branch"
 }
 
 test_expect_success 'basic usage requires no repo' '
@@ -91,42 +89,41 @@ test_expect_success 'difftool forwards arguments to diff' '
 	rm for-diff
 '
 
-for opt in '' '--dir-diff'
-do
-	test_expect_success "difftool ${opt:-without options} ignores exit code" '
+for opt in '' '--dir-diff'; do
+  test_expect_success "difftool ${opt:-without options} ignores exit code" '
 		test_config difftool.error.cmd false &&
 		git difftool ${opt} -y -t error branch
 	'
 
-	test_expect_success "difftool ${opt:-without options} forwards exit code with --trust-exit-code" '
+  test_expect_success "difftool ${opt:-without options} forwards exit code with --trust-exit-code" '
 		test_config difftool.error.cmd false &&
 		test_must_fail git difftool ${opt} -y --trust-exit-code -t error branch
 	'
 
-	test_expect_success "difftool ${opt:-without options} forwards exit code with --trust-exit-code for built-ins" '
+  test_expect_success "difftool ${opt:-without options} forwards exit code with --trust-exit-code for built-ins" '
 		test_config difftool.vimdiff.path false &&
 		test_must_fail git difftool ${opt} -y --trust-exit-code -t vimdiff branch
 	'
 
-	test_expect_success "difftool ${opt:-without options} honors difftool.trustExitCode = true" '
+  test_expect_success "difftool ${opt:-without options} honors difftool.trustExitCode = true" '
 		test_config difftool.error.cmd false &&
 		test_config difftool.trustExitCode true &&
 		test_must_fail git difftool ${opt} -y -t error branch
 	'
 
-	test_expect_success "difftool ${opt:-without options} honors difftool.trustExitCode = false" '
+  test_expect_success "difftool ${opt:-without options} honors difftool.trustExitCode = false" '
 		test_config difftool.error.cmd false &&
 		test_config difftool.trustExitCode false &&
 		git difftool ${opt} -y -t error branch
 	'
 
-	test_expect_success "difftool ${opt:-without options} ignores exit code with --no-trust-exit-code" '
+  test_expect_success "difftool ${opt:-without options} ignores exit code with --no-trust-exit-code" '
 		test_config difftool.error.cmd false &&
 		test_config difftool.trustExitCode true &&
 		git difftool ${opt} -y --no-trust-exit-code -t error branch
 	'
 
-	test_expect_success "difftool ${opt:-without options} stops on error with --trust-exit-code" '
+  test_expect_success "difftool ${opt:-without options} stops on error with --trust-exit-code" '
 		test_when_finished "rm -f for-diff .git/fail-right-file" &&
 		test_when_finished "git reset -- for-diff" &&
 		write_script .git/fail-right-file <<-\EOF &&
@@ -140,7 +137,7 @@ do
 		test_line_count = 1 actual
 	'
 
-	test_expect_success "difftool ${opt:-without options} honors exit status if command not found" '
+  test_expect_success "difftool ${opt:-without options} honors exit status if command not found" '
 		test_config difftool.nonexistent.cmd i-dont-exist &&
 		test_config difftool.trustExitCode false &&
 		if test "${opt}" = --dir-diff
@@ -491,12 +488,12 @@ test_expect_success 'difftool -d with growing paths' '
 	)
 '
 
-run_dir_diff_test () {
-	test_expect_success "$1 --no-symlinks" "
+run_dir_diff_test() {
+  test_expect_success "$1 --no-symlinks" "
 		symlinks=--no-symlinks &&
 		$2
 	"
-	test_expect_success SYMLINKS "$1 --symlinks" "
+  test_expect_success SYMLINKS "$1 --symlinks" "
 		symlinks=--symlinks &&
 		$2
 	"

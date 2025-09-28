@@ -2,7 +2,6 @@
 
 test_description='test downloading a file by URL'
 
-
 . ./test-lib.sh
 
 . "$TEST_DIRECTORY"/lib-httpd.sh

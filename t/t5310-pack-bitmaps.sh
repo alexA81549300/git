@@ -9,21 +9,21 @@ test_description='exercise basic bitmap functionality'
 # the boundary-based traversal.
 sane_unset GIT_TEST_PACK_USE_BITMAP_BOUNDARY_TRAVERSAL
 
-objpath () {
-	echo ".git/objects/$(echo "$1" | sed -e 's|\(..\)|\1/|')"
+objpath() {
+  echo ".git/objects/$(echo "$1" | sed -e 's|\(..\)|\1/|')"
 }
 
 # show objects present in pack ($1 should be associated *.idx)
-list_packed_objects () {
-	git show-index <"$1" >object-list &&
-	cut -d' ' -f2 object-list
+list_packed_objects() {
+  git show-index <"$1" >object-list \
+    && cut -d' ' -f2 object-list
 }
 
 # has_any pattern-file content-file
 # tests whether content-file has any entry from pattern-file with entries being
 # whole lines.
-has_any () {
-	grep -Ff "$1" "$2"
+has_any() {
+  grep -Ff "$1" "$2"
 }
 
 # Since name-hash values are stored in the .bitmap files, add a test
@@ -56,27 +56,26 @@ test_expect_success 'name-hash value stability' '
 	test_cmp expect out
 '
 
-test_bitmap_cases () {
-	writeLookupTable=false
-	for i in "$@"
-	do
-		case "$i" in
-		"pack.writeBitmapLookupTable") writeLookupTable=true;;
-		esac
-	done
+test_bitmap_cases() {
+  writeLookupTable=false
+  for i in "$@"; do
+    case "$i" in
+      "pack.writeBitmapLookupTable") writeLookupTable=true ;;
+    esac
+  done
 
-	test_expect_success 'setup test repository' '
+  test_expect_success 'setup test repository' '
 		rm -fr * .git &&
 		git init &&
 		git config pack.writeBitmapLookupTable '"$writeLookupTable"'
 	'
-	setup_bitmap_history
+  setup_bitmap_history
 
-	test_expect_success 'setup writing bitmaps during repack' '
+  test_expect_success 'setup writing bitmaps during repack' '
 		git config repack.writeBitmaps true
 	'
 
-	test_expect_success 'full repack creates bitmaps' '
+  test_expect_success 'full repack creates bitmaps' '
 		GIT_TRACE2_EVENT="$(pwd)/trace" \
 			git repack -ad &&
 		ls .git/objects/pack/ | grep bitmap >output &&
@@ -85,9 +84,9 @@ test_bitmap_cases () {
 		grep "\"key\":\"num_maximal_commits\",\"value\":\"107\"" trace
 	'
 
-	basic_bitmap_tests
+  basic_bitmap_tests
 
-	test_expect_success 'pack-objects respects --local (non-local loose)' '
+  test_expect_success 'pack-objects respects --local (non-local loose)' '
 		git init --bare alt.git &&
 		echo $(pwd)/alt.git/objects >.git/objects/info/alternates &&
 		echo content1 >file1 &&
@@ -105,7 +104,7 @@ test_bitmap_cases () {
 		! has_any nonlocal-loose 1.objects
 	'
 
-	test_expect_success 'pack-objects respects --honor-pack-keep (local non-bitmapped pack)' '
+  test_expect_success 'pack-objects respects --honor-pack-keep (local non-bitmapped pack)' '
 		echo content2 >file2 &&
 		blob2=$(git hash-object -w file2) &&
 		git add file2 &&
@@ -122,7 +121,7 @@ test_bitmap_cases () {
 		! has_any keepobjects 2a.objects
 	'
 
-	test_expect_success 'pack-objects respects --local (non-local pack)' '
+  test_expect_success 'pack-objects respects --local (non-local pack)' '
 		mv .git/objects/pack/pack2-$pack2.* alt.git/objects/pack/ &&
 		echo HEAD | git pack-objects --local --stdout --revs >2b.pack &&
 		git index-pack 2b.pack &&
@@ -130,7 +129,7 @@ test_bitmap_cases () {
 		! has_any keepobjects 2b.objects
 	'
 
-	test_expect_success 'pack-objects respects --honor-pack-keep (local bitmapped pack)' '
+  test_expect_success 'pack-objects respects --honor-pack-keep (local bitmapped pack)' '
 		ls .git/objects/pack/ | grep bitmap >output &&
 		test_line_count = 1 output &&
 		packbitmap=$(basename $(cat output) .bitmap) &&
@@ -143,7 +142,7 @@ test_bitmap_cases () {
 		! has_any packbitmap.objects 3a.objects
 	'
 
-	test_expect_success 'pack-objects respects --local (non-local bitmapped pack)' '
+  test_expect_success 'pack-objects respects --local (non-local bitmapped pack)' '
 		mv .git/objects/pack/$packbitmap.* alt.git/objects/pack/ &&
 		rm -f .git/objects/pack/multi-pack-index &&
 		test_when_finished "mv alt.git/objects/pack/$packbitmap.* .git/objects/pack/" &&
@@ -153,7 +152,7 @@ test_bitmap_cases () {
 		! has_any packbitmap.objects 3b.objects
 	'
 
-	test_expect_success 'pack-objects to file can use bitmap' '
+  test_expect_success 'pack-objects to file can use bitmap' '
 		# make sure we still have 1 bitmap index from previous tests
 		ls .git/objects/pack/ | grep bitmap >output &&
 		test_line_count = 1 output &&
@@ -165,20 +164,20 @@ test_bitmap_cases () {
 		test_cmp packa.objects packb.objects
 	'
 
-	test_expect_success 'full repack, reusing previous bitmaps' '
+  test_expect_success 'full repack, reusing previous bitmaps' '
 		git repack -ad &&
 		ls .git/objects/pack/ | grep bitmap >output &&
 		test_line_count = 1 output
 	'
 
-	test_expect_success 'fetch (full bitmap)' '
+  test_expect_success 'fetch (full bitmap)' '
 		git --git-dir=clone.git fetch origin second:second &&
 		git rev-parse HEAD >expect &&
 		git --git-dir=clone.git rev-parse HEAD >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success 'create objects for missing-HAVE tests' '
+  test_expect_success 'create objects for missing-HAVE tests' '
 		blob=$(echo "missing have" | git hash-object -w --stdin) &&
 		tree=$(printf "100644 blob $blob\tfile\n" | git mktree) &&
 		parent=$(echo parent | git commit-tree $tree) &&
@@ -190,7 +189,7 @@ test_bitmap_cases () {
 		EOF
 	'
 
-	test_expect_success 'pack-objects respects --incremental' '
+  test_expect_success 'pack-objects respects --incremental' '
 		cat >revs2 <<-EOF &&
 		HEAD
 		$commit
@@ -204,22 +203,22 @@ test_bitmap_cases () {
 		test_cmp 4.objects objects
 	'
 
-	test_expect_success 'pack with missing blob' '
+  test_expect_success 'pack with missing blob' '
 		rm $(objpath $blob) &&
 		git pack-objects --stdout --revs <revs >/dev/null
 	'
 
-	test_expect_success 'pack with missing tree' '
+  test_expect_success 'pack with missing tree' '
 		rm $(objpath $tree) &&
 		git pack-objects --stdout --revs <revs >/dev/null
 	'
 
-	test_expect_success 'pack with missing parent' '
+  test_expect_success 'pack with missing parent' '
 		rm $(objpath $parent) &&
 		git pack-objects --stdout --revs <revs >/dev/null
 	'
 
-	test_expect_success JGIT,SHA1 'we can read jgit bitmaps' '
+  test_expect_success JGIT,SHA1 'we can read jgit bitmaps' '
 		git clone --bare . compat-jgit.git &&
 		(
 			cd compat-jgit.git &&
@@ -229,7 +228,7 @@ test_bitmap_cases () {
 		)
 	'
 
-	test_expect_success JGIT,SHA1 'jgit can read our bitmaps' '
+  test_expect_success JGIT,SHA1 'jgit can read our bitmaps' '
 		git clone --bare . compat-us.git &&
 		(
 			cd compat-us.git &&
@@ -240,7 +239,7 @@ test_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'splitting packs does not generate bogus bitmaps' '
+  test_expect_success 'splitting packs does not generate bogus bitmaps' '
 		test-tool genrandom foo $((1024 * 1024)) >rand &&
 		git add rand &&
 		git commit -m "commit with big file" &&
@@ -249,7 +248,7 @@ test_bitmap_cases () {
 		git -C no-bitmaps.git fetch .. HEAD
 	'
 
-	test_expect_success 'set up reusable pack' '
+  test_expect_success 'set up reusable pack' '
 		rm -f .git/objects/pack/*.keep &&
 		git repack -adb &&
 		reusable_pack () {
@@ -258,7 +257,7 @@ test_bitmap_cases () {
 		}
 	'
 
-	test_expect_success 'pack reuse respects --honor-pack-keep' '
+  test_expect_success 'pack reuse respects --honor-pack-keep' '
 		test_when_finished "rm -f .git/objects/pack/*.keep" &&
 		for i in .git/objects/pack/*.pack
 		do
@@ -270,7 +269,7 @@ test_bitmap_cases () {
 		test_must_be_empty actual
 	'
 
-	test_expect_success 'pack reuse respects --local' '
+  test_expect_success 'pack reuse respects --local' '
 		mv .git/objects/pack/* alt.git/objects/pack/ &&
 		test_when_finished "mv alt.git/objects/pack/* .git/objects/pack/" &&
 		reusable_pack --local >empty.pack &&
@@ -279,14 +278,14 @@ test_bitmap_cases () {
 		test_must_be_empty actual
 	'
 
-	test_expect_success 'pack reuse respects --incremental' '
+  test_expect_success 'pack reuse respects --incremental' '
 		reusable_pack --incremental >empty.pack &&
 		git index-pack empty.pack &&
 		git show-index <empty.idx >actual &&
 		test_must_be_empty actual
 	'
 
-	test_expect_success 'truncated bitmap fails gracefully (ewah)' '
+  test_expect_success 'truncated bitmap fails gracefully (ewah)' '
 		test_config pack.writebitmaphashcache false &&
 		test_config pack.writebitmaplookuptable false &&
 		git repack -ad &&
@@ -300,7 +299,7 @@ test_bitmap_cases () {
 		test_grep corrupt.ewah.bitmap stderr
 	'
 
-	test_expect_success 'truncated bitmap fails gracefully (cache)' '
+  test_expect_success 'truncated bitmap fails gracefully (cache)' '
 		git config pack.writeBitmapLookupTable '"$writeLookupTable"' &&
 		git repack -ad &&
 		git rev-list --use-bitmap-index --count --all >expect &&
@@ -313,24 +312,24 @@ test_bitmap_cases () {
 		test_grep corrupted.bitmap.index stderr
 	'
 
-	# Create a state of history with these properties:
-	#
-	#  - refs that allow a client to fetch some new history, while sharing some old
-	#    history with the server; we use branches delta-reuse-old and
-	#    delta-reuse-new here
-	#
-	#  - the new history contains an object that is stored on the server as a delta
-	#    against a base that is in the old history
-	#
-	#  - the base object is not immediately reachable from the tip of the old
-	#    history; finding it would involve digging down through history we know the
-	#    other side has
-	#
-	# This should result in a state where fetching from old->new would not
-	# traditionally reuse the on-disk delta (because we'd have to dig to realize
-	# that the client has it), but we will do so if bitmaps can tell us cheaply
-	# that the other side has it.
-	test_expect_success 'set up thin delta-reuse parent' '
+  # Create a state of history with these properties:
+  #
+  #  - refs that allow a client to fetch some new history, while sharing some old
+  #    history with the server; we use branches delta-reuse-old and
+  #    delta-reuse-new here
+  #
+  #  - the new history contains an object that is stored on the server as a delta
+  #    against a base that is in the old history
+  #
+  #  - the base object is not immediately reachable from the tip of the old
+  #    history; finding it would involve digging down through history we know the
+  #    other side has
+  #
+  # This should result in a state where fetching from old->new would not
+  # traditionally reuse the on-disk delta (because we'd have to dig to realize
+  # that the client has it), but we will do so if bitmaps can tell us cheaply
+  # that the other side has it.
+  test_expect_success 'set up thin delta-reuse parent' '
 		# This first commit contains the buried base object.
 		test-tool genrandom delta 16384 >file &&
 		git add file &&
@@ -360,15 +359,15 @@ test_bitmap_cases () {
 		have_delta $delta $base
 	'
 
-	# Now we can sanity-check the non-bitmap behavior (that the server is not able
-	# to reuse the delta). This isn't strictly something we care about, so this
-	# test could be scrapped in the future. But it makes sure that the next test is
-	# actually triggering the feature we want.
-	#
-	# Note that our tools for working with on-the-wire "thin" packs are limited. So
-	# we actually perform the fetch, retain the resulting pack, and inspect the
-	# result.
-	test_expect_success 'fetch without bitmaps ignores delta against old base' '
+  # Now we can sanity-check the non-bitmap behavior (that the server is not able
+  # to reuse the delta). This isn't strictly something we care about, so this
+  # test could be scrapped in the future. But it makes sure that the next test is
+  # actually triggering the feature we want.
+  #
+  # Note that our tools for working with on-the-wire "thin" packs are limited. So
+  # we actually perform the fetch, retain the resulting pack, and inspect the
+  # result.
+  test_expect_success 'fetch without bitmaps ignores delta against old base' '
 		test_config pack.usebitmaps false &&
 		test_when_finished "rm -rf client.git" &&
 		git init --bare client.git &&
@@ -381,8 +380,8 @@ test_bitmap_cases () {
 		)
 	'
 
-	# And do the same for the bitmap case, where we do expect to find the delta.
-	test_expect_success 'fetch with bitmaps can reuse old base' '
+  # And do the same for the bitmap case, where we do expect to find the delta.
+  test_expect_success 'fetch with bitmaps can reuse old base' '
 		test_config pack.usebitmaps true &&
 		test_when_finished "rm -rf client.git" &&
 		git init --bare client.git &&
@@ -395,7 +394,7 @@ test_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'pack.preferBitmapTips' '
+  test_expect_success 'pack.preferBitmapTips' '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -434,7 +433,7 @@ test_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'pack.preferBitmapTips' '
+  test_expect_success 'pack.preferBitmapTips' '
 		git init repo &&
 		test_when_finished "rm -rf repo" &&
 		(
@@ -457,7 +456,7 @@ test_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'complains about multiple pack bitmaps' '
+  test_expect_success 'complains about multiple pack bitmaps' '
 		rm -fr repo &&
 		git init repo &&
 		test_when_finished "rm -fr repo" &&

@@ -15,35 +15,32 @@ test_expect_success 'setup' '
 	setup_basic_ls_tree_data
 '
 
-test_ls_tree_format_mode_output () {
-	local opts="$1" &&
-	shift &&
-	cat >expect &&
-
-	while test $# -gt 0
-	do
-		local mode="$1" &&
-		shift &&
-
-		test_expect_success "'ls-tree $opts${mode:+ $mode}' output" '
+test_ls_tree_format_mode_output() {
+  local opts="$1" \
+    && shift \
+    && cat >expect \
+    && while test $# -gt 0; do
+      local mode="$1" \
+        && shift \
+        && test_expect_success "'ls-tree $opts${mode:+ $mode}' output" '
 			git ls-tree ${mode:+$mode }$opts HEAD >actual &&
 			test_cmp expect actual
 		'
 
-		case "$opts" in
-		--full-tree)
-			test_expect_success "'ls-tree $opts${mode:+ $mode}' output (via subdir, fails)" '
+      case "$opts" in
+        --full-tree)
+          test_expect_success "'ls-tree $opts${mode:+ $mode}' output (via subdir, fails)" '
 				test_must_fail git -C dir ls-tree --full-name ${mode:+$mode }$opts HEAD -- ../
 			'
-			;;
-		*)
-			test_expect_success "'ls-tree $opts${mode:+ $mode}' output (via subdir)" '
+          ;;
+        *)
+          test_expect_success "'ls-tree $opts${mode:+ $mode}' output (via subdir)" '
 				git -C dir ls-tree --full-name ${mode:+$mode }$opts HEAD -- ../ >actual &&
 				test_cmp expect actual
 			'
-			;;
-		esac
-	done
+          ;;
+      esac
+    done
 }
 
 # test exact output of option (none, --long, ...) and mode (none and

@@ -38,9 +38,8 @@ cat >expected <<EOF
 add 'sub/foo'
 EOF
 
-if test_have_prereq !MINGW && mkdir ":" 2>/dev/null
-then
-	test_set_prereq COLON_DIR
+if test_have_prereq !MINGW && mkdir ":" 2>/dev/null; then
+  test_set_prereq COLON_DIR
 fi
 
 test_expect_success COLON_DIR 'a file with the same (long) magic name exists' '

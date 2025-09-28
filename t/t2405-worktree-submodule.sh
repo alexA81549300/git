@@ -9,7 +9,7 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 base_path=$(pwd -P)
 
-test_expect_success 'setup: create origin repos'  '
+test_expect_success 'setup: create origin repos' '
 	git config --global protocol.file.allow always &&
 	git init origin/sub &&
 	test_commit -C origin/sub file1 &&

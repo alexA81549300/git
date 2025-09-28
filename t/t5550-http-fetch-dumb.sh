@@ -6,10 +6,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-if test_have_prereq !REFFILES
-then
-	skip_all='skipping test; dumb HTTP protocol not supported with reftable.'
-	test_done
+if test_have_prereq !REFFILES; then
+  skip_all='skipping test; dumb HTTP protocol not supported with reftable.'
+  test_done
 fi
 
 . "$TEST_DIRECTORY"/lib-httpd.sh
@@ -31,11 +30,10 @@ test_expect_success 'packfile without repository does not crash' '
 	test_cmp expect err
 '
 
-setup_post_update_server_info_hook () {
-	test_hook --setup -C "$1" post-update <<-\EOF &&
+setup_post_update_server_info_hook() {
+  test_hook --setup -C "$1" post-update <<-\EOF && git -C "$1" update-server-info
 	exec git update-server-info
 	EOF
-	git -C "$1" update-server-info
 }
 
 test_expect_success 'create http-accessible bare repository with loose objects' '
@@ -60,7 +58,6 @@ test_expect_success 'list refs from outside any repository' '
 	nongit git ls-remote "$HTTPD_URL/dumb/repo.git" >actual &&
 	test_cmp expect actual
 '
-
 
 test_expect_success 'list detached HEAD from outside any repository' '
 	git clone --mirror "$HTTPD_DOCUMENT_ROOT_PATH/repo.git" \
@@ -307,11 +304,11 @@ test_expect_success 'fetch notices corrupt idx' '
 '
 
 # usage: count_fetches <nr> <extension> <trace_file>
-count_fetches () {
-	# ignore grep exit code; it may return non-zero if we are expecting no
-	# matches
-	grep "GET .*objects/pack/pack-[a-z0-9]*.$2" "$3" >trace.count
-	test_line_count = "$1" trace.count
+count_fetches() {
+  # ignore grep exit code; it may return non-zero if we are expecting no
+  # matches
+  grep "GET .*objects/pack/pack-[a-z0-9]*.$2" "$3" >trace.count
+  test_line_count = "$1" trace.count
 }
 
 test_expect_success 'fetch can handle previously-fetched .idx files' '
@@ -367,22 +364,22 @@ test_expect_success ICONV 'reencoding is robust to whitespace oddities' '
 	grep "this is the error message" stderr
 '
 
-check_language () {
-	case "$2" in
-	'')
-		>expect
-		;;
-	?*)
-		echo "=> Send header: Accept-Language: $1" >expect
-		;;
-	esac &&
-	GIT_TRACE_CURL=true \
-	LANGUAGE=$2 \
-	git ls-remote "$HTTPD_URL/dumb/repo.git" >output 2>&1 &&
-	tr -d '\015' <output |
-	sort -u |
-	sed -ne '/^=> Send header: Accept-Language:/ p' >actual &&
-	test_cmp expect actual
+check_language() {
+  case "$2" in
+    '')
+      >expect
+      ;;
+    ?*)
+      echo "=> Send header: Accept-Language: $1" >expect
+      ;;
+  esac \
+    && GIT_TRACE_CURL=true \
+      LANGUAGE=$2 \
+      git ls-remote "$HTTPD_URL/dumb/repo.git" >output 2>&1 \
+    && tr -d '\015' <output \
+    | sort -u \
+      | sed -ne '/^=> Send header: Accept-Language:/ p' >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'git client sends Accept-Language based on LANGUAGE' '

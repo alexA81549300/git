@@ -36,7 +36,6 @@ test_expect_success 'setup' '
 # * B
 # * A
 
-
 H=$(git rev-parse H)
 
 test_expect_success 'rewrite identically' '

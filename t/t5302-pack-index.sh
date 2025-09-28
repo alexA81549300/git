@@ -83,12 +83,11 @@ test_expect_success 'index v2: force some 64-bit offsets with pack-objects' '
 	pack3=$(git pack-objects --index-version=2,0x40000 test-3 <obj-list)
 '
 
-if msg=$(git verify-pack -v "test-3-${pack3}.pack" 2>&1) ||
-	! (echo "$msg" | grep "pack too large .* off_t")
-then
-	test_set_prereq OFF64_T
+if msg=$(git verify-pack -v "test-3-${pack3}.pack" 2>&1) \
+  || ! (echo "$msg" | grep "pack too large .* off_t"); then
+  test_set_prereq OFF64_T
 else
-	say "# skipping tests concerning 64-bit offsets"
+  say "# skipping tests concerning 64-bit offsets"
 fi
 
 test_expect_success OFF64_T 'index v2: verify a pack with some 64-bit offsets' '
@@ -118,28 +117,25 @@ test_expect_success OFF64_T 'index-pack --verify on 64-bit offset v2' '
 '
 
 # returns the object number for given object in given pack index
-index_obj_nr()
-{
-	idx_file=$1
-	object_sha1=$2
-	nr=0
-	git show-index < $idx_file |
-	while read offs sha1 extra
-	do
-	  nr=$(($nr + 1))
-	  test "$sha1" = "$object_sha1" || continue
-	  echo "$(($nr - 1))"
-	  break
-	done
+index_obj_nr() {
+  idx_file=$1
+  object_sha1=$2
+  nr=0
+  git show-index <$idx_file \
+    | while read offs sha1 extra; do
+      nr=$(($nr + 1))
+      test "$sha1" = "$object_sha1" || continue
+      echo "$(($nr - 1))"
+      break
+    done
 }
 
 # returns the pack offset for given object as found in given pack index
-index_obj_offset()
-{
-	idx_file=$1
-	object_sha1=$2
-	git show-index < $idx_file | grep $object_sha1 |
-	( read offs extra && echo "$offs" )
+index_obj_offset() {
+  idx_file=$1
+  object_sha1=$2
+  git show-index <$idx_file | grep $object_sha1 \
+    | (read offs extra && echo "$offs")
 }
 
 test_expect_success '[index v1] 1) stream pack to repository' '
@@ -151,7 +147,7 @@ test_expect_success '[index v1] 1) stream pack to repository' '
 '
 
 test_expect_success \
-	'[index v1] 2) create a stealth corruption in a delta base reference' '
+  '[index v1] 2) create a stealth corruption in a delta base reference' '
 	# This test assumes file_101 is a delta smaller than 16 bytes.
 	# It should be against file_100 but we substitute its base for file_099
 	sha1_101=$(git hash-object file_101) &&
@@ -168,17 +164,17 @@ test_expect_success \
 '
 
 test_expect_success \
-	'[index v1] 3) corrupted delta happily returned wrong data' '
+  '[index v1] 3) corrupted delta happily returned wrong data' '
 	test -f file_101_foo1 && ! cmp file_101 file_101_foo1
 '
 
 test_expect_success \
-	'[index v1] 4) confirm that the pack is actually corrupted' '
+  '[index v1] 4) confirm that the pack is actually corrupted' '
 	test_must_fail git fsck --full $commit
 '
 
 test_expect_success \
-	'[index v1] 5) pack-objects happily reuses corrupted data' '
+  '[index v1] 5) pack-objects happily reuses corrupted data' '
 	pack4=$(git pack-objects test-4 <obj-list) &&
 	test -f "test-4-${pack4}.pack"
 '
@@ -197,7 +193,7 @@ test_expect_success '[index v2] 1) stream pack to repository' '
 '
 
 test_expect_success \
-	'[index v2] 2) create a stealth corruption in a delta base reference' '
+  '[index v2] 2) create a stealth corruption in a delta base reference' '
 	# This test assumes file_101 is a delta smaller than 16 bytes.
 	# It should be against file_100 but we substitute its base for file_099
 	sha1_101=$(git hash-object file_101) &&
@@ -213,23 +209,23 @@ test_expect_success \
 '
 
 test_expect_success \
-	'[index v2] 3) corrupted delta happily returned wrong data' '
+  '[index v2] 3) corrupted delta happily returned wrong data' '
 	test -f file_101_foo2 && ! cmp file_101 file_101_foo2
 '
 
 test_expect_success \
-	'[index v2] 4) confirm that the pack is actually corrupted' '
+  '[index v2] 4) confirm that the pack is actually corrupted' '
 	test_must_fail git fsck --full $commit
 '
 
 test_expect_success \
-	'[index v2] 5) pack-objects refuses to reuse corrupted data' '
+  '[index v2] 5) pack-objects refuses to reuse corrupted data' '
 	test_must_fail git pack-objects test-5 <obj-list &&
 	test_must_fail git pack-objects --no-reuse-object test-6 <obj-list
 '
 
 test_expect_success \
-	'[index v2] 6) verify-pack detects CRC mismatch' '
+  '[index v2] 6) verify-pack detects CRC mismatch' '
 	rm -f .git/objects/pack/* &&
 	git index-pack --index-version=2 --stdin < "test-1-${pack1}.pack" &&
 	git verify-pack ".git/objects/pack/pack-${pack1}.pack" &&

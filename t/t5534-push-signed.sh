@@ -8,11 +8,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-gpg.sh
 
-prepare_dst () {
-	rm -fr dst &&
-	test_create_repo dst &&
-
-	git push dst main:noop main:ff main:noff
+prepare_dst() {
+  rm -fr dst \
+    && test_create_repo dst \
+    && git push dst main:noop main:ff main:noff
 }
 
 test_expect_success setup '

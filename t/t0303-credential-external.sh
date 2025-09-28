@@ -43,17 +43,17 @@ commands.
 # implement any caching or expiry logic, we'll cheat and override
 # the "check" function to just report all results as OK.
 if test -z "$GIT_TEST_CREDENTIAL_HELPER"; then
-	GIT_TEST_CREDENTIAL_HELPER=store
-	GIT_TEST_CREDENTIAL_HELPER_TIMEOUT=store
-	check () {
-		test "$1" = "approve" || return 0
-		git -c credential.helper=store credential approve
-	}
-	check_cleanup=t
+  GIT_TEST_CREDENTIAL_HELPER=store
+  GIT_TEST_CREDENTIAL_HELPER_TIMEOUT=store
+  check() {
+    test "$1" = "approve" || return 0
+    git -c credential.helper=store credential approve
+  }
+  check_cleanup=t
 fi
 
-test -z "$GIT_TEST_CREDENTIAL_HELPER_SETUP" ||
-	eval "$GIT_TEST_CREDENTIAL_HELPER_SETUP"
+test -z "$GIT_TEST_CREDENTIAL_HELPER_SETUP" \
+  || eval "$GIT_TEST_CREDENTIAL_HELPER_SETUP"
 
 # clean before the test in case there is cruft left
 # over from a previous run that would impact results
@@ -64,9 +64,9 @@ helper_test_password_expiry_utc "$GIT_TEST_CREDENTIAL_HELPER"
 helper_test_oauth_refresh_token "$GIT_TEST_CREDENTIAL_HELPER"
 
 if test -z "$GIT_TEST_CREDENTIAL_HELPER_TIMEOUT"; then
-	say "# skipping timeout tests (GIT_TEST_CREDENTIAL_HELPER_TIMEOUT not set)"
+  say "# skipping timeout tests (GIT_TEST_CREDENTIAL_HELPER_TIMEOUT not set)"
 else
-	helper_test_timeout "$GIT_TEST_CREDENTIAL_HELPER_TIMEOUT"
+  helper_test_timeout "$GIT_TEST_CREDENTIAL_HELPER_TIMEOUT"
 fi
 
 # clean afterwards so that we are good citizens
@@ -74,9 +74,8 @@ fi
 # might be long-term system storage
 helper_test_clean "$GIT_TEST_CREDENTIAL_HELPER"
 
-if test "$check_cleanup" = "t"
-then
-	test_expect_success 'test cleanup removes everything' '
+if test "$check_cleanup" = "t"; then
+  test_expect_success 'test cleanup removes everything' '
 		test_must_be_empty "$HOME/.git-credentials"
 	'
 fi

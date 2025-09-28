@@ -1,6 +1,6 @@
-test_push_pull () {
+test_push_pull() {
 
-	test_expect_success 'Git pull works after adding a new wiki page' '
+  test_expect_success 'Git pull works after adding a new wiki page' '
 		wiki_reset &&
 
 		git clone mediawiki::'"$WIKI_URL"' mw_dir_1 &&
@@ -15,7 +15,7 @@ test_push_pull () {
 		test_diff_directories mw_dir_1 ref_page_1
 	'
 
-	test_expect_success 'Git pull works after editing a wiki page' '
+  test_expect_success 'Git pull works after editing a wiki page' '
 		wiki_reset &&
 
 		wiki_editpage Foo "page created before the git clone" false &&
@@ -31,7 +31,7 @@ test_push_pull () {
 		test_diff_directories mw_dir_2 ref_page_2
 	'
 
-	test_expect_success 'git pull works on conflict handled by auto-merge' '
+  test_expect_success 'git pull works on conflict handled by auto-merge' '
 		wiki_reset &&
 
 		wiki_editpage Foo "1 init
@@ -59,7 +59,7 @@ test_push_pull () {
 		)
 	'
 
-	test_expect_success 'Git push works after adding a file .mw' '
+  test_expect_success 'Git push works after adding a file .mw' '
 		wiki_reset &&
 		git clone mediawiki::'"$WIKI_URL"' mw_dir_4 &&
 		wiki_getallpage ref_page_4 &&
@@ -76,7 +76,7 @@ test_push_pull () {
 		test_diff_directories mw_dir_4 ref_page_4
 	'
 
-	test_expect_success 'Git push works after editing a file .mw' '
+  test_expect_success 'Git push works after editing a file .mw' '
 		wiki_reset &&
 		wiki_editpage "Foo" "page created before the git clone" false &&
 		git clone mediawiki::'"$WIKI_URL"' mw_dir_5 &&
@@ -92,7 +92,7 @@ test_push_pull () {
 		test_diff_directories mw_dir_5 ref_page_5
 	'
 
-	test_expect_failure 'Git push works after deleting a file' '
+  test_expect_failure 'Git push works after deleting a file' '
 		wiki_reset &&
 		wiki_editpage Foo "wiki page added before git clone" false &&
 		git clone mediawiki::'"$WIKI_URL"' mw_dir_6 &&
@@ -107,7 +107,7 @@ test_push_pull () {
 		test_must_fail wiki_page_exist Foo
 	'
 
-	test_expect_success 'Merge conflict expected and solving it' '
+  test_expect_success 'Merge conflict expected and solving it' '
 		wiki_reset &&
 
 		git clone mediawiki::'"$WIKI_URL"' mw_dir_7 &&
@@ -129,7 +129,7 @@ test_push_pull () {
 		)
 	'
 
-	test_expect_failure 'git pull works after deleting a wiki page' '
+  test_expect_failure 'git pull works after deleting a wiki page' '
 		wiki_reset &&
 		wiki_editpage Foo "wiki page added before the git clone" false &&
 		git clone mediawiki::'"$WIKI_URL"' mw_dir_8 &&

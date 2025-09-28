@@ -52,33 +52,32 @@ test_expect_success 'gitdir required mode' '
 	test_must_fail git -C test2 apply --check --index ../test.patch
 '
 
-check_allow () {
-	git rev-parse --git-dir >actual &&
-	echo .git >expect &&
-	test_cmp expect actual
+check_allow() {
+  git rev-parse --git-dir >actual \
+    && echo .git >expect \
+    && test_cmp expect actual
 }
 
-check_abort () {
-	test_must_fail git rev-parse --git-dir
+check_abort() {
+  test_must_fail git rev-parse --git-dir
 }
 
 # avoid git-config, since it cannot be trusted to run
 # in a repository with a broken version
-mkconfig () {
-	echo '[core]' &&
-	echo "repositoryformatversion = $1" &&
-	shift &&
-
-	if test $# -gt 0; then
-		echo '[extensions]' &&
-		for i in "$@"; do
-			echo "$i"
-		done
-	fi
+mkconfig() {
+  echo '[core]' \
+    && echo "repositoryformatversion = $1" \
+    && shift \
+    && if test $# -gt 0; then
+      echo '[extensions]' \
+        && for i in "$@"; do
+          echo "$i"
+        done
+    fi
 }
 
 while read outcome version extensions; do
-	test_expect_success "$outcome version=$version $extensions" "
+  test_expect_success "$outcome version=$version $extensions" "
 		test_when_finished 'rm -rf extensions' &&
 		git init extensions &&
 		(

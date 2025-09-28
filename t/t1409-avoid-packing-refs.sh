@@ -4,8 +4,7 @@ test_description='avoid rewriting packed-refs unnecessarily'
 
 . ./test-lib.sh
 
-if test_have_prereq !REFFILES
-then
+if test_have_prereq !REFFILES; then
   skip_all='skipping files-backend specific pack-refs tests'
   test_done
 fi
@@ -13,14 +12,14 @@ fi
 # Add an identifying mark to the packed-refs file header line. This
 # shouldn't upset readers, and it should be omitted if the file is
 # ever rewritten.
-mark_packed_refs () {
-	sed -e "s/^\(#.*\)/\1 t1409 /" .git/packed-refs >.git/packed-refs.new &&
-	mv .git/packed-refs.new .git/packed-refs
+mark_packed_refs() {
+  sed -e "s/^\(#.*\)/\1 t1409 /" .git/packed-refs >.git/packed-refs.new \
+    && mv .git/packed-refs.new .git/packed-refs
 }
 
 # Verify that the packed-refs file is still marked.
-check_packed_refs_marked () {
-	grep -q '^#.* t1409 ' .git/packed-refs
+check_packed_refs_marked() {
+  grep -q '^#.* t1409 ' .git/packed-refs
 }
 
 test_expect_success 'setup' '

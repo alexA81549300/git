@@ -14,15 +14,14 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 PATH="$TEST_DIRECTORY/t5801:$PATH"
 
 compare_refs() {
-	fail= &&
-	if test "x$1" = 'x!'
-	then
-		fail='!' &&
-		shift
-	fi &&
-	git --git-dir="$1/.git" rev-parse --verify $2 >expect &&
-	git --git-dir="$3/.git" rev-parse --verify $4 >actual &&
-	eval $fail test_cmp expect actual
+  fail= \
+    && if test "x$1" = 'x!'; then
+      fail='!' \
+        && shift
+    fi \
+    && git --git-dir="$1/.git" rev-parse --verify $2 >expect \
+    && git --git-dir="$3/.git" rev-parse --verify $4 >actual \
+    && eval $fail test_cmp expect actual
 }
 
 test_expect_success 'setup repository' '
@@ -269,11 +268,11 @@ test_expect_success 'push update refs failure' '
 	)
 '
 
-clean_mark () {
-	cut -f 2 -d ' ' "$1" |
-	git cat-file --batch-check |
-	grep commit |
-	sort >$(basename "$1")
+clean_mark() {
+  cut -f 2 -d ' ' "$1" \
+    | git cat-file --batch-check \
+    | grep commit \
+    | sort >$(basename "$1")
 }
 
 test_expect_success 'proper failure checks for fetching' '

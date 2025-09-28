@@ -21,35 +21,35 @@ a_empty_cr=
 a_empty_crlf=
 
 cd import
-	cat >>kw.c <<\EOF
+cat >>kw.c <<\EOF
 /* Somebody prematurely put a keyword into this file */
 /* $Id$ */
 EOF
 
-	printf "Hello\r\nWorld\r\n" >crlf
-	a_crlf=$(git hash-object -w crlf)
-	printf "Hello\rWorld\r" >cr
-	a_cr=$(git hash-object -w cr)
-	printf "Hello\nWorld\n" >lf
-	a_lf=$(git hash-object -w lf)
+printf "Hello\r\nWorld\r\n" >crlf
+a_crlf=$(git hash-object -w crlf)
+printf "Hello\rWorld\r" >cr
+a_cr=$(git hash-object -w cr)
+printf "Hello\nWorld\n" >lf
+a_lf=$(git hash-object -w lf)
 
-	printf "Hello\r\nWorld" >ne_crlf
-	a_ne_crlf=$(git hash-object -w ne_crlf)
-	printf "Hello\nWorld" >ne_lf
-	a_ne_lf=$(git hash-object -w ne_lf)
-	printf "Hello\rWorld" >ne_cr
-	a_ne_cr=$(git hash-object -w ne_cr)
+printf "Hello\r\nWorld" >ne_crlf
+a_ne_crlf=$(git hash-object -w ne_crlf)
+printf "Hello\nWorld" >ne_lf
+a_ne_lf=$(git hash-object -w ne_lf)
+printf "Hello\rWorld" >ne_cr
+a_ne_cr=$(git hash-object -w ne_cr)
 
-	touch empty
-	a_empty=$(git hash-object -w empty)
-	printf "\n" >empty_lf
-	a_empty_lf=$(git hash-object -w empty_lf)
-	printf "\r" >empty_cr
-	a_empty_cr=$(git hash-object -w empty_cr)
-	printf "\r\n" >empty_crlf
-	a_empty_crlf=$(git hash-object -w empty_crlf)
+touch empty
+a_empty=$(git hash-object -w empty)
+printf "\n" >empty_lf
+a_empty_lf=$(git hash-object -w empty_lf)
+printf "\r" >empty_cr
+a_empty_cr=$(git hash-object -w empty_cr)
+printf "\r\n" >empty_crlf
+a_empty_crlf=$(git hash-object -w empty_crlf)
 
-	svn_cmd import --no-auto-props -m 'import for git svn' . "$svnrepo" >/dev/null
+svn_cmd import --no-auto-props -m 'import for git svn' . "$svnrepo" >/dev/null
 cd ..
 
 rm -rf import
@@ -74,7 +74,7 @@ test_expect_success 'fetch revisions from svn' 'git svn fetch'
 
 name='test svn:keywords ignoring'
 test_expect_success "$name" \
-	'git checkout -b mybranch remotes/git-svn &&
+  'git checkout -b mybranch remotes/git-svn &&
 	echo Hi again >>kw.c &&
 	git commit -a -m "test keywords ignoring" &&
 	git svn set-tree remotes/git-svn..mybranch &&
@@ -95,30 +95,28 @@ test_expect_success "propset CR on crlf files" '
 '
 
 test_expect_success 'fetch and pull latest from svn and checkout a new wc' \
-	'git svn fetch &&
+  'git svn fetch &&
 	 git pull . remotes/git-svn &&
 	 svn_cmd co "$svnrepo" new_wc'
 
-for i in crlf ne_crlf lf ne_lf cr ne_cr empty_cr empty_lf empty empty_crlf
-do
-	test_expect_success "Comparing $i" "cmp $i new_wc/$i"
+for i in crlf ne_crlf lf ne_lf cr ne_cr empty_cr empty_lf empty empty_crlf; do
+  test_expect_success "Comparing $i" "cmp $i new_wc/$i"
 done
 
-
 cd test_wc
-	printf '$Id$\rHello\rWorld\r' >cr
-	printf '$Id$\rHello\rWorld' >ne_cr
-	a_cr=$(printf '$Id$\r\nHello\r\nWorld\r\n' | git hash-object --stdin)
-	a_ne_cr=$(printf '$Id$\r\nHello\r\nWorld' | git hash-object --stdin)
-	test_expect_success 'Set CRLF on cr files' \
-	'svn_cmd propset svn:eol-style CRLF cr &&
+printf '$Id$\rHello\rWorld\r' >cr
+printf '$Id$\rHello\rWorld' >ne_cr
+a_cr=$(printf '$Id$\r\nHello\r\nWorld\r\n' | git hash-object --stdin)
+a_ne_cr=$(printf '$Id$\r\nHello\r\nWorld' | git hash-object --stdin)
+test_expect_success 'Set CRLF on cr files' \
+  'svn_cmd propset svn:eol-style CRLF cr &&
 	 svn_cmd propset svn:eol-style CRLF ne_cr &&
 	 svn_cmd propset svn:keywords Id cr &&
 	 svn_cmd propset svn:keywords Id ne_cr &&
 	 svn_cmd commit -m "propset CRLF on cr files"'
 cd ..
 test_expect_success 'fetch and pull latest from svn' \
-	'git svn fetch && git pull . remotes/git-svn'
+  'git svn fetch && git pull . remotes/git-svn'
 
 b_cr="$(git hash-object cr)"
 b_ne_cr="$(git hash-object ne_cr)"

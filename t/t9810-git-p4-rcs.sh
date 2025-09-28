@@ -45,12 +45,11 @@ test_expect_success 'init depot' '
 #
 # Generate these in a function to make it easy to use single quote marks.
 #
-write_scrub_scripts () {
-	cat >"$TRASH_DIRECTORY/scrub_k.py" <<-\EOF &&
+write_scrub_scripts() {
+  cat >"$TRASH_DIRECTORY/scrub_k.py" <<-\EOF && cat >"$TRASH_DIRECTORY/scrub_ko.py" <<-\EOF
 	import re, sys
 	sys.stdout.write(re.sub(r'(?i)\$(Id|Header|Author|Date|DateTime|Change|File|Revision):[^$]*\$', r'$\1$', sys.stdin.read()))
 	EOF
-	cat >"$TRASH_DIRECTORY/scrub_ko.py" <<-\EOF
 	import re, sys
 	sys.stdout.write(re.sub(r'(?i)\$(Id|Header):[^$]*\$', r'$\1$', sys.stdin.read()))
 	EOF
@@ -64,21 +63,21 @@ test_expect_success 'scrub scripts' '
 # Compare $cli/file to its scrubbed version, should be different.
 # Compare scrubbed $cli/file to $git/file, should be same.
 #
-scrub_k_check () {
-	file="$1" &&
-	scrub="$TRASH_DIRECTORY/$file" &&
-	"$PYTHON_PATH" "$TRASH_DIRECTORY/scrub_k.py" <"$git/$file" >"$scrub" &&
-	! test_cmp "$cli/$file" "$scrub" &&
-	test_cmp "$git/$file" "$scrub" &&
-	rm "$scrub"
+scrub_k_check() {
+  file="$1" \
+    && scrub="$TRASH_DIRECTORY/$file" \
+    && "$PYTHON_PATH" "$TRASH_DIRECTORY/scrub_k.py" <"$git/$file" >"$scrub" \
+    && ! test_cmp "$cli/$file" "$scrub" \
+    && test_cmp "$git/$file" "$scrub" \
+    && rm "$scrub"
 }
-scrub_ko_check () {
-	file="$1" &&
-	scrub="$TRASH_DIRECTORY/$file" &&
-	"$PYTHON_PATH" "$TRASH_DIRECTORY/scrub_ko.py" <"$git/$file" >"$scrub" &&
-	! test_cmp "$cli/$file" "$scrub" &&
-	test_cmp "$git/$file" "$scrub" &&
-	rm "$scrub"
+scrub_ko_check() {
+  file="$1" \
+    && scrub="$TRASH_DIRECTORY/$file" \
+    && "$PYTHON_PATH" "$TRASH_DIRECTORY/scrub_ko.py" <"$git/$file" >"$scrub" \
+    && ! test_cmp "$cli/$file" "$scrub" \
+    && test_cmp "$git/$file" "$scrub" \
+    && rm "$scrub"
 }
 
 #
@@ -223,8 +222,8 @@ test_expect_success 'cleanup after failure 2' '
 	)
 '
 
-create_kw_file () {
-	cat <<\EOF >"$1"
+create_kw_file() {
+  cat <<\EOF >"$1"
 /* A file
 	Id: $Id$
 	Revision: $Revision$
@@ -248,11 +247,11 @@ test_expect_success 'add kwfile' '
 	)
 '
 
-p4_append_to_file () {
-	f="$1" &&
-	p4 edit -t ktext "$f" &&
-	echo "/* $(date) */" >>"$f" &&
-	p4 submit -d "appending a line in p4"
+p4_append_to_file() {
+  f="$1" \
+    && p4 edit -t ktext "$f" \
+    && echo "/* $(date) */" >>"$f" \
+    && p4 submit -d "appending a line in p4"
 }
 
 # Create some files with RCS keywords. If they get modified

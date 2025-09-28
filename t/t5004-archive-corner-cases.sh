@@ -14,22 +14,23 @@ test_expect_success 'create commit with empty tree and fake empty tar' '
 
 # Make a dir and clean it up afterwards
 make_dir() {
-	mkdir "$1" &&
-	test_when_finished "rm -rf '$1'"
+  mkdir "$1" \
+    && test_when_finished "rm -rf '$1'"
 }
 
 # Check that the dir given in "$1" contains exactly the
 # set of paths given as arguments.
 check_dir() {
-	dir=$1; shift
-	{
-		echo "$dir" &&
-		for i in "$@"; do
-			echo "$dir/$i"
-		done
-	} | sort >expect &&
-	find "$dir" ! -name pax_global_header -print | sort >actual &&
-	test_cmp expect actual
+  dir=$1
+  shift
+  {
+    echo "$dir" \
+      && for i in "$@"; do
+        echo "$dir/$i"
+      done
+  } | sort >expect \
+    && find "$dir" ! -name pax_global_header -print | sort >actual \
+    && test_cmp expect actual
 }
 
 test_lazy_prereq UNZIP_ZIP64_SUPPORT '
@@ -38,9 +39,8 @@ test_lazy_prereq UNZIP_ZIP64_SUPPORT '
 
 # bsdtar/libarchive versions before 3.1.3 consider a tar file with a
 # global pax header that is not followed by a file record as corrupt.
-if "$TAR" tf "$TEST_DIRECTORY"/t5004/empty-with-pax-header.tar >/dev/null 2>&1
-then
-	test_set_prereq HEADER_ONLY_TAR_OK
+if "$TAR" tf "$TEST_DIRECTORY"/t5004/empty-with-pax-header.tar >/dev/null 2>&1; then
+  test_set_prereq HEADER_ONLY_TAR_OK
 fi
 
 test_expect_success HEADER_ONLY_TAR_OK 'tar archive of commit with empty tree' '
@@ -160,7 +160,7 @@ test_expect_success ZIPINFO 'zip archive with many entries' '
 '
 
 test_expect_success EXPENSIVE,UNZIP,UNZIP_ZIP64_SUPPORT \
-	'zip archive bigger than 4GB' '
+  'zip archive bigger than 4GB' '
 	# build string containing 65536 characters
 	s=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef &&
 	s=$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s$s &&
@@ -184,7 +184,7 @@ test_expect_success EXPENSIVE,UNZIP,UNZIP_ZIP64_SUPPORT \
 '
 
 test_expect_success EXPENSIVE,LONG_IS_64BIT,UNZIP,UNZIP_ZIP64_SUPPORT,ZIPINFO \
-	'zip archive with files bigger than 4GB' '
+  'zip archive with files bigger than 4GB' '
 	# Pack created with:
 	#   dd if=/dev/zero of=file bs=1M count=4100 && git hash-object -w file
 	mkdir -p .git/objects/pack &&
@@ -207,7 +207,7 @@ test_expect_success EXPENSIVE,LONG_IS_64BIT,UNZIP,UNZIP_ZIP64_SUPPORT,ZIPINFO \
 '
 
 build_tree() {
-	perl -e '
+  perl -e '
 		my $hash = $ARGV[0];
 		foreach my $order (2..6) {
 			$first = 10 ** $order;

@@ -8,7 +8,7 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . "$TEST_DIRECTORY"/lib-terminal.sh
 
 ensure_fresh_upstream() {
-	rm -rf parent && git init --bare parent
+  rm -rf parent && git init --bare parent
 }
 
 test_expect_success 'setup bare parent' '
@@ -23,10 +23,15 @@ test_expect_success 'setup local commit' '
 '
 
 check_config() {
-	(echo $2; echo $3) >expect.$1
-	(git config branch.$1.remote
-	 git config branch.$1.merge) >actual.$1
-	test_cmp expect.$1 actual.$1
+  (
+    echo $2
+    echo $3
+  ) >expect.$1
+  (
+    git config branch.$1.remote
+    git config branch.$1.merge
+  ) >actual.$1
+  test_cmp expect.$1 actual.$1
 }
 
 test_expect_success 'push -u main:main' '

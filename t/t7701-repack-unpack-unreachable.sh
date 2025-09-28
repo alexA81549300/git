@@ -56,12 +56,11 @@ test_expect_success '-A with -d option leaves unreachable objects unpacked' '
 	git show $tsha1
 '
 
-compare_mtimes ()
-{
-	read tref &&
-	while read t; do
-		test "$tref" = "$t" || return 1
-	done
+compare_mtimes() {
+  read tref \
+    && while read t; do
+      test "$tref" = "$t" || return 1
+    done
 }
 
 test_expect_success '-A without -d option leaves unreachable objects packed' '

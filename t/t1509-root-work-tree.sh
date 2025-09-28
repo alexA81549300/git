@@ -12,27 +12,27 @@ can chroot in and execute this test from there.
 . ./test-lib.sh
 
 test_cmp_val() {
-	echo "$1" > expected
-	echo "$2" > result
-	test_cmp expected result
+  echo "$1" >expected
+  echo "$2" >result
+  test_cmp expected result
 }
 
 test_vars() {
-	test_expect_success "$1: gitdir" '
+  test_expect_success "$1: gitdir" '
 		test_cmp_val "'"$2"'" "$(git rev-parse --git-dir)"
 	'
 
-	test_expect_success "$1: worktree" '
+  test_expect_success "$1: worktree" '
 		test_cmp_val "'"$3"'" "$(git rev-parse --show-toplevel)"
 	'
 
-	test_expect_success "$1: prefix" '
+  test_expect_success "$1: prefix" '
 		test_cmp_val "'"$4"'" "$(git rev-parse --show-prefix)"
 	'
 }
 
 test_foobar_root() {
-	test_expect_success 'add relative' '
+  test_expect_success 'add relative' '
 		test -z "$(cd / && git ls-files)" &&
 		git add foo/foome &&
 		git add foo/bar/barme &&
@@ -42,7 +42,7 @@ test_foobar_root() {
 		rm "$(git rev-parse --git-dir)/index"
 	'
 
-	test_expect_success 'add absolute' '
+  test_expect_success 'add absolute' '
 		test -z "$(cd / && git ls-files)" &&
 		git add /foo/foome &&
 		git add /foo/bar/barme &&
@@ -55,7 +55,7 @@ test_foobar_root() {
 }
 
 test_foobar_foo() {
-	test_expect_success 'add relative' '
+  test_expect_success 'add relative' '
 		test -z "$(cd / && git ls-files)" &&
 		git add foome &&
 		git add bar/barme &&
@@ -65,7 +65,7 @@ test_foobar_foo() {
 		rm "$(git rev-parse --git-dir)/index"
 	'
 
-	test_expect_success 'add absolute' '
+  test_expect_success 'add absolute' '
 		test -z "$(cd / && git ls-files)" &&
 		git add /foo/foome &&
 		git add /foo/bar/barme &&
@@ -77,7 +77,7 @@ test_foobar_foo() {
 }
 
 test_foobar_foobar() {
-	test_expect_success 'add relative' '
+  test_expect_success 'add relative' '
 		test -z "$(cd / && git ls-files)" &&
 		git add ../foome &&
 		git add barme &&
@@ -87,7 +87,7 @@ test_foobar_foobar() {
 		rm "$(git rev-parse --git-dir)/index"
 	'
 
-	test_expect_success 'add absolute' '
+  test_expect_success 'add absolute' '
 		test -z "$(cd / && git ls-files)" &&
 		git add /foo/foome &&
 		git add /foo/bar/barme &&
@@ -98,28 +98,25 @@ test_foobar_foobar() {
 	'
 }
 
-if ! test -w /
-then
-	skip_all="Test requiring writable / skipped. Read this test if you want to run it"
-	test_done
+if ! test -w /; then
+  skip_all="Test requiring writable / skipped. Read this test if you want to run it"
+  test_done
 fi
 
-if  test -e /refs || test -e /objects || test -e /info || test -e /hooks ||
-    test -e /.git || test -e /foo || test -e /me
-then
-	skip_all="Skip test that clobbers existing files in /"
-	test_done
+if test -e /refs || test -e /objects || test -e /info || test -e /hooks \
+  || test -e /.git || test -e /foo || test -e /me; then
+  skip_all="Skip test that clobbers existing files in /"
+  test_done
 fi
 
 if [ "$IKNOWWHATIAMDOING" != "YES" ]; then
-	skip_all="You must set env var IKNOWWHATIAMDOING=YES in order to run this test"
-	test_done
+  skip_all="You must set env var IKNOWWHATIAMDOING=YES in order to run this test"
+  test_done
 fi
 
-if ! test_have_prereq NOT_ROOT
-then
-	skip_all="No you can't run this as root"
-	test_done
+if ! test_have_prereq NOT_ROOT; then
+  skip_all="No you can't run this as root"
+  test_done
 fi
 
 ONE_SHA1=d00491fd7e5bb6fa28c517a0bb32b8b506539d4d
@@ -163,7 +160,7 @@ say "GIT_DIR relative, GIT_WORK_TREE set"
 
 test_expect_success 'go to /' 'cd /'
 
-GIT_DIR="$(echo $TRASH_DIRECTORY|sed 's,^/,,')/.git" && export GIT_DIR
+GIT_DIR="$(echo $TRASH_DIRECTORY | sed 's,^/,,')/.git" && export GIT_DIR
 GIT_WORK_TREE=/ && export GIT_WORK_TREE
 
 test_vars 'rel gitdir, root' "$GIT_DIR" "/" ""
@@ -189,7 +186,7 @@ say "GIT_DIR relative, GIT_WORK_TREE relative"
 
 test_expect_success 'go to /' 'cd /'
 
-GIT_DIR="$(echo $TRASH_DIRECTORY|sed 's,^/,,')/.git" && export GIT_DIR
+GIT_DIR="$(echo $TRASH_DIRECTORY | sed 's,^/,,')/.git" && export GIT_DIR
 GIT_WORK_TREE=. && export GIT_WORK_TREE
 
 test_vars 'rel gitdir, root' "$GIT_DIR" "/" ""

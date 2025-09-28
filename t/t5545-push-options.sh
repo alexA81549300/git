@@ -10,15 +10,15 @@ export GIT_TEST_FATAL_REGISTER_SUBMODULE_ODB
 
 . ./test-lib.sh
 
-mk_repo_pair () {
-	rm -rf workbench upstream &&
-	test_create_repo upstream &&
-	test_create_repo workbench &&
-	(
-		cd upstream &&
-		git config receive.denyCurrentBranch warn &&
-		mkdir -p .git/hooks &&
-		cat >.git/hooks/pre-receive <<-'EOF' &&
+mk_repo_pair() {
+  rm -rf workbench upstream \
+    && test_create_repo upstream \
+    && test_create_repo workbench \
+    && (
+      cd upstream \
+        && git config receive.denyCurrentBranch warn \
+        && mkdir -p .git/hooks \
+        && cat >.git/hooks/pre-receive <<-'EOF' && chmod u+x .git/hooks/pre-receive
 		#!/bin/sh
 		if test -n "$GIT_PUSH_OPTION_COUNT"; then
 			i=0
@@ -30,9 +30,7 @@ mk_repo_pair () {
 			done
 		fi
 		EOF
-		chmod u+x .git/hooks/pre-receive
-
-		cat >.git/hooks/post-receive <<-'EOF' &&
+      cat >.git/hooks/post-receive <<-'EOF' && chmod u+x .git/hooks/post-receive
 		#!/bin/sh
 		if test -n "$GIT_PUSH_OPTION_COUNT"; then
 			i=0
@@ -44,21 +42,20 @@ mk_repo_pair () {
 			done
 		fi
 		EOF
-		chmod u+x .git/hooks/post-receive
-	) &&
-	(
-		cd workbench &&
-		git remote add up ../upstream
-	)
+    ) \
+    && (
+      cd workbench \
+        && git remote add up ../upstream
+    )
 }
 
 # Compare the ref ($1) in upstream with a ref value from workbench ($2)
 # i.e. test_refs second HEAD@{2}
-test_refs () {
-	test $# = 2 &&
-	git -C upstream rev-parse --verify "$1" >expect &&
-	git -C workbench rev-parse --verify "$2" >actual &&
-	test_cmp expect actual
+test_refs() {
+  test $# = 2 \
+    && git -C upstream rev-parse --verify "$1" >expect \
+    && git -C workbench rev-parse --verify "$2" >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'one push option works for a single branch' '
@@ -238,14 +235,14 @@ start_httpd
 
 # set up http repository for fetching/pushing, with push options config
 # bool set to $1
-mk_http_pair () {
-	test_when_finished "rm -rf test_http_clone" &&
-	test_when_finished 'rm -rf "$HTTPD_DOCUMENT_ROOT_PATH"/upstream.git' &&
-	mk_repo_pair &&
-	git -C upstream config receive.advertisePushOptions "$1" &&
-	git -C upstream config http.receivepack true &&
-	cp -R upstream/.git "$HTTPD_DOCUMENT_ROOT_PATH"/upstream.git &&
-	git clone "$HTTPD_URL"/smart/upstream test_http_clone
+mk_http_pair() {
+  test_when_finished "rm -rf test_http_clone" \
+    && test_when_finished 'rm -rf "$HTTPD_DOCUMENT_ROOT_PATH"/upstream.git' \
+    && mk_repo_pair \
+    && git -C upstream config receive.advertisePushOptions "$1" \
+    && git -C upstream config http.receivepack true \
+    && cp -R upstream/.git "$HTTPD_DOCUMENT_ROOT_PATH"/upstream.git \
+    && git clone "$HTTPD_URL"/smart/upstream test_http_clone
 }
 
 test_expect_success 'push option denied properly by http server' '

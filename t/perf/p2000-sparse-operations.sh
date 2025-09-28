@@ -91,19 +91,18 @@ test_expect_success 'setup repo and indexes' '
 	)
 '
 
-test_perf_on_all () {
-	command="$@"
-	for repo in full-v3 full-v4 \
-		    sparse-v3 sparse-v4
-	do
-		test_perf "$command ($repo)" "
+test_perf_on_all() {
+  command="$@"
+  for repo in full-v3 full-v4 \
+    sparse-v3 sparse-v4; do
+    test_perf "$command ($repo)" "
 			(
 				cd $repo &&
 				echo >>$SPARSE_CONE/a &&
 				$command
 			)
 		"
-	done
+  done
 }
 
 test_perf_on_all git status

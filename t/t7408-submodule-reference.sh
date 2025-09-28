@@ -9,13 +9,13 @@ test_description='test clone --reference'
 
 base_dir=$(pwd)
 
-test_alternate_is_used () {
-	alternates_file="$1" &&
-	working_dir="$2" &&
-	test_line_count = 1 "$alternates_file" &&
-	echo "0 objects, 0 kilobytes" >expect &&
-	git -C "$working_dir" count-objects >actual &&
-	test_cmp expect actual
+test_alternate_is_used() {
+  alternates_file="$1" \
+    && working_dir="$2" \
+    && test_line_count = 1 "$alternates_file" \
+    && echo "0 objects, 0 kilobytes" >expect \
+    && git -C "$working_dir" count-objects >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'setup' '
@@ -183,13 +183,14 @@ test_expect_success 'nested submodule alternate in works and is actually used' '
 '
 
 check_that_two_of_three_alternates_are_used() {
-	test_alternate_is_used .git/objects/info/alternates . &&
-	# immediate submodule has alternate:
-	test_alternate_is_used .git/modules/subwithsub/objects/info/alternates subwithsub &&
-	# but nested submodule has no alternate:
-	test_path_is_missing .git/modules/subwithsub/modules/sub/objects/info/alternates
+  test_alternate_is_used .git/objects/info/alternates . \
+    &&
+    # immediate submodule has alternate:
+    test_alternate_is_used .git/modules/subwithsub/objects/info/alternates subwithsub \
+    &&
+    # but nested submodule has no alternate:
+    test_path_is_missing .git/modules/subwithsub/modules/sub/objects/info/alternates
 }
-
 
 test_expect_success 'missing nested submodule alternate fails clone and submodule update' '
 	test_when_finished "rm -rf supersuper-clone" &&

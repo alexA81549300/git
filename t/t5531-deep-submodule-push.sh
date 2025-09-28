@@ -512,28 +512,27 @@ test_expect_success 'push only unpushed submodules recursively' '
 	test_cmp expected_pub actual_pub
 '
 
-setup_subsub () {
-	git init upstream &&
-	git init upstream/sub &&
-	git init upstream/sub/deepsub &&
-	test_commit -C upstream/sub/deepsub innermost &&
-	git -C upstream/sub submodule add ./deepsub deepsub &&
-	git -C upstream/sub commit -m middle &&
-	git -C upstream submodule add ./sub sub &&
-	git -C upstream commit -m outermost &&
-
-	git -c protocol.file.allow=always clone --recurse-submodules upstream downstream &&
-	git -C downstream/sub/deepsub checkout -b downstream-branch &&
-	git -C downstream/sub checkout -b downstream-branch &&
-	git -C downstream checkout -b downstream-branch
+setup_subsub() {
+  git init upstream \
+    && git init upstream/sub \
+    && git init upstream/sub/deepsub \
+    && test_commit -C upstream/sub/deepsub innermost \
+    && git -C upstream/sub submodule add ./deepsub deepsub \
+    && git -C upstream/sub commit -m middle \
+    && git -C upstream submodule add ./sub sub \
+    && git -C upstream commit -m outermost \
+    && git -c protocol.file.allow=always clone --recurse-submodules upstream downstream \
+    && git -C downstream/sub/deepsub checkout -b downstream-branch \
+    && git -C downstream/sub checkout -b downstream-branch \
+    && git -C downstream checkout -b downstream-branch
 }
 
-new_downstream_commits () {
-	test_commit -C downstream/sub/deepsub new-innermost &&
-	git -C downstream/sub add deepsub &&
-	git -C downstream/sub commit -m new-middle &&
-	git -C downstream add sub &&
-	git -C downstream commit -m new-outermost
+new_downstream_commits() {
+  test_commit -C downstream/sub/deepsub new-innermost \
+    && git -C downstream/sub add deepsub \
+    && git -C downstream/sub commit -m new-middle \
+    && git -C downstream add sub \
+    && git -C downstream commit -m new-outermost
 }
 
 test_expect_success 'push with push.recurseSubmodules=only on superproject' '

@@ -106,15 +106,14 @@ test_expect_success 'setup repo for checkout with various types of changes' '
 	)
 '
 
-for mode in sequential parallel sequential-fallback
-do
-	case $mode in
-	sequential)          workers=1 threshold=0 expected_workers=0 ;;
-	parallel)            workers=2 threshold=0 expected_workers=2 ;;
-	sequential-fallback) workers=2 threshold=100 expected_workers=0 ;;
-	esac
+for mode in sequential parallel sequential-fallback; do
+  case $mode in
+    sequential) workers=1 threshold=0 expected_workers=0 ;;
+    parallel) workers=2 threshold=0 expected_workers=2 ;;
+    sequential-fallback) workers=2 threshold=100 expected_workers=0 ;;
+  esac
 
-	test_expect_success "$mode checkout" '
+  test_expect_success "$mode checkout" '
 		repo=various_$mode &&
 		cp -R -P various $repo &&
 
@@ -134,14 +133,13 @@ do
 	'
 done
 
-for mode in parallel sequential-fallback
-do
-	case $mode in
-	parallel)            workers=2 threshold=0 expected_workers=2 ;;
-	sequential-fallback) workers=2 threshold=100 expected_workers=0 ;;
-	esac
+for mode in parallel sequential-fallback; do
+  case $mode in
+    parallel) workers=2 threshold=0 expected_workers=2 ;;
+    sequential-fallback) workers=2 threshold=100 expected_workers=0 ;;
+  esac
 
-	test_expect_success "$mode checkout on clone" '
+  test_expect_success "$mode checkout on clone" '
 		test_config_global protocol.file.allow always &&
 		repo=various_${mode}_clone &&
 		set_checkout_config $workers $threshold &&

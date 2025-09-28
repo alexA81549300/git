@@ -10,47 +10,41 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 . "$TEST_DIRECTORY/lib-gpg.sh"
 
-add_and_commit_file ()
-{
-    _file="$1"
-    _msg="$2"
+add_and_commit_file() {
+  _file="$1"
+  _msg="$2"
 
-    git add $_file || return $?
-    test_tick || return $?
-    git commit --quiet -m "$_file: $_msg"
+  git add $_file || return $?
+  test_tick || return $?
+  git commit --quiet -m "$_file: $_msg"
 }
 
-commit_buffer_contains_parents ()
-{
-    git cat-file commit "$1" >payload &&
-    sed -n -e '/^$/q' -e '/^parent /p' <payload >actual &&
-    shift &&
-    for _parent
-    do
-	echo "parent $_parent"
-    done >expected &&
-    test_cmp expected actual
+commit_buffer_contains_parents() {
+  git cat-file commit "$1" >payload \
+    && sed -n -e '/^$/q' -e '/^parent /p' <payload >actual \
+    && shift \
+    && for _parent; do
+      echo "parent $_parent"
+    done >expected \
+    && test_cmp expected actual
 }
 
-commit_peeling_shows_parents ()
-{
-    _parent_number=1
-    _commit="$1"
-    shift &&
-    for _parent
-    do
-	_found=$(git rev-parse --verify $_commit^$_parent_number) || return 1
-	test "$_found" = "$_parent" || return 1
-	_parent_number=$(( $_parent_number + 1 ))
-    done &&
-    test_must_fail git rev-parse --verify $_commit^$_parent_number 2>err &&
-    test_grep "Needed a single revision" err
+commit_peeling_shows_parents() {
+  _parent_number=1
+  _commit="$1"
+  shift \
+    && for _parent; do
+      _found=$(git rev-parse --verify $_commit^$_parent_number) || return 1
+      test "$_found" = "$_parent" || return 1
+      _parent_number=$(($_parent_number + 1))
+    done \
+    && test_must_fail git rev-parse --verify $_commit^$_parent_number 2>err \
+    && test_grep "Needed a single revision" err
 }
 
-commit_has_parents ()
-{
-    commit_buffer_contains_parents "$@" &&
-    commit_peeling_shows_parents "$@"
+commit_has_parents() {
+  commit_buffer_contains_parents "$@" \
+    && commit_peeling_shows_parents "$@"
 }
 
 HASH1=

@@ -242,9 +242,9 @@ test_expect_success 'old records rest in peace' '
 	! test -f $rr2/preimage
 '
 
-rerere_gc_custom_expiry_test () {
-	five_days="$1" right_now="$2"
-	test_expect_success "rerere gc with custom expiry ($five_days, $right_now)" '
+rerere_gc_custom_expiry_test() {
+  five_days="$1" right_now="$2"
+  test_expect_success "rerere gc with custom expiry ($five_days, $right_now)" '
 		rm -fr .git/rr-cache &&
 		rr=.git/rr-cache/$ZERO_OID &&
 		mkdir -p "$rr" &&
@@ -442,25 +442,26 @@ test_expect_success 'rerere -h' '
 	test_grep [Uu]sage help
 '
 
-concat_insert () {
-	last=$1
-	shift
-	cat early && printf "%s\n" "$@" && cat late "$last"
+concat_insert() {
+  last=$1
+  shift
+  cat early && printf "%s\n" "$@" && cat late "$last"
 }
 
-count_pre_post () {
-	find .git/rr-cache/ -type f -name "preimage*" >actual &&
-	test_line_count = "$1" actual &&
-	find .git/rr-cache/ -type f -name "postimage*" >actual &&
-	test_line_count = "$2" actual
+count_pre_post() {
+  find .git/rr-cache/ -type f -name "preimage*" >actual \
+    && test_line_count = "$1" actual \
+    && find .git/rr-cache/ -type f -name "postimage*" >actual \
+    && test_line_count = "$2" actual
 }
 
-merge_conflict_resolve () {
-	git reset --hard &&
-	test_must_fail git merge six.1 &&
-	# Resolution is to replace 7 with 6.1 and 6.2 (i.e. take both)
-	concat_insert short 6.1 6.2 >file1 &&
-	concat_insert long 6.1 6.2 >file2
+merge_conflict_resolve() {
+  git reset --hard \
+    && test_must_fail git merge six.1 \
+    &&
+    # Resolution is to replace 7 with 6.1 and 6.2 (i.e. take both)
+    concat_insert short 6.1 6.2 >file1 \
+    && concat_insert long 6.1 6.2 >file2
 }
 
 test_expect_success 'multiple identical conflicts' '

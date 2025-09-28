@@ -121,7 +121,7 @@ test_expect_success 'erase: erase matching credentials from both xdg and home fi
 '
 
 invalid_credential_test() {
-	test_expect_success "get: ignore credentials without $1 as invalid" '
+  test_expect_success "get: ignore credentials without $1 as invalid" '
 		echo "$2" >"$HOME/.git-credentials" &&
 		check fill store <<-\EOF
 		protocol=https

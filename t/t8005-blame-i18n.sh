@@ -4,10 +4,9 @@ test_description='git blame encoding conversion'
 
 . ./test-lib.sh
 
-if ! test_have_prereq ICONV
-then
-	skip_all='skipping blame i18n tests; iconv not available'
-	test_done
+if ! test_have_prereq ICONV; then
+  skip_all='skipping blame i18n tests; iconv not available'
+  test_done
 fi
 
 . "$TEST_DIRECTORY"/t8005/utf8.txt
@@ -40,12 +39,12 @@ author $SJIS_NAME
 summary $SJIS_MSG
 EOF
 
-filter_author_summary () {
-	sed -n -e '/^author /p' -e '/^summary /p' "$@"
+filter_author_summary() {
+  sed -n -e '/^author /p' -e '/^summary /p' "$@"
 }
 
 test_expect_success !MINGW \
-	'blame respects i18n.commitencoding' '
+  'blame respects i18n.commitencoding' '
 	git blame --incremental file >output &&
 	filter_author_summary output >actual &&
 	test_cmp expected actual
@@ -61,7 +60,7 @@ summary $EUC_JAPAN_MSG
 EOF
 
 test_expect_success !MINGW \
-	'blame respects i18n.logoutputencoding' '
+  'blame respects i18n.logoutputencoding' '
 	git config i18n.logoutputencoding eucJP &&
 	git blame --incremental file >output &&
 	filter_author_summary output >actual &&
@@ -78,7 +77,7 @@ summary $UTF8_MSG
 EOF
 
 test_expect_success !MINGW \
-	'blame respects --encoding=UTF-8' '
+  'blame respects --encoding=UTF-8' '
 	git blame --incremental --encoding=UTF-8 file >output &&
 	filter_author_summary output >actual &&
 	test_cmp expected actual
@@ -94,7 +93,7 @@ summary $UTF8_MSG
 EOF
 
 test_expect_success !MINGW \
-	'blame respects --encoding=none' '
+  'blame respects --encoding=none' '
 	git blame --incremental --encoding=none file >output &&
 	filter_author_summary output >actual &&
 	test_cmp expected actual

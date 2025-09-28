@@ -47,68 +47,61 @@ test_untraceable=UnfortunatelyYes
 
 here=$(pwd)
 
-test_repo () {
-	(
-		cd "$1" &&
-		if test -n "$2"
-		then
-			GIT_DIR="$2" &&
-			export GIT_DIR
-		fi &&
-		if test -n "$3"
-		then
-			GIT_WORK_TREE="$3" &&
-			export GIT_WORK_TREE
-		fi &&
-		rm -f trace &&
-		GIT_TRACE_SETUP="$(pwd)/trace" git symbolic-ref HEAD >/dev/null &&
-		grep '^setup: ' trace >result &&
-		test_cmp expected result
-	)
+test_repo() {
+  (
+    cd "$1" \
+      && if test -n "$2"; then
+        GIT_DIR="$2" \
+          && export GIT_DIR
+      fi \
+      && if test -n "$3"; then
+        GIT_WORK_TREE="$3" \
+          && export GIT_WORK_TREE
+      fi \
+      && rm -f trace \
+      && GIT_TRACE_SETUP="$(pwd)/trace" git symbolic-ref HEAD >/dev/null \
+      && grep '^setup: ' trace >result \
+      && test_cmp expected result
+  )
 }
 
-maybe_config () {
-	file=$1 var=$2 value=$3 &&
-	if test "$value" != unset
-	then
-		git config --file="$file" "$var" "$value"
-	fi
+maybe_config() {
+  file=$1 var=$2 value=$3 \
+    && if test "$value" != unset; then
+      git config --file="$file" "$var" "$value"
+    fi
 }
 
-setup_repo () {
-	name=$1 worktreecfg=$2 gitfile=$3 barecfg=$4 &&
-	sane_unset GIT_DIR GIT_WORK_TREE &&
-
-	git -c init.defaultBranch=initial init "$name" &&
-	maybe_config "$name/.git/config" core.worktree "$worktreecfg" &&
-	maybe_config "$name/.git/config" core.bare "$barecfg" &&
-	mkdir -p "$name/sub/sub" &&
-
-	if test "${gitfile:+set}"
-	then
-		mv "$name/.git" "$name.git" &&
-		echo "gitdir: ../$name.git" >"$name/.git"
-	fi
+setup_repo() {
+  name=$1 worktreecfg=$2 gitfile=$3 barecfg=$4 \
+    && sane_unset GIT_DIR GIT_WORK_TREE \
+    && git -c init.defaultBranch=initial init "$name" \
+    && maybe_config "$name/.git/config" core.worktree "$worktreecfg" \
+    && maybe_config "$name/.git/config" core.bare "$barecfg" \
+    && mkdir -p "$name/sub/sub" \
+    && if test "${gitfile:+set}"; then
+      mv "$name/.git" "$name.git" \
+        && echo "gitdir: ../$name.git" >"$name/.git"
+    fi
 }
 
-maybe_set () {
-	var=$1 value=$2 &&
-	if test "$value" != unset
-	then
-		eval "$var=\$value" &&
-		export $var
-	fi
+maybe_set() {
+  var=$1 value=$2 \
+    && if test "$value" != unset; then
+      eval "$var=\$value" \
+        && export $var
+    fi
 }
 
-setup_env () {
-	worktreenv=$1 gitdirenv=$2 &&
-	sane_unset GIT_DIR GIT_WORK_TREE &&
-	maybe_set GIT_DIR "$gitdirenv" &&
-	maybe_set GIT_WORK_TREE "$worktreeenv"
+setup_env() {
+  worktreenv=$1 gitdirenv=$2 \
+    && sane_unset GIT_DIR GIT_WORK_TREE \
+    && maybe_set GIT_DIR "$gitdirenv" \
+    && maybe_set GIT_WORK_TREE "$worktreeenv"
 }
 
-expect () {
-	cat >"$1/expected" <<-EOF
+expect() {
+  cat >"$1/expected" <<-EOF
 	setup: git_dir: $2
 	setup: git_common_dir: $2
 	setup: worktree: $3
@@ -117,27 +110,26 @@ expect () {
 	EOF
 }
 
-try_case () {
-	name=$1 worktreeenv=$2 gitdirenv=$3 &&
-	setup_env "$worktreeenv" "$gitdirenv" &&
-	expect "$name" "$4" "$5" "$6" "$7" &&
-	test_repo "$name"
+try_case() {
+  name=$1 worktreeenv=$2 gitdirenv=$3 \
+    && setup_env "$worktreeenv" "$gitdirenv" \
+    && expect "$name" "$4" "$5" "$6" "$7" \
+    && test_repo "$name"
 }
 
-run_wt_tests () {
-	N=$1 gitfile=$2
+run_wt_tests() {
+  N=$1 gitfile=$2
 
-	absgit="$here/$N/.git"
-	dotgit=.git
-	dotdotgit=../../.git
+  absgit="$here/$N/.git"
+  dotgit=.git
+  dotdotgit=../../.git
 
-	if test "$gitfile"
-	then
-		absgit="$here/$N.git"
-		dotgit=$absgit dotdotgit=$absgit
-	fi
+  if test "$gitfile"; then
+    absgit="$here/$N.git"
+    dotgit=$absgit dotdotgit=$absgit
+  fi
 
-	test_expect_success "#$N: explicit GIT_WORK_TREE and GIT_DIR at toplevel" '
+  test_expect_success "#$N: explicit GIT_WORK_TREE and GIT_DIR at toplevel" '
 		try_case $N "$here/$N" .git \
 			"$dotgit" "$here/$N" "$here/$N" "(null)" &&
 		try_case $N . .git \
@@ -148,7 +140,7 @@ run_wt_tests () {
 			"$absgit" "$here/$N" "$here/$N" "(null)"
 	'
 
-	test_expect_success "#$N: explicit GIT_WORK_TREE and GIT_DIR in subdir" '
+  test_expect_success "#$N: explicit GIT_WORK_TREE and GIT_DIR in subdir" '
 		try_case $N/sub/sub "$here/$N" ../../.git \
 			"$absgit" "$here/$N" "$here/$N" sub/sub/ &&
 		try_case $N/sub/sub ../.. ../../.git \
@@ -159,7 +151,7 @@ run_wt_tests () {
 			"$absgit" "$here/$N" "$here/$N" sub/sub/
 	'
 
-	test_expect_success "#$N: explicit GIT_WORK_TREE from parent of worktree" '
+  test_expect_success "#$N: explicit GIT_WORK_TREE from parent of worktree" '
 		try_case $N "$here/$N/wt" .git \
 			"$dotgit" "$here/$N/wt" "$here/$N" "(null)" &&
 		try_case $N wt .git \
@@ -170,7 +162,7 @@ run_wt_tests () {
 			"$absgit" "$here/$N/wt" "$here/$N" "(null)"
 	'
 
-	test_expect_success "#$N: explicit GIT_WORK_TREE from nephew of worktree" '
+  test_expect_success "#$N: explicit GIT_WORK_TREE from nephew of worktree" '
 		try_case $N/sub/sub "$here/$N/wt" ../../.git \
 			"$dotdotgit" "$here/$N/wt" "$here/$N/sub/sub" "(null)" &&
 		try_case $N/sub/sub ../../wt ../../.git \
@@ -181,7 +173,7 @@ run_wt_tests () {
 			"$absgit" "$here/$N/wt" "$here/$N/sub/sub" "(null)"
 	'
 
-	test_expect_success "#$N: chdir_to_toplevel uses worktree, not git dir" '
+  test_expect_success "#$N: chdir_to_toplevel uses worktree, not git dir" '
 		try_case $N "$here" .git \
 			"$absgit" "$here" "$here" $N/ &&
 		try_case $N .. .git \
@@ -192,7 +184,7 @@ run_wt_tests () {
 			"$absgit" "$here" "$here" $N/
 	'
 
-	test_expect_success "#$N: chdir_to_toplevel uses worktree (from subdir)" '
+  test_expect_success "#$N: chdir_to_toplevel uses worktree (from subdir)" '
 		try_case $N/sub/sub "$here" ../../.git \
 			"$absgit" "$here" "$here" $N/sub/sub/ &&
 		try_case $N/sub/sub ../../.. ../../.git \
@@ -207,20 +199,21 @@ run_wt_tests () {
 # try_repo #c GIT_WORK_TREE GIT_DIR core.worktree .gitfile? core.bare \
 #	(git dir) (work tree) (cwd) (prefix) \	<-- at toplevel
 #	(git dir) (work tree) (cwd) (prefix)	<-- from subdir
-try_repo () {
-	name=$1 worktreeenv=$2 gitdirenv=$3 &&
-	setup_repo "$name" "$4" "$5" "$6" &&
-	shift 6 &&
-	try_case "$name" "$worktreeenv" "$gitdirenv" \
-		"$1" "$2" "$3" "$4" &&
-	shift 4 &&
-	case "$gitdirenv" in
-	/* | ?:/* | unset) ;;
-	*)
-		gitdirenv=../$gitdirenv ;;
-	esac &&
-	try_case "$name/sub" "$worktreeenv" "$gitdirenv" \
-		"$1" "$2" "$3" "$4"
+try_repo() {
+  name=$1 worktreeenv=$2 gitdirenv=$3 \
+    && setup_repo "$name" "$4" "$5" "$6" \
+    && shift 6 \
+    && try_case "$name" "$worktreeenv" "$gitdirenv" \
+      "$1" "$2" "$3" "$4" \
+    && shift 4 \
+    && case "$gitdirenv" in
+      /* | ?:/* | unset) ;;
+      *)
+        gitdirenv=../$gitdirenv
+        ;;
+    esac \
+    && try_case "$name/sub" "$worktreeenv" "$gitdirenv" \
+      "$1" "$2" "$3" "$4"
 }
 
 # Bit 0 = GIT_WORK_TREE

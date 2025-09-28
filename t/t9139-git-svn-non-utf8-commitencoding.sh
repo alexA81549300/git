@@ -8,18 +8,16 @@ test_description='git svn refuses to dcommit non-UTF8 messages'
 
 # ISO-2022-JP can pass for valid UTF-8, so skipping that in this test
 
-for H in ISO8859-1 eucJP
-do
-	test_expect_success "$H setup" '
+for H in ISO8859-1 eucJP; do
+  test_expect_success "$H setup" '
 		mkdir $H &&
 		svn_cmd import -m "$H test" $H "$svnrepo"/$H &&
 		git svn clone "$svnrepo"/$H $H
 	'
 done
 
-for H in ISO8859-1 eucJP
-do
-	test_expect_success "$H commit on git side" '
+for H in ISO8859-1 eucJP; do
+  test_expect_success "$H commit on git side" '
 	(
 		cd $H &&
 		git config i18n.commitencoding $H &&
@@ -33,9 +31,8 @@ do
 	'
 done
 
-for H in ISO8859-1 eucJP
-do
-	test_expect_success "$H dcommit to svn" '
+for H in ISO8859-1 eucJP; do
+  test_expect_success "$H dcommit to svn" '
 	(
 		cd $H &&
 		git config --unset i18n.commitencoding &&

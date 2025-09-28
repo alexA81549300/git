@@ -5,12 +5,12 @@ test_description='simple command server'
 . ./test-lib.sh
 
 test-tool simple-ipc SUPPORTS_SIMPLE_IPC || {
-	skip_all='simple IPC not supported on this platform'
-	test_done
+  skip_all='simple IPC not supported on this platform'
+  test_done
 }
 
-stop_simple_IPC_server () {
-	test-tool simple-ipc stop-daemon
+stop_simple_IPC_server() {
+  test-tool simple-ipc stop-daemon
 }
 
 test_expect_success 'start simple command server' '

@@ -71,7 +71,6 @@ test_expect_success 'update backfilled tag without primary transfer' '
 	test_cmp expect actual
 '
 
-
 test_expect_success 'set up fake git-daemon' '
 	mkdir remote &&
 	git init --bare remote/one.git &&

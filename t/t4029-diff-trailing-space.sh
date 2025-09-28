@@ -6,7 +6,7 @@ test_description='diff honors config option, diff.suppressBlankEmpty'
 
 . ./test-lib.sh
 
-cat <<\EOF >expected ||
+cat <<\EOF >expected || exit 1
 diff --git a/f b/f
 index 5f6a263..8cb8bae 100644
 --- a/f
@@ -16,8 +16,6 @@ index 5f6a263..8cb8bae 100644
 -x
 +y
 EOF
-exit 1
-
 test_expect_success "$test_description" '
 	printf "\nx\n" > f &&
 	before=$(git hash-object f) &&

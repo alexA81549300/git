@@ -16,19 +16,18 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-build_script () {
-	script="$1" &&
-	for i in one three_file main topic_2 one_tree three two two2 three2
-	do
-		echo "s/$(test_oid --hash=sha1 "$i")/$(test_oid "$i")/g" >>"$script"
-	done
+build_script() {
+  script="$1" \
+    && for i in one three_file main topic_2 one_tree three two two2 three2; do
+      echo "s/$(test_oid --hash=sha1 "$i")/$(test_oid "$i")/g" >>"$script"
+    done
 }
 
-convert_expected () {
-	file="$1" &&
-	script="$2" &&
-	sed -f "$script" "$file" >"$file.tmp" &&
-	mv "$file.tmp" "$file"
+convert_expected() {
+  file="$1" \
+    && script="$2" \
+    && sed -f "$script" "$file" >"$file.tmp" \
+    && mv "$file.tmp" "$file"
 }
 
 test_expect_success setup '
@@ -142,30 +141,30 @@ test_expect_success setup '
 '
 
 # Merge logic depends on branch properties and Pull: or .fetch lines
-for remote in $remotes ; do
-    for branch in "" "-merge" "-octopus" ; do
-cat <<EOF
+for remote in $remotes; do
+  for branch in "" "-merge" "-octopus"; do
+    cat <<EOF
 br-$remote$branch
 br-$remote$branch $remote
 EOF
-    done
-done > tests
+  done
+done >tests
 
 # Merge logic does not depend on branch properties,
 # but does depend on Pull: or fetch lines.
 # Use two branches completely unrelated from the arguments,
 # the clone default and one without branch properties
-for branch in main br-unconfig ; do
-    echo $branch
-    for remote in $remotes ; do
-	echo $branch $remote
-    done
-done >> tests
+for branch in main br-unconfig; do
+  echo $branch
+  for remote in $remotes; do
+    echo $branch $remote
+  done
+done >>tests
 
 # Merge logic does not depend on branch properties
 # neither in the Pull: or .fetch config
-for branch in main br-unconfig ; do
-    cat <<EOF
+for branch in main br-unconfig; do
+  cat <<EOF
 $branch ../.git
 $branch ../.git one
 $branch ../.git one two
@@ -174,21 +173,20 @@ $branch ../.git tag tag-one tag tag-three
 $branch ../.git tag tag-one-tree tag tag-three-file
 $branch ../.git one tag tag-one tag tag-three-file
 EOF
-done >> tests
+done >>tests
 
-while read cmd
-do
-	case "$cmd" in
-	'' | '#'*) continue ;;
-	esac
-	test=$(echo "$cmd" | sed -e 's|[/ ][/ ]*|_|g')
-	pfx=$(printf "%04d" $test_count)
-	expect_f="$TEST_DIRECTORY/t5515/fetch.$test"
-	actual_f="$pfx-fetch.$test"
-	expect_r="$TEST_DIRECTORY/t5515/refs.$test"
-	actual_r="$pfx-refs.$test"
+while read cmd; do
+  case "$cmd" in
+    '' | '#'*) continue ;;
+  esac
+  test=$(echo "$cmd" | sed -e 's|[/ ][/ ]*|_|g')
+  pfx=$(printf "%04d" $test_count)
+  expect_f="$TEST_DIRECTORY/t5515/fetch.$test"
+  actual_f="$pfx-fetch.$test"
+  expect_r="$TEST_DIRECTORY/t5515/refs.$test"
+  actual_r="$pfx-refs.$test"
 
-	test_expect_success "$cmd" '
+  test_expect_success "$cmd" '
 		cp "$expect_f" expect_f &&
 		convert_expected expect_f sed_script &&
 		cp "$expect_r" expect_r &&
@@ -227,6 +225,6 @@ do
 			false
 		fi
 	'
-done < tests
+done <tests
 
 test_done

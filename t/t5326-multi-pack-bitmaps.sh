@@ -17,18 +17,17 @@ sane_unset GIT_TEST_MIDX_WRITE_REV
 sane_unset GIT_TEST_MIDX_READ_RIDX
 
 bitmap_reuse_tests() {
-	from=$1
-	to=$2
-	writeLookupTable=false
+  from=$1
+  to=$2
+  writeLookupTable=false
 
-	for i in $3-${$#}
-	do
-		case $i in
-		"pack.writeBitmapLookupTable") writeLookupTable=true;;
-		esac
-	done
+  for i in $3-${$#}; do
+    case $i in
+      "pack.writeBitmapLookupTable") writeLookupTable=true ;;
+    esac
+  done
 
-	test_expect_success "setup pack reuse tests ($from -> $to)" '
+  test_expect_success "setup pack reuse tests ($from -> $to)" '
 		rm -fr repo &&
 		git init repo &&
 		(
@@ -48,7 +47,7 @@ bitmap_reuse_tests() {
 		)
 	'
 
-	test_expect_success "build bitmap from existing ($from -> $to)" '
+  test_expect_success "build bitmap from existing ($from -> $to)" '
 		(
 			cd repo &&
 			git config pack.writeBitmapLookupTable '"$writeLookupTable"' &&
@@ -65,7 +64,7 @@ bitmap_reuse_tests() {
 		)
 	'
 
-	test_expect_success "verify resulting bitmaps ($from -> $to)" '
+  test_expect_success "verify resulting bitmaps ($from -> $to)" '
 		(
 			cd repo &&
 			git config pack.writeBitmapLookupTable '"$writeLookupTable"' &&
@@ -76,33 +75,32 @@ bitmap_reuse_tests() {
 	'
 }
 
-test_midx_bitmap_cases () {
-	writeLookupTable=false
-	writeBitmapLookupTable=
+test_midx_bitmap_cases() {
+  writeLookupTable=false
+  writeBitmapLookupTable=
 
-	for i in "$@"
-	do
-		case $i in
-		"pack.writeBitmapLookupTable")
-			writeLookupTable=true
-			writeBitmapLookupTable="$i"
-			;;
-		esac
-	done
+  for i in "$@"; do
+    case $i in
+      "pack.writeBitmapLookupTable")
+        writeLookupTable=true
+        writeBitmapLookupTable="$i"
+        ;;
+    esac
+  done
 
-	test_expect_success 'setup test_repository' '
+  test_expect_success 'setup test_repository' '
 		rm -rf * .git &&
 		git init &&
 		git config pack.writeBitmapLookupTable '"$writeLookupTable"'
 	'
 
-	midx_bitmap_core
+  midx_bitmap_core
 
-	bitmap_reuse_tests 'pack' 'MIDX' "$writeBitmapLookupTable"
-	bitmap_reuse_tests 'MIDX' 'pack' "$writeBitmapLookupTable"
-	bitmap_reuse_tests 'MIDX' 'MIDX' "$writeBitmapLookupTable"
+  bitmap_reuse_tests 'pack' 'MIDX' "$writeBitmapLookupTable"
+  bitmap_reuse_tests 'MIDX' 'pack' "$writeBitmapLookupTable"
+  bitmap_reuse_tests 'MIDX' 'MIDX' "$writeBitmapLookupTable"
 
-	test_expect_success 'missing object closure fails gracefully' '
+  test_expect_success 'missing object closure fails gracefully' '
 		rm -fr repo &&
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
@@ -125,9 +123,9 @@ test_midx_bitmap_cases () {
 		)
 	'
 
-	midx_bitmap_partial_tests
+  midx_bitmap_partial_tests
 
-	test_expect_success 'removing a MIDX clears stale bitmaps' '
+  test_expect_success 'removing a MIDX clears stale bitmaps' '
 		rm -fr repo &&
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
@@ -153,7 +151,7 @@ test_midx_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'pack.preferBitmapTips' '
+  test_expect_success 'pack.preferBitmapTips' '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -191,7 +189,7 @@ test_midx_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'writing a bitmap with --refs-snapshot' '
+  test_expect_success 'writing a bitmap with --refs-snapshot' '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -233,7 +231,7 @@ test_midx_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'write a bitmap with --refs-snapshot (preferred tips)' '
+  test_expect_success 'write a bitmap with --refs-snapshot (preferred tips)' '
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
 		(
@@ -273,7 +271,7 @@ test_midx_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'hash-cache values are propagated from pack bitmaps' '
+  test_expect_success 'hash-cache values are propagated from pack bitmaps' '
 		rm -fr repo &&
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
@@ -304,7 +302,7 @@ test_midx_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'no .bitmap is written without any objects' '
+  test_expect_success 'no .bitmap is written without any objects' '
 		rm -fr repo &&
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
@@ -327,7 +325,7 @@ test_midx_bitmap_cases () {
 		)
 	'
 
-	test_expect_success 'graceful fallback when missing reverse index' '
+  test_expect_success 'graceful fallback when missing reverse index' '
 		rm -fr repo &&
 		git init repo &&
 		test_when_finished "rm -fr repo" &&
@@ -456,9 +454,9 @@ test_expect_success 'do not follow replace objects for MIDX bitmap' '
 	)
 '
 
-corrupt_file () {
-	chmod a+w "$1" &&
-	printf "bogus" | dd of="$1" bs=1 seek="12" conv=notrunc
+corrupt_file() {
+  chmod a+w "$1" \
+    && printf "bogus" | dd of="$1" bs=1 seek="12" conv=notrunc
 }
 
 test_expect_success 'git fsck correctly identifies good and bad bitmaps' '
@@ -535,9 +533,8 @@ test_expect_success 'corrupt MIDX with bitmap causes fallback' '
 	)
 '
 
-for allow_pack_reuse in single multi
-do
-	test_expect_success "reading MIDX without BTMP chunk does not complain with $allow_pack_reuse pack reuse" '
+for allow_pack_reuse in single multi; do
+  test_expect_success "reading MIDX without BTMP chunk does not complain with $allow_pack_reuse pack reuse" '
 		test_when_finished "rm -rf midx-without-btmp" &&
 		git init midx-without-btmp &&
 		(

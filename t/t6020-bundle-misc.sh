@@ -12,122 +12,115 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . "$TEST_DIRECTORY"/lib-bundle.sh
 . "$TEST_DIRECTORY"/lib-terminal.sh
 
-for cmd in create verify list-heads unbundle
-do
-	test_expect_success "usage: git bundle $cmd needs an argument" '
+for cmd in create verify list-heads unbundle; do
+  test_expect_success "usage: git bundle $cmd needs an argument" '
 		test_expect_code 129 git bundle $cmd
 	'
 done
 
 # Create a commit or tag and set the variable with the object ID.
-test_commit_setvar () {
-	notick=
-	signoff=
-	indir=
-	merge=
-	tag=
-	var=
+test_commit_setvar() {
+  notick=
+  signoff=
+  indir=
+  merge=
+  tag=
+  var=
 
-	while test $# != 0
-	do
-		case "$1" in
-		--merge)
-			merge=t
-			;;
-		--tag)
-			tag=t
-			;;
-		--notick)
-			notick=t
-			;;
-		--signoff)
-			signoff="$1"
-			;;
-		-C)
-			shift
-			indir="$1"
-			;;
-		-*)
-			echo >&2 "error: unknown option $1"
-			return 1
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done
-	if test $# -lt 2
-	then
-		echo >&2 "error: test_commit_setvar must have at least 2 arguments"
-		return 1
-	fi
-	var=$1
-	shift
-	indir=${indir:+"$indir"/}
-	if test -z "$notick"
-	then
-		test_tick
-	fi &&
-	if test -n "$merge"
-	then
-		git ${indir:+ -C "$indir"} merge --no-edit --no-ff \
-			${2:+-m "$2"} "$1" &&
-		oid=$(git ${indir:+ -C "$indir"} rev-parse HEAD)
-	elif test -n "$tag"
-	then
-		git ${indir:+ -C "$indir"} tag -m "$1" "$1" "${2:-HEAD}" &&
-		oid=$(git ${indir:+ -C "$indir"} rev-parse "$1")
-	else
-		file=${2:-"$1.t"} &&
-		echo "${3-$1}" >"$indir$file" &&
-		git ${indir:+ -C "$indir"} add "$file" &&
-		git ${indir:+ -C "$indir"} commit $signoff -m "$1" &&
-		oid=$(git ${indir:+ -C "$indir"} rev-parse HEAD)
-	fi &&
-	eval $var=$oid
+  while test $# != 0; do
+    case "$1" in
+      --merge)
+        merge=t
+        ;;
+      --tag)
+        tag=t
+        ;;
+      --notick)
+        notick=t
+        ;;
+      --signoff)
+        signoff="$1"
+        ;;
+      -C)
+        shift
+        indir="$1"
+        ;;
+      -*)
+        echo >&2 "error: unknown option $1"
+        return 1
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
+  if test $# -lt 2; then
+    echo >&2 "error: test_commit_setvar must have at least 2 arguments"
+    return 1
+  fi
+  var=$1
+  shift
+  indir=${indir:+"$indir"/}
+  if test -z "$notick"; then
+    test_tick
+  fi \
+    && if test -n "$merge"; then
+      git ${indir:+ -C "$indir"} merge --no-edit --no-ff \
+        ${2:+-m "$2"} "$1" \
+        && oid=$(git ${indir:+ -C "$indir"} rev-parse HEAD)
+    elif test -n "$tag"; then
+      git ${indir:+ -C "$indir"} tag -m "$1" "$1" "${2:-HEAD}" \
+        && oid=$(git ${indir:+ -C "$indir"} rev-parse "$1")
+    else
+      file=${2:-"$1.t"} \
+        && echo "${3-$1}" >"$indir$file" \
+        && git ${indir:+ -C "$indir"} add "$file" \
+        && git ${indir:+ -C "$indir"} commit $signoff -m "$1" \
+        && oid=$(git ${indir:+ -C "$indir"} rev-parse HEAD)
+    fi \
+    && eval $var=$oid
 }
 
-get_abbrev_oid () {
-	oid=$1 &&
-	suffix=${oid#???????} &&
-	oid=${oid%$suffix} &&
-	if test -n "$oid"
-	then
-		echo "$oid"
-	else
-		echo "undefined-oid"
-	fi
+get_abbrev_oid() {
+  oid=$1 \
+    && suffix=${oid#???????} \
+    && oid=${oid%$suffix} \
+    && if test -n "$oid"; then
+      echo "$oid"
+    else
+      echo "undefined-oid"
+    fi
 }
 
 # Format the output of git commands to make a user-friendly and stable
 # text.  We can easily prepare the expect text without having to worry
 # about future changes of the commit ID.
-make_user_friendly_and_stable_output () {
-	sed \
-		-e "s/$(get_abbrev_oid $A)[0-9a-f]*/<COMMIT-A>/g" \
-		-e "s/$(get_abbrev_oid $B)[0-9a-f]*/<COMMIT-B>/g" \
-		-e "s/$(get_abbrev_oid $C)[0-9a-f]*/<COMMIT-C>/g" \
-		-e "s/$(get_abbrev_oid $D)[0-9a-f]*/<COMMIT-D>/g" \
-		-e "s/$(get_abbrev_oid $E)[0-9a-f]*/<COMMIT-E>/g" \
-		-e "s/$(get_abbrev_oid $F)[0-9a-f]*/<COMMIT-F>/g" \
-		-e "s/$(get_abbrev_oid $G)[0-9a-f]*/<COMMIT-G>/g" \
-		-e "s/$(get_abbrev_oid $H)[0-9a-f]*/<COMMIT-H>/g" \
-		-e "s/$(get_abbrev_oid $I)[0-9a-f]*/<COMMIT-I>/g" \
-		-e "s/$(get_abbrev_oid $J)[0-9a-f]*/<COMMIT-J>/g" \
-		-e "s/$(get_abbrev_oid $K)[0-9a-f]*/<COMMIT-K>/g" \
-		-e "s/$(get_abbrev_oid $L)[0-9a-f]*/<COMMIT-L>/g" \
-		-e "s/$(get_abbrev_oid $M)[0-9a-f]*/<COMMIT-M>/g" \
-		-e "s/$(get_abbrev_oid $N)[0-9a-f]*/<COMMIT-N>/g" \
-		-e "s/$(get_abbrev_oid $O)[0-9a-f]*/<COMMIT-O>/g" \
-		-e "s/$(get_abbrev_oid $P)[0-9a-f]*/<COMMIT-P>/g" \
-		-e "s/$(get_abbrev_oid $TAG1)[0-9a-f]*/<TAG-1>/g" \
-		-e "s/$(get_abbrev_oid $TAG2)[0-9a-f]*/<TAG-2>/g" \
-		-e "s/$(get_abbrev_oid $TAG3)[0-9a-f]*/<TAG-3>/g"
+make_user_friendly_and_stable_output() {
+  sed \
+    -e "s/$(get_abbrev_oid $A)[0-9a-f]*/<COMMIT-A>/g" \
+    -e "s/$(get_abbrev_oid $B)[0-9a-f]*/<COMMIT-B>/g" \
+    -e "s/$(get_abbrev_oid $C)[0-9a-f]*/<COMMIT-C>/g" \
+    -e "s/$(get_abbrev_oid $D)[0-9a-f]*/<COMMIT-D>/g" \
+    -e "s/$(get_abbrev_oid $E)[0-9a-f]*/<COMMIT-E>/g" \
+    -e "s/$(get_abbrev_oid $F)[0-9a-f]*/<COMMIT-F>/g" \
+    -e "s/$(get_abbrev_oid $G)[0-9a-f]*/<COMMIT-G>/g" \
+    -e "s/$(get_abbrev_oid $H)[0-9a-f]*/<COMMIT-H>/g" \
+    -e "s/$(get_abbrev_oid $I)[0-9a-f]*/<COMMIT-I>/g" \
+    -e "s/$(get_abbrev_oid $J)[0-9a-f]*/<COMMIT-J>/g" \
+    -e "s/$(get_abbrev_oid $K)[0-9a-f]*/<COMMIT-K>/g" \
+    -e "s/$(get_abbrev_oid $L)[0-9a-f]*/<COMMIT-L>/g" \
+    -e "s/$(get_abbrev_oid $M)[0-9a-f]*/<COMMIT-M>/g" \
+    -e "s/$(get_abbrev_oid $N)[0-9a-f]*/<COMMIT-N>/g" \
+    -e "s/$(get_abbrev_oid $O)[0-9a-f]*/<COMMIT-O>/g" \
+    -e "s/$(get_abbrev_oid $P)[0-9a-f]*/<COMMIT-P>/g" \
+    -e "s/$(get_abbrev_oid $TAG1)[0-9a-f]*/<TAG-1>/g" \
+    -e "s/$(get_abbrev_oid $TAG2)[0-9a-f]*/<TAG-2>/g" \
+    -e "s/$(get_abbrev_oid $TAG3)[0-9a-f]*/<TAG-3>/g"
 }
 
-format_and_save_expect () {
-	sed -e 's/Z$//' >expect
+format_and_save_expect() {
+  sed -e 's/Z$//' >expect
 }
 
 HASH_MESSAGE="The bundle uses this hash algorithm: $GIT_DEFAULT_HASH"
@@ -552,9 +545,8 @@ test_expect_success 'incremental bundle between two annotated tags' '
 	test_cmp expect actual
 '
 
-for filter in "blob:none" "tree:0" "tree:1" "blob:limit=100"
-do
-	test_expect_success "filtered bundle: $filter" '
+for filter in "blob:none" "tree:0" "tree:1" "blob:limit=100"; do
+  test_expect_success "filtered bundle: $filter" '
 		test_when_finished rm -rf .git/objects/pack cloned unbundled &&
 		git bundle create partial.bdl \
 			--all \
@@ -715,9 +707,8 @@ test_expect_success 'list-heads outside of a repository' '
 	test_cmp expect actual
 '
 
-for hash in sha1 sha256
-do
-	test_expect_success "list-heads with bundle using $hash" '
+for hash in sha1 sha256; do
+  test_expect_success "list-heads with bundle using $hash" '
 		test_when_finished "rm -rf hash" &&
 		git init --object-format=$hash hash &&
 		test_commit -C hash initial &&

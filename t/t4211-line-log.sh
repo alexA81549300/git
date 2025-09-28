@@ -33,22 +33,22 @@ test_expect_success 'basic command line parsing' '
 	test_must_fail git log --follow -L1,1:b.c -- b.c
 '
 
-canned_test_1 () {
-	test_expect_$1 "$2" "
+canned_test_1() {
+  test_expect_$1 "$2" "
 		git log $2 >actual &&
 		test_cmp \"\$TEST_DIRECTORY\"/t4211/$(test_oid algo)/expect.$3 actual
 	"
 }
 
-canned_test () {
-	canned_test_1 success "$@"
+canned_test() {
+  canned_test_1 success "$@"
 }
-canned_test_failure () {
-	canned_test_1 failure "$@"
+canned_test_failure() {
+  canned_test_1 failure "$@"
 }
 
-test_bad_opts () {
-	test_expect_success "invalid args: $1" "
+test_bad_opts() {
+  test_expect_success "invalid args: $1" "
 		test_must_fail git log $1 2>errors &&
 		test_grep '$2' errors
 	"

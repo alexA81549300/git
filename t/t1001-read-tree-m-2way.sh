@@ -24,31 +24,31 @@ In the test, these paths are used:
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-read-tree.sh
 
-read_tree_twoway () {
-	git read-tree -m "$1" "$2" && git ls-files --stage
+read_tree_twoway() {
+  git read-tree -m "$1" "$2" && git ls-files --stage
 }
 
-compare_change () {
-	sed -n >current \
-	    -e '/^--- /d; /^+++ /d; /^@@ /d;' \
-	    -e 's/^\([-+][0-7][0-7][0-7][0-7][0-7][0-7]\) '"$OID_REGEX"' /\1 X /p' \
-	    "$1"
-	test_cmp expected current
+compare_change() {
+  sed -n \
+    -e '/^--- /d; /^+++ /d; /^@@ /d;' \
+    -e 's/^\([-+][0-7][0-7][0-7][0-7][0-7][0-7]\) '"$OID_REGEX"' /\1 X /p' \
+    "$1" >current
+  test_cmp expected current
 }
 
-check_cache_at () {
-	git diff-files -- "$1" >out &&
-	clean_if_empty=$(cat out) &&
-	case "$clean_if_empty" in
-	'')  echo "$1: clean" ;;
-	?*)  echo "$1: dirty" ;;
-	esac &&
-	case "$2,$clean_if_empty" in
-	clean,)		:     ;;
-	clean,?*)	false ;;
-	dirty,)		false ;;
-	dirty,?*)	:     ;;
-	esac
+check_cache_at() {
+  git diff-files -- "$1" >out \
+    && clean_if_empty=$(cat out) \
+    && case "$clean_if_empty" in
+      '') echo "$1: clean" ;;
+      ?*) echo "$1: dirty" ;;
+    esac \
+    && case "$2,$clean_if_empty" in
+      clean,) : ;;
+      clean,?*) false ;;
+      dirty,) false ;;
+      dirty,?*) : ;;
+    esac
 }
 
 cat >bozbar-old <<\EOF

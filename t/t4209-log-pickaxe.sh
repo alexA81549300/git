@@ -4,40 +4,40 @@ test_description='log --grep/--author/--regexp-ignore-case/-S/-G'
 
 . ./test-lib.sh
 
-test_log () {
-	expect=$1
-	kind=$2
-	needle=$3
-	shift 3
-	rest=$@
+test_log() {
+  expect=$1
+  kind=$2
+  needle=$3
+  shift 3
+  rest=$@
 
-	case $kind in
-	--*)
-		opt=$kind=$needle
-		;;
-	*)
-		opt=$kind$needle
-		;;
-	esac
-	case $expect in
-	expect_nomatch)
-		match=nomatch
-		;;
-	*)
-		match=match
-		;;
-	esac
+  case $kind in
+    --*)
+      opt=$kind=$needle
+      ;;
+    *)
+      opt=$kind$needle
+      ;;
+  esac
+  case $expect in
+    expect_nomatch)
+      match=nomatch
+      ;;
+    *)
+      match=match
+      ;;
+  esac
 
-	test_expect_success "log $kind${rest:+ $rest} ($match)" "
+  test_expect_success "log $kind${rest:+ $rest} ($match)" "
 		git log $rest $opt --format=%H >actual &&
 		test_cmp $expect actual
 	"
 }
 
 # test -i and --regexp-ignore-case and expect both to behave the same way
-test_log_icase () {
-	test_log $@ --regexp-ignore-case
-	test_log $@ -i
+test_log_icase() {
+  test_log $@ --regexp-ignore-case
+  test_log $@ -i
 }
 
 test_expect_success setup '
@@ -93,20 +93,20 @@ test_expect_success 'usage: --no-pickaxe-regex' '
 	test_cmp expect actual
 '
 
-test_log	expect_initial	--grep initial
-test_log	expect_nomatch	--grep InItial
-test_log_icase	expect_initial	--grep InItial
-test_log_icase	expect_nomatch	--grep initail
+test_log expect_initial --grep initial
+test_log expect_nomatch --grep InItial
+test_log_icase expect_initial --grep InItial
+test_log_icase expect_nomatch --grep initail
 
-test_log	expect_second	--author Person
-test_log	expect_nomatch	--author person
-test_log_icase	expect_second	--author person
-test_log_icase	expect_nomatch	--author spreon
+test_log expect_second --author Person
+test_log expect_nomatch --author person
+test_log_icase expect_second --author person
+test_log_icase expect_nomatch --author spreon
 
-test_log	expect_nomatch	-G picked
-test_log	expect_second	-G Picked
-test_log_icase	expect_nomatch	-G pickle
-test_log_icase	expect_second	-G picked
+test_log expect_nomatch -G picked
+test_log expect_second -G Picked
+test_log_icase expect_nomatch -G pickle
+test_log_icase expect_second -G picked
 
 test_expect_success 'log -G --textconv (missing textconv tool)' '
 	echo "* diff=test" >.gitattributes &&
@@ -121,15 +121,15 @@ test_expect_success 'log -G --no-textconv (missing textconv tool)' '
 	rm .gitattributes
 '
 
-test_log	expect_nomatch	-S picked
-test_log	expect_second	-S Picked
-test_log_icase	expect_second	-S picked
-test_log_icase	expect_nomatch	-S pickle
+test_log expect_nomatch -S picked
+test_log expect_second -S Picked
+test_log_icase expect_second -S picked
+test_log_icase expect_nomatch -S pickle
 
-test_log	expect_nomatch	-S p.cked --pickaxe-regex
-test_log	expect_second	-S P.cked --pickaxe-regex
-test_log_icase	expect_second	-S p.cked --pickaxe-regex
-test_log_icase	expect_nomatch	-S p.ckle --pickaxe-regex
+test_log expect_nomatch -S p.cked --pickaxe-regex
+test_log expect_second -S P.cked --pickaxe-regex
+test_log_icase expect_second -S p.cked --pickaxe-regex
+test_log_icase expect_nomatch -S p.ckle --pickaxe-regex
 
 test_expect_success 'log -S --textconv (missing textconv tool)' '
 	echo "* diff=test" >.gitattributes &&

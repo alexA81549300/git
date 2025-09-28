@@ -28,5 +28,4 @@ test_expect_success 'Try a commit on rmdir' '
 	svn_cmd ls -R "$svnrepo" | grep ^deeply/nested/directory/number/1
 	'
 
-
 test_done

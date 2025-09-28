@@ -16,13 +16,11 @@ test_description='Test the Git Mediawiki remote helper: git push and git pull si
 . ./test-gitmw-lib.sh
 . $TEST_DIRECTORY/test-lib.sh
 
-
 test_check_precond
 
-
-test_git_reimport () {
-	git -c remote.origin.dumbPush=true push &&
-	git -c remote.origin.mediaImport=true pull --rebase
+test_git_reimport() {
+  git -c remote.origin.dumbPush=true push \
+    && git -c remote.origin.mediaImport=true pull --rebase
 }
 
 # Don't bother with permissions, be administrator by default

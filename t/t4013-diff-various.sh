@@ -133,8 +133,8 @@ test_expect_success setup '
 +*++ [initial] Initial
 EOF
 
-process_diffs () {
-	perl -e '
+process_diffs() {
+  perl -e '
 		my $oid_length = length($ARGV[0]);
 		my $x40 = "[0-9a-f]{40}";
 		my $xab = "[0-9a-f]{4,16}";
@@ -176,31 +176,31 @@ process_diffs () {
 }
 
 V=$(git version | sed -e 's/^git version //' -e 's/\./\\./g')
-while read magic cmd
-do
-	case "$magic" in
-	'' | '#'*)
-		continue ;;
-	:noellipses)
-		magic=noellipses
-		label="$magic-$cmd"
-		;;
-	:*)
-		BUG "unknown magic $magic"
-		;;
-	*)
-		cmd="$magic $cmd"
-		magic=
-		label="$cmd"
-		;;
-	esac
+while read magic cmd; do
+  case "$magic" in
+    '' | '#'*)
+      continue
+      ;;
+    :noellipses)
+      magic=noellipses
+      label="$magic-$cmd"
+      ;;
+    :*)
+      BUG "unknown magic $magic"
+      ;;
+    *)
+      cmd="$magic $cmd"
+      magic=
+      label="$cmd"
+      ;;
+  esac
 
-	test=$(echo "$label" | sed -e 's|[/ ][/ ]*|_|g')
-	pfx=$(printf "%04d" $test_count)
-	expect="$TEST_DIRECTORY/t4013/diff.$test"
-	actual="$pfx-diff.$test"
+  test=$(echo "$label" | sed -e 's|[/ ][/ ]*|_|g')
+  pfx=$(printf "%04d" $test_count)
+  expect="$TEST_DIRECTORY/t4013/diff.$test"
+  actual="$pfx-diff.$test"
 
-	test_expect_success "git $cmd # magic is ${magic:-(not used)}" '
+  test_expect_success "git $cmd # magic is ${magic:-(not used)}" '
 		{
 			echo "$ git $cmd"
 			case "$magic" in
@@ -623,14 +623,13 @@ test_expect_success 'diff -I<regex>: detect malformed regex' '
 
 # check_prefix <patch> <src> <dst>
 # check only lines with paths to avoid dependency on exact oid/contents
-check_prefix () {
-	grep -E '^(diff|---|\+\+\+) ' "$1" >actual.paths &&
-	cat >expect <<-EOF &&
+check_prefix() {
+  grep -E '^(diff|---|\+\+\+) ' "$1" >actual.paths \
+    && cat >expect <<-EOF && test_cmp expect actual.paths
 	diff --git $2 $3
 	--- $2
 	+++ $3
 	EOF
-	test_cmp expect actual.paths
 }
 
 test_expect_success 'diff-files does not respect diff.noPrefix' '

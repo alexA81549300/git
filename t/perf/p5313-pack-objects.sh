@@ -25,42 +25,41 @@ test_expect_success 'create rev input' '
 	EOF
 '
 
-for version in 1 2
-do
-	export version
+for version in 1 2; do
+  export version
 
-	test_perf "thin pack with version $version" '
+  test_perf "thin pack with version $version" '
 		git pack-objects --thin --stdout --revs --sparse \
 			--name-hash-version=$version <in-thin >out
 	'
 
-	test_size "thin pack size with version $version" '
+  test_size "thin pack size with version $version" '
 		test_file_size out
 	'
 
-	test_perf "big pack with version $version" '
+  test_perf "big pack with version $version" '
 		git pack-objects --stdout --revs --sparse \
 			--name-hash-version=$version <in-big >out
 	'
 
-	test_size "big pack size with version $version" '
+  test_size "big pack size with version $version" '
 		test_file_size out
 	'
 
-	test_perf "shallow fetch pack with version $version" '
+  test_perf "shallow fetch pack with version $version" '
 		git pack-objects --stdout --revs --sparse --shallow \
 			--name-hash-version=$version <in-shallow >out
 	'
 
-	test_size "shallow pack size with version $version" '
+  test_size "shallow pack size with version $version" '
 		test_file_size out
 	'
 
-	test_perf "repack with version $version" '
+  test_perf "repack with version $version" '
 		git repack -adf --name-hash-version=$version
 	'
 
-	test_size "repack size with version $version" '
+  test_size "repack size with version $version" '
 		gitdir=$(git rev-parse --git-dir) &&
 		pack=$(ls $gitdir/objects/pack/pack-*.pack) &&
 		test_file_size "$pack"

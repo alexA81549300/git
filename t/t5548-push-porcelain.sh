@@ -13,51 +13,49 @@ test_description='Test git push porcelain output'
 #
 # NOTE: Never calling this function from a subshell since variable
 # assignments will disappear when subshell exits.
-create_commits_in () {
-	repo="$1" && test -d "$repo" ||
-	error "Repository $repo does not exist."
-	shift &&
-	while test $# -gt 0
-	do
-		name=$1 &&
-		shift &&
-		test_commit -C "$repo" --no-tag "$name" &&
-		eval $name=$(git -C "$repo" rev-parse HEAD)
-	done
+create_commits_in() {
+  repo="$1" && test -d "$repo" \
+    || error "Repository $repo does not exist."
+  shift \
+    && while test $# -gt 0; do
+      name=$1 \
+        && shift \
+        && test_commit -C "$repo" --no-tag "$name" \
+        && eval $name=$(git -C "$repo" rev-parse HEAD)
+    done
 }
 
-get_abbrev_oid () {
-	oid=$1 &&
-	suffix=${oid#???????} &&
-	oid=${oid%$suffix} &&
-	if test -n "$oid"
-	then
-		echo "$oid"
-	else
-		echo "undefined-oid"
-	fi
+get_abbrev_oid() {
+  oid=$1 \
+    && suffix=${oid#???????} \
+    && oid=${oid%$suffix} \
+    && if test -n "$oid"; then
+      echo "$oid"
+    else
+      echo "undefined-oid"
+    fi
 }
 
 # Format the output of git-push, git-show-ref and other commands to make a
 # user-friendly and stable text.  We can easily prepare the expect text
 # without having to worry about future changes of the commit ID and spaces
 # of the output.
-make_user_friendly_and_stable_output () {
-	sed \
-		-e "s/$(get_abbrev_oid $A)[0-9a-f]*/<COMMIT-A>/g" \
-		-e "s/$(get_abbrev_oid $B)[0-9a-f]*/<COMMIT-B>/g" \
-		-e "s/$ZERO_OID/<ZERO-OID>/g" \
-		-e "s#To $URL_PREFIX/upstream.git#To <URL/of/upstream.git>#"
+make_user_friendly_and_stable_output() {
+  sed \
+    -e "s/$(get_abbrev_oid $A)[0-9a-f]*/<COMMIT-A>/g" \
+    -e "s/$(get_abbrev_oid $B)[0-9a-f]*/<COMMIT-B>/g" \
+    -e "s/$ZERO_OID/<ZERO-OID>/g" \
+    -e "s#To $URL_PREFIX/upstream.git#To <URL/of/upstream.git>#"
 }
 
-format_and_save_expect () {
-	sed -e 's/^> //' -e 's/Z$//' >expect
+format_and_save_expect() {
+  sed -e 's/^> //' -e 's/Z$//' >expect
 }
 
-setup_upstream_and_workbench () {
-	# Upstream  after setup : main(B)  foo(A)  bar(A)  baz(A)
-	# Workbench after setup : main(A)
-	test_expect_success "setup upstream repository and workbench" '
+setup_upstream_and_workbench() {
+  # Upstream  after setup : main(B)  foo(A)  bar(A)  baz(A)
+  # Workbench after setup : main(A)
+  test_expect_success "setup upstream repository and workbench" '
 		rm -rf upstream.git workbench &&
 		git init --bare upstream.git &&
 		git init workbench &&
@@ -81,21 +79,21 @@ setup_upstream_and_workbench () {
 }
 
 run_git_push_porcelain_output_test() {
-	case $1 in
-	http)
-		PROTOCOL="HTTP protocol"
-		URL_PREFIX="http://.*"
-		;;
-	file)
-		PROTOCOL="builtin protocol"
-		URL_PREFIX="\.\."
-		;;
-	esac
+  case $1 in
+    http)
+      PROTOCOL="HTTP protocol"
+      URL_PREFIX="http://.*"
+      ;;
+    file)
+      PROTOCOL="builtin protocol"
+      URL_PREFIX="\.\."
+      ;;
+  esac
 
-	# Refs of upstream : main(B)  foo(A)  bar(A)  baz(A)
-	# Refs of workbench: main(A)                  baz(A)  next(A)
-	# git-push         : main(A)  NULL    (B)     baz(A)  next(A)
-	test_expect_success "porcelain output of successful git-push ($PROTOCOL)" '
+  # Refs of upstream : main(B)  foo(A)  bar(A)  baz(A)
+  # Refs of workbench: main(A)                  baz(A)  next(A)
+  # git-push         : main(A)  NULL    (B)     baz(A)  next(A)
+  test_expect_success "porcelain output of successful git-push ($PROTOCOL)" '
 		(
 			cd workbench &&
 			git update-ref refs/heads/main $A &&
@@ -131,10 +129,10 @@ run_git_push_porcelain_output_test() {
 		test_cmp expect actual
 	'
 
-	# Refs of upstream : main(A)  bar(B)  baz(A)  next(A)
-	# Refs of workbench: main(B)  bar(A)  baz(A)  next(A)
-	# git-push         : main(B)  bar(A)  NULL    next(A)
-	test_expect_success "atomic push failed ($PROTOCOL)" '
+  # Refs of upstream : main(A)  bar(B)  baz(A)  next(A)
+  # Refs of workbench: main(B)  bar(A)  baz(A)  next(A)
+  # git-push         : main(B)  bar(A)  NULL    next(A)
+  test_expect_success "atomic push failed ($PROTOCOL)" '
 		(
 			cd workbench &&
 			git update-ref refs/heads/main $B &&
@@ -167,16 +165,16 @@ run_git_push_porcelain_output_test() {
 		test_cmp expect actual
 	'
 
-	test_expect_success "prepare pre-receive hook ($PROTOCOL)" '
+  test_expect_success "prepare pre-receive hook ($PROTOCOL)" '
 		test_hook --setup -C "$upstream" pre-receive <<-EOF
 		exit 1
 		EOF
 	'
 
-	# Refs of upstream : main(A)  bar(B)  baz(A)  next(A)
-	# Refs of workbench: main(B)  bar(A)  baz(A)  next(A)
-	# git-push         : main(B)  bar(A)  NULL    next(A)
-	test_expect_success "pre-receive hook declined ($PROTOCOL)" '
+  # Refs of upstream : main(A)  bar(B)  baz(A)  next(A)
+  # Refs of workbench: main(B)  bar(A)  baz(A)  next(A)
+  # git-push         : main(B)  bar(A)  NULL    next(A)
+  test_expect_success "pre-receive hook declined ($PROTOCOL)" '
 		(
 			cd workbench &&
 			git update-ref refs/heads/main $B &&
@@ -209,14 +207,14 @@ run_git_push_porcelain_output_test() {
 		test_cmp expect actual
 	'
 
-	test_expect_success "remove pre-receive hook ($PROTOCOL)" '
+  test_expect_success "remove pre-receive hook ($PROTOCOL)" '
 		rm "$upstream/hooks/pre-receive"
 	'
 
-	# Refs of upstream : main(A)  bar(B)  baz(A)  next(A)
-	# Refs of workbench: main(B)  bar(A)  baz(A)  next(A)
-	# git-push         : main(B)  bar(A)  NULL    next(A)
-	test_expect_success "non-fastforward push ($PROTOCOL)" '
+  # Refs of upstream : main(A)  bar(B)  baz(A)  next(A)
+  # Refs of workbench: main(B)  bar(A)  baz(A)  next(A)
+  # git-push         : main(B)  bar(A)  NULL    next(A)
+  test_expect_success "non-fastforward push ($PROTOCOL)" '
 		(
 			cd workbench &&
 			test_must_fail git push --porcelain origin \

@@ -19,11 +19,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 test_have_prereq SED_STRIPS_CR && SED_OPTIONS=-b
 
-compare_files () {
-	tr '\015\000' QN <"$1" >"$1".expect &&
-	tr '\015\000' QN <"$2" >"$2".actual &&
-	test_cmp "$1".expect "$2".actual &&
-	rm "$1".expect "$2".actual
+compare_files() {
+  tr '\015\000' QN <"$1" >"$1".expect \
+    && tr '\015\000' QN <"$2" >"$2".actual \
+    && test_cmp "$1".expect "$2".actual \
+    && rm "$1".expect "$2".actual
 }
 
 test_expect_success setup '

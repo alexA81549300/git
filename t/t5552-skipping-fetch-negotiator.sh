@@ -20,42 +20,40 @@ test_expect_success 'fetch.negotiationalgorithm config' '
 	test_cmp expect actual
 '
 
-have_sent () {
-	while test "$#" -ne 0
-	do
-		grep "fetch> have $(git -C client rev-parse $1)" trace
-		if test $? -ne 0
-		then
-			echo "No have $(git -C client rev-parse $1) ($1)"
-			return 1
-		fi
-		shift
-	done
+have_sent() {
+  while test "$#" -ne 0; do
+    grep "fetch> have $(git -C client rev-parse $1)" trace
+    if test $? -ne 0; then
+      echo "No have $(git -C client rev-parse $1) ($1)"
+      return 1
+    fi
+    shift
+  done
 }
 
-have_not_sent () {
-	while test "$#" -ne 0
-	do
-		grep "fetch> have $(git -C client rev-parse $1)" trace
-		if test $? -eq 0
-		then
-			return 1
-		fi
-		shift
-	done
+have_not_sent() {
+  while test "$#" -ne 0; do
+    grep "fetch> have $(git -C client rev-parse $1)" trace
+    if test $? -eq 0; then
+      return 1
+    fi
+    shift
+  done
 }
 
 # trace_fetch <client_dir> <server_dir> [args]
 #
 # Trace the packet output of fetch, but make sure we disable the variable
 # in the child upload-pack, so we don't combine the results in the same file.
-trace_fetch () {
-	client=$1; shift
-	server=$1; shift
-	GIT_TRACE_PACKET="$(pwd)/trace" \
-	git -C "$client" fetch \
-	  --upload-pack 'unset GIT_TRACE_PACKET; git-upload-pack' \
-	  "$server" "$@"
+trace_fetch() {
+  client=$1
+  shift
+  server=$1
+  shift
+  GIT_TRACE_PACKET="$(pwd)/trace" \
+    git -C "$client" fetch \
+    --upload-pack 'unset GIT_TRACE_PACKET; git-upload-pack' \
+    "$server" "$@"
 }
 
 test_expect_success 'commits with no parents are sent regardless of skip distance' '

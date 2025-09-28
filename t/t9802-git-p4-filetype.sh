@@ -187,11 +187,10 @@ test_expect_success 'keyword file create' '
 '
 
 build_smush() {
-	cat >k_smush.py <<-\EOF &&
+  cat >k_smush.py <<-\EOF && cat >ko_smush.py <<-\EOF
 	import re, sys
 	sys.stdout.write(re.sub(r'(?i)\$(Id|Header|Author|Date|DateTime|Change|File|Revision):[^$]*\$', r'$\1$', sys.stdin.read()))
 	EOF
-	cat >ko_smush.py <<-\EOF
 	import re, sys
 	sys.stdout.write(re.sub(r'(?i)\$(Id|Header):[^$]*\$', r'$\1$', sys.stdin.read()))
 	EOF
@@ -219,7 +218,7 @@ test_expect_success 'keyword file test' '
 '
 
 build_gendouble() {
-	cat >gendouble.py <<-\EOF
+  cat >gendouble.py <<-\EOF
 	import sys
 	import struct
 

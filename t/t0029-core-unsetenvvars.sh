@@ -4,10 +4,9 @@ test_description='test the Windows-only core.unsetenvvars setting'
 
 . ./test-lib.sh
 
-if ! test_have_prereq MINGW
-then
-	skip_all='skipping Windows-specific tests'
-	test_done
+if ! test_have_prereq MINGW; then
+  skip_all='skipping Windows-specific tests'
+  test_done
 fi
 
 test_expect_success 'setup' '

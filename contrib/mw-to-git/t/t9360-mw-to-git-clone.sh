@@ -9,15 +9,12 @@
 #
 # License: GPL v2 or later
 
-
 test_description='Test the Git Mediawiki remote helper: git clone'
 
 . ./test-gitmw-lib.sh
 . $TEST_DIRECTORY/test-lib.sh
 
-
 test_check_precond
-
 
 test_expect_success 'Git clone creates the expected git log with one file' '
 	wiki_reset &&
@@ -30,7 +27,6 @@ test_expect_success 'Git clone creates the expected git log with one file' '
 	echo "this must be the same" >msg.tmp &&
 	test_cmp msg.tmp mw_dir_1/log.tmp
 '
-
 
 test_expect_success 'Git clone creates the expected git log with multiple files' '
 	wiki_reset &&
@@ -53,7 +49,6 @@ test_expect_success 'Git clone creates the expected git log with multiple files'
 	test_cmp msgDaddy.tmp mw_dir_2/logDaddy.tmp &&
 	test_cmp msgDj.tmp mw_dir_2/logDj.tmp
 '
-
 
 test_expect_success 'Git clone creates only Main_Page.mw with an empty wiki' '
 	wiki_reset &&
@@ -101,7 +96,6 @@ test_expect_success 'Git clone works with an edited page ' '
 	diff FooExpect.log Foo.log
 '
 
-
 test_expect_success 'Git clone works with several pages and some deleted ' '
 	wiki_reset &&
 	wiki_editpage foo "this page will not be deleted" false &&
@@ -118,7 +112,6 @@ test_expect_success 'Git clone works with several pages and some deleted ' '
 	wiki_getallpage mw_dir_7/page_ref_7 &&
 	test_diff_directories mw_dir_7 mw_dir_7/page_ref_7
 '
-
 
 test_expect_success 'Git clone works with one specific page cloned ' '
 	wiki_reset &&

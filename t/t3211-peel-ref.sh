@@ -17,7 +17,7 @@ test_expect_success 'create annotated tag outside of refs/tags' '
 
 # This matches show-ref's output
 print_ref() {
-	echo "$(git rev-parse "$1") $1"
+  echo "$(git rev-parse "$1") $1"
 }
 
 test_expect_success 'set up expected show-ref output' '

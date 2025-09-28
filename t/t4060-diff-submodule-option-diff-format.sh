@@ -13,49 +13,47 @@ This test tries to verify the sanity of --submodule=diff option of git diff.
 . ./test-lib.sh
 
 # Test non-UTF-8 encoding in case iconv is available.
-if test_have_prereq ICONV
-then
-	test_encoding="ISO8859-1"
-	# String "added" in German (translated with Google Translate), encoded in UTF-8,
-	# used in sample commit log messages in add_file() function below.
-	added=$(printf "hinzugef\303\274gt")
+if test_have_prereq ICONV; then
+  test_encoding="ISO8859-1"
+  # String "added" in German (translated with Google Translate), encoded in UTF-8,
+  # used in sample commit log messages in add_file() function below.
+  added=$(printf "hinzugef\303\274gt")
 else
-	test_encoding="UTF-8"
-	added="added"
+  test_encoding="UTF-8"
+  added="added"
 fi
 
-add_file () {
-	(
-		cd "$1" &&
-		shift &&
-		for name
-		do
-			echo "$name" >"$name" &&
-			git add "$name" &&
-			test_tick &&
-			# "git commit -m" would break MinGW, as Windows refuse to pass
-			# $test_encoding encoded parameter to git.
-			echo "Add $name ($added $name)" | iconv -f utf-8 -t $test_encoding |
-			git -c "i18n.commitEncoding=$test_encoding" commit -F -
-		done >/dev/null &&
-		git rev-parse --short --verify HEAD
-	)
+add_file() {
+  (
+    cd "$1" \
+      && shift \
+      && for name; do
+        echo "$name" >"$name" \
+          && git add "$name" \
+          && test_tick \
+          &&
+          # "git commit -m" would break MinGW, as Windows refuse to pass
+          # $test_encoding encoded parameter to git.
+          echo "Add $name ($added $name)" | iconv -f utf-8 -t $test_encoding \
+          | git -c "i18n.commitEncoding=$test_encoding" commit -F -
+      done >/dev/null \
+      && git rev-parse --short --verify HEAD
+  )
 }
 
-commit_file () {
-	test_tick &&
-	git commit "$@" -m "Commit $*" >/dev/null
+commit_file() {
+  test_tick \
+    && git commit "$@" -m "Commit $*" >/dev/null
 }
 
-diff_cmp () {
-       for i in "$1" "$2"
-       do
-		sed -e 's/^index 0000000\.\.[0-9a-f]*/index 0000000..1234567/' \
-		-e 's/^index [0-9a-f]*\.\.[0-9a-f]*/index 1234567..89abcde/' \
-		"$i" >"$i.compare" || return 1
-       done &&
-       test_cmp "$1.compare" "$2.compare" &&
-       rm -f "$1.compare" "$2.compare"
+diff_cmp() {
+  for i in "$1" "$2"; do
+    sed -e 's/^index 0000000\.\.[0-9a-f]*/index 0000000..1234567/' \
+      -e 's/^index [0-9a-f]*\.\.[0-9a-f]*/index 1234567..89abcde/' \
+      "$i" >"$i.compare" || return 1
+  done \
+    && test_cmp "$1.compare" "$2.compare" \
+    && rm -f "$1.compare" "$2.compare"
 }
 
 test_expect_success 'setup repository' '
@@ -143,8 +141,8 @@ test_expect_success 'diff.submodule does not affect plumbing' '
 	diff_cmp expected actual
 '
 
-commit_file sm1 &&
-head2=$(add_file sm1 foo3)
+commit_file sm1 \
+  && head2=$(add_file sm1 foo3)
 
 test_expect_success 'modified submodule(forward)' '
 	git diff-index -p --submodule=diff HEAD >actual &&
@@ -185,7 +183,10 @@ test_expect_success 'modified submodule(forward) --submodule' '
 	diff_cmp expected actual
 '
 
-fullhead2=$(cd sm1; git rev-parse --verify HEAD)
+fullhead2=$(
+  cd sm1
+  git rev-parse --verify HEAD
+)
 test_expect_success 'modified submodule(forward) --submodule=short' '
 	git diff --submodule=short >actual &&
 	cat >expected <<-EOF &&
@@ -200,12 +201,12 @@ test_expect_success 'modified submodule(forward) --submodule=short' '
 	diff_cmp expected actual
 '
 
-commit_file sm1 &&
-head3=$(
-	cd sm1 &&
-	git reset --hard HEAD~2 >/dev/null &&
-	git rev-parse --short --verify HEAD
-)
+commit_file sm1 \
+  && head3=$(
+    cd sm1 \
+      && git reset --hard HEAD~2 >/dev/null \
+      && git rev-parse --short --verify HEAD
+  )
 
 test_expect_success 'modified submodule(backward)' '
 	git diff-index -p --submodule=diff HEAD >actual &&
@@ -266,13 +267,13 @@ test_expect_success 'modified submodule(backward and forward)' '
 	diff_cmp expected actual
 '
 
-commit_file sm1 &&
-mv sm1 sm1-bak &&
-echo sm1 >sm1 &&
-head5=$(git hash-object sm1 | cut -c1-7) &&
-git add sm1 &&
-rm -f sm1 &&
-mv sm1-bak sm1
+commit_file sm1 \
+  && mv sm1 sm1-bak \
+  && echo sm1 >sm1 \
+  && head5=$(git hash-object sm1 | cut -c1-7) \
+  && git add sm1 \
+  && rm -f sm1 \
+  && mv sm1-bak sm1
 
 test_expect_success 'typechanged submodule(submodule->blob), --cached' '
 	git diff --submodule=diff --cached >actual &&
@@ -346,8 +347,8 @@ test_expect_success 'typechanged submodule(submodule->blob)' '
 	diff_cmp expected actual
 '
 
-rm -rf sm1 &&
-git checkout-index sm1
+rm -rf sm1 \
+  && git checkout-index sm1
 test_expect_success 'typechanged submodule(submodule->blob)' '
 	git diff-index -p --submodule=diff HEAD >actual &&
 	cat >expected <<-EOF &&
@@ -363,9 +364,9 @@ test_expect_success 'typechanged submodule(submodule->blob)' '
 	diff_cmp expected actual
 '
 
-rm -f sm1 &&
-test_create_repo sm1 &&
-head6=$(add_file sm1 foo6 foo7)
+rm -f sm1 \
+  && test_create_repo sm1 \
+  && head6=$(add_file sm1 foo6 foo7)
 test_expect_success 'nonexistent commit' '
 	git diff-index -p --submodule=diff HEAD >actual &&
 	cat >expected <<-EOF &&
@@ -404,8 +405,8 @@ test_expect_success 'typechanged submodule(blob->submodule)' '
 	diff_cmp expected actual
 '
 
-commit_file sm1 &&
-test_expect_success 'submodule is up to date' '
+commit_file sm1 \
+  && test_expect_success 'submodule is up to date' '
 	head7=$(git -C sm1 rev-parse --short --verify HEAD) &&
 	git diff-index -p --submodule=diff HEAD >actual &&
 	test_must_be_empty actual
@@ -497,9 +498,15 @@ test_expect_success 'submodule contains modified content' '
 	diff_cmp expected actual
 '
 
-(cd sm1; git commit -mchange foo6 >/dev/null) &&
-head8=$(cd sm1; git rev-parse --short --verify HEAD) &&
-test_expect_success 'submodule is modified' '
+(
+  cd sm1
+  git commit -mchange foo6 >/dev/null
+) \
+  && head8=$(
+    cd sm1
+    git rev-parse --short --verify HEAD
+  ) \
+  && test_expect_success 'submodule is modified' '
 	git diff-index -p --submodule=diff HEAD >actual &&
 	cat >expected <<-EOF &&
 	Submodule sm1 $head7..$head8:
@@ -809,7 +816,7 @@ test_expect_success 'deleted submodule with .git file' '
 	diff_cmp expected actual
 '
 
-echo submodule-to-blob>sm2
+echo submodule-to-blob >sm2
 
 test_expect_success 'typechanged(submodule->blob) submodule with .git file' '
 	git diff-index -p --submodule=diff HEAD >actual &&
@@ -915,9 +922,15 @@ test_expect_success 'diff --submodule=diff recurses into nested submodules' '
 	diff_cmp expected actual
 '
 
-(cd sm2; commit_file nested)
+(
+  cd sm2
+  commit_file nested
+)
 commit_file sm2
-head12=$(cd sm2; git rev-parse --short --verify HEAD)
+head12=$(
+  cd sm2
+  git rev-parse --short --verify HEAD
+)
 
 mv sm2 sm2-bak
 

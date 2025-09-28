@@ -5,10 +5,10 @@ test_description='exercise delta islands'
 . ./test-lib.sh
 
 # returns true iff $1 is a delta based on $2
-is_delta_base () {
-	delta_base=$(echo "$1" | git cat-file --batch-check='%(deltabase)') &&
-	echo >&2 "$1 has base $delta_base" &&
-	test "$delta_base" = "$2"
+is_delta_base() {
+  delta_base=$(echo "$1" | git cat-file --batch-check='%(deltabase)') \
+    && echo >&2 "$1 has base $delta_base" \
+    && test "$delta_base" = "$2"
 }
 
 # generate a commit on branch $1 with a single file, "file", whose
@@ -16,13 +16,13 @@ is_delta_base () {
 # of content $3 appended. This should allow us to see whether
 # blobs of different refs delta against each other.
 commit() {
-	blob=$({ test-tool genrandom "$2" 10240 && echo "$3"; } |
-	       git hash-object -w --stdin) &&
-	tree=$(printf '100644 blob %s\tfile\n' "$blob" | git mktree) &&
-	commit=$(echo "$2-$3" | git commit-tree "$tree" ${4:+-p "$4"}) &&
-	git update-ref "refs/heads/$1" "$commit" &&
-	eval "$1"'=$(git rev-parse $1:file)' &&
-	eval "echo >&2 $1=\$$1"
+  blob=$({ test-tool genrandom "$2" 10240 && echo "$3"; } \
+    | git hash-object -w --stdin) \
+    && tree=$(printf '100644 blob %s\tfile\n' "$blob" | git mktree) \
+    && commit=$(echo "$2-$3" | git commit-tree "$tree" ${4:+-p "$4"}) \
+    && git update-ref "refs/heads/$1" "$commit" \
+    && eval "$1"'=$(git rev-parse $1:file)' \
+    && eval "echo >&2 $1=\$$1"
 }
 
 test_expect_success 'setup commits' '

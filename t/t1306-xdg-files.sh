@@ -18,7 +18,6 @@ test_expect_success 'read config: xdg file exists and ~/.gitconfig doesn'\''t' '
 	test_cmp expected actual
 '
 
-
 test_expect_success 'read config: xdg file exists and ~/.gitconfig exists' '
 	>.gitconfig &&
 	echo "[alias]" >.gitconfig &&
@@ -27,7 +26,6 @@ test_expect_success 'read config: xdg file exists and ~/.gitconfig exists' '
 	git myalias >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'read with --get: xdg file exists and ~/.gitconfig doesn'\''t' '
 	rm .gitconfig &&
@@ -55,14 +53,12 @@ test_expect_success 'read with --get: xdg file exists and ~/.gitconfig exists' '
 	test_cmp expected actual
 '
 
-
 test_expect_success 'read with --list: xdg file exists and ~/.gitconfig doesn'\''t' '
 	rm .gitconfig &&
 	echo user.name=read_config >expected &&
 	git config --global --list >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'read with --list: xdg file exists and ~/.gitconfig exists' '
 	>.gitconfig &&
@@ -73,13 +69,11 @@ test_expect_success 'read with --list: xdg file exists and ~/.gitconfig exists' 
 	test_cmp expected actual
 '
 
-
 test_expect_success 'Setup' '
 	git init git &&
 	cd git &&
 	echo foo >to_be_excluded
 '
-
 
 test_expect_success 'Exclusion of a file in the XDG ignore file' '
 	mkdir -p "$HOME"/.config/git/ &&
@@ -103,7 +97,6 @@ test_expect_success 'Exclusion in both XDG and local ignore files' '
 	echo to_be_excluded >.gitignore &&
 	test_must_fail git add to_be_excluded
 '
-
 
 test_expect_success 'Exclusion in a non-XDG global ignore file' '
 	rm .gitignore &&
@@ -151,7 +144,6 @@ test_expect_success 'Checking attributes in both XDG and local attributes files'
 	test_cmp expected actual
 '
 
-
 test_expect_success 'Checking attributes in a non-XDG global attributes file' '
 	rm -f .gitattributes &&
 	echo "f attr_f=test" >"$HOME"/my_gitattributes &&
@@ -160,7 +152,6 @@ test_expect_success 'Checking attributes in a non-XDG global attributes file' '
 	git check-attr -a f >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'write: xdg file exists and ~/.gitconfig doesn'\''t' '
 	mkdir -p "$HOME"/.config/git &&
@@ -172,7 +163,6 @@ test_expect_success 'write: xdg file exists and ~/.gitconfig doesn'\''t' '
 	test_cmp expected "$HOME"/.config/git/config
 '
 
-
 test_expect_success 'write: xdg file exists and ~/.gitconfig exists' '
 	>"$HOME"/.gitconfig &&
 	git config --global user.name "write_gitconfig" &&
@@ -180,7 +170,6 @@ test_expect_success 'write: xdg file exists and ~/.gitconfig exists' '
 	echo "	name = write_gitconfig" >>expected &&
 	test_cmp expected "$HOME"/.gitconfig
 '
-
 
 test_expect_success 'write: ~/.config/git/ exists and config file doesn'\''t' '
 	rm -f "$HOME"/.gitconfig &&
@@ -190,6 +179,5 @@ test_expect_success 'write: ~/.config/git/ exists and config file doesn'\''t' '
 	echo "	name = write_gitconfig" >>expected &&
 	test_cmp expected "$HOME"/.gitconfig
 '
-
 
 test_done

@@ -11,29 +11,28 @@ test_description='Tests git rev-list --bisect functionality'
 #
 # e.g. test_bisection 1 --bisect l1 ^l0
 #
-test_bisection_diff()
-{
-	_max_diff=$1
-	_bisect_option=$2
-	shift 2
-	_bisection=$(git rev-list $_bisect_option "$@")
-	_list_size=$(git rev-list "$@" | wc -l)
-        _head=$1
-	shift 1
-	_bisection_size=$(git rev-list $_bisection "$@" | wc -l)
-	[ -n "$_list_size" -a -n "$_bisection_size" ] ||
-	error "test_bisection_diff failed"
+test_bisection_diff() {
+  _max_diff=$1
+  _bisect_option=$2
+  shift 2
+  _bisection=$(git rev-list $_bisect_option "$@")
+  _list_size=$(git rev-list "$@" | wc -l)
+  _head=$1
+  shift 1
+  _bisection_size=$(git rev-list $_bisection "$@" | wc -l)
+  [ -n "$_list_size" -a -n "$_bisection_size" ] \
+    || error "test_bisection_diff failed"
 
-	# Test if bisection size is close to half of list size within
-	# tolerance.
-	#
-	_bisect_err=$(expr $_list_size - $_bisection_size \* 2)
-	test "$_bisect_err" -lt 0 && _bisect_err=$(expr 0 - $_bisect_err)
-	_bisect_err=$(expr $_bisect_err / 2) ; # floor
+  # Test if bisection size is close to half of list size within
+  # tolerance.
+  #
+  _bisect_err=$(expr $_list_size - $_bisection_size \* 2)
+  test "$_bisect_err" -lt 0 && _bisect_err=$(expr 0 - $_bisect_err)
+  _bisect_err=$(expr $_bisect_err / 2) # floor
 
-	test_expect_success \
-	"bisection diff $_bisect_option $_head $* <= $_max_diff" \
-	'test $_bisect_err -le $_max_diff'
+  test_expect_success \
+    "bisection diff $_bisect_option $_head $* <= $_max_diff" \
+    'test $_bisect_err -le $_max_diff'
 }
 
 date >path0
@@ -59,7 +58,6 @@ on_committer_date "00:16" save_tag l3 unique_commit l3 tree -p a4
 on_committer_date "00:17" save_tag l4 unique_commit l4 tree -p l3
 on_committer_date "00:18" save_tag l5 unique_commit l5 tree -p l4
 git update-ref HEAD $(tag l5)
-
 
 #     E
 #    / \
@@ -89,7 +87,6 @@ git update-ref HEAD $(tag l5)
 #    \ /
 #     F
 
-
 on_committer_date "00:00" hide_error save_tag F unique_commit F tree
 on_committer_date "00:01" save_tag e8 unique_commit e8 tree -p F
 on_committer_date "00:02" save_tag e7 unique_commit e7 tree -p e8
@@ -114,120 +111,119 @@ on_committer_date "00:04" save_tag u4 unique_commit u4 tree -p u0
 on_committer_date "00:05" save_tag u5 unique_commit u5 tree -p u0
 on_committer_date "00:06" save_tag V unique_commit V tree -p u1 -p u2 -p u3 -p u4 -p u5
 
-test_sequence()
-{
-	_bisect_option=$1
+test_sequence() {
+  _bisect_option=$1
 
-	test_bisection_diff 0 $_bisect_option l0 ^root
-	test_bisection_diff 0 $_bisect_option l1 ^root
-	test_bisection_diff 0 $_bisect_option l2 ^root
-	test_bisection_diff 0 $_bisect_option a0 ^root
-	test_bisection_diff 0 $_bisect_option a1 ^root
-	test_bisection_diff 0 $_bisect_option a2 ^root
-	test_bisection_diff 0 $_bisect_option a3 ^root
-	test_bisection_diff 0 $_bisect_option b1 ^root
-	test_bisection_diff 0 $_bisect_option b2 ^root
-	test_bisection_diff 0 $_bisect_option b3 ^root
-	test_bisection_diff 0 $_bisect_option c1 ^root
-	test_bisection_diff 0 $_bisect_option c2 ^root
-	test_bisection_diff 0 $_bisect_option c3 ^root
-	test_bisection_diff 0 $_bisect_option E ^F
-	test_bisection_diff 0 $_bisect_option e1 ^F
-	test_bisection_diff 0 $_bisect_option e2 ^F
-	test_bisection_diff 0 $_bisect_option e3 ^F
-	test_bisection_diff 0 $_bisect_option e4 ^F
-	test_bisection_diff 0 $_bisect_option e5 ^F
-	test_bisection_diff 0 $_bisect_option e6 ^F
-	test_bisection_diff 0 $_bisect_option e7 ^F
-	test_bisection_diff 0 $_bisect_option f1 ^F
-	test_bisection_diff 0 $_bisect_option f2 ^F
-	test_bisection_diff 0 $_bisect_option f3 ^F
-	test_bisection_diff 0 $_bisect_option f4 ^F
-	test_bisection_diff 0 $_bisect_option E ^F
+  test_bisection_diff 0 $_bisect_option l0 ^root
+  test_bisection_diff 0 $_bisect_option l1 ^root
+  test_bisection_diff 0 $_bisect_option l2 ^root
+  test_bisection_diff 0 $_bisect_option a0 ^root
+  test_bisection_diff 0 $_bisect_option a1 ^root
+  test_bisection_diff 0 $_bisect_option a2 ^root
+  test_bisection_diff 0 $_bisect_option a3 ^root
+  test_bisection_diff 0 $_bisect_option b1 ^root
+  test_bisection_diff 0 $_bisect_option b2 ^root
+  test_bisection_diff 0 $_bisect_option b3 ^root
+  test_bisection_diff 0 $_bisect_option c1 ^root
+  test_bisection_diff 0 $_bisect_option c2 ^root
+  test_bisection_diff 0 $_bisect_option c3 ^root
+  test_bisection_diff 0 $_bisect_option E ^F
+  test_bisection_diff 0 $_bisect_option e1 ^F
+  test_bisection_diff 0 $_bisect_option e2 ^F
+  test_bisection_diff 0 $_bisect_option e3 ^F
+  test_bisection_diff 0 $_bisect_option e4 ^F
+  test_bisection_diff 0 $_bisect_option e5 ^F
+  test_bisection_diff 0 $_bisect_option e6 ^F
+  test_bisection_diff 0 $_bisect_option e7 ^F
+  test_bisection_diff 0 $_bisect_option f1 ^F
+  test_bisection_diff 0 $_bisect_option f2 ^F
+  test_bisection_diff 0 $_bisect_option f3 ^F
+  test_bisection_diff 0 $_bisect_option f4 ^F
+  test_bisection_diff 0 $_bisect_option E ^F
 
-	test_bisection_diff 1 $_bisect_option V ^U
-	test_bisection_diff 0 $_bisect_option V ^U ^u1 ^u2 ^u3
-	test_bisection_diff 0 $_bisect_option u1 ^U
-	test_bisection_diff 0 $_bisect_option u2 ^U
-	test_bisection_diff 0 $_bisect_option u3 ^U
-	test_bisection_diff 0 $_bisect_option u4 ^U
-	test_bisection_diff 0 $_bisect_option u5 ^U
+  test_bisection_diff 1 $_bisect_option V ^U
+  test_bisection_diff 0 $_bisect_option V ^U ^u1 ^u2 ^u3
+  test_bisection_diff 0 $_bisect_option u1 ^U
+  test_bisection_diff 0 $_bisect_option u2 ^U
+  test_bisection_diff 0 $_bisect_option u3 ^U
+  test_bisection_diff 0 $_bisect_option u4 ^U
+  test_bisection_diff 0 $_bisect_option u5 ^U
 
-#
-# the following illustrates Linus' binary bug blatt idea.
-#
-# assume the bug is actually at l3, but you don't know that - all you know is that l3 is broken
-# and it wasn't broken before
-#
-# keep bisecting the list, advancing the "bad" head and accumulating "good" heads until
-# the bisection point is the head - this is the bad point.
-#
+  #
+  # the following illustrates Linus' binary bug blatt idea.
+  #
+  # assume the bug is actually at l3, but you don't know that - all you know is that l3 is broken
+  # and it wasn't broken before
+  #
+  # keep bisecting the list, advancing the "bad" head and accumulating "good" heads until
+  # the bisection point is the head - this is the bad point.
+  #
 
-test_output_expect_success "$_bisect_option l5 ^root" 'git rev-list $_bisect_option l5 ^root' <<EOF
+  test_output_expect_success "$_bisect_option l5 ^root" 'git rev-list $_bisect_option l5 ^root' <<EOF
 c3
 EOF
 
-test_output_expect_success "$_bisect_option l5 ^root ^c3" 'git rev-list $_bisect_option l5 ^root ^c3' <<EOF
+  test_output_expect_success "$_bisect_option l5 ^root ^c3" 'git rev-list $_bisect_option l5 ^root ^c3' <<EOF
 b4
 EOF
 
-test_output_expect_success "$_bisect_option l5 ^root ^c3 ^b4" 'git rev-list $_bisect_option l5 ^c3 ^b4' <<EOF
+  test_output_expect_success "$_bisect_option l5 ^root ^c3 ^b4" 'git rev-list $_bisect_option l5 ^c3 ^b4' <<EOF
 l3
 EOF
 
-test_output_expect_success "$_bisect_option l3 ^root ^c3 ^b4" 'git rev-list $_bisect_option l3 ^root ^c3 ^b4' <<EOF
+  test_output_expect_success "$_bisect_option l3 ^root ^c3 ^b4" 'git rev-list $_bisect_option l3 ^root ^c3 ^b4' <<EOF
 a4
 EOF
 
-test_output_expect_success "$_bisect_option l5 ^b3 ^a3 ^b4 ^a4" 'git rev-list $_bisect_option l3 ^b3 ^a3 ^a4' <<EOF
+  test_output_expect_success "$_bisect_option l5 ^b3 ^a3 ^b4 ^a4" 'git rev-list $_bisect_option l3 ^b3 ^a3 ^a4' <<EOF
 l3
 EOF
 
-#
-# if l3 is bad, then l4 is bad too - so advance the bad pointer by making b4 the known bad head
-#
+  #
+  # if l3 is bad, then l4 is bad too - so advance the bad pointer by making b4 the known bad head
+  #
 
-test_output_expect_success "$_bisect_option l4 ^a2 ^a3 ^b ^a4" 'git rev-list $_bisect_option l4 ^a2 ^a3 ^a4' <<EOF
+  test_output_expect_success "$_bisect_option l4 ^a2 ^a3 ^b ^a4" 'git rev-list $_bisect_option l4 ^a2 ^a3 ^a4' <<EOF
 l3
 EOF
 
-test_output_expect_success "$_bisect_option l3 ^a2 ^a3 ^b ^a4" 'git rev-list $_bisect_option l3 ^a2 ^a3 ^a4' <<EOF
+  test_output_expect_success "$_bisect_option l3 ^a2 ^a3 ^b ^a4" 'git rev-list $_bisect_option l3 ^a2 ^a3 ^a4' <<EOF
 l3
 EOF
 
-# found!
+  # found!
 
-#
-# as another example, let's consider a4 to be the bad head, in which case
-#
+  #
+  # as another example, let's consider a4 to be the bad head, in which case
+  #
 
-test_output_expect_success "$_bisect_option a4 ^a2 ^a3 ^b4" 'git rev-list $_bisect_option a4 ^a2 ^a3 ^b4' <<EOF
+  test_output_expect_success "$_bisect_option a4 ^a2 ^a3 ^b4" 'git rev-list $_bisect_option a4 ^a2 ^a3 ^b4' <<EOF
 c2
 EOF
 
-test_output_expect_success "$_bisect_option a4 ^a2 ^a3 ^b4 ^c2" 'git rev-list $_bisect_option a4 ^a2 ^a3 ^b4 ^c2' <<EOF
+  test_output_expect_success "$_bisect_option a4 ^a2 ^a3 ^b4 ^c2" 'git rev-list $_bisect_option a4 ^a2 ^a3 ^b4 ^c2' <<EOF
 c3
 EOF
 
-test_output_expect_success "$_bisect_option a4 ^a2 ^a3 ^b4 ^c2 ^c3" 'git rev-list $_bisect_option a4 ^a2 ^a3 ^b4 ^c2 ^c3' <<EOF
+  test_output_expect_success "$_bisect_option a4 ^a2 ^a3 ^b4 ^c2 ^c3" 'git rev-list $_bisect_option a4 ^a2 ^a3 ^b4 ^c2 ^c3' <<EOF
 a4
 EOF
 
-# found!
+  # found!
 
-#
-# or consider c3 to be the bad head
-#
+  #
+  # or consider c3 to be the bad head
+  #
 
-test_output_expect_success "$_bisect_option a4 ^a2 ^a3 ^b4" 'git rev-list $_bisect_option a4 ^a2 ^a3 ^b4' <<EOF
+  test_output_expect_success "$_bisect_option a4 ^a2 ^a3 ^b4" 'git rev-list $_bisect_option a4 ^a2 ^a3 ^b4' <<EOF
 c2
 EOF
 
-test_output_expect_success "$_bisect_option c3 ^a2 ^a3 ^b4 ^c2" 'git rev-list $_bisect_option c3 ^a2 ^a3 ^b4 ^c2' <<EOF
+  test_output_expect_success "$_bisect_option c3 ^a2 ^a3 ^b4 ^c2" 'git rev-list $_bisect_option c3 ^a2 ^a3 ^b4 ^c2' <<EOF
 c3
 EOF
 
-# found!
+  # found!
 
 }
 

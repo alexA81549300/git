@@ -7,28 +7,28 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 mark() {
-	echo "$1" >mark
+  echo "$1" >mark
 }
 
 update_repo() {
-	(cd $1 &&
-	echo content >>file &&
-	git add file &&
-	git commit -F ../mark)
+  (cd $1 \
+    && echo content >>file \
+    && git add file \
+    && git commit -F ../mark)
 }
 
 update_repos() {
-	update_repo one $1 &&
-	update_repo two $1
+  update_repo one $1 \
+    && update_repo two $1
 }
 
 repo_fetched() {
-	if test "$(git log -1 --pretty=format:%s $1 --)" = "$(cat mark)"; then
-		echo >&2 "repo was fetched: $1"
-		return 0
-	fi
-	echo >&2 "repo was not fetched: $1"
-	return 1
+  if test "$(git log -1 --pretty=format:%s $1 --)" = "$(cat mark)"; then
+    echo >&2 "repo was fetched: $1"
+    return 0
+  fi
+  echo >&2 "repo was not fetched: $1"
+  return 1
 }
 
 test_expect_success 'setup' '

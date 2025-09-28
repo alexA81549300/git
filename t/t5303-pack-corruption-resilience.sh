@@ -20,48 +20,47 @@ test_description='resilience to pack corruptions with redundant objects'
 # 3) object header is always 2 bytes.
 
 create_test_files() {
-    test-tool genrandom "foo" 2000 > file_1 &&
-    test-tool genrandom "foo" 1800 > file_2 &&
-    test-tool genrandom "foo" 1800 > file_3 &&
-    echo " base " >> file_1 &&
-    echo " delta1 " >> file_2 &&
-    echo " delta delta2 " >> file_3 &&
-    test-tool genrandom "bar" 150 >> file_2 &&
-    test-tool genrandom "baz" 100 >> file_3
+  test-tool genrandom "foo" 2000 >file_1 \
+    && test-tool genrandom "foo" 1800 >file_2 \
+    && test-tool genrandom "foo" 1800 >file_3 \
+    && echo " base " >>file_1 \
+    && echo " delta1 " >>file_2 \
+    && echo " delta delta2 " >>file_3 \
+    && test-tool genrandom "bar" 150 >>file_2 \
+    && test-tool genrandom "baz" 100 >>file_3
 }
 
 create_new_pack() {
-    rm -rf .git &&
-    git init &&
-    blob_1=$(git hash-object -t blob -w file_1) &&
-    blob_2=$(git hash-object -t blob -w file_2) &&
-    blob_3=$(git hash-object -t blob -w file_3) &&
-    pack=$(printf "$blob_1\n$blob_2\n$blob_3\n" |
-          git pack-objects $@ .git/objects/pack/pack) &&
-    pack=".git/objects/pack/pack-${pack}" &&
-    git verify-pack -v ${pack}.pack
+  rm -rf .git \
+    && git init \
+    && blob_1=$(git hash-object -t blob -w file_1) \
+    && blob_2=$(git hash-object -t blob -w file_2) \
+    && blob_3=$(git hash-object -t blob -w file_3) \
+    && pack=$(printf "$blob_1\n$blob_2\n$blob_3\n" \
+      | git pack-objects $@ .git/objects/pack/pack) \
+    && pack=".git/objects/pack/pack-${pack}" \
+    && git verify-pack -v ${pack}.pack
 }
 
 do_repack() {
-    for f in $pack.*
-    do
-	    mv $f "$(echo $f | sed -e 's/pack-/pack-corrupt-/')" || return 1
-    done &&
-    pack=$(printf "$blob_1\n$blob_2\n$blob_3\n" |
-          git pack-objects $@ .git/objects/pack/pack) &&
-    pack=".git/objects/pack/pack-${pack}" &&
-    rm -f .git/objects/pack/pack-corrupt-*
+  for f in $pack.*; do
+    mv $f "$(echo $f | sed -e 's/pack-/pack-corrupt-/')" || return 1
+  done \
+    && pack=$(printf "$blob_1\n$blob_2\n$blob_3\n" \
+      | git pack-objects $@ .git/objects/pack/pack) \
+    && pack=".git/objects/pack/pack-${pack}" \
+    && rm -f .git/objects/pack/pack-corrupt-*
 }
 
 do_corrupt_object() {
-    ofs=$(git show-index < ${pack}.idx | grep $1 | cut -f1 -d" ") &&
-    ofs=$(($ofs + $2)) &&
-    chmod +w ${pack}.pack &&
-    dd of=${pack}.pack bs=1 conv=notrunc seek=$ofs &&
-    test_must_fail git verify-pack ${pack}.pack
+  ofs=$(git show-index <${pack}.idx | grep $1 | cut -f1 -d" ") \
+    && ofs=$(($ofs + $2)) \
+    && chmod +w ${pack}.pack \
+    && dd of=${pack}.pack bs=1 conv=notrunc seek=$ofs \
+    && test_must_fail git verify-pack ${pack}.pack
 }
 
-printf '\0' > zero
+printf '\0' >zero
 
 test_expect_success 'initial setup validation' '
 	create_test_files &&

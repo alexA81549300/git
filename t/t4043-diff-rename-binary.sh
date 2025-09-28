@@ -7,7 +7,6 @@ test_description='Move a binary file'
 
 . ./test-lib.sh
 
-
 test_expect_success 'prepare repository' '
 	git init &&
 	echo foo > foo &&
@@ -22,7 +21,7 @@ test_expect_success 'move the files into a "sub" directory' '
 	git commit -m "Moved to sub/"
 '
 
-cat > expected <<\EOF
+cat >expected <<\EOF
 -	-	bar => sub/bar
 0	0	foo => sub/foo
 

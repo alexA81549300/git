@@ -21,19 +21,19 @@ test_expect_success 'enable core.protectNTFS for rejection tests' '
 '
 
 while read path pretty; do
-	: ${pretty:=$path}
-	case "$path" in
-	*SPACE)
-		path="${path%SPACE} "
-		;;
-	esac
-	test_expect_success "reject $pretty at end of path" '
+  : ${pretty:=$path}
+  case "$path" in
+    *SPACE)
+      path="${path%SPACE} "
+      ;;
+  esac
+  test_expect_success "reject $pretty at end of path" '
 		printf "100644 blob %s\t%s" "$blob" "$path" >tree &&
 		bogus=$(git mktree <tree) &&
 		test_must_fail git read-tree $bogus
 	'
 
-	test_expect_success "reject $pretty as subtree" '
+  test_expect_success "reject $pretty as subtree" '
 		printf "040000 tree %s\t%s" "$tree" "$path" >tree &&
 		bogus=$(git mktree <tree) &&
 		test_must_fail git read-tree $bogus

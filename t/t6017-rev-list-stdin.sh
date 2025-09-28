@@ -10,21 +10,19 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-check () {
-	for cmd in rev-list "log --stat"
-	do
-		for i in "$@"
-		do
-			printf "%s\n" $i
-		done >input &&
-		test_expect_success "check $cmd $*" '
+check() {
+  for cmd in rev-list "log --stat"; do
+    for i in "$@"; do
+      printf "%s\n" $i
+    done >input \
+      && test_expect_success "check $cmd $*" '
 			git $cmd $(cat input) >expect &&
 			git $cmd --stdin <input >actual &&
 			sed -e "s/^/input /" input &&
 			sed -e "s/^/output /" expect &&
 			test_cmp expect actual
 		'
-	done
+  done
 }
 
 them='1 2 3 4 5 6 7'

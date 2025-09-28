@@ -11,10 +11,9 @@ TEST_CREATE_REPO_NO_TEMPLATE=1
 
 GIT_TRACE_WORKING_TREE_ENCODING=1 && export GIT_TRACE_WORKING_TREE_ENCODING
 
-if ! test_have_prereq ICONV
-then
-	skip_all='skipping working tree encoding tests; iconv not available'
-	test_done
+if ! test_have_prereq ICONV; then
+  skip_all='skipping working tree encoding tests; iconv not available'
+  test_done
 fi
 
 test_expect_success 'setup test files' '
@@ -84,9 +83,8 @@ test_expect_success 'check $GIT_DIR/info/attributes support' '
 	test_cmp_bin test.utf8.raw test.utf32.git
 '
 
-for i in 16 32
-do
-	test_expect_success "check prohibited UTF-${i} BOM" '
+for i in 16 32; do
+  test_expect_success "check prohibited UTF-${i} BOM" '
 		test_when_finished "git reset --hard HEAD" &&
 
 		echo "*.utf${i}be text working-tree-encoding=utf-${i}be" >>.gitattributes &&
@@ -116,7 +114,7 @@ do
 		test_grep "use UTF-${i} as working-tree-encoding" err.out
 	'
 
-	test_expect_success "check required UTF-${i} BOM" '
+  test_expect_success "check required UTF-${i} BOM" '
 		test_when_finished "git reset --hard HEAD" &&
 
 		echo "*.utf${i} text working-tree-encoding=utf-${i}" >>.gitattributes &&
@@ -132,7 +130,7 @@ do
 		test_grep "use UTF-${i}BE or UTF-${i}LE" err.out
 	'
 
-	test_expect_success "eol conversion for UTF-${i} encoded files on checkout" '
+  test_expect_success "eol conversion for UTF-${i} encoded files on checkout" '
 		test_when_finished "rm -f crlf.utf${i}.raw lf.utf${i}.raw" &&
 		test_when_finished "git reset --hard HEAD^" &&
 
@@ -271,12 +269,12 @@ test_expect_success ICONV_SHIFT_JIS 'check roundtrip encoding' '
 # $1: checkout encoding
 # $2: test string
 # $3: binary test string in checkout encoding
-test_commit_utf8_checkout_other () {
-	encoding="$1"
-	orig_string="$2"
-	expect_bytes="$3"
+test_commit_utf8_checkout_other() {
+  encoding="$1"
+  orig_string="$2"
+  expect_bytes="$3"
 
-	test_expect_success "Commit UTF-8, checkout $encoding" '
+  test_expect_success "Commit UTF-8, checkout $encoding" '
 		test_when_finished "git checkout HEAD -- .gitattributes" &&
 
 		test_ext="commit_utf8_checkout_$encoding" &&
@@ -299,12 +297,12 @@ test_commit_utf8_checkout_other () {
 	'
 }
 
-test_commit_utf8_checkout_other "UTF-8"        "Test Тест" "\124\145\163\164\040\320\242\320\265\321\201\321\202"
-test_commit_utf8_checkout_other "UTF-16LE"     "Test Тест" "\124\000\145\000\163\000\164\000\040\000\042\004\065\004\101\004\102\004"
-test_commit_utf8_checkout_other "UTF-16BE"     "Test Тест" "\000\124\000\145\000\163\000\164\000\040\004\042\004\065\004\101\004\102"
+test_commit_utf8_checkout_other "UTF-8" "Test Тест" "\124\145\163\164\040\320\242\320\265\321\201\321\202"
+test_commit_utf8_checkout_other "UTF-16LE" "Test Тест" "\124\000\145\000\163\000\164\000\040\000\042\004\065\004\101\004\102\004"
+test_commit_utf8_checkout_other "UTF-16BE" "Test Тест" "\000\124\000\145\000\163\000\164\000\040\004\042\004\065\004\101\004\102"
 test_commit_utf8_checkout_other "UTF-16LE-BOM" "Test Тест" "\377\376\124\000\145\000\163\000\164\000\040\000\042\004\065\004\101\004\102\004"
 test_commit_utf8_checkout_other "UTF-16BE-BOM" "Test Тест" "\376\377\000\124\000\145\000\163\000\164\000\040\004\042\004\065\004\101\004\102"
-test_commit_utf8_checkout_other "UTF-32LE"     "Test Тест" "\124\000\000\000\145\000\000\000\163\000\000\000\164\000\000\000\040\000\000\000\042\004\000\000\065\004\000\000\101\004\000\000\102\004\000\000"
-test_commit_utf8_checkout_other "UTF-32BE"     "Test Тест" "\000\000\000\124\000\000\000\145\000\000\000\163\000\000\000\164\000\000\000\040\000\000\004\042\000\000\004\065\000\000\004\101\000\000\004\102"
+test_commit_utf8_checkout_other "UTF-32LE" "Test Тест" "\124\000\000\000\145\000\000\000\163\000\000\000\164\000\000\000\040\000\000\000\042\004\000\000\065\004\000\000\101\004\000\000\102\004\000\000"
+test_commit_utf8_checkout_other "UTF-32BE" "Test Тест" "\000\000\000\124\000\000\000\145\000\000\000\163\000\000\000\164\000\000\000\040\000\000\004\042\000\000\004\065\000\000\004\101\000\000\004\102"
 
 test_done

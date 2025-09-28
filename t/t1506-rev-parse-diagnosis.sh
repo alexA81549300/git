@@ -9,13 +9,11 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-test_did_you_mean ()
-{
-	cat >expected <<-EOF &&
+test_did_you_mean() {
+  cat >expected <<-EOF && test_cmp expected error
 	fatal: path '$2$3' $4, but not ${5:-$SQ$3$SQ}
 	hint: Did you mean '$1:$2$3'${2:+ aka $SQ$1:./$3$SQ}?
 	EOF
-	test_cmp expected error
 }
 
 HASH_file=

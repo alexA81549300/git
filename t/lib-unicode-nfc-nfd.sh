@@ -116,47 +116,40 @@ test_lazy_prereq UNICODE_DOUBLE_NFD_PRESERVED '
 #
 # It is rather noisy, so it is disabled by default.
 #
-if test "$unicode_debug" = "true"
-then
-	if test_have_prereq UNICODE_COMPOSITION_SENSITIVE
-	then
-		echo NFC and NFD are distinct on this OS/filesystem.
-	else
-		echo NFC and NFD are aliases on this OS/filesystem.
-	fi
+if test "$unicode_debug" = "true"; then
+  if test_have_prereq UNICODE_COMPOSITION_SENSITIVE; then
+    echo NFC and NFD are distinct on this OS/filesystem.
+  else
+    echo NFC and NFD are aliases on this OS/filesystem.
+  fi
 
-	if test_have_prereq UNICODE_NFC_PRESERVED
-	then
-		echo NFC maintains original spelling.
-	else
-		echo NFC is modified.
-	fi
+  if test_have_prereq UNICODE_NFC_PRESERVED; then
+    echo NFC maintains original spelling.
+  else
+    echo NFC is modified.
+  fi
 
-	if test_have_prereq UNICODE_NFD_PRESERVED
-	then
-		echo NFD maintains original spelling.
-	else
-		echo NFD is modified.
-	fi
+  if test_have_prereq UNICODE_NFD_PRESERVED; then
+    echo NFD maintains original spelling.
+  else
+    echo NFD is modified.
+  fi
 
-	if test_have_prereq UNICODE_DOUBLE_COMPOSITION_SENSITIVE
-	then
-		echo DOUBLE NFC and NFD are distinct on this OS/filesystem.
-	else
-		echo DOUBLE NFC and NFD are aliases on this OS/filesystem.
-	fi
+  if test_have_prereq UNICODE_DOUBLE_COMPOSITION_SENSITIVE; then
+    echo DOUBLE NFC and NFD are distinct on this OS/filesystem.
+  else
+    echo DOUBLE NFC and NFD are aliases on this OS/filesystem.
+  fi
 
-	if test_have_prereq UNICODE_DOUBLE_NFC_PRESERVED
-	then
-		echo Double NFC maintains original spelling.
-	else
-		echo Double NFC is modified.
-	fi
+  if test_have_prereq UNICODE_DOUBLE_NFC_PRESERVED; then
+    echo Double NFC maintains original spelling.
+  else
+    echo Double NFC is modified.
+  fi
 
-	if test_have_prereq UNICODE_DOUBLE_NFD_PRESERVED
-	then
-		echo Double NFD maintains original spelling.
-	else
-		echo Double NFD is modified.
-	fi
+  if test_have_prereq UNICODE_DOUBLE_NFD_PRESERVED; then
+    echo Double NFD maintains original spelling.
+  else
+    echo Double NFD is modified.
+  fi
 fi

@@ -7,7 +7,6 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-
 test_expect_success 'setup' '
 	echo one >one &&
 	git add one &&

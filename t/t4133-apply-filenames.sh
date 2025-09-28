@@ -5,7 +5,6 @@
 
 test_description='git apply filename consistency check'
 
-
 . ./test-lib.sh
 
 test_expect_success setup '

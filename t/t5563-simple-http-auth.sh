@@ -6,10 +6,9 @@ test_description='test http auth header and credential helper interop'
 . "$TEST_DIRECTORY"/lib-httpd.sh
 
 enable_cgipassauth
-if ! test_have_prereq CGIPASSAUTH
-then
-	skip_all="no CGIPassAuth support"
-	test_done
+if ! test_have_prereq CGIPASSAUTH; then
+  skip_all="no CGIPassAuth support"
+  test_done
 fi
 start_httpd
 
@@ -39,22 +38,22 @@ test_expect_success 'setup_credential_helper' '
 	EOF
 '
 
-set_credential_reply () {
-	local suffix="$(test -n "$2" && echo "-$2")"
-	cat >"$TRASH_DIRECTORY/$1-reply$suffix.cred"
+set_credential_reply() {
+  local suffix="$(test -n "$2" && echo "-$2")"
+  cat >"$TRASH_DIRECTORY/$1-reply$suffix.cred"
 }
 
-expect_credential_query () {
-	local suffix="$(test -n "$2" && echo "-$2")"
-	cat >"$TRASH_DIRECTORY/$1-expect$suffix.cred" &&
-	test_cmp "$TRASH_DIRECTORY/$1-expect$suffix.cred" \
-		 "$TRASH_DIRECTORY/$1-query$suffix.cred"
+expect_credential_query() {
+  local suffix="$(test -n "$2" && echo "-$2")"
+  cat >"$TRASH_DIRECTORY/$1-expect$suffix.cred" \
+    && test_cmp "$TRASH_DIRECTORY/$1-expect$suffix.cred" \
+      "$TRASH_DIRECTORY/$1-query$suffix.cred"
 }
 
-per_test_cleanup () {
-	rm -f *.cred &&
-	rm -f "$HTTPD_ROOT_PATH"/custom-auth.valid \
-	      "$HTTPD_ROOT_PATH"/custom-auth.challenge
+per_test_cleanup() {
+  rm -f *.cred \
+    && rm -f "$HTTPD_ROOT_PATH"/custom-auth.valid \
+      "$HTTPD_ROOT_PATH"/custom-auth.challenge
 }
 
 test_expect_success 'setup repository' '

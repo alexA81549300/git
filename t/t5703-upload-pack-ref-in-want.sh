@@ -4,37 +4,36 @@ test_description='upload-pack ref-in-want'
 
 . ./test-lib.sh
 
-get_actual_refs () {
-	sed -n -e '/wanted-refs/,/0001/{
+get_actual_refs() {
+  sed -n -e '/wanted-refs/,/0001/{
 		/wanted-refs/d
 		/0001/d
 		p
 		}' <out | test-tool pkt-line unpack >actual_refs
 }
 
-get_actual_commits () {
-	test-tool pkt-line unpack-sideband <out >o.pack &&
-	git index-pack o.pack &&
-	git verify-pack -v o.idx >objs &&
-	sed -n -e 's/\([0-9a-f][0-9a-f]*\) commit .*/\1/p' objs >objs.sed &&
-	sort >actual_commits <objs.sed
+get_actual_commits() {
+  test-tool pkt-line unpack-sideband <out >o.pack \
+    && git index-pack o.pack \
+    && git verify-pack -v o.idx >objs \
+    && sed -n -e 's/\([0-9a-f][0-9a-f]*\) commit .*/\1/p' objs >objs.sed \
+    && sort >actual_commits <objs.sed
 }
 
-check_output () {
-	get_actual_refs &&
-	test_cmp expected_refs actual_refs &&
-	get_actual_commits &&
-	sort expected_commits >sorted_commits &&
-	test_cmp sorted_commits actual_commits
+check_output() {
+  get_actual_refs \
+    && test_cmp expected_refs actual_refs \
+    && get_actual_commits \
+    && sort expected_commits >sorted_commits \
+    && test_cmp sorted_commits actual_commits
 }
 
-write_command () {
-	echo "command=$1"
+write_command() {
+  echo "command=$1"
 
-	if test "$(test_oid algo)" != sha1
-	then
-		echo "object-format=$(test_oid algo)"
-	fi
+  if test "$(test_oid algo)" != sha1; then
+    echo "object-format=$(test_oid algo)"
+  fi
 }
 
 # Write a complete fetch command to stdout, suitable for use with `test-tool
@@ -52,13 +51,13 @@ write_command () {
 # have $(git rev-parse a)
 # EOF
 #
-write_fetch_command () {
-	write_command fetch &&
-	echo "0001" &&
-	echo "no-progress" &&
-	cat &&
-	echo "done" &&
-	echo "0000"
+write_fetch_command() {
+  write_command fetch \
+    && echo "0001" \
+    && echo "no-progress" \
+    && cat \
+    && echo "done" \
+    && echo "0000"
 }
 
 # c(o/foo) d(o/bar)
@@ -432,7 +431,6 @@ test_expect_success 'without namespace: relative hideRefs does not match' '
 	check_output
 '
 
-
 . "$TEST_DIRECTORY"/lib-httpd.sh
 start_httpd
 
@@ -466,16 +464,16 @@ test_expect_success 'setup repos for change-while-negotiating test' '
 	git -C "$LOCAL_PRISTINE" config protocol.version 2
 '
 
-inconsistency () {
-	# Simulate that the server initially reports $2 as the ref
-	# corresponding to $1, and after that, $1 as the ref corresponding to
-	# $1. This corresponds to the real-life situation where the server's
-	# repository appears to change during negotiation, for example, when
-	# different servers in a load-balancing arrangement serve (stateless)
-	# RPCs during a single negotiation.
-	oid1=$(git -C "$REPO" rev-parse $1) &&
-	oid2=$(git -C "$REPO" rev-parse $2) &&
-	echo "s/$oid1/$oid2/" >"$HTTPD_ROOT_PATH/one-time-perl"
+inconsistency() {
+  # Simulate that the server initially reports $2 as the ref
+  # corresponding to $1, and after that, $1 as the ref corresponding to
+  # $1. This corresponds to the real-life situation where the server's
+  # repository appears to change during negotiation, for example, when
+  # different servers in a load-balancing arrangement serve (stateless)
+  # RPCs during a single negotiation.
+  oid1=$(git -C "$REPO" rev-parse $1) \
+    && oid2=$(git -C "$REPO" rev-parse $2) \
+    && echo "s/$oid1/$oid2/" >"$HTTPD_ROOT_PATH/one-time-perl"
 }
 
 test_expect_success 'server is initially ahead - no ref in want' '

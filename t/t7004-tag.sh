@@ -16,8 +16,8 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 # creating and listing lightweight tags:
 
-tag_exists () {
-	git show-ref --quiet --verify refs/tags/"$1"
+tag_exists() {
+  git show-ref --quiet --verify refs/tags/"$1"
 }
 
 test_expect_success 'setup' '
@@ -451,13 +451,13 @@ test_expect_success 'trying to verify many non-annotated or unknown tags, should
 
 # creating annotated tags:
 
-get_tag_msg () {
-	git cat-file tag "$1" | sed -e "/BEGIN PGP/q"
+get_tag_msg() {
+  git cat-file tag "$1" | sed -e "/BEGIN PGP/q"
 }
 
 # run test_tick before committing always gives the time in that timezone
-get_tag_header () {
-cat <<EOF
+get_tag_header() {
+  cat <<EOF
 object $2
 type $3
 tag $1
@@ -1804,14 +1804,13 @@ test_expect_success 'mixing incompatibles modes and options is forbidden' '
 	test_must_fail git tag --no-without HEAD
 '
 
-for option in --contains --with --no-contains --without --merged --no-merged --points-at
-do
-	test_expect_success "mixing incompatible modes with $option is forbidden" '
+for option in --contains --with --no-contains --without --merged --no-merged --points-at; do
+  test_expect_success "mixing incompatible modes with $option is forbidden" '
 		test_must_fail git tag -d $option HEAD &&
 		test_must_fail git tag -d $option HEAD some-tag &&
 		test_must_fail git tag -v $option HEAD
 	'
-	test_expect_success "Doing 'git tag --list-like $option <commit> <pattern> is permitted" '
+  test_expect_success "Doing 'git tag --list-like $option <commit> <pattern> is permitted" '
 		git tag -n $option HEAD HEAD &&
 		git tag $option HEAD HEAD &&
 		git tag $option

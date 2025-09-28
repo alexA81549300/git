@@ -54,20 +54,20 @@ commit_sha3=$(git rev-parse 3rd^{commit})
 commit_sha4=$(git rev-parse 4th^{commit})
 commit_sha5=$(git rev-parse 5th^{commit})
 
-verify_notes () {
-	notes_ref="$1"
-	git -c core.notesRef="refs/notes/$notes_ref" notes |
-		sort >"output_notes_$notes_ref" &&
-	test_cmp "expect_notes_$notes_ref" "output_notes_$notes_ref" &&
-	git -c core.notesRef="refs/notes/$notes_ref" log --format="%H %s%n%N" \
-		>"output_log_$notes_ref" &&
-	test_cmp "expect_log_$notes_ref" "output_log_$notes_ref"
+verify_notes() {
+  notes_ref="$1"
+  git -c core.notesRef="refs/notes/$notes_ref" notes \
+    | sort >"output_notes_$notes_ref" \
+    && test_cmp "expect_notes_$notes_ref" "output_notes_$notes_ref" \
+    && git -c core.notesRef="refs/notes/$notes_ref" log --format="%H %s%n%N" \
+      >"output_log_$notes_ref" \
+    && test_cmp "expect_log_$notes_ref" "output_log_$notes_ref"
 }
 
-notes_merge_files_gone () {
-	# No .git/NOTES_MERGE_* files left
-	{ ls .git/NOTES_MERGE_* >output || :; } &&
-	test_must_be_empty output
+notes_merge_files_gone() {
+  # No .git/NOTES_MERGE_* files left
+  { ls .git/NOTES_MERGE_* >output || :; } \
+    && test_must_be_empty output
 }
 
 cat <<EOF | sort >expect_notes_x
@@ -208,8 +208,8 @@ EOF
 cp expect_notes_y expect_notes_m
 cp expect_log_y expect_log_m
 
-git rev-parse refs/notes/y > pre_merge_y
-git rev-parse refs/notes/z > pre_merge_z
+git rev-parse refs/notes/y >pre_merge_y
+git rev-parse refs/notes/z >pre_merge_z
 
 test_expect_success 'merge z into m (== y) with default ("manual") resolver => Conflicting 3-way merge' '
 	git update-ref refs/notes/m refs/notes/y &&
@@ -409,8 +409,8 @@ EOF
 cp expect_notes_y expect_notes_m
 cp expect_log_y expect_log_m
 
-git rev-parse refs/notes/y > pre_merge_y
-git rev-parse refs/notes/z > pre_merge_z
+git rev-parse refs/notes/y >pre_merge_y
+git rev-parse refs/notes/z >pre_merge_z
 
 test_expect_success 'redo merge of z into m (== y) with default ("manual") resolver => Conflicting 3-way merge' '
 	git update-ref refs/notes/m refs/notes/y &&
@@ -443,8 +443,8 @@ test_expect_success 'abort notes merge' '
 	verify_notes z
 '
 
-git rev-parse refs/notes/y > pre_merge_y
-git rev-parse refs/notes/z > pre_merge_z
+git rev-parse refs/notes/y >pre_merge_y
+git rev-parse refs/notes/z >pre_merge_z
 
 test_expect_success 'redo merge of z into m (== y) with default ("manual") resolver => Conflicting 3-way merge' '
 	test_must_fail git notes merge z >output 2>&1 &&

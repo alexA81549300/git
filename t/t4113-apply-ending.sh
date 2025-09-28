@@ -25,12 +25,12 @@ echo 'b' >>file
 echo 'c' >>file
 
 test_expect_success setup \
-    'git update-index --add file'
+  'git update-index --add file'
 
 # test
 
 test_expect_success 'apply at the end' \
-    'test_must_fail git apply --index test-patch'
+  'test_must_fail git apply --index test-patch'
 
 cat >test-patch <<\EOF
 diff a/file b/file
@@ -48,6 +48,6 @@ c'
 git update-index file
 
 test_expect_success 'apply at the beginning' \
-	'test_must_fail git apply --index test-patch'
+  'test_must_fail git apply --index test-patch'
 
 test_done

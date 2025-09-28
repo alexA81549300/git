@@ -143,66 +143,69 @@ test_expect_success 'pull.rebase not set and --ff-only given (not-fast-forward)'
 	test_grep ! "You have divergent branches" err
 '
 
-test_does_rebase () {
-	git reset --hard c2 &&
-	git "$@" . c1 &&
-	# Check that we actually did a rebase
-	git rev-list --count HEAD >actual &&
-	git rev-list --merges --count HEAD >>actual &&
-	test_write_lines 3 0 >expect &&
-	test_cmp expect actual &&
-	rm actual expect
+test_does_rebase() {
+  git reset --hard c2 \
+    && git "$@" . c1 \
+    &&
+    # Check that we actually did a rebase
+    git rev-list --count HEAD >actual \
+    && git rev-list --merges --count HEAD >>actual \
+    && test_write_lines 3 0 >expect \
+    && test_cmp expect actual \
+    && rm actual expect
 }
 
 # Prefers merge over fast-forward
-test_does_merge_when_ff_possible () {
-	git reset --hard c0 &&
-	git "$@" . c1 &&
-	# Check that we actually did a merge
-	git rev-list --count HEAD >actual &&
-	git rev-list --merges --count HEAD >>actual &&
-	test_write_lines 3 1 >expect &&
-	test_cmp expect actual &&
-	rm actual expect
+test_does_merge_when_ff_possible() {
+  git reset --hard c0 \
+    && git "$@" . c1 \
+    &&
+    # Check that we actually did a merge
+    git rev-list --count HEAD >actual \
+    && git rev-list --merges --count HEAD >>actual \
+    && test_write_lines 3 1 >expect \
+    && test_cmp expect actual \
+    && rm actual expect
 }
 
 # Prefers fast-forward over merge or rebase
-test_does_fast_forward () {
-	git reset --hard c0 &&
-	git "$@" . c1 &&
-
-	# Check that we did not get any merges
-	git rev-list --count HEAD >actual &&
-	git rev-list --merges --count HEAD >>actual &&
-	test_write_lines 2 0 >expect &&
-	test_cmp expect actual &&
-
-	# Check that we ended up at c1
-	git rev-parse HEAD >actual &&
-	git rev-parse c1^{commit} >expect &&
-	test_cmp actual expect &&
-
-	# Remove temporary files
-	rm actual expect
+test_does_fast_forward() {
+  git reset --hard c0 \
+    && git "$@" . c1 \
+    &&
+    # Check that we did not get any merges
+    git rev-list --count HEAD >actual \
+    && git rev-list --merges --count HEAD >>actual \
+    && test_write_lines 2 0 >expect \
+    && test_cmp expect actual \
+    &&
+    # Check that we ended up at c1
+    git rev-parse HEAD >actual \
+    && git rev-parse c1^{commit} >expect \
+    && test_cmp actual expect \
+    &&
+    # Remove temporary files
+    rm actual expect
 }
 
 # Doesn't fail when fast-forward not possible; does a merge
-test_falls_back_to_full_merge () {
-	git reset --hard c2 &&
-	git "$@" . c1 &&
-	# Check that we actually did a merge
-	git rev-list --count HEAD >actual &&
-	git rev-list --merges --count HEAD >>actual &&
-	test_write_lines 4 1 >expect &&
-	test_cmp expect actual &&
-	rm actual expect
+test_falls_back_to_full_merge() {
+  git reset --hard c2 \
+    && git "$@" . c1 \
+    &&
+    # Check that we actually did a merge
+    git rev-list --count HEAD >actual \
+    && git rev-list --merges --count HEAD >>actual \
+    && test_write_lines 4 1 >expect \
+    && test_cmp expect actual \
+    && rm actual expect
 }
 
 # Attempts fast forward, which is impossible, and bails
-test_attempts_fast_forward () {
-	git reset --hard c2 &&
-	test_must_fail git "$@" . c1 2>err &&
-	test_grep "Not possible to fast-forward, aborting" err
+test_attempts_fast_forward() {
+  git reset --hard c2 \
+    && test_must_fail git "$@" . c1 2>err \
+    && test_grep "Not possible to fast-forward, aborting" err
 }
 
 #
@@ -437,12 +440,11 @@ test_expect_success 'merge c1 with c2 and c3 (recursive and octopus in pull.octo
 	test_path_is_file c3.c
 '
 
-conflict_count()
-{
-	{
-		git diff-files --name-only
-		git ls-files --unmerged
-	} | wc -l
+conflict_count() {
+  {
+    git diff-files --name-only
+    git ls-files --unmerged
+  } | wc -l
 }
 
 # c4 - c5

@@ -7,7 +7,6 @@ test_description='git apply should not get confused with rename/copy.
 
 '
 
-
 . ./test-lib.sh
 
 # setup

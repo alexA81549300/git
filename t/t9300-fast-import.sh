@@ -8,13 +8,12 @@ GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME=main
 export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
-. "$TEST_DIRECTORY"/lib-diff.sh ;# test-lib chdir's into trash
+. "$TEST_DIRECTORY"/lib-diff.sh # test-lib chdir's into trash
 
-verify_packs () {
-	for p in .git/objects/pack/*.pack
-	do
-		git verify-pack "$@" "$p" || return
-	done
+verify_packs() {
+  for p in .git/objects/pack/*.pack; do
+    git verify-pack "$@" "$p" || return
+  done
 }
 
 file2_data='file2
@@ -1166,9 +1165,8 @@ test_expect_success 'M: rename subdirectory to new subdirectory' '
 	compare_diff_raw expect actual
 '
 
-for root in '""' ''
-do
-	test_expect_success "M: rename root ($root) to subdirectory" '
+for root in '""' ''; do
+  test_expect_success "M: rename root ($root) to subdirectory" '
 		cat >input <<-INPUT_END &&
 		commit refs/heads/M4
 		committer $GIT_COMMITTER_NAME <$GIT_COMMITTER_EMAIL> $GIT_COMMITTER_DATE
@@ -1369,9 +1367,8 @@ test_expect_success PIPE 'N: empty directory reads as missing' '
 	test_cmp expect actual
 '
 
-for root in '""' ''
-do
-	test_expect_success "N: copy root ($root) by tree hash" '
+for root in '""' ''; do
+  test_expect_success "N: copy root ($root) by tree hash" '
 		cat >expect <<-EOF &&
 		:100755 000000 $newf $zero D	file3/newf
 		:100644 000000 $oldf $zero D	file3/oldf
@@ -1392,7 +1389,7 @@ do
 		compare_diff_raw expect actual
 	'
 
-	test_expect_success "N: copy root ($root) by path" '
+  test_expect_success "N: copy root ($root) by path" '
 		cat >expect <<-EOF &&
 		:100755 100755 $newf $newf C100	file2/newf	oldroot/file2/newf
 		:100644 100644 $oldf $oldf C100	file2/oldf	oldroot/file2/oldf
@@ -1544,9 +1541,8 @@ test_expect_success 'N: reject foo/ syntax in ls argument' '
 	INPUT_END
 '
 
-for root in '""' ''
-do
-	test_expect_success "N: copy to root ($root) by id and modify" '
+for root in '""' ''; do
+  test_expect_success "N: copy to root ($root) by id and modify" '
 		echo "hello, world" >expect.foo &&
 		echo hello >expect.bar &&
 		git fast-import <<-SETUP_END &&
@@ -1583,7 +1579,7 @@ do
 		test_cmp expect.bar actual.bar
 	'
 
-	test_expect_success "N: extract subtree to the root ($root)" '
+  test_expect_success "N: extract subtree to the root ($root)" '
 		branch=$(git rev-parse --verify refs/heads/branch^{tree}) &&
 		cat >input <<-INPUT_END &&
 		commit refs/heads/N9
@@ -1599,7 +1595,7 @@ do
 		git diff --exit-code branch:newdir N9
 	'
 
-	test_expect_success "N: modify subtree, extract it to the root ($root), and modify again" '
+  test_expect_success "N: modify subtree, extract it to the root ($root), and modify again" '
 		echo hello >expect.baz &&
 		echo hello, world >expect.qux &&
 		git fast-import <<-SETUP_END &&
@@ -2467,7 +2463,6 @@ test_expect_success 'R: import marks prefers commandline marks file over the str
 	test_cmp marks.out marks.new
 '
 
-
 test_expect_success 'R: multiple --import-marks= should be honoured' '
 	cat >input <<-EOF &&
 	feature import-marks=nonexistent.marks
@@ -3116,7 +3111,6 @@ test_expect_success 'S: from with garbage after mark must fail' '
 	test_grep "after mark" err
 '
 
-
 #
 # merge
 #
@@ -3198,9 +3192,9 @@ test_expect_success 'S: ls with garbage after sha1 must fail' '
 # commit :305 from :301 -- rename hello.c $path
 # ls :305 $path
 #
-test_path_eol_success () {
-	local test="$1" path="$2" unquoted_path="$3"
-	test_expect_success "S: paths at EOL with $test must work" '
+test_path_eol_success() {
+  local test="$1" path="$2" unquoted_path="$3"
+  test_expect_success "S: paths at EOL with $test must work" '
 		test_when_finished "git branch -D S-path-eol" &&
 
 		git -c core.protectNTFS=false fast-import --export-marks=marks.out <<-EOF >out 2>err &&
@@ -3296,9 +3290,9 @@ test_path_eol_success () {
 	'
 }
 
-test_path_eol_success 'quoted spaces'   '" hello world.c "'  ' hello world.c '
-test_path_eol_success 'unquoted spaces' ' hello world.c '    ' hello world.c '
-test_path_eol_success 'octal escapes'   '"\150\151\056\143"' 'hi.c'
+test_path_eol_success 'quoted spaces' '" hello world.c "' ' hello world.c '
+test_path_eol_success 'unquoted spaces' ' hello world.c ' ' hello world.c '
+test_path_eol_success 'octal escapes' '"\150\151\056\143"' 'hi.c'
 
 #
 # Valid paths before a space: filecopy (source) and filerename (source).
@@ -3307,9 +3301,9 @@ test_path_eol_success 'octal escapes'   '"\150\151\056\143"' 'hi.c'
 # commit :302 from :301 -- copy $path hello2.c
 # commit :303 from :301 -- rename $path hello2.c
 #
-test_path_space_success () {
-	local test="$1" path="$2" unquoted_path="$3"
-	test_expect_success "S: paths before space with $test must work" '
+test_path_space_success() {
+  local test="$1" path="$2" unquoted_path="$3"
+  test_expect_success "S: paths before space with $test must work" '
 		test_when_finished "git branch -D S-path-space" &&
 
 		git -c core.protectNTFS=false fast-import --export-marks=marks.out <<-EOF 2>err &&
@@ -3364,17 +3358,17 @@ test_path_space_success () {
 	'
 }
 
-test_path_space_success 'quoted spaces'      '" hello world.c "'  ' hello world.c '
-test_path_space_success 'no unquoted spaces' 'hello_world.c'      'hello_world.c'
-test_path_space_success 'octal escapes'      '"\150\151\056\143"' 'hi.c'
+test_path_space_success 'quoted spaces' '" hello world.c "' ' hello world.c '
+test_path_space_success 'no unquoted spaces' 'hello_world.c' 'hello_world.c'
+test_path_space_success 'octal escapes' '"\150\151\056\143"' 'hi.c'
 
 #
 # Test a single commit change with an invalid path. Run it with all occurrences
 # of <path> in the grammar against all error kinds.
 #
-test_path_fail () {
-	local change="$1" what="$2" prefix="$3" path="$4" suffix="$5" err_grep="$6"
-	test_expect_success "S: $change with $what must fail" '
+test_path_fail() {
+  local change="$1" what="$2" prefix="$3" path="$4" suffix="$5" err_grep="$6"
+  test_expect_success "S: $change with $what must fail" '
 		test_must_fail git fast-import <<-EOF 2>err &&
 		blob
 		mark :1
@@ -3403,36 +3397,36 @@ test_path_fail () {
 	'
 }
 
-test_path_base_fail () {
-	local change="$1" prefix="$2" field="$3" suffix="$4"
-	test_path_fail "$change" 'unclosed " in '"$field"          "$prefix" '"hello.c'    "$suffix" "Invalid $field"
-	test_path_fail "$change" "invalid escape in quoted $field" "$prefix" '"hello\xff"' "$suffix" "Invalid $field"
-	test_path_fail "$change" "escaped NUL in quoted $field"    "$prefix" '"hello\000"' "$suffix" "NUL in $field"
+test_path_base_fail() {
+  local change="$1" prefix="$2" field="$3" suffix="$4"
+  test_path_fail "$change" 'unclosed " in '"$field" "$prefix" '"hello.c' "$suffix" "Invalid $field"
+  test_path_fail "$change" "invalid escape in quoted $field" "$prefix" '"hello\xff"' "$suffix" "Invalid $field"
+  test_path_fail "$change" "escaped NUL in quoted $field" "$prefix" '"hello\000"' "$suffix" "NUL in $field"
 }
-test_path_eol_quoted_fail () {
-	local change="$1" prefix="$2" field="$3"
-	test_path_base_fail "$change" "$prefix" "$field" ''
-	test_path_fail "$change" "garbage after quoted $field" "$prefix" '"hello.c"' 'x' "Garbage after $field"
-	test_path_fail "$change" "space after quoted $field"   "$prefix" '"hello.c"' ' ' "Garbage after $field"
+test_path_eol_quoted_fail() {
+  local change="$1" prefix="$2" field="$3"
+  test_path_base_fail "$change" "$prefix" "$field" ''
+  test_path_fail "$change" "garbage after quoted $field" "$prefix" '"hello.c"' 'x' "Garbage after $field"
+  test_path_fail "$change" "space after quoted $field" "$prefix" '"hello.c"' ' ' "Garbage after $field"
 }
-test_path_eol_fail () {
-	local change="$1" prefix="$2" field="$3"
-	test_path_eol_quoted_fail "$change" "$prefix" "$field"
+test_path_eol_fail() {
+  local change="$1" prefix="$2" field="$3"
+  test_path_eol_quoted_fail "$change" "$prefix" "$field"
 }
-test_path_space_fail () {
-	local change="$1" prefix="$2" field="$3"
-	test_path_base_fail "$change" "$prefix" "$field" ' world.c'
-	test_path_fail "$change" "missing space after quoted $field"   "$prefix" '"hello.c"' 'x world.c' "Missing space after $field"
-	test_path_fail "$change" "missing space after unquoted $field" "$prefix" 'hello.c'   ''          "Missing space after $field"
+test_path_space_fail() {
+  local change="$1" prefix="$2" field="$3"
+  test_path_base_fail "$change" "$prefix" "$field" ' world.c'
+  test_path_fail "$change" "missing space after quoted $field" "$prefix" '"hello.c"' 'x world.c' "Missing space after $field"
+  test_path_fail "$change" "missing space after unquoted $field" "$prefix" 'hello.c' '' "Missing space after $field"
 }
 
-test_path_eol_fail   filemodify       'M 100644 :1 ' path
-test_path_eol_fail   filedelete       'D '           path
-test_path_space_fail filecopy         'C '           source
-test_path_eol_fail   filecopy         'C hello.c '   dest
-test_path_space_fail filerename       'R '           source
-test_path_eol_fail   filerename       'R hello.c '   dest
-test_path_eol_fail   'ls (in commit)' 'ls :2 '       path
+test_path_eol_fail filemodify 'M 100644 :1 ' path
+test_path_eol_fail filedelete 'D ' path
+test_path_space_fail filecopy 'C ' source
+test_path_eol_fail filecopy 'C hello.c ' dest
+test_path_space_fail filerename 'R ' source
+test_path_eol_fail filerename 'R hello.c ' dest
+test_path_eol_fail 'ls (in commit)' 'ls :2 ' path
 
 # When 'ls' has no <dataref>, the <path> must be quoted.
 test_path_eol_quoted_fail 'ls (without dataref in commit)' 'ls ' path
@@ -3442,9 +3436,8 @@ test_path_eol_quoted_fail 'ls (without dataref in commit)' 'ls ' path
 ###
 # Setup is carried over from series S.
 
-for root in '""' ''
-do
-	test_expect_success "T: ls root ($root) tree" '
+for root in '""' ''; do
+  test_expect_success "T: ls root ($root) tree" '
 		sed -e "s/Z\$//" >expect <<-EOF &&
 		040000 tree $(git rev-parse S^{tree})	Z
 		EOF
@@ -3556,9 +3549,8 @@ test_expect_success 'U: validate directory delete result' '
 	compare_diff_raw expect actual
 '
 
-for root in '""' ''
-do
-	test_expect_success "U: filedelete root ($root) succeeds" '
+for root in '""' ''; do
+  test_expect_success "U: filedelete root ($root) succeeds" '
 		cat >input <<-INPUT_END &&
 		commit refs/heads/U-delete-root
 		committer $GIT_COMMITTER_NAME <$GIT_COMMITTER_EMAIL> $GIT_COMMITTER_DATE
@@ -3573,7 +3565,7 @@ do
 		git fast-import <input
 	'
 
-	test_expect_success "U: validate root ($root) delete result" '
+  test_expect_success "U: validate root ($root) delete result" '
 		cat >expect <<-EOF &&
 		:100644 000000 $f7id $ZERO_OID D	hello.c
 		EOF
@@ -3595,73 +3587,68 @@ done
 # fast-import terminates (and thus writes out its state), check that the
 # fast-import process is still running using background_import_still_running
 # *after* evaluating the test conditions.
-background_import_then_checkpoint () {
-	options=$1
-	input_file=$2
+background_import_then_checkpoint() {
+  options=$1
+  input_file=$2
 
-	mkfifo V.input
-	exec 8<>V.input
-	rm V.input
+  mkfifo V.input
+  exec 8<>V.input
+  rm V.input
 
-	mkfifo V.output
-	exec 9<>V.output
-	rm V.output
+  mkfifo V.output
+  exec 9<>V.output
+  rm V.output
 
-	(
-		git fast-import $options <&8 >&9 &
-		echo $! >&9
-		wait $!
-		echo >&2 "background fast-import terminated too early with exit code $?"
-		# Un-block the read loop in the main shell process.
-		echo >&9 UNEXPECTED
-	) &
-	sh_pid=$!
-	read fi_pid <&9
-	# We don't mind if fast-import has already died by the time the test
-	# ends.
-	test_when_finished "
+  (
+    git fast-import $options <&8 >&9 &
+    echo $! >&9
+    wait $!
+    echo >&2 "background fast-import terminated too early with exit code $?"
+    # Un-block the read loop in the main shell process.
+    echo >&9 UNEXPECTED
+  ) &
+  sh_pid=$!
+  read fi_pid <&9
+  # We don't mind if fast-import has already died by the time the test
+  # ends.
+  test_when_finished "
 		exec 8>&-; exec 9>&-;
 		kill $sh_pid && wait $sh_pid
 		kill $fi_pid && wait $fi_pid
 		true"
 
-	# Start in the background to ensure we adhere strictly to (blocking)
-	# pipes writing sequence. We want to assume that the write below could
-	# block, e.g. if fast-import blocks writing its own output to &9
-	# because there is no reader on &9 yet.
-	(
-		cat "$input_file"
-		echo "checkpoint"
-		echo "progress checkpoint"
-	) >&8 &
+  # Start in the background to ensure we adhere strictly to (blocking)
+  # pipes writing sequence. We want to assume that the write below could
+  # block, e.g. if fast-import blocks writing its own output to &9
+  # because there is no reader on &9 yet.
+  (
+    cat "$input_file"
+    echo "checkpoint"
+    echo "progress checkpoint"
+  ) >&8 &
 
-	error=1 ;# assume the worst
-	while read output <&9
-	do
-		if test "$output" = "progress checkpoint"
-		then
-			error=0
-			break
-		elif test "$output" = "UNEXPECTED"
-		then
-			break
-		fi
-		# otherwise ignore cruft
-		echo >&2 "cruft: $output"
-	done
+  error=1 # assume the worst
+  while read output <&9; do
+    if test "$output" = "progress checkpoint"; then
+      error=0
+      break
+    elif test "$output" = "UNEXPECTED"; then
+      break
+    fi
+    # otherwise ignore cruft
+    echo >&2 "cruft: $output"
+  done
 
-	if test $error -eq 1
-	then
-		false
-	fi
+  if test $error -eq 1; then
+    false
+  fi
 }
 
-background_import_still_running () {
-	if ! kill -0 "$fi_pid"
-	then
-		echo >&2 "background fast-import terminated too early"
-		false
-	fi
+background_import_still_running() {
+  if ! kill -0 "$fi_pid"; then
+    echo >&2 "background fast-import terminated too early"
+    false
+  fi
 }
 
 test_expect_success PIPE 'V: checkpoint helper does not get stuck with extra output' '

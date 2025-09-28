@@ -12,7 +12,7 @@ test_expect_success 'create repo with file' '
 '
 
 check_output() {
-test_expect_success "ls-files output contains file ($1)" "
+  test_expect_success "ls-files output contains file ($1)" "
 	echo '$2' >expect &&
 	git ls-files --exclude-standard --$1 >output &&
 	test_cmp expect output
@@ -20,8 +20,8 @@ test_expect_success "ls-files output contains file ($1)" "
 }
 
 check_all_output() {
-	check_output 'cached' 'file'
-	check_output 'modified' 'file'
+  check_output 'cached' 'file'
+  check_output 'modified' 'file'
 }
 
 check_all_output

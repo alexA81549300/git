@@ -7,14 +7,14 @@ test_description='commit tests of various authorhip options. '
 
 . ./test-lib.sh
 
-author_header () {
-	git cat-file commit "$1" |
-	sed -n -e '/^$/q' -e '/^author /p'
+author_header() {
+  git cat-file commit "$1" \
+    | sed -n -e '/^$/q' -e '/^author /p'
 }
 
-message_body () {
-	git cat-file commit "$1" |
-	sed -e '1,/^$/d'
+message_body() {
+  git cat-file commit "$1" \
+    | sed -e '1,/^$/d'
 }
 
 test_expect_success '-C option copies authorship and message' '
@@ -82,10 +82,10 @@ test_expect_success '--amend option copies authorship' '
 '
 
 sha1_file() {
-	echo "$*" | sed "s#..#.git/objects/&/#"
+  echo "$*" | sed "s#..#.git/objects/&/#"
 }
 remove_object() {
-	rm -f $(sha1_file "$*")
+  rm -f $(sha1_file "$*")
 }
 
 test_expect_success '--amend option with empty author' '

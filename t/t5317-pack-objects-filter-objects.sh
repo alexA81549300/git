@@ -19,8 +19,8 @@ test_expect_success 'setup r1' '
 	done
 '
 
-parse_verify_pack_blob_oid () {
-	awk '{print $1}' -
+parse_verify_pack_blob_oid() {
+  awk '{print $1}' -
 }
 
 test_expect_success 'verify blob count in normal packfile' '

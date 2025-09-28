@@ -14,15 +14,12 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
+compare_head() {
+  sha_main=$(git rev-list --max-count=1 main)
+  sha_head=$(git rev-list --max-count=1 HEAD)
 
-compare_head()
-{
-    sha_main=$(git rev-list --max-count=1 main)
-    sha_head=$(git rev-list --max-count=1 HEAD)
-
-    test "$sha_main" = "$sha_head"
+  test "$sha_main" = "$sha_head"
 }
-
 
 test_expect_success 'setup a submodule tree' '
 	git config --global protocol.file.allow always &&
@@ -458,7 +455,7 @@ test_expect_success 'fsck detects command in .gitmodules' '
 	)
 '
 
-cat << EOF >expect
+cat <<EOF >expect
 fatal: Execution of 'false $submodulesha1' failed in submodule path 'submodule'
 EOF
 
@@ -475,7 +472,7 @@ test_expect_success 'submodule update - command in .git/config catches failure' 
 	test_cmp actual expect
 '
 
-cat << EOF >expect
+cat <<EOF >expect
 fatal: Execution of 'false $submodulesha1' failed in submodule path '../submodule'
 EOF
 
@@ -503,7 +500,7 @@ test_expect_success 'submodule update - command run for initial population of su
 	git -C super submodule update --checkout
 '
 
-cat << EOF >expect
+cat <<EOF >expect
 fatal: Execution of 'false $submodulesha1' failed in submodule path '../super/submodule'
 fatal: Failed to recurse into submodule path '../super'
 EOF
@@ -1181,13 +1178,13 @@ test_expect_success 'submodule update --recursive skip submodules with strategy=
 	test_cmp expect.err actual.err
 '
 
-add_submodule_commit_and_validate () {
-	HASH=$(git rev-parse HEAD) &&
-	git update-index --add --cacheinfo 160000,$HASH,sub &&
-	git commit -m "create submodule" &&
-	echo "160000 commit $HASH	sub" >expect &&
-	git ls-tree HEAD -- sub >actual &&
-	test_cmp expect actual
+add_submodule_commit_and_validate() {
+  HASH=$(git rev-parse HEAD) \
+    && git update-index --add --cacheinfo 160000,$HASH,sub \
+    && git commit -m "create submodule" \
+    && echo "160000 commit $HASH	sub" >expect \
+    && git ls-tree HEAD -- sub >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'commit with staged submodule change' '
@@ -1205,7 +1202,7 @@ test_expect_success 'commit with staged submodule change with ignoreSubmodules a
 '
 
 test_expect_success CASE_INSENSITIVE_FS,SYMLINKS \
-	'submodule paths must not follow symlinks' '
+  'submodule paths must not follow symlinks' '
 
 	# This is only needed because we want to run this in a self-contained
 	# test without having to spin up an HTTP server; However, it would not

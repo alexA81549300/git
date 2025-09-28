@@ -23,9 +23,8 @@ test_expect_success 'shared = 0400 (faulty permission u-w)' '
 	)
 '
 
-for u in 002 022
-do
-	test_expect_success POSIXPERM "shared=1 does not clear bits preset by umask $u" '
+for u in 002 022; do
+  test_expect_success POSIXPERM "shared=1 does not clear bits preset by umask $u" '
 		test_when_finished "rm -rf sub" &&
 		mkdir sub && (
 			cd sub &&
@@ -82,19 +81,17 @@ test_expect_success POSIXPERM 'update-server-info honors core.sharedRepository' 
 	esac
 '
 
-for u in	0660:rw-rw---- \
-		0640:rw-r----- \
-		0600:rw------- \
-		0666:rw-rw-rw- \
-		0664:rw-rw-r--
-do
-	x=$(expr "$u" : ".*:\([rw-]*\)") &&
-	y=$(echo "$x" | sed -e "s/w/-/g") &&
-	u=$(expr "$u" : "\([0-7]*\)") &&
-	git config core.sharedrepository "$u" &&
-	umask 0277 &&
-
-	test_expect_success POSIXPERM "shared = $u ($y) ro" '
+for u in 0660:rw-rw---- \
+  0640:rw-r----- \
+  0600:rw------- \
+  0666:rw-rw-rw- \
+  0664:rw-rw-r--; do
+  x=$(expr "$u" : ".*:\([rw-]*\)") \
+    && y=$(echo "$x" | sed -e "s/w/-/g") \
+    && u=$(expr "$u" : "\([0-7]*\)") \
+    && git config core.sharedrepository "$u" \
+    && umask 0277 \
+    && test_expect_success POSIXPERM "shared = $u ($y) ro" '
 
 		rm -f .git/info/refs &&
 		git update-server-info &&
@@ -103,8 +100,8 @@ do
 
 	'
 
-	umask 077 &&
-	test_expect_success POSIXPERM "shared = $u ($x) rw" '
+  umask 077 \
+    && test_expect_success POSIXPERM "shared = $u ($x) rw" '
 
 		rm -f .git/info/refs &&
 		git update-server-info &&

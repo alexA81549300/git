@@ -7,30 +7,29 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-setup_repository () {
-	mkdir "$1" && (
-	cd "$1" &&
-	git init &&
-	>file &&
-	git add file &&
-	test_tick &&
-	git commit -m "Initial" &&
-	git checkout -b side &&
-	>elif &&
-	git add elif &&
-	test_tick &&
-	git commit -m "Second" &&
-	git checkout main
-	)
+setup_repository() {
+  mkdir "$1" && (
+    cd "$1" \
+      && git init \
+      && >file \
+      && git add file \
+      && test_tick \
+      && git commit -m "Initial" \
+      && git checkout -b side \
+      && >elif \
+      && git add elif \
+      && test_tick \
+      && git commit -m "Second" \
+      && git checkout main
+  )
 }
 
-setup_test_clone () {
-	test_dir="$1" &&
-	git clone one "$test_dir" &&
-	for r in one two three
-	do
-		git -C "$test_dir" remote add "$r" "../$r" || return 1
-	done
+setup_test_clone() {
+  test_dir="$1" \
+    && git clone one "$test_dir" \
+    && for r in one two three; do
+      git -C "$test_dir" remote add "$r" "../$r" || return 1
+    done
 }
 
 test_expect_success setup '
@@ -43,7 +42,7 @@ test_expect_success setup '
 	git clone one test
 '
 
-cat > test/expect << EOF
+cat >test/expect <<EOF
   one/HEAD -> one/main
   one/main
   one/side
@@ -95,7 +94,7 @@ test_expect_success 'git fetch --all does not allow non-option arguments' '
 	 test_must_fail git fetch --all origin main)
 '
 
-cat > expect << EOF
+cat >expect <<EOF
   origin/HEAD -> origin/main
   origin/main
   origin/side
@@ -114,7 +113,7 @@ test_expect_success 'git fetch --multiple (but only one remote)' '
 	 test_cmp ../expect output)
 '
 
-cat > expect << EOF
+cat >expect <<EOF
   one/HEAD -> one/main
   one/main
   one/side
@@ -143,7 +142,6 @@ test_expect_success 'git fetch --multiple (bad remote names)' '
 	 test_must_fail git fetch --multiple four)
 '
 
-
 test_expect_success 'git fetch --all (skipFetchAll)' '
 	(cd test4 &&
 	 for b in $(git branch -r | grep -v HEAD)
@@ -157,7 +155,7 @@ test_expect_success 'git fetch --all (skipFetchAll)' '
 	 test_cmp ../expect output)
 '
 
-cat > expect << EOF
+cat >expect <<EOF
   one/HEAD -> one/main
   one/main
   one/side
@@ -227,8 +225,8 @@ test_expect_success 'git fetch --multiple --jobs=0 picks a default' '
 	 git fetch --multiple --jobs=0)
 '
 
-create_fetch_all_expect () {
-	cat >expect <<-\EOF
+create_fetch_all_expect() {
+  cat >expect <<-\EOF
 	  one/HEAD -> one/main
 	  one/main
 	  one/side
@@ -246,9 +244,8 @@ create_fetch_all_expect () {
 	EOF
 }
 
-for fetch_all in true false
-do
-	test_expect_success "git fetch --all (works with fetch.all = $fetch_all)" '
+for fetch_all in true false; do
+  test_expect_success "git fetch --all (works with fetch.all = $fetch_all)" '
 		test_dir="test_fetch_all_$fetch_all" &&
 		setup_test_clone "$test_dir" &&
 		(
@@ -274,8 +271,8 @@ test_expect_success 'git fetch (fetch all remotes with fetch.all = true)' '
 	)
 '
 
-create_fetch_one_expect () {
-	cat >expect <<-\EOF
+create_fetch_one_expect() {
+  cat >expect <<-\EOF
 	  one/HEAD -> one/main
 	  one/main
 	  one/side
@@ -297,8 +294,8 @@ test_expect_success 'git fetch one (explicit remote overrides fetch.all)' '
 	)
 '
 
-create_fetch_two_as_origin_expect () {
-	cat >expect <<-\EOF
+create_fetch_two_as_origin_expect() {
+  cat >expect <<-\EOF
 	  origin/HEAD -> origin/main
 	  origin/another
 	  origin/main
@@ -319,9 +316,8 @@ test_expect_success 'git config fetch.all false (fetch only default remote)' '
 	)
 '
 
-for fetch_all in true false
-do
-	test_expect_success "git fetch --no-all (fetch only default remote with fetch.all = $fetch_all)" '
+for fetch_all in true false; do
+  test_expect_success "git fetch --no-all (fetch only default remote with fetch.all = $fetch_all)" '
 		test_dir="test_no_all_fetch_all_$fetch_all" &&
 		setup_test_clone "$test_dir" &&
 		(

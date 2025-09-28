@@ -64,10 +64,10 @@ test_expect_success '--ignore-whitespace is remembered when continuing' '
 	git diff --exit-code side
 '
 
-test_ctime_is_atime () {
-	git log $1 --format="$GIT_COMMITTER_NAME <$GIT_COMMITTER_EMAIL> %ai" >authortime &&
-	git log $1 --format="%cn <%ce> %ci" >committertime &&
-	test_cmp authortime committertime
+test_ctime_is_atime() {
+  git log $1 --format="$GIT_COMMITTER_NAME <$GIT_COMMITTER_EMAIL> %ai" >authortime \
+    && git log $1 --format="%cn <%ce> %ci" >committertime \
+    && test_cmp authortime committertime
 }
 
 test_expect_success '--committer-date-is-author-date works with apply backend' '
@@ -126,9 +126,9 @@ test_expect_success '--committer-date-is-author-date works when committing confl
 # default timezone is UTC but the timezone used while committing is
 # +0530. The inverted logic in the grep is necessary to check all the
 # author dates in the file.
-test_atime_is_ignored () {
-	git log $1 --format=%ai >authortime &&
-	! grep -v +0000 authortime
+test_atime_is_ignored() {
+  git log $1 --format=%ai >authortime \
+    && ! grep -v +0000 authortime
 }
 
 test_expect_success '--reset-author-date works with apply backend' '

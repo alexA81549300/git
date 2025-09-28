@@ -31,10 +31,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-test_merge () {
-	test_tick &&
-	git merge -s ours -m "$2" "$1" &&
-	git tag "$2"
+test_merge() {
+  test_tick \
+    && git merge -s ours -m "$2" "$1" \
+    && git tag "$2"
 }
 
 test_expect_success setup '
@@ -55,10 +55,10 @@ test_expect_success setup '
 	test_commit M
 '
 
-test_ancestry () {
-	args=$1
-	expected=$2
-	test_expect_success "log $args" "
+test_ancestry() {
+  args=$1
+  expected=$2
+  test_expect_success "log $args" "
 		test_write_lines $expected >expect &&
 		git log --format=%s $args >raw &&
 

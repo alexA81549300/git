@@ -21,7 +21,7 @@ test_expect_success 'git svn help works anywhere' '
 '
 
 test_expect_success \
-	'initialize git svn' '
+  'initialize git svn' '
 	mkdir import &&
 	(
 		cd import &&
@@ -56,7 +56,6 @@ test_expect_success "$name" '
 	svn_cmd up "$SVN_TREE" &&
 	test -d "$SVN_TREE"/dir && test ! -d "$SVN_TREE"/dir/a'
 
-
 name='detect node change from file to directory #1'
 test_expect_success "$name" '
 	mkdir dir/new_file &&
@@ -68,7 +67,6 @@ test_expect_success "$name" '
 	test_must_fail git svn set-tree --find-copies-harder --rmdir \
 		remotes/git-svn..mybranch
 '
-
 
 name='detect node change from directory to file #1'
 test_expect_success "$name" '
@@ -83,7 +81,6 @@ test_expect_success "$name" '
 	test_must_fail git svn set-tree --find-copies-harder --rmdir \
 		remotes/git-svn..mybranch2
 '
-
 
 name='detect node change from file to directory #2'
 test_expect_success "$name" '
@@ -116,7 +113,6 @@ test_expect_success "$name" '
 		remotes/git-svn..mybranch4
 '
 
-
 name='remove executable bit from a file'
 test_expect_success POSIXPERM "$name" '
 	rm -f "$GIT_DIR"/index &&
@@ -129,7 +125,6 @@ test_expect_success POSIXPERM "$name" '
 	svn_cmd up "$SVN_TREE" &&
 	test ! -x "$SVN_TREE"/exec.sh'
 
-
 name='add executable bit back file'
 test_expect_success POSIXPERM "$name" '
 	chmod +x exec.sh &&
@@ -139,7 +134,6 @@ test_expect_success POSIXPERM "$name" '
 		remotes/git-svn..mybranch5 &&
 	svn_cmd up "$SVN_TREE" &&
 	test -x "$SVN_TREE"/exec.sh'
-
 
 name='executable file becomes a symlink to file'
 test_expect_success SYMLINKS "$name" '
@@ -194,7 +188,7 @@ name='test fetch functionality (svn => git) with alternate GIT_SVN_ID'
 GIT_SVN_ID=alt
 export GIT_SVN_ID
 test_expect_success "$name" \
-    'git svn init "$svnrepo" && git svn fetch &&
+  'git svn init "$svnrepo" && git svn fetch &&
      git log --format="tree %T %s" remotes/git-svn |
 	awk "!seen[\$0]++ { print \$1, \$2 }" >a &&
      git log --format="tree %T" alt >b &&
@@ -202,12 +196,11 @@ test_expect_success "$name" \
 
 name='check imported tree checksums expected tree checksums'
 rm -f expected
-if test_have_prereq UTF8
-then
-	echo tree dc68b14b733e4ec85b04ab6f712340edc5dc936e > expected.sha1
-	echo tree b95b55b29d771f5eb73aa9b9d52d02fe11a2538c2feb0829f754ce20a91d98eb > expected.sha256
+if test_have_prereq UTF8; then
+  echo tree dc68b14b733e4ec85b04ab6f712340edc5dc936e >expected.sha1
+  echo tree b95b55b29d771f5eb73aa9b9d52d02fe11a2538c2feb0829f754ce20a91d98eb >expected.sha256
 fi
-cat >> expected.sha1 <<\EOF
+cat >>expected.sha1 <<\EOF
 tree c3322890dcf74901f32d216f05c5044f670ce632
 tree d3ccd5035feafd17b030c5732e7808cc49122853
 tree d03e1630363d4881e68929d532746b20b0986b83
@@ -217,7 +210,7 @@ tree 149d63cd5878155c846e8c55d7d8487de283f89e
 tree d667270a1f7b109f5eb3aaea21ede14b56bfdd6e
 tree 8f51f74cf0163afc9ad68a4b1537288c4558b5a4
 EOF
-cat >> expected.sha256 <<\EOF
+cat >>expected.sha256 <<\EOF
 tree 8d12756699d0b5b110514240a0ff141f6cbf8891fd69ab05e5594196fb437c9f
 tree 8187168d33f7d4ccb8c1cc6e99532810aaccb47658f35d19b3803072d1128d7a
 tree 74e535d85da8ee25eb23d7b506790c5ab3ccdb1ba0826bd57625ed44ef361650

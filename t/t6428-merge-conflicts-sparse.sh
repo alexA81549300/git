@@ -25,44 +25,36 @@ test_description="merge cases"
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-merge.sh
 
-
 # Testcase basic, conflicting changes in 'numerals'
 
-test_setup_numerals () {
-	git init numerals_$1 &&
-	(
-		cd numerals_$1 &&
-
-		>README &&
-		test_write_lines I II III >numerals &&
-		git add README numerals &&
-		test_tick &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B &&
-
-		git checkout A &&
-		test_write_lines I II III IIII >numerals &&
-		git add numerals &&
-		test_tick &&
-		git commit -m "A" &&
-
-		git checkout B &&
-		test_write_lines I II III IV >numerals &&
-		git add numerals &&
-		test_tick &&
-		git commit -m "B" &&
-
-		cat <<-EOF >expected-index &&
+test_setup_numerals() {
+  git init numerals_$1 \
+    && (
+      cd numerals_$1 \
+        && >README \
+        && test_write_lines I II III >numerals \
+        && git add README numerals \
+        && test_tick \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B \
+        && git checkout A \
+        && test_write_lines I II III IIII >numerals \
+        && git add numerals \
+        && test_tick \
+        && git commit -m "A" \
+        && git checkout B \
+        && test_write_lines I II III IV >numerals \
+        && git add numerals \
+        && test_tick \
+        && git commit -m "B" \
+        && cat <<-EOF >expected-index && cat <<-EOF >expected-merge
 		H README
 		M numerals
 		M numerals
 		M numerals
 		EOF
-
-		cat <<-EOF >expected-merge
 		I
 		II
 		III
@@ -73,7 +65,7 @@ test_setup_numerals () {
 		>>>>>>> B^0
 		EOF
 
-	)
+    )
 }
 
 test_expect_success 'conflicting entries written to worktree even if sparse' '

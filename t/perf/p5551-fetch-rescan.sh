@@ -20,7 +20,6 @@ test_expect_success 'create parent and child' '
 	git clone parent child
 '
 
-
 test_expect_success 'create refs in the parent' '
 	(
 		cd parent &&

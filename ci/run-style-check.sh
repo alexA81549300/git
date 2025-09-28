@@ -17,9 +17,9 @@ baseCommit=$1
 #
 # [1]: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#removebracesllvm
 {
-	cat .clang-format
-	echo "RemoveBracesLLVM: true"
+  cat .clang-format
+  echo "RemoveBracesLLVM: true"
 } >/tmp/clang-format-rules
 
 git clang-format --style=file:/tmp/clang-format-rules \
-	--diff --extensions c,h "$baseCommit"
+  --diff --extensions c,h "$baseCommit"

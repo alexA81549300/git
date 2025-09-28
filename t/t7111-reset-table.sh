@@ -7,16 +7,14 @@ test_description='Tests to check that "reset" options follow a known table'
 
 . ./test-lib.sh
 
-
 test_expect_success 'creating initial commits' '
 	test_commit E file1 &&
 	test_commit D file1 &&
 	test_commit C file1
 '
 
-while read W1 I1 H1 T opt W2 I2 H2
-do
-    test_expect_success "check: $W1 $I1 $H1 $T --$opt $W2 $I2 $H2" '
+while read W1 I1 H1 T opt W2 I2 H2; do
+  test_expect_success "check: $W1 $I1 $H1 $T --$opt $W2 $I2 $H2" '
 	git reset --hard C &&
 	if test "$I1" != "$H1"
 	then
@@ -82,9 +80,8 @@ test_expect_success 'setting up branches to test with unmerged entries' '
 	test_commit B file1
 '
 
-while read W1 I1 H1 T opt W2 I2 H2
-do
-    test_expect_success "check: $W1 $I1 $H1 $T --$opt $W2 $I2 $H2" '
+while read W1 I1 H1 T opt W2 I2 H2; do
+  test_expect_success "check: $W1 $I1 $H1 $T --$opt $W2 $I2 $H2" '
 	git reset --hard B &&
 	test_must_fail git merge branch1 &&
 	cat file1 >X_file1 &&

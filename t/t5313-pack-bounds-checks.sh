@@ -4,31 +4,31 @@ test_description='bounds-checking of access to mmapped on-disk file formats'
 
 . ./test-lib.sh
 
-clear_base () {
-	test_when_finished 'restore_base' &&
-	rm -r -f $base
+clear_base() {
+  test_when_finished 'restore_base' \
+    && rm -r -f $base
 }
 
-restore_base () {
-	cp -r base-backup/* .git/objects/pack/
+restore_base() {
+  cp -r base-backup/* .git/objects/pack/
 }
 
-do_pack () {
-	pack_objects=$1; shift
-	sha1=$(
-		for i in $pack_objects
-		do
-			echo $i
-		done | git pack-objects "$@" .git/objects/pack/pack
-	) &&
-	pack=.git/objects/pack/pack-$sha1.pack &&
-	idx=.git/objects/pack/pack-$sha1.idx &&
-	chmod +w $pack $idx &&
-	test_when_finished 'rm -f "$pack" "$idx"'
+do_pack() {
+  pack_objects=$1
+  shift
+  sha1=$(
+    for i in $pack_objects; do
+      echo $i
+    done | git pack-objects "$@" .git/objects/pack/pack
+  ) \
+    && pack=.git/objects/pack/pack-$sha1.pack \
+    && idx=.git/objects/pack/pack-$sha1.idx \
+    && chmod +w $pack $idx \
+    && test_when_finished 'rm -f "$pack" "$idx"'
 }
 
-munge () {
-	printf "$3" | dd of="$1" bs=1 conv=notrunc seek=$2
+munge() {
+  printf "$3" | dd of="$1" bs=1 conv=notrunc seek=$2
 }
 
 # Offset in a v2 .idx to its initial and extended offset tables. For an index
@@ -38,11 +38,11 @@ munge () {
 #
 # for the initial, and another ofs(4*nr) past that for the extended.
 #
-ofs_table () {
-	echo $((4 + 4 + 4*256 + $(test_oid rawsz)*$1 + 4*$1))
+ofs_table() {
+  echo $((4 + 4 + 4 * 256 + $(test_oid rawsz) * $1 + 4 * $1))
 }
-extended_table () {
-	echo $(($(ofs_table "$1") + 4*$1))
+extended_table() {
+  echo $(($(ofs_table "$1") + 4 * $1))
 }
 
 test_expect_success 'setup' '

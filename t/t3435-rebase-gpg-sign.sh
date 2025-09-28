@@ -12,23 +12,21 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . "$TEST_DIRECTORY/lib-rebase.sh"
 . "$TEST_DIRECTORY/lib-gpg.sh"
 
-if ! test_have_prereq GPG
-then
-	skip_all='skip all test rebase --[no-]gpg-sign, gpg not available'
-	test_done
+if ! test_have_prereq GPG; then
+  skip_all='skip all test rebase --[no-]gpg-sign, gpg not available'
+  test_done
 fi
 
-test_rebase_gpg_sign () {
-	local must_fail= will=will fake_editor=
-	if test "x$1" = "x!"
-	then
-		must_fail=test_must_fail
-		will="won't"
-		shift
-	fi
-	conf=$1
-	shift
-	test_expect_success "rebase $* with commit.gpgsign=$conf $will sign commit" "
+test_rebase_gpg_sign() {
+  local must_fail= will=will fake_editor=
+  if test "x$1" = "x!"; then
+    must_fail=test_must_fail
+    will="won't"
+    shift
+  fi
+  conf=$1
+  shift
+  test_expect_success "rebase $* with commit.gpgsign=$conf $will sign commit" "
 		git reset two &&
 		git config commit.gpgsign $conf &&
 		set_fake_editor &&
@@ -55,14 +53,14 @@ test_expect_success 'setup: merge commit' '
 '
 
 test_rebase_gpg_sign ! false
-test_rebase_gpg_sign   true
-test_rebase_gpg_sign ! true  --no-gpg-sign
-test_rebase_gpg_sign ! true  --gpg-sign --no-gpg-sign
-test_rebase_gpg_sign   false --no-gpg-sign --gpg-sign
-test_rebase_gpg_sign   true  -i
-test_rebase_gpg_sign ! true  -i --no-gpg-sign
-test_rebase_gpg_sign ! true  -i --gpg-sign --no-gpg-sign
-test_rebase_gpg_sign   false -i --no-gpg-sign --gpg-sign
+test_rebase_gpg_sign true
+test_rebase_gpg_sign ! true --no-gpg-sign
+test_rebase_gpg_sign ! true --gpg-sign --no-gpg-sign
+test_rebase_gpg_sign false --no-gpg-sign --gpg-sign
+test_rebase_gpg_sign true -i
+test_rebase_gpg_sign ! true -i --no-gpg-sign
+test_rebase_gpg_sign ! true -i --gpg-sign --no-gpg-sign
+test_rebase_gpg_sign false -i --no-gpg-sign --gpg-sign
 
 test_expect_success 'rebase -r, merge strategy, --gpg-sign will sign commit' '
 	git reset --hard merged &&

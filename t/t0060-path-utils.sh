@@ -8,8 +8,8 @@ test_description='Test various path utilities'
 . ./test-lib.sh
 
 norm_path() {
-	expected=$(test-tool path-utils print_path "$2")
-	test_expect_success $3 "normalize path: $1 => $2" "
+  expected=$(test-tool path-utils print_path "$2")
+  test_expect_success $3 "normalize path: $1 => $2" "
 		echo '$expected' >expect &&
 		test-tool path-utils normalize_path_copy '$1' >actual &&
 		test_cmp expect actual
@@ -17,8 +17,8 @@ norm_path() {
 }
 
 relative_path() {
-	expected=$(test-tool path-utils print_path "$3")
-	test_expect_success $4 "relative path: $1 $2 => $3" "
+  expected=$(test-tool path-utils print_path "$3")
+  test_expect_success $4 "relative path: $1 $2 => $3" "
 		echo '$expected' >expect &&
 		test-tool path-utils relative_path '$1' '$2' >actual &&
 		test_cmp expect actual
@@ -26,7 +26,7 @@ relative_path() {
 }
 
 test_submodule_relative_url() {
-	test_expect_success "test_submodule_relative_url: $1 $2 $3 => $4" "
+  test_expect_success "test_submodule_relative_url: $1 $2 $3 => $4" "
 		echo '$4' >expect &&
 		test-tool submodule resolve-relative-url '$1' '$2' '$3' >actual &&
 		test_cmp expect actual
@@ -34,7 +34,7 @@ test_submodule_relative_url() {
 }
 
 test_git_path() {
-	test_expect_success "git-path $1 $2 => $3" "
+  test_expect_success "git-path $1 $2 => $3" "
 		$1 git rev-parse --git-path $2 >actual &&
 		echo $3 >expect &&
 		test_cmp expect actual
@@ -47,30 +47,30 @@ test_git_path() {
 rootoff=$(test-tool path-utils normalize_path_copy / | wc -c)
 # Account for the trailing LF:
 if test $rootoff = 2; then
-	rootoff=	# we are on Unix
+  rootoff= # we are on Unix
 else
-	rootoff=$(($rootoff-1))
-	# In MSYS2, the root directory "/" is translated into a Windows
-	# directory *with* trailing slash. Let's test for that and adjust
-	# our expected longest ancestor length accordingly.
-	case "$(test-tool path-utils print_path /)" in
-	*/) rootslash=1;;
-	*) rootslash=0;;
-	esac
+  rootoff=$(($rootoff - 1))
+  # In MSYS2, the root directory "/" is translated into a Windows
+  # directory *with* trailing slash. Let's test for that and adjust
+  # our expected longest ancestor length accordingly.
+  case "$(test-tool path-utils print_path /)" in
+    */) rootslash=1 ;;
+    *) rootslash=0 ;;
+  esac
 fi
 
 ancestor() {
-	# We do some math with the expected ancestor length.
-	expected=$3
-	case "$rootoff,$expected,$2" in
-	*,*,//*) ;; # leave UNC paths alone
-	[0-9]*,[0-9]*,/*)
-		# On Windows, expect MSYS2 pseudo root translation for
-		# Unix-style absolute paths
-		expected=$(($expected-$rootslash+$rootoff))
-		;;
-	esac
-	test_expect_success $4 "longest ancestor: $1 $2 => $expected" "
+  # We do some math with the expected ancestor length.
+  expected=$3
+  case "$rootoff,$expected,$2" in
+    *,*,//*) ;; # leave UNC paths alone
+    [0-9]*,[0-9]*,/*)
+      # On Windows, expect MSYS2 pseudo root translation for
+      # Unix-style absolute paths
+      expected=$(($expected - $rootslash + $rootoff))
+      ;;
+  esac
+  test_expect_success $4 "longest ancestor: $1 $2 => $expected" "
 		echo '$expected' >expect &&
 		test-tool path-utils longest_ancestor_length '$1' '$2' >actual &&
 		test_cmp expect actual
@@ -80,13 +80,11 @@ ancestor() {
 # Some absolute path tests should be skipped on Windows due to path mangling
 # on POSIX-style absolute paths
 case $(uname -s) in
-*MINGW*)
-	;;
-*CYGWIN*)
-	;;
-*)
-	test_set_prereq POSIX
-	;;
+  *MINGW*) ;;
+  *CYGWIN*) ;;
+  *)
+    test_set_prereq POSIX
+    ;;
 esac
 
 test_expect_success basename 'test-tool path-utils basename'
@@ -307,40 +305,40 @@ test_expect_success SYMLINKS 'prefix_path works with absolute path to a symlink 
 	test_cmp expect actual
 '
 
-relative_path /foo/a/b/c/	/foo/a/b/	c/
-relative_path /foo/a/b/c/	/foo/a/b	c/
-relative_path /foo/a//b//c/	///foo/a/b//	c/		POSIX
-relative_path /foo/a/b		/foo/a/b	./
-relative_path /foo/a/b/		/foo/a/b	./
-relative_path /foo/a		/foo/a/b	../
-relative_path /			/foo/a/b/	../../../
-relative_path /foo/a/c		/foo/a/b/	../c
-relative_path /foo/a/c		/foo/a/b	../c
-relative_path /foo/x/y		/foo/a/b/	../../x/y
-relative_path /foo/a/b		"<empty>"	/foo/a/b
-relative_path /foo/a/b 		"<null>"	/foo/a/b
-relative_path foo/a/b/c/	foo/a/b/	c/
-relative_path foo/a/b/c/	foo/a/b		c/
-relative_path foo/a/b//c	foo/a//b	c
-relative_path foo/a/b/		foo/a/b/	./
-relative_path foo/a/b/		foo/a/b		./
-relative_path foo/a		foo/a/b		../
-relative_path foo/x/y		foo/a/b		../../x/y
-relative_path foo/a/c		foo/a/b		../c
-relative_path foo/a/b		/foo/x/y	foo/a/b
-relative_path /foo/a/b		foo/x/y		/foo/a/b
-relative_path d:/a/b		D:/a/c		../b		MINGW
-relative_path C:/a/b		D:/a/c		C:/a/b		MINGW
-relative_path foo/a/b		"<empty>"	foo/a/b
-relative_path foo/a/b 		"<null>"	foo/a/b
-relative_path "<empty>"		/foo/a/b	./
-relative_path "<empty>"		"<empty>"	./
-relative_path "<empty>"		"<null>"	./
-relative_path "<null>"		"<empty>"	./
-relative_path "<null>"		"<null>"	./
-relative_path "<null>"		/foo/a/b	./
+relative_path /foo/a/b/c/ /foo/a/b/ c/
+relative_path /foo/a/b/c/ /foo/a/b c/
+relative_path /foo/a//b//c/ ///foo/a/b// c/ POSIX
+relative_path /foo/a/b /foo/a/b ./
+relative_path /foo/a/b/ /foo/a/b ./
+relative_path /foo/a /foo/a/b ../
+relative_path / /foo/a/b/ ../../../
+relative_path /foo/a/c /foo/a/b/ ../c
+relative_path /foo/a/c /foo/a/b ../c
+relative_path /foo/x/y /foo/a/b/ ../../x/y
+relative_path /foo/a/b "<empty>" /foo/a/b
+relative_path /foo/a/b "<null>" /foo/a/b
+relative_path foo/a/b/c/ foo/a/b/ c/
+relative_path foo/a/b/c/ foo/a/b c/
+relative_path foo/a/b//c foo/a//b c
+relative_path foo/a/b/ foo/a/b/ ./
+relative_path foo/a/b/ foo/a/b ./
+relative_path foo/a foo/a/b ../
+relative_path foo/x/y foo/a/b ../../x/y
+relative_path foo/a/c foo/a/b ../c
+relative_path foo/a/b /foo/x/y foo/a/b
+relative_path /foo/a/b foo/x/y /foo/a/b
+relative_path d:/a/b D:/a/c ../b MINGW
+relative_path C:/a/b D:/a/c C:/a/b MINGW
+relative_path foo/a/b "<empty>" foo/a/b
+relative_path foo/a/b "<null>" foo/a/b
+relative_path "<empty>" /foo/a/b ./
+relative_path "<empty>" "<empty>" ./
+relative_path "<empty>" "<null>" ./
+relative_path "<null>" "<empty>" ./
+relative_path "<null>" "<null>" ./
+relative_path "<null>" /foo/a/b ./
 
-test_git_path A=B                info/grafts .git/info/grafts
+test_git_path A=B info/grafts .git/info/grafts
 test_git_path GIT_GRAFT_FILE=foo info/grafts foo
 test_git_path GIT_GRAFT_FILE=foo info/////grafts foo
 test_git_path GIT_INDEX_FILE=foo index foo
@@ -351,34 +349,34 @@ test_git_path GIT_OBJECT_DIRECTORY=foo objects foo
 test_git_path GIT_OBJECT_DIRECTORY=foo objects/foo foo/foo
 test_git_path GIT_OBJECT_DIRECTORY=foo objects2 .git/objects2
 test_expect_success 'setup common repository' 'git --git-dir=bar init'
-test_git_path GIT_COMMON_DIR=bar index                    .git/index
-test_git_path GIT_COMMON_DIR=bar index.lock               .git/index.lock
-test_git_path GIT_COMMON_DIR=bar HEAD                     .git/HEAD
-test_git_path GIT_COMMON_DIR=bar logs/HEAD                .git/logs/HEAD
-test_git_path GIT_COMMON_DIR=bar logs/HEAD.lock           .git/logs/HEAD.lock
-test_git_path GIT_COMMON_DIR=bar logs/refs/bisect/foo     .git/logs/refs/bisect/foo
-test_git_path GIT_COMMON_DIR=bar logs/refs                bar/logs/refs
-test_git_path GIT_COMMON_DIR=bar logs/refs/               bar/logs/refs/
-test_git_path GIT_COMMON_DIR=bar logs/refs/bisec/foo      bar/logs/refs/bisec/foo
-test_git_path GIT_COMMON_DIR=bar logs/refs/bisec          bar/logs/refs/bisec
-test_git_path GIT_COMMON_DIR=bar logs/refs/bisectfoo      bar/logs/refs/bisectfoo
-test_git_path GIT_COMMON_DIR=bar objects                  bar/objects
-test_git_path GIT_COMMON_DIR=bar objects/bar              bar/objects/bar
-test_git_path GIT_COMMON_DIR=bar info/exclude             bar/info/exclude
-test_git_path GIT_COMMON_DIR=bar info/grafts              bar/info/grafts
-test_git_path GIT_COMMON_DIR=bar info/sparse-checkout     .git/info/sparse-checkout
-test_git_path GIT_COMMON_DIR=bar info//sparse-checkout    .git/info//sparse-checkout
-test_git_path GIT_COMMON_DIR=bar remotes/bar              bar/remotes/bar
-test_git_path GIT_COMMON_DIR=bar branches/bar             bar/branches/bar
-test_git_path GIT_COMMON_DIR=bar logs/refs/heads/main     bar/logs/refs/heads/main
-test_git_path GIT_COMMON_DIR=bar refs/heads/main          bar/refs/heads/main
-test_git_path GIT_COMMON_DIR=bar refs/bisect/foo          .git/refs/bisect/foo
-test_git_path GIT_COMMON_DIR=bar hooks/me                 bar/hooks/me
-test_git_path GIT_COMMON_DIR=bar config                   bar/config
-test_git_path GIT_COMMON_DIR=bar packed-refs              bar/packed-refs
-test_git_path GIT_COMMON_DIR=bar shallow                  bar/shallow
-test_git_path GIT_COMMON_DIR=bar common                   bar/common
-test_git_path GIT_COMMON_DIR=bar common/file              bar/common/file
+test_git_path GIT_COMMON_DIR=bar index .git/index
+test_git_path GIT_COMMON_DIR=bar index.lock .git/index.lock
+test_git_path GIT_COMMON_DIR=bar HEAD .git/HEAD
+test_git_path GIT_COMMON_DIR=bar logs/HEAD .git/logs/HEAD
+test_git_path GIT_COMMON_DIR=bar logs/HEAD.lock .git/logs/HEAD.lock
+test_git_path GIT_COMMON_DIR=bar logs/refs/bisect/foo .git/logs/refs/bisect/foo
+test_git_path GIT_COMMON_DIR=bar logs/refs bar/logs/refs
+test_git_path GIT_COMMON_DIR=bar logs/refs/ bar/logs/refs/
+test_git_path GIT_COMMON_DIR=bar logs/refs/bisec/foo bar/logs/refs/bisec/foo
+test_git_path GIT_COMMON_DIR=bar logs/refs/bisec bar/logs/refs/bisec
+test_git_path GIT_COMMON_DIR=bar logs/refs/bisectfoo bar/logs/refs/bisectfoo
+test_git_path GIT_COMMON_DIR=bar objects bar/objects
+test_git_path GIT_COMMON_DIR=bar objects/bar bar/objects/bar
+test_git_path GIT_COMMON_DIR=bar info/exclude bar/info/exclude
+test_git_path GIT_COMMON_DIR=bar info/grafts bar/info/grafts
+test_git_path GIT_COMMON_DIR=bar info/sparse-checkout .git/info/sparse-checkout
+test_git_path GIT_COMMON_DIR=bar info//sparse-checkout .git/info//sparse-checkout
+test_git_path GIT_COMMON_DIR=bar remotes/bar bar/remotes/bar
+test_git_path GIT_COMMON_DIR=bar branches/bar bar/branches/bar
+test_git_path GIT_COMMON_DIR=bar logs/refs/heads/main bar/logs/refs/heads/main
+test_git_path GIT_COMMON_DIR=bar refs/heads/main bar/refs/heads/main
+test_git_path GIT_COMMON_DIR=bar refs/bisect/foo .git/refs/bisect/foo
+test_git_path GIT_COMMON_DIR=bar hooks/me bar/hooks/me
+test_git_path GIT_COMMON_DIR=bar config bar/config
+test_git_path GIT_COMMON_DIR=bar packed-refs bar/packed-refs
+test_git_path GIT_COMMON_DIR=bar shallow bar/shallow
+test_git_path GIT_COMMON_DIR=bar common bar/common
+test_git_path GIT_COMMON_DIR=bar common/file bar/common/file
 
 # In the tests below, $(pwd) must be used because it is a native path on
 # Windows and avoids MSYS's path mangling (which simplifies "foo/../bar" and

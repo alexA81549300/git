@@ -118,7 +118,7 @@ test_expect_success 'migrate --minimize on old inited layout' '
 	grep "^:refs/remotes/git-svn" fetch.out
 	'
 
-test_expect_success  ".rev_db auto-converted to .rev_map.UUID" '
+test_expect_success ".rev_db auto-converted to .rev_map.UUID" '
 	git svn fetch -i trunk &&
 	test -z "$(ls "$GIT_DIR"/svn/refs/remotes/origin/trunk/.rev_db.* 2>/dev/null)" &&
 	expect="$(ls "$GIT_DIR"/svn/refs/remotes/origin/trunk/.rev_map.*)" &&

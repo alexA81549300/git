@@ -4,10 +4,10 @@ test_description='git svn handling of root commits in merge ranges'
 
 svn_ver="$(svn --version --quiet)"
 case $svn_ver in
-0.* | 1.[0-4].*)
-	skip_all="skipping git-svn test - SVN too old ($svn_ver)"
-	test_done
-	;;
+  0.* | 1.[0-4].*)
+    skip_all="skipping git-svn test - SVN too old ($svn_ver)"
+    test_done
+    ;;
 esac
 
 test_expect_success 'test handling of root commits in merge ranges' '

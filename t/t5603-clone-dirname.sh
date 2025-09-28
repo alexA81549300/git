@@ -19,25 +19,26 @@ test_expect_success 'setup ssh wrapper' '
 '
 
 # make sure that cloning $1 results in local directory $2
-test_clone_dir () {
-	url=$1; shift
-	dir=$1; shift
-	expect=success
-	bare=non-bare
-	clone_opts=
-	for i in "$@"
-	do
-		case "$i" in
-		fail)
-			expect=failure
-			;;
-		bare)
-			bare=bare
-			clone_opts=--bare
-			;;
-		esac
-	done
-	test_expect_$expect "clone of $url goes to $dir ($bare)" "
+test_clone_dir() {
+  url=$1
+  shift
+  dir=$1
+  shift
+  expect=success
+  bare=non-bare
+  clone_opts=
+  for i in "$@"; do
+    case "$i" in
+      fail)
+        expect=failure
+        ;;
+      bare)
+        bare=bare
+        clone_opts=--bare
+        ;;
+    esac
+  done
+  test_expect_$expect "clone of $url goes to $dir ($bare)" "
 		rm -rf $dir &&
 		git clone $clone_opts $url &&
 		test_path_is_dir $dir

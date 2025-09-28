@@ -21,10 +21,10 @@ test_expect_success 'first branch switch' '
 	git checkout other
 '
 
-test_cmp_symbolic_HEAD_ref () {
-	echo refs/heads/"$1" >expect &&
-	git symbolic-ref HEAD >actual &&
-	test_cmp expect actual
+test_cmp_symbolic_HEAD_ref() {
+  echo refs/heads/"$1" >expect \
+    && git symbolic-ref HEAD >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success '"checkout -" switches back' '
@@ -63,11 +63,10 @@ test_expect_success 'more switches' '
 	done
 '
 
-more_switches () {
-	for i in 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1
-	do
-		git checkout branch$i || return 1
-	done
+more_switches() {
+  for i in 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1; do
+    git checkout branch$i || return 1
+  done
 }
 
 test_expect_success 'switch to the last' '

@@ -9,10 +9,10 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 # May be altered later in the test
 PREREQ="PERL"
 
-replace_variable_fields () {
-	sed	-e "s/^\(Date:\).*/\1 DATE-STRING/" \
-		-e "s/^\(Message-ID:\).*/\1 MESSAGE-ID-STRING/" \
-		-e "s/^\(X-Mailer:\).*/\1 X-MAILER-STRING/"
+replace_variable_fields() {
+  sed -e "s/^\(Date:\).*/\1 DATE-STRING/" \
+    -e "s/^\(Message-ID:\).*/\1 MESSAGE-ID-STRING/" \
+    -e "s/^\(X-Mailer:\).*/\1 X-MAILER-STRING/"
 }
 
 test_expect_success $PREREQ 'prepare reference tree' '
@@ -40,8 +40,8 @@ test_expect_success $PREREQ 'Setup helper tool' '
 	GIT_AUTHOR_NAME="A" git commit -a -m "Second."
 '
 
-clean_fake_sendmail () {
-	rm -f commandline* msgtxt*
+clean_fake_sendmail() {
+  rm -f commandline* msgtxt*
 }
 
 test_expect_success $PREREQ 'Extract patches' '
@@ -50,35 +50,33 @@ test_expect_success $PREREQ 'Extract patches' '
 '
 
 # Test no confirm early to ensure remaining tests will not hang
-test_no_confirm () {
-	rm -f no_confirm_okay
-	echo n | \
-		GIT_SEND_EMAIL_NOTTY=1 \
-		git send-email \
-		--from="Example <from@example.com>" \
-		--to=nobody@example.com \
-		--smtp-server="$(pwd)/fake.sendmail" \
-		$@ \
-		$patches >stdout &&
-	! grep "Send this email" stdout &&
-	>no_confirm_okay
+test_no_confirm() {
+  rm -f no_confirm_okay
+  echo n \
+    | GIT_SEND_EMAIL_NOTTY=1 \
+      git send-email \
+      --from="Example <from@example.com>" \
+      --to=nobody@example.com \
+      --smtp-server="$(pwd)/fake.sendmail" \
+      $@ \
+      $patches >stdout \
+    && ! grep "Send this email" stdout \
+    && >no_confirm_okay
 }
 
 # Exit immediately to prevent hang if a no-confirm test fails
-check_no_confirm () {
-	if ! test -f no_confirm_okay
-	then
-		say 'confirm test failed; skipping remaining tests to prevent hanging'
-		PREREQ="$PREREQ,CHECK_NO_CONFIRM"
-	fi
-	return 0
+check_no_confirm() {
+  if ! test -f no_confirm_okay; then
+    say 'confirm test failed; skipping remaining tests to prevent hanging'
+    PREREQ="$PREREQ,CHECK_NO_CONFIRM"
+  fi
+  return 0
 }
 
 test_expect_success $PREREQ 'No confirm with --suppress-cc' '
 	test_no_confirm --suppress-cc=sob &&
 	check_no_confirm
 '
-
 
 test_expect_success $PREREQ 'No confirm with --confirm=never' '
 	test_no_confirm --confirm=never &&
@@ -236,34 +234,24 @@ Result: OK
 EOF
 "
 
-test_suppress_self () {
-	test_commit $3 &&
-	test_when_finished "git reset --hard HEAD^" &&
-
-	write_script cccmd-sed <<-EOF &&
+test_suppress_self() {
+  test_commit $3 \
+    && test_when_finished "git reset --hard HEAD^" \
+    && write_script cccmd-sed <<-EOF && git commit --amend --author="$1 <$2>" -F - && clean_fake_sendmail && git format-patch --stdout -1 >"suppress-self-$3.patch" && git send-email --from="$1 <$2>" \
+      --to=nobody@example.com \
+      --cc-cmd=./cccmd-sed \
+      --suppress-cc=self \
+      --smtp-server="$(pwd)/fake.sendmail" \
+      suppress-self-$3.patch && mv msgtxt1 msgtxt1-$3 && sed -e '/^$/q' msgtxt1-$3 >"msghdr1-$3" && (
 		sed -n -e s/^cccmd--//p "\$1"
 	EOF
-
-	git commit --amend --author="$1 <$2>" -F - &&
-	clean_fake_sendmail &&
-	git format-patch --stdout -1 >"suppress-self-$3.patch" &&
-
-	git send-email --from="$1 <$2>" \
-		--to=nobody@example.com \
-		--cc-cmd=./cccmd-sed \
-		--suppress-cc=self \
-		--smtp-server="$(pwd)/fake.sendmail" \
-		suppress-self-$3.patch &&
-
-	mv msgtxt1 msgtxt1-$3 &&
-	sed -e '/^$/q' msgtxt1-$3 >"msghdr1-$3" &&
-
-	(grep '^Cc:' msghdr1-$3 >"actual-no-cc-$3";
-	 test_must_be_empty actual-no-cc-$3)
+      grep '^Cc:' msghdr1-$3 >"actual-no-cc-$3"
+      test_must_be_empty actual-no-cc-$3
+    )
 }
 
-test_suppress_self_unquoted () {
-	test_suppress_self "$1" "$2" "unquoted-$3" <<-EOF
+test_suppress_self_unquoted() {
+  test_suppress_self "$1" "$2" "unquoted-$3" <<-EOF
 		test suppress-cc.self unquoted-$3 with name $1 email $2
 
 		unquoted-$3
@@ -275,8 +263,8 @@ test_suppress_self_unquoted () {
 	EOF
 }
 
-test_suppress_self_quoted () {
-	test_suppress_self "$1" "$2" "quoted-$3" <<-EOF
+test_suppress_self_quoted() {
+  test_suppress_self "$1" "$2" "quoted-$3" <<-EOF
 		test suppress-cc.self quoted-$3 with name $1 email $2
 
 		quoted-$3
@@ -575,9 +563,8 @@ test_expect_success $PREREQ 'carriage returns with auto encoding are quoted-prin
 	grep "Content-Transfer-Encoding: quoted-printable" msgtxt1
 '
 
-for enc in auto quoted-printable base64
-do
-	test_expect_success $PREREQ "--validate passes with encoding $enc" '
+for enc in auto quoted-printable base64; do
+  test_expect_success $PREREQ "--validate passes with encoding $enc" '
 		git send-email \
 			--from="Example <nobody@example.com>" \
 			--to=nobody@example.com \
@@ -688,9 +675,8 @@ test_expect_success $PREREQ 'clear message-id before parsing a new message' '
 	test "z$id1" != "z$id2"
 '
 
-for enc in 7bit 8bit quoted-printable base64
-do
-	test_expect_success $PREREQ "--transfer-encoding=$enc produces correct header" '
+for enc in 7bit 8bit quoted-printable base64; do
+  test_expect_success $PREREQ "--transfer-encoding=$enc produces correct header" '
 		clean_fake_sendmail &&
 		git send-email \
 			--from="Example <nobody@example.com>" \
@@ -845,16 +831,16 @@ Result: OK
 EOF
 "
 
-test_suppression () {
-	git send-email \
-		--dry-run \
-		--suppress-cc=$1 ${2+"--suppress-cc=$2"} \
-		--from="Example <from@example.com>" \
-		--to=to@example.com \
-		--smtp-server relay.example.com \
-		$patches | replace_variable_fields \
-		>actual-suppress-$1${2+"-$2"} &&
-	test_cmp expected-suppress-$1${2+"-$2"} actual-suppress-$1${2+"-$2"}
+test_suppression() {
+  git send-email \
+    --dry-run \
+    --suppress-cc=$1 ${2+"--suppress-cc=$2"} \
+    --from="Example <from@example.com>" \
+    --to=to@example.com \
+    --smtp-server relay.example.com \
+    $patches | replace_variable_fields \
+    >actual-suppress-$1${2+"-$2"} \
+    && test_cmp expected-suppress-$1${2+"-$2"} actual-suppress-$1${2+"-$2"}
 }
 
 test_expect_success $PREREQ 'sendemail.cc set' '
@@ -1129,15 +1115,15 @@ test_expect_success $PREREQ '--suppress-cc=cc' '
 	test_suppression cc
 '
 
-test_confirm () {
-	echo y | \
-		GIT_SEND_EMAIL_NOTTY=1 \
-		git send-email \
-		--from="Example <nobody@example.com>" \
-		--to=nobody@example.com \
-		--smtp-server="$(pwd)/fake.sendmail" \
-		$@ $patches >stdout &&
-	grep "Send this email" stdout
+test_confirm() {
+  echo y \
+    | GIT_SEND_EMAIL_NOTTY=1 \
+      git send-email \
+      --from="Example <nobody@example.com>" \
+      --to=nobody@example.com \
+      --smtp-server="$(pwd)/fake.sendmail" \
+      $@ $patches >stdout \
+    && grep "Send this email" stdout
 }
 
 test_expect_success $PREREQ '--confirm=always' '
@@ -1910,7 +1896,6 @@ test_expect_success $PREREQ 'CRLF and sendemail.transferencoding=base64' '
 	test_cmp expected actual
 '
 
-
 # Note that the patches in this test are deliberately out of order; we
 # want to make sure it works even if the cover-letter is not in the
 # first mail.
@@ -1947,31 +1932,31 @@ test_expect_success $PREREQ '--force sends cover letter template anyway' '
 	test -n "$(ls msgtxt*)"
 '
 
-test_cover_addresses () {
-	header="$1"
-	shift
-	clean_fake_sendmail &&
-	rm -fr outdir &&
-	git format-patch --cover-letter -2 -o outdir &&
-	cover=$(echo outdir/0000-*.patch) &&
-	mv $cover cover-to-edit.patch &&
-	perl -pe "s/^From:/$header: extra\@address.com\nFrom:/" cover-to-edit.patch >"$cover" &&
-	git send-email \
-		--force \
-		--from="Example <nobody@example.com>" \
-		--no-to --no-cc \
-		"$@" \
-		--smtp-server="$(pwd)/fake.sendmail" \
-		outdir/0000-*.patch \
-		outdir/0001-*.patch \
-		outdir/0002-*.patch \
-		2>errors >out &&
-	grep "^$header: extra@address.com" msgtxt1 >to1 &&
-	grep "^$header: extra@address.com" msgtxt2 >to2 &&
-	grep "^$header: extra@address.com" msgtxt3 >to3 &&
-	test_line_count = 1 to1 &&
-	test_line_count = 1 to2 &&
-	test_line_count = 1 to3
+test_cover_addresses() {
+  header="$1"
+  shift
+  clean_fake_sendmail \
+    && rm -fr outdir \
+    && git format-patch --cover-letter -2 -o outdir \
+    && cover=$(echo outdir/0000-*.patch) \
+    && mv $cover cover-to-edit.patch \
+    && perl -pe "s/^From:/$header: extra\@address.com\nFrom:/" cover-to-edit.patch >"$cover" \
+    && git send-email \
+      --force \
+      --from="Example <nobody@example.com>" \
+      --no-to --no-cc \
+      "$@" \
+      --smtp-server="$(pwd)/fake.sendmail" \
+      outdir/0000-*.patch \
+      outdir/0001-*.patch \
+      outdir/0002-*.patch \
+      2>errors >out \
+    && grep "^$header: extra@address.com" msgtxt1 >to1 \
+    && grep "^$header: extra@address.com" msgtxt2 >to2 \
+    && grep "^$header: extra@address.com" msgtxt3 >to3 \
+    && test_line_count = 1 to1 \
+    && test_line_count = 1 to2 \
+    && test_line_count = 1 to3
 }
 
 test_expect_success $PREREQ 'to-cover adds To to all mail' '
@@ -2035,13 +2020,12 @@ test_expect_success $PREREQ 'sendemail.aliasesfile=~/.mailrc' '
 	grep "^!someone@example\.org!$" commandline1
 '
 
-test_dump_aliases () {
-	msg="$1" && shift &&
-	filetype="$1" && shift &&
-	printf '%s\n' "$@" >expect &&
-	cat >.tmp-email-aliases &&
-
-	test_expect_success $PREREQ "$msg" '
+test_dump_aliases() {
+  msg="$1" && shift \
+    && filetype="$1" && shift \
+    && printf '%s\n' "$@" >expect \
+    && cat >.tmp-email-aliases \
+    && test_expect_success $PREREQ "$msg" '
 		clean_fake_sendmail && rm -fr outdir &&
 		git config --replace-all sendemail.aliasesfile \
 			"$(pwd)/.tmp-email-aliases" &&
@@ -2052,12 +2036,12 @@ test_dump_aliases () {
 }
 
 test_dump_aliases '--dump-aliases sendmail format' \
-	'sendmail' \
-	'abgroup' \
-	'alice' \
-	'bcgrp' \
-	'bob' \
-	'chloe' <<-\EOF
+  'sendmail' \
+  'abgroup' \
+  'alice' \
+  'bcgrp' \
+  'bob' \
+  'chloe' <<-\EOF
 	alice: Alice W Land <awol@example.com>
 	bob: Robert Bobbyton <bob@example.com>
 	chloe: chloe@example.com
@@ -2066,11 +2050,11 @@ test_dump_aliases '--dump-aliases sendmail format' \
 	EOF
 
 test_dump_aliases '--dump-aliases mutt format' \
-	'mutt' \
-	'alice' \
-	'bob' \
-	'chloe' \
-	'donald' <<-\EOF
+  'mutt' \
+  'alice' \
+  'bob' \
+  'chloe' \
+  'donald' <<-\EOF
 	alias alice Alice W Land <awol@example.com>
 	alias donald Donald C Carlton <donc@example.com>
 	alias bob Robert Bobbyton <bob@example.com>
@@ -2078,11 +2062,11 @@ test_dump_aliases '--dump-aliases mutt format' \
 	EOF
 
 test_dump_aliases '--dump-aliases mailrc format' \
-	'mailrc' \
-	'alice' \
-	'bob' \
-	'chloe' \
-	'eve' <<-\EOF
+  'mailrc' \
+  'alice' \
+  'bob' \
+  'chloe' \
+  'eve' <<-\EOF
 	alias alice   "Alice W Land <awol@example.com>"
 	alias eve     "Eve <eve@example.com>"
 	alias bob     "Robert Bobbyton <bob@example.com>"
@@ -2090,12 +2074,12 @@ test_dump_aliases '--dump-aliases mailrc format' \
 	EOF
 
 test_dump_aliases '--dump-aliases pine format' \
-	'pine' \
-	'alice' \
-	'bcgrp' \
-	'bob' \
-	'chloe' \
-	'eve' <<-\EOF
+  'pine' \
+  'alice' \
+  'bcgrp' \
+  'bob' \
+  'chloe' \
+  'eve' <<-\EOF
 	alice	Alice W Land	awol@example.com		Friend
 	eve	Eve	eve@example.com
 	bob	Robert Bobbyton	bob@example.com
@@ -2104,11 +2088,11 @@ test_dump_aliases '--dump-aliases pine format' \
 	EOF
 
 test_dump_aliases '--dump-aliases gnus format' \
-	'gnus' \
-	'alice' \
-	'bob' \
-	'chloe' \
-	'eve' <<-\EOF
+  'gnus' \
+  'alice' \
+  'bob' \
+  'chloe' \
+  'eve' <<-\EOF
 	(define-mail-alias "alice" "awol@example.com")
 	(define-mail-alias "eve" "eve@example.com")
 	(define-mail-alias "bob" "bob@example.com")
@@ -2119,15 +2103,14 @@ test_expect_success '--dump-aliases must be used alone' '
 	test_must_fail git send-email --dump-aliases --to=janice@example.com -1 refs/heads/accounting
 '
 
-test_translate_aliases () {
-	msg="$1" && shift &&
-	filetype="$1" && shift &&
-	aliases="$1" && shift &&
-	printf '%s\n' "$@" >expect &&
-	cat >.tmp-email-aliases &&
-	printf '%s\n' "$aliases" >aliases &&
-
-	test_expect_success $PREREQ "$msg" '
+test_translate_aliases() {
+  msg="$1" && shift \
+    && filetype="$1" && shift \
+    && aliases="$1" && shift \
+    && printf '%s\n' "$@" >expect \
+    && cat >.tmp-email-aliases \
+    && printf '%s\n' "$aliases" >aliases \
+    && test_expect_success $PREREQ "$msg" '
 		clean_fake_sendmail && rm -fr outdir &&
 		git config --replace-all sendemail.aliasesfile \
 			"$(pwd)/.tmp-email-aliases" &&
@@ -2138,12 +2121,12 @@ test_translate_aliases () {
 }
 
 test_translate_aliases '--translate-aliases sendmail format' \
-	'sendmail' \
-	'alice bcgrp' \
-	'Alice W Land <awol@example.com>' \
-	'Robert Bobbyton <bob@example.com>' \
-	'chloe@example.com' \
-	'Other <o@example.com>' <<-\EOF
+  'sendmail' \
+  'alice bcgrp' \
+  'Alice W Land <awol@example.com>' \
+  'Robert Bobbyton <bob@example.com>' \
+  'chloe@example.com' \
+  'Other <o@example.com>' <<-\EOF
 	alice: Alice W Land <awol@example.com>
 	bob: Robert Bobbyton <bob@example.com>
 	chloe: chloe@example.com
@@ -2152,10 +2135,10 @@ test_translate_aliases '--translate-aliases sendmail format' \
 	EOF
 
 test_translate_aliases '--translate-aliases mutt format' \
-	'mutt' \
-	'donald bob' \
-	'Donald C Carlton <donc@example.com>' \
-	'Robert Bobbyton <bob@example.com>' <<-\EOF
+  'mutt' \
+  'donald bob' \
+  'Donald C Carlton <donc@example.com>' \
+  'Robert Bobbyton <bob@example.com>' <<-\EOF
 	alias alice Alice W Land <awol@example.com>
 	alias donald Donald C Carlton <donc@example.com>
 	alias bob Robert Bobbyton <bob@example.com>
@@ -2163,11 +2146,11 @@ test_translate_aliases '--translate-aliases mutt format' \
 	EOF
 
 test_translate_aliases '--translate-aliases mailrc format' \
-	'mailrc' \
-	'chloe eve alice' \
-	'chloe@example.com' \
-	'Eve <eve@example.com>' \
-	'Alice W Land <awol@example.com>' <<-\EOF
+  'mailrc' \
+  'chloe eve alice' \
+  'chloe@example.com' \
+  'Eve <eve@example.com>' \
+  'Alice W Land <awol@example.com>' <<-\EOF
 	alias alice   "Alice W Land <awol@example.com>"
 	alias eve     "Eve <eve@example.com>"
 	alias bob     "Robert Bobbyton <bob@example.com>"
@@ -2175,13 +2158,13 @@ test_translate_aliases '--translate-aliases mailrc format' \
 	EOF
 
 test_translate_aliases '--translate-aliases pine format' \
-	'pine' \
-	'eve bob bcgrp' \
-	'eve@example.com' \
-	'bob@example.com' \
-	'bob@example.com' \
-	'chloe@example.com' \
-	'Other <o@example.com>' <<-\EOF
+  'pine' \
+  'eve bob bcgrp' \
+  'eve@example.com' \
+  'bob@example.com' \
+  'bob@example.com' \
+  'chloe@example.com' \
+  'Other <o@example.com>' <<-\EOF
 	alice	Alice W Land	awol@example.com		Friend
 	eve	Eve	eve@example.com
 	bob	Robert Bobbyton	bob@example.com
@@ -2190,11 +2173,11 @@ test_translate_aliases '--translate-aliases pine format' \
 	EOF
 
 test_translate_aliases '--translate-aliases gnus format' \
-	'gnus' \
-	'alice chloe eve' \
-	'awol@example.com' \
-	'chloe@example.com' \
-	'eve@example.com' <<-\EOF
+  'gnus' \
+  'alice chloe eve' \
+  'awol@example.com' \
+  'chloe@example.com' \
+  'eve@example.com' <<-\EOF
 	(define-mail-alias "alice" "awol@example.com")
 	(define-mail-alias "eve" "eve@example.com")
 	(define-mail-alias "bob" "bob@example.com")
@@ -2232,12 +2215,11 @@ test_expect_success $PREREQ 'aliases and sendemail.identity' '
 	test_grep "cloud-aliases" stderr
 '
 
-test_sendmail_aliases () {
-	msg="$1" && shift &&
-	expect="$@" &&
-	cat >.tmp-email-aliases &&
-
-	test_expect_success $PREREQ "$msg" '
+test_sendmail_aliases() {
+  msg="$1" && shift \
+    && expect="$@" \
+    && cat >.tmp-email-aliases \
+    && test_expect_success $PREREQ "$msg" '
 		clean_fake_sendmail && rm -fr outdir &&
 		git format-patch -1 -o outdir &&
 		git config --replace-all sendemail.aliasesfile \
@@ -2257,10 +2239,10 @@ test_sendmail_aliases () {
 }
 
 test_sendmail_aliases 'sendemail.aliasfiletype=sendmail' \
-	'awol@example\.com' \
-	'bob@example\.com' \
-	'chloe@example\.com' \
-	'o@example\.com' <<-\EOF
+  'awol@example\.com' \
+  'bob@example\.com' \
+  'chloe@example\.com' \
+  'o@example\.com' <<-\EOF
 	alice: Alice W Land <awol@example.com>
 	bob: Robert Bobbyton <bob@example.com>
 	# this is a comment
@@ -2271,13 +2253,13 @@ test_sendmail_aliases 'sendemail.aliasfiletype=sendmail' \
 	EOF
 
 test_sendmail_aliases 'sendmail aliases line folding' \
-	alice1 \
-	bob1 bob2 \
-	chuck1 chuck2 \
-	darla1 darla2 darla3 \
-	elton1 elton2 elton3 \
-	fred1 fred2 \
-	greg1 <<-\EOF
+  alice1 \
+  bob1 bob2 \
+  chuck1 chuck2 \
+  darla1 darla2 darla3 \
+  elton1 elton2 elton3 \
+  fred1 fred2 \
+  greg1 <<-\EOF
 	alice: alice1
 	bob: bob1,\
 	bob2
@@ -2296,7 +2278,7 @@ test_sendmail_aliases 'sendmail aliases line folding' \
 	EOF
 
 test_sendmail_aliases 'sendmail aliases tolerate bogus line folding' \
-	alice1 bob1 <<-\EOF
+  alice1 bob1 <<-\EOF
 	    alice: alice1
 	bcgrp: bob1\
 	EOF
@@ -2364,18 +2346,18 @@ test_expect_success $PREREQ 'cccmd works with aliases' '
 	grep "^!someone@example\.org!$" commandline1
 '
 
-do_xmailer_test () {
-	expected=$1 params=$2 &&
-	git format-patch -1 &&
-	git send-email \
-		--from="Example <nobody@example.com>" \
-		--to=someone@example.com \
-		--smtp-server="$(pwd)/fake.sendmail" \
-		$params \
-		0001-*.patch \
-		2>errors >out &&
-	{ grep '^X-Mailer:' out || :; } >mailer &&
-	test_line_count = $expected mailer
+do_xmailer_test() {
+  expected=$1 params=$2 \
+    && git format-patch -1 \
+    && git send-email \
+      --from="Example <nobody@example.com>" \
+      --to=someone@example.com \
+      --smtp-server="$(pwd)/fake.sendmail" \
+      $params \
+      0001-*.patch \
+      2>errors >out \
+    && { grep '^X-Mailer:' out || :; } >mailer \
+    && test_line_count = $expected mailer
 }
 
 test_expect_success $PREREQ '--[no-]xmailer without any configuration' '
@@ -2720,14 +2702,13 @@ test_expect_success $PREREQ 'invoke hook' '
 	)
 '
 
-expected_file_counter_output () {
-	total=$1
-	count=0
-	while test $count -ne $total
-	do
-		count=$((count + 1)) &&
-		echo "$count/$total" || return
-	done
+expected_file_counter_output() {
+  total=$1
+  count=0
+  while test $count -ne $total; do
+    count=$((count + 1)) \
+      && echo "$count/$total" || return
+  done
 }
 
 test_expect_success $PREREQ '--validate hook allows counting of messages' '

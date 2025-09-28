@@ -9,9 +9,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 # verify that diffc.expect matches output of
 # $(git diff -c --name-only HEAD HEAD^ HEAD^2)
-diffc_verify () {
-	git diff -c --name-only HEAD HEAD^ HEAD^2 >diffc.actual &&
-	test_cmp diffc.expect diffc.actual
+diffc_verify() {
+  git diff -c --name-only HEAD HEAD^ HEAD^2 >diffc.actual \
+    && test_cmp diffc.expect diffc.actual
 }
 
 test_expect_success 'trivial merge - combine-diff empty' '
@@ -34,7 +34,6 @@ test_expect_success 'trivial merge - combine-diff empty' '
 	>diffc.expect &&
 	diffc_verify
 '
-
 
 test_expect_success 'only one truly conflicting path' '
 	git checkout side &&

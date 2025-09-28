@@ -25,9 +25,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . "$TEST_DIRECTORY"/lib-rebase.sh
 . "$TEST_DIRECTORY"/lib-log-graph.sh
 
-test_cmp_graph () {
-	cat >expect &&
-	lib_test_cmp_graph --boundary --format=%s "$@"
+test_cmp_graph() {
+  cat >expect \
+    && lib_test_cmp_graph --boundary --format=%s "$@"
 }
 
 test_expect_success 'setup' '

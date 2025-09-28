@@ -2,7 +2,6 @@
 #
 # Copyright (c) 2007 Eric Wong
 
-
 test_description='git svn dcommit can commit renames of files with ugly names'
 
 . ./lib-git-svn.sh

@@ -7,7 +7,6 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-
 test_expect_success 'setup' '
 
 	test_commit 1 &&
@@ -31,14 +30,14 @@ test_expect_success 'setup' '
 	)
 '
 
-commit_subject () {
-	(cd clone &&
-	 git show -s --pretty=tformat:%s "$@")
+commit_subject() {
+  (cd clone \
+    && git show -s --pretty=tformat:%s "$@")
 }
 
-error_message () {
-	(cd clone &&
-	 test_must_fail git rev-parse --verify "$@" 2>../error)
+error_message() {
+  (cd clone \
+    && test_must_fail git rev-parse --verify "$@" 2>../error)
 }
 
 test_expect_success '@{upstream} resolves to correct full name' '

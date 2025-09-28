@@ -7,33 +7,33 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-mk_repo_pair () {
-	rm -rf workbench upstream &&
-	test_create_repo upstream &&
-	test_create_repo workbench &&
-	(
-		cd upstream &&
-		git config receive.denyCurrentBranch warn
-	) &&
-	(
-		cd workbench &&
-		git remote add up ../upstream
-	)
+mk_repo_pair() {
+  rm -rf workbench upstream \
+    && test_create_repo upstream \
+    && test_create_repo workbench \
+    && (
+      cd upstream \
+        && git config receive.denyCurrentBranch warn
+    ) \
+    && (
+      cd workbench \
+        && git remote add up ../upstream
+    )
 }
 
 # Compare the ref ($1) in upstream with a ref value from workbench ($2)
 # i.e. test_refs second HEAD@{2}
-test_refs () {
-	test $# = 2 &&
-	git -C upstream rev-parse --verify "$1" >expect &&
-	git -C workbench rev-parse --verify "$2" >actual &&
-	test_cmp expect actual
+test_refs() {
+  test $# = 2 \
+    && git -C upstream rev-parse --verify "$1" >expect \
+    && git -C workbench rev-parse --verify "$2" >actual \
+    && test_cmp expect actual
 }
 
-fmt_status_report () {
-	sed -n \
-		-e "/^To / { s/   */ /g; p; }" \
-		-e "/^ ! / { s/   */ /g; p; }"
+fmt_status_report() {
+  sed -n \
+    -e "/^To / { s/   */ /g; p; }" \
+    -e "/^ ! / { s/   */ /g; p; }"
 }
 
 test_expect_success 'atomic push works for a single branch' '

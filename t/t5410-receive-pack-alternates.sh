@@ -16,8 +16,8 @@ test_expect_success 'setup' '
 	test_commit private
 '
 
-extract_haves () {
-	depacketize | perl -lne '/^(\S+) \.have/ and print $1'
+extract_haves() {
+  depacketize | perl -lne '/^(\S+) \.have/ and print $1'
 }
 
 test_expect_success 'with core.alternateRefsCommand' '

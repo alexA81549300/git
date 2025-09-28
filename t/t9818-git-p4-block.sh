@@ -9,7 +9,7 @@ test_expect_success 'start p4d' '
 '
 
 create_restricted_group() {
-	p4 group -i <<-EOF
+  p4 group -i <<-EOF
 	Group: restricted
 	MaxResults: 7
 	MaxScanRows: 40
@@ -81,11 +81,12 @@ test_expect_success 'Previous version of file.txt is correct' '
 # Test git-p4 sync, with some files outside the client specification.
 
 p4_add_file() {
-	(cd "$cli" &&
-		>$1 &&
-		p4 add $1 &&
-		p4 submit -d "Added file $1" $1
-	)
+  (
+    cd "$cli" \
+      && >$1 \
+      && p4 add $1 \
+      && p4 submit -d "Added file $1" $1
+  )
 }
 
 test_expect_success 'Add some more files' '

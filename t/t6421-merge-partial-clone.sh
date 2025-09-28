@@ -29,120 +29,104 @@ test_description="limiting blob downloads when merging with partial clones"
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-merge.sh
 
-test_setup_repo () {
-	test -d server && return
-	git init server &&
-	(
-		cd server &&
-
-		git config uploadpack.allowfilter 1 &&
-		git config uploadpack.allowanysha1inwant 1 &&
-
-		mkdir -p general &&
-		test_seq 2 9 >general/leap1 &&
-		cp general/leap1 general/leap2 &&
-		echo leap2 >>general/leap2 &&
-
-		mkdir -p basename &&
-		cp general/leap1 basename/numbers &&
-		cp general/leap1 basename/sequence &&
-		cp general/leap1 basename/values &&
-		echo numbers >>basename/numbers &&
-		echo sequence >>basename/sequence &&
-		echo values >>basename/values &&
-
-		mkdir -p dir/unchanged &&
-		mkdir -p dir/subdir/tweaked &&
-		echo a >dir/subdir/a &&
-		echo b >dir/subdir/b &&
-		echo c >dir/subdir/c &&
-		echo d >dir/subdir/d &&
-		echo e >dir/subdir/e &&
-		cp general/leap1 dir/subdir/Makefile &&
-		echo toplevel makefile >>dir/subdir/Makefile &&
-		echo f >dir/subdir/tweaked/f &&
-		echo g >dir/subdir/tweaked/g &&
-		echo h >dir/subdir/tweaked/h &&
-		echo subdirectory makefile >dir/subdir/tweaked/Makefile &&
-		for i in $(test_seq 1 88)
-		do
-			echo content $i >dir/unchanged/file_$i
-		done &&
-		git add . &&
-		git commit -m "O" &&
-
-		git branch O &&
-		git branch A &&
-		git branch B-single &&
-		git branch B-dir &&
-		git branch B-many &&
-
-		git switch A &&
-
-		git rm general/leap* &&
-		mkdir general/ &&
-		test_seq 1 9 >general/jump1 &&
-		cp general/jump1 general/jump2 &&
-		echo leap2 >>general/jump2 &&
-
-		rm basename/numbers basename/sequence basename/values &&
-		mkdir -p basename/subdir/
-		cp general/jump1 basename/subdir/numbers &&
-		cp general/jump1 basename/subdir/sequence &&
-		cp general/jump1 basename/subdir/values &&
-		echo numbers >>basename/subdir/numbers &&
-		echo sequence >>basename/subdir/sequence &&
-		echo values >>basename/subdir/values &&
-
-		git rm dir/subdir/tweaked/f &&
-		echo more >>dir/subdir/e &&
-		echo more >>dir/subdir/Makefile &&
-		echo more >>dir/subdir/tweaked/Makefile &&
-		mkdir dir/subdir/newsubdir &&
-		echo rust code >dir/subdir/newsubdir/newfile.rs &&
-		git mv dir/subdir/e dir/subdir/newsubdir/ &&
-		git mv dir folder &&
-		git add . &&
-		git commit -m "A" &&
-
-		git switch B-single &&
-		echo new first line >dir/subdir/Makefile &&
-		cat general/leap1 >>dir/subdir/Makefile &&
-		echo toplevel makefile >>dir/subdir/Makefile &&
-		echo perl code >general/newfile.pl &&
-		git add . &&
-		git commit -m "B-single" &&
-
-		git switch B-dir &&
-		echo java code >dir/subdir/newfile.java &&
-		echo scala code >dir/subdir/newfile.scala &&
-		echo groovy code >dir/subdir/newfile.groovy &&
-		git add . &&
-		git commit -m "B-dir" &&
-
-		git switch B-many &&
-		test_seq 2 10 >general/leap1 &&
-		rm general/leap2 &&
-		cp general/leap1 general/leap2 &&
-		echo leap2 >>general/leap2 &&
-
-		rm basename/numbers basename/sequence basename/values &&
-		mkdir -p basename/subdir/
-		cp general/leap1 basename/subdir/numbers &&
-		cp general/leap1 basename/subdir/sequence &&
-		cp general/leap1 basename/subdir/values &&
-		echo numbers >>basename/subdir/numbers &&
-		echo sequence >>basename/subdir/sequence &&
-		echo values >>basename/subdir/values &&
-
-		mkdir dir/subdir/newsubdir/ &&
-		echo c code >dir/subdir/newfile.c &&
-		echo python code >dir/subdir/newsubdir/newfile.py &&
-		git add . &&
-		git commit -m "B-many" &&
-
-		git switch A
-	)
+test_setup_repo() {
+  test -d server && return
+  git init server \
+    && (
+      cd server \
+        && git config uploadpack.allowfilter 1 \
+        && git config uploadpack.allowanysha1inwant 1 \
+        && mkdir -p general \
+        && test_seq 2 9 >general/leap1 \
+        && cp general/leap1 general/leap2 \
+        && echo leap2 >>general/leap2 \
+        && mkdir -p basename \
+        && cp general/leap1 basename/numbers \
+        && cp general/leap1 basename/sequence \
+        && cp general/leap1 basename/values \
+        && echo numbers >>basename/numbers \
+        && echo sequence >>basename/sequence \
+        && echo values >>basename/values \
+        && mkdir -p dir/unchanged \
+        && mkdir -p dir/subdir/tweaked \
+        && echo a >dir/subdir/a \
+        && echo b >dir/subdir/b \
+        && echo c >dir/subdir/c \
+        && echo d >dir/subdir/d \
+        && echo e >dir/subdir/e \
+        && cp general/leap1 dir/subdir/Makefile \
+        && echo toplevel makefile >>dir/subdir/Makefile \
+        && echo f >dir/subdir/tweaked/f \
+        && echo g >dir/subdir/tweaked/g \
+        && echo h >dir/subdir/tweaked/h \
+        && echo subdirectory makefile >dir/subdir/tweaked/Makefile \
+        && for i in $(test_seq 1 88); do
+          echo content $i >dir/unchanged/file_$i
+        done \
+        && git add . \
+        && git commit -m "O" \
+        && git branch O \
+        && git branch A \
+        && git branch B-single \
+        && git branch B-dir \
+        && git branch B-many \
+        && git switch A \
+        && git rm general/leap* \
+        && mkdir general/ \
+        && test_seq 1 9 >general/jump1 \
+        && cp general/jump1 general/jump2 \
+        && echo leap2 >>general/jump2 \
+        && rm basename/numbers basename/sequence basename/values \
+        && mkdir -p basename/subdir/
+      cp general/jump1 basename/subdir/numbers \
+        && cp general/jump1 basename/subdir/sequence \
+        && cp general/jump1 basename/subdir/values \
+        && echo numbers >>basename/subdir/numbers \
+        && echo sequence >>basename/subdir/sequence \
+        && echo values >>basename/subdir/values \
+        && git rm dir/subdir/tweaked/f \
+        && echo more >>dir/subdir/e \
+        && echo more >>dir/subdir/Makefile \
+        && echo more >>dir/subdir/tweaked/Makefile \
+        && mkdir dir/subdir/newsubdir \
+        && echo rust code >dir/subdir/newsubdir/newfile.rs \
+        && git mv dir/subdir/e dir/subdir/newsubdir/ \
+        && git mv dir folder \
+        && git add . \
+        && git commit -m "A" \
+        && git switch B-single \
+        && echo new first line >dir/subdir/Makefile \
+        && cat general/leap1 >>dir/subdir/Makefile \
+        && echo toplevel makefile >>dir/subdir/Makefile \
+        && echo perl code >general/newfile.pl \
+        && git add . \
+        && git commit -m "B-single" \
+        && git switch B-dir \
+        && echo java code >dir/subdir/newfile.java \
+        && echo scala code >dir/subdir/newfile.scala \
+        && echo groovy code >dir/subdir/newfile.groovy \
+        && git add . \
+        && git commit -m "B-dir" \
+        && git switch B-many \
+        && test_seq 2 10 >general/leap1 \
+        && rm general/leap2 \
+        && cp general/leap1 general/leap2 \
+        && echo leap2 >>general/leap2 \
+        && rm basename/numbers basename/sequence basename/values \
+        && mkdir -p basename/subdir/
+      cp general/leap1 basename/subdir/numbers \
+        && cp general/leap1 basename/subdir/sequence \
+        && cp general/leap1 basename/subdir/values \
+        && echo numbers >>basename/subdir/numbers \
+        && echo sequence >>basename/subdir/sequence \
+        && echo values >>basename/subdir/values \
+        && mkdir dir/subdir/newsubdir/ \
+        && echo c code >dir/subdir/newfile.c \
+        && echo python code >dir/subdir/newsubdir/newfile.py \
+        && git add . \
+        && git commit -m "B-many" \
+        && git switch A
+    )
 }
 
 # Testcase: Objects downloaded for single relevant rename

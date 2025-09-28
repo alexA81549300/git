@@ -89,27 +89,26 @@ test_expect_success 'setup' '
 '
 
 test_expect_success \
-    'update-index --add a file.' \
-    'git update-index --add path0'
+  'update-index --add a file.' \
+  'git update-index --add path0'
 
 test_expect_success \
-    'write that tree.' \
-    'tree=$(git write-tree) && echo $tree'
+  'write that tree.' \
+  'tree=$(git write-tree) && echo $tree'
 
 sed -e 's/line/Line/' <path0 >path1
 rm -f path0
 test_expect_success \
-    'renamed and edited the file.' \
-    'git update-index --add --remove path0 path1'
+  'renamed and edited the file.' \
+  'git update-index --add --remove path0 path1'
 
 test_expect_success \
-    'git diff-index -p -M after rename and editing.' \
-    'git diff-index -p -M $tree >current'
-
+  'git diff-index -p -M after rename and editing.' \
+  'git diff-index -p -M $tree >current'
 
 test_expect_success \
-    'validate the output.' \
-    'compare_diff_patch current expected'
+  'validate the output.' \
+  'compare_diff_patch current expected'
 
 test_expect_success 'test diff.renames=true' '
 	git -c diff.renames=true diff --cached $tree >current &&

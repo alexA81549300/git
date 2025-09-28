@@ -7,41 +7,41 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-setup_repository () {
-	mkdir "$1" && (
-	cd "$1" &&
-	git init -b main &&
-	>file &&
-	git add file &&
-	test_tick &&
-	git commit -m "Initial" &&
-	git checkout -b side &&
-	>elif &&
-	git add elif &&
-	test_tick &&
-	git commit -m "Second" &&
-	git checkout main
-	)
+setup_repository() {
+  mkdir "$1" && (
+    cd "$1" \
+      && git init -b main \
+      && >file \
+      && git add file \
+      && test_tick \
+      && git commit -m "Initial" \
+      && git checkout -b side \
+      && >elif \
+      && git add elif \
+      && test_tick \
+      && git commit -m "Second" \
+      && git checkout main
+  )
 }
 
-tokens_match () {
-	echo "$1" | tr ' ' '\012' | sort | sed -e '/^$/d' >expect &&
-	echo "$2" | tr ' ' '\012' | sort | sed -e '/^$/d' >actual &&
-	test_cmp expect actual
+tokens_match() {
+  echo "$1" | tr ' ' '\012' | sort | sed -e '/^$/d' >expect \
+    && echo "$2" | tr ' ' '\012' | sort | sed -e '/^$/d' >actual \
+    && test_cmp expect actual
 }
 
-check_remote_track () {
-	actual=$(git remote show "$1" | sed -ne 's|^    \(.*\) tracked$|\1|p')
-	shift &&
-	tokens_match "$*" "$actual"
+check_remote_track() {
+  actual=$(git remote show "$1" | sed -ne 's|^    \(.*\) tracked$|\1|p')
+  shift \
+    && tokens_match "$*" "$actual"
 }
 
-check_tracking_branch () {
-	f="" &&
-	r=$(git for-each-ref "--format=%(refname)" |
-		sed -ne "s|^refs/remotes/$1/||p") &&
-	shift &&
-	tokens_match "$*" "$r"
+check_tracking_branch() {
+  f="" \
+    && r=$(git for-each-ref "--format=%(refname)" \
+      | sed -ne "s|^refs/remotes/$1/||p") \
+    && shift \
+    && tokens_match "$*" "$r"
 }
 
 test_expect_success setup '
@@ -1300,10 +1300,10 @@ test_expect_success 'new remote' '
 	cmp expect actual
 '
 
-get_url_test () {
-	cat >expect &&
-	git remote get-url "$@" >actual &&
-	test_cmp expect actual
+get_url_test() {
+  cat >expect \
+    && git remote get-url "$@" >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'get-url on new remote' '
@@ -1522,8 +1522,8 @@ test_expect_success 'extra args: setup' '
 	git remote add origin .
 '
 
-test_extra_arg () {
-	test_expect_success "extra args: $*" "
+test_extra_arg() {
+  test_expect_success "extra args: $*" "
 		test_must_fail git remote $* bogus_extra_arg 2>actual &&
 		test_grep '^usage:' actual
 	"

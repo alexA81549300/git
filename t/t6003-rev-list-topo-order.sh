@@ -8,9 +8,8 @@ test_description='Tests git rev-list --topo-order functionality'
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-t6000.sh # t6xxx specific functions
 
-list_duplicates()
-{
-    "$@" | sort | uniq -d
+list_duplicates() {
+  "$@" | sort | uniq -d
 }
 
 date >path0
@@ -42,7 +41,6 @@ on_dates "00:22" "00:22" save_tag r0 unique_commit r0 tree -p alt_root
 on_dates "00:23" "00:23" save_tag r1 unique_commit r1 tree -p r0
 on_dates "00:24" "00:24" save_tag l5r1 unique_commit l5r1 tree -p l5 -p r1
 on_dates "00:25" "00:25" save_tag r1l5 unique_commit r1l5 tree -p r1 -p l5
-
 
 hide_error save_tag e1 as_author e@example.com unique_commit e1 tree
 save_tag e2 as_author e@example.com unique_commit e2 tree -p e1

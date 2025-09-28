@@ -13,9 +13,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-log-graph.sh
 
-check_graph () {
-	cat >expect &&
-	lib_test_cmp_graph --format=%s "$@"
+check_graph() {
+  cat >expect \
+    && lib_test_cmp_graph --format=%s "$@"
 }
 
 test_expect_success 'set up rev-list --graph test' '

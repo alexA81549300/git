@@ -262,11 +262,11 @@ test_expect_success '--cherry-pick with duplicates on each side' '
 
 # Corrupt the object store deliberately to make sure
 # the object is not even checked for its existence.
-remove_loose_object () {
-	sha1="$(git rev-parse "$1")" &&
-	remainder=${sha1#??} &&
-	firsttwo=${sha1%$remainder} &&
-	rm .git/objects/$firsttwo/$remainder
+remove_loose_object() {
+  sha1="$(git rev-parse "$1")" \
+    && remainder=${sha1#??} \
+    && firsttwo=${sha1%$remainder} \
+    && rm .git/objects/$firsttwo/$remainder
 }
 
 test_expect_success '--cherry-pick avoids looking at full diffs' '

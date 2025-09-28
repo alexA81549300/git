@@ -7,9 +7,9 @@ test_description='verify safe.directory checks'
 GIT_TEST_ASSUME_DIFFERENT_OWNER=1
 export GIT_TEST_ASSUME_DIFFERENT_OWNER
 
-expect_rejected_dir () {
-	test_must_fail git status 2>err &&
-	grep "dubious ownership" err
+expect_rejected_dir() {
+  test_must_fail git status 2>err \
+    && grep "dubious ownership" err
 }
 
 test_expect_success 'safe.directory is not set' '

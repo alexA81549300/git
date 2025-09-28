@@ -19,41 +19,41 @@ test_expect_success 'setup bare remotes' '
 # $1 = local revision
 # $2 = remote revision (tested to be equal to the local one)
 # $3 = [optional] repo to check for actual output (repo1 by default)
-check_pushed_commit () {
-	git log -1 --format='%h %s' "$1" >expect &&
-	git --git-dir="${3:-repo1}" log -1 --format='%h %s' "$2" >actual &&
-	test_cmp expect actual
+check_pushed_commit() {
+  git log -1 --format='%h %s' "$1" >expect \
+    && git --git-dir="${3:-repo1}" log -1 --format='%h %s' "$2" >actual \
+    && test_cmp expect actual
 }
 
 # $1 = push.default value
 # $2 = expected target branch for the push
 # $3 = [optional] repo to check for actual output (repo1 by default)
-test_push_success () {
-	git ${1:+-c} ${1:+push.default="$1"} push &&
-	check_pushed_commit HEAD "$2" "$3"
+test_push_success() {
+  git ${1:+-c} ${1:+push.default="$1"} push \
+    && check_pushed_commit HEAD "$2" "$3"
 }
 
 # $1 = push.default value
 # check that push fails and does not modify any remote branch
-test_push_failure () {
-	git --git-dir=repo1 log --no-walk --format='%h %s' --all >expect &&
-	test_must_fail git ${1:+-c} ${1:+push.default="$1"} push &&
-	git --git-dir=repo1 log --no-walk --format='%h %s' --all >actual &&
-	test_cmp expect actual
+test_push_failure() {
+  git --git-dir=repo1 log --no-walk --format='%h %s' --all >expect \
+    && test_must_fail git ${1:+-c} ${1:+push.default="$1"} push \
+    && git --git-dir=repo1 log --no-walk --format='%h %s' --all >actual \
+    && test_cmp expect actual
 }
 
 # $1 = success or failure
 # $2 = push.default value
 # $3 = branch to check for actual output (main or foo)
 # $4 = [optional] switch to triangular workflow
-test_pushdefault_workflow () {
-	workflow=central
-	pushdefault=parent1
-	if test -n "${4-}"; then
-		workflow=triangular
-		pushdefault=parent2
-	fi
-	test_expect_success "push.default = $2 $1 in $workflow workflows" "
+test_pushdefault_workflow() {
+  workflow=central
+  pushdefault=parent1
+  if test -n "${4-}"; then
+    workflow=triangular
+    pushdefault=parent2
+  fi
+  test_expect_success "push.default = $2 $1 in $workflow workflows" "
 		test_config branch.main.remote parent1 &&
 		test_config branch.main.merge refs/heads/foo &&
 		test_config remote.pushdefault $pushdefault &&

@@ -4,9 +4,8 @@ test_description='git ls-files --format test'
 
 . ./test-lib.sh
 
-for flag in -s -o -k -t --resolve-undo --deduplicate --eol
-do
-	test_expect_success "usage: --format is incompatible with $flag" '
+for flag in -s -o -k -t --resolve-undo --deduplicate --eol; do
+  test_expect_success "usage: --format is incompatible with $flag" '
 		test_expect_code 129 git ls-files --format="%(objectname)" $flag
 	'
 done

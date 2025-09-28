@@ -7,10 +7,9 @@ TEST_DATA="$TEST_DIRECTORY/t0013"
 
 test_lazy_prereq SHA1_IS_SHA1DC 'test-tool sha1-is-sha1dc'
 
-if ! test_have_prereq SHA1_IS_SHA1DC
-then
-	skip_all='skipping sha1 collision tests, not using sha1collisiondetection'
-	test_done
+if ! test_have_prereq SHA1_IS_SHA1DC; then
+  skip_all='skipping sha1 collision tests, not using sha1collisiondetection'
+  test_done
 fi
 
 test_expect_success 'test-sha1 detects shattered pdf' '

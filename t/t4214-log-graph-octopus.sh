@@ -8,13 +8,13 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-log-graph.sh
 
-test_cmp_graph () {
-	cat >expect &&
-	lib_test_cmp_graph --color=never --date-order --format=%s "$@"
+test_cmp_graph() {
+  cat >expect \
+    && lib_test_cmp_graph --color=never --date-order --format=%s "$@"
 }
 
-test_cmp_colored_graph () {
-	lib_test_cmp_colored_graph --date-order --format=%s "$@"
+test_cmp_colored_graph() {
+  lib_test_cmp_colored_graph --date-order --format=%s "$@"
 }
 
 test_expect_success 'set up merge history' '

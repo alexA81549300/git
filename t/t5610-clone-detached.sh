@@ -7,8 +7,8 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 head_is_detached() {
-	git --git-dir=$1/.git rev-parse --verify HEAD &&
-	test_must_fail git --git-dir=$1/.git symbolic-ref HEAD
+  git --git-dir=$1/.git rev-parse --verify HEAD \
+    && test_must_fail git --git-dir=$1/.git symbolic-ref HEAD
 }
 
 test_expect_success 'setup' '

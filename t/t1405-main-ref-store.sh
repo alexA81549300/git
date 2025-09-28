@@ -9,7 +9,6 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 RUN="test-tool ref-store main"
 
-
 test_expect_success 'setup' '
 	test_commit one
 '

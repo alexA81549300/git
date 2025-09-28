@@ -5,9 +5,8 @@
 
 test_description='Same rename detection as t4003 but testing diff-raw.'
 
-
 . ./test-lib.sh
-. "$TEST_DIRECTORY"/lib-diff.sh ;# test-lib chdir's into trash
+. "$TEST_DIRECTORY"/lib-diff.sh # test-lib chdir's into trash
 
 test_expect_success 'setup reference tree' '
 	COPYING_test_data >COPYING &&

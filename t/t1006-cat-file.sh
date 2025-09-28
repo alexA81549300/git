@@ -4,214 +4,205 @@ test_description='git cat-file'
 
 . ./test-lib.sh
 
-test_cmdmode_usage () {
-	test_expect_code 129 "$@" 2>err &&
-	grep "^error: .* cannot be used together" err
+test_cmdmode_usage() {
+  test_expect_code 129 "$@" 2>err \
+    && grep "^error: .* cannot be used together" err
 }
 
 for switches in \
-	'-e -p' \
-	'-p -t' \
-	'-t -s' \
-	'-s --textconv' \
-	'--textconv --filters' \
-	'--batch-all-objects -e'
-do
-	test_expect_success "usage: cmdmode $switches" '
+  '-e -p' \
+  '-p -t' \
+  '-t -s' \
+  '-s --textconv' \
+  '--textconv --filters' \
+  '--batch-all-objects -e'; do
+  test_expect_success "usage: cmdmode $switches" '
 		test_cmdmode_usage git cat-file $switches
 	'
 done
 
-test_incompatible_usage () {
-	test_expect_code 129 "$@" 2>err &&
-	grep -E "^(fatal|error):.*(requires|incompatible with|needs)" err
+test_incompatible_usage() {
+  test_expect_code 129 "$@" 2>err \
+    && grep -E "^(fatal|error):.*(requires|incompatible with|needs)" err
 }
 
-for opt in --batch --batch-check
-do
-	test_expect_success "usage: incompatible options: --path with $opt" '
+for opt in --batch --batch-check; do
+  test_expect_success "usage: incompatible options: --path with $opt" '
 		test_incompatible_usage git cat-file --path=foo $opt
 	'
 done
 
-test_missing_usage () {
-	test_expect_code 129 "$@" 2>err &&
-	grep -E "^fatal:.*required" err
+test_missing_usage() {
+  test_expect_code 129 "$@" 2>err \
+    && grep -E "^fatal:.*required" err
 }
 
 short_modes="-e -p -t -s"
 cw_modes="--textconv --filters"
 
-for opt in $cw_modes
-do
-	test_expect_success "usage: $opt requires another option" '
+for opt in $cw_modes; do
+  test_expect_success "usage: $opt requires another option" '
 		test_missing_usage git cat-file $opt
 	'
 done
 
-for opt in $short_modes
-do
-	test_expect_success "usage: $opt requires another option" '
+for opt in $short_modes; do
+  test_expect_success "usage: $opt requires another option" '
 		test_missing_usage git cat-file $opt
 	'
 
-	for opt2 in --batch \
-		--batch-check \
-		--follow-symlinks \
-		"--path=foo HEAD:some-path.txt"
-	do
-		test_expect_success "usage: incompatible options: $opt and $opt2" '
+  for opt2 in --batch \
+    --batch-check \
+    --follow-symlinks \
+    "--path=foo HEAD:some-path.txt"; do
+    test_expect_success "usage: incompatible options: $opt and $opt2" '
 			test_incompatible_usage git cat-file $opt $opt2
 		'
-	done
+  done
 done
 
-test_too_many_arguments () {
-	test_expect_code 129 "$@" 2>err &&
-	grep -E "^fatal: too many arguments$" err
+test_too_many_arguments() {
+  test_expect_code 129 "$@" 2>err \
+    && grep -E "^fatal: too many arguments$" err
 }
 
-for opt in $short_modes $cw_modes
-do
-	args="one two three"
-	test_expect_success "usage: too many arguments: $opt $args" '
+for opt in $short_modes $cw_modes; do
+  args="one two three"
+  test_expect_success "usage: too many arguments: $opt $args" '
 		test_too_many_arguments git cat-file $opt $args
 	'
 
-	for opt2 in --buffer --follow-symlinks
-	do
-		test_expect_success "usage: incompatible arguments: $opt with batch option $opt2" '
+  for opt2 in --buffer --follow-symlinks; do
+    test_expect_success "usage: incompatible arguments: $opt with batch option $opt2" '
 			test_incompatible_usage git cat-file $opt $opt2
 		'
-	done
+  done
 done
 
 for opt in --buffer \
-	--follow-symlinks \
-	--batch-all-objects \
-	-z \
-	-Z
-do
-	test_expect_success "usage: bad option combination: $opt without batch mode" '
+  --follow-symlinks \
+  --batch-all-objects \
+  -z \
+  -Z; do
+  test_expect_success "usage: bad option combination: $opt without batch mode" '
 		test_incompatible_usage git cat-file $opt &&
 		test_incompatible_usage git cat-file $opt commit HEAD
 	'
 done
 
-echo_without_newline () {
-    printf '%s' "$*"
+echo_without_newline() {
+  printf '%s' "$*"
 }
 
-echo_without_newline_nul () {
-	echo_without_newline "$@" | tr '\n' '\0'
+echo_without_newline_nul() {
+  echo_without_newline "$@" | tr '\n' '\0'
 }
 
-strlen () {
-    echo_without_newline "$1" | wc -c | sed -e 's/^ *//'
+strlen() {
+  echo_without_newline "$1" | wc -c | sed -e 's/^ *//'
 }
 
-run_tests () {
-    type=$1
-    oid=$2
-    size=$3
-    content=$4
-    pretty_content=$5
+run_tests() {
+  type=$1
+  oid=$2
+  size=$3
+  content=$4
+  pretty_content=$5
 
-    batch_output="$oid $type $size
+  batch_output="$oid $type $size
 $content"
 
-    test_expect_success "$type exists" '
+  test_expect_success "$type exists" '
 	git cat-file -e $oid
     '
 
-    test_expect_success "Type of $type is correct" '
+  test_expect_success "Type of $type is correct" '
 	echo $type >expect &&
 	git cat-file -t $oid >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success "Size of $type is correct" '
+  test_expect_success "Size of $type is correct" '
 	echo $size >expect &&
 	git cat-file -s $oid >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success "Type of $type is correct using --allow-unknown-type" '
+  test_expect_success "Type of $type is correct using --allow-unknown-type" '
 	echo $type >expect &&
 	git cat-file -t --allow-unknown-type $oid >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success "Size of $type is correct using --allow-unknown-type" '
+  test_expect_success "Size of $type is correct using --allow-unknown-type" '
 	echo $size >expect &&
 	git cat-file -s --allow-unknown-type $oid >actual &&
 	test_cmp expect actual
     '
 
-    test -z "$content" ||
-    test_expect_success "Content of $type is correct" '
+  test -z "$content" \
+    || test_expect_success "Content of $type is correct" '
 	echo_without_newline "$content" >expect &&
 	git cat-file $type $oid >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success "Pretty content of $type is correct" '
+  test_expect_success "Pretty content of $type is correct" '
 	echo_without_newline "$pretty_content" >expect &&
 	git cat-file -p $oid >actual &&
 	test_cmp expect actual
     '
 
-    test -z "$content" ||
-    test_expect_success "--batch output of $type is correct" '
+  test -z "$content" \
+    || test_expect_success "--batch output of $type is correct" '
 	echo "$batch_output" >expect &&
 	echo $oid | git cat-file --batch >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success "--batch-check output of $type is correct" '
+  test_expect_success "--batch-check output of $type is correct" '
 	echo "$oid $type $size" >expect &&
 	echo_without_newline $oid | git cat-file --batch-check >actual &&
 	test_cmp expect actual
     '
 
-    for opt in --buffer --no-buffer
-    do
-	test -z "$content" ||
-		test_expect_success "--batch-command $opt output of $type content is correct" '
+  for opt in --buffer --no-buffer; do
+    test -z "$content" \
+      || test_expect_success "--batch-command $opt output of $type content is correct" '
 		echo "$batch_output" >expect &&
 		test_write_lines "contents $oid" | git cat-file --batch-command $opt >actual &&
 		test_cmp expect actual
 	'
 
-	test_expect_success "--batch-command $opt output of $type info is correct" '
+    test_expect_success "--batch-command $opt output of $type info is correct" '
 		echo "$oid $type $size" >expect &&
 		test_write_lines "info $oid" |
 		git cat-file --batch-command $opt >actual &&
 		test_cmp expect actual
 	'
-    done
+  done
 
-    test_expect_success "custom --batch-check format" '
+  test_expect_success "custom --batch-check format" '
 	echo "$type $oid" >expect &&
 	echo $oid | git cat-file --batch-check="%(objecttype) %(objectname)" >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success "custom --batch-command format" '
+  test_expect_success "custom --batch-command format" '
 	echo "$type $oid" >expect &&
 	echo "info $oid" | git cat-file --batch-command="%(objecttype) %(objectname)" >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success '--batch-check with %(rest)' '
+  test_expect_success '--batch-check with %(rest)' '
 	echo "$type this is some extra content" >expect &&
 	echo "$oid    this is some extra content" |
 		git cat-file --batch-check="%(objecttype) %(rest)" >actual &&
 	test_cmp expect actual
     '
 
-    test -z "$content" ||
-    test_expect_success "--batch without type ($type)" '
+  test -z "$content" \
+    || test_expect_success "--batch without type ($type)" '
 	{
 		echo "$size" &&
 		echo "$content"
@@ -220,8 +211,8 @@ $content"
 	test_cmp expect actual
     '
 
-    test -z "$content" ||
-    test_expect_success "--batch without size ($type)" '
+  test -z "$content" \
+    || test_expect_success "--batch without size ($type)" '
 	{
 		echo "$type" &&
 		echo "$content"
@@ -244,12 +235,12 @@ test_expect_success "setup" '
 	git commit -m "add hello file"
 '
 
-run_blob_tests () {
-    oid=$1
+run_blob_tests() {
+  oid=$1
 
-    run_tests 'blob' $oid $hello_size "$hello_content" "$hello_content"
+  run_tests 'blob' $oid $hello_size "$hello_content" "$hello_content"
 
-    test_expect_success '--batch-command --buffer with flush for blob info' '
+  test_expect_success '--batch-command --buffer with flush for blob info' '
 	echo "$oid blob $hello_size" >expect &&
 	test_write_lines "info $oid" "flush" |
 	GIT_TEST_CAT_FILE_NO_FLUSH_ON_EXIT=1 \
@@ -257,7 +248,7 @@ run_blob_tests () {
 	test_cmp expect actual
     '
 
-    test_expect_success '--batch-command --buffer without flush for blob info' '
+  test_expect_success '--batch-command --buffer without flush for blob info' '
 	touch output &&
 	test_write_lines "info $oid" |
 	GIT_TEST_CAT_FILE_NO_FLUSH_ON_EXIT=1 \
@@ -338,43 +329,38 @@ test_expect_success "Reach a blob from a tag pointing to it" '
 	test_cmp expect actual
 '
 
-for oid in $hello_oid $hello_compat_oid
-do
-    for batch in batch batch-check batch-command
-    do
-	for opt in t s e p
-	do
-	test_expect_success "Passing -$opt with --$batch fails" '
+for oid in $hello_oid $hello_compat_oid; do
+  for batch in batch batch-check batch-command; do
+    for opt in t s e p; do
+      test_expect_success "Passing -$opt with --$batch fails" '
 	    test_must_fail git cat-file --$batch -$opt $oid
 	'
 
-	test_expect_success "Passing --$batch with -$opt fails" '
+      test_expect_success "Passing --$batch with -$opt fails" '
 	    test_must_fail git cat-file -$opt --$batch $oid
 	'
-	done
+    done
 
-	test_expect_success "Passing <type> with --$batch fails" '
+    test_expect_success "Passing <type> with --$batch fails" '
 	test_must_fail git cat-file --$batch blob $oid
 	'
 
-	test_expect_success "Passing --$batch with <type> fails" '
+    test_expect_success "Passing --$batch with <type> fails" '
 	test_must_fail git cat-file blob --$batch $oid
 	'
 
-	test_expect_success "Passing oid with --$batch fails" '
+    test_expect_success "Passing oid with --$batch fails" '
 	test_must_fail git cat-file --$batch $oid
 	'
-    done
+  done
 done
 
-for oid in $hello_oid $hello_compat_oid
-do
-    for opt in t s e p
-    do
-	test_expect_success "Passing -$opt with --follow-symlinks fails" '
+for oid in $hello_oid $hello_compat_oid; do
+  for opt in t s e p; do
+    test_expect_success "Passing -$opt with --follow-symlinks fails" '
 	    test_must_fail git cat-file --follow-symlinks -$opt $oid
 	'
-    done
+  done
 done
 
 test_expect_success "--batch-check for a non-existent named object" '
@@ -427,55 +413,55 @@ test_expect_success 'empty --batch-check notices missing object' '
 	test_cmp expect actual
 '
 
-batch_tests () {
-    boid=$1
-    loid=$2
-    lsize=$3
-    coid=$4
-    csize=$5
-    ccontent=$6
-    toid=$7
-    tsize=$8
-    tcontent=$9
+batch_tests() {
+  boid=$1
+  loid=$2
+  lsize=$3
+  coid=$4
+  csize=$5
+  ccontent=$6
+  toid=$7
+  tsize=$8
+  tcontent=$9
 
-    batch_input="$boid
+  batch_input="$boid
 $coid
 $toid
 deadbeef
 
 "
 
-    printf "%s\0" \
-	"$boid blob $hello_size" \
-	"$hello_content" \
-	"$coid commit $csize" \
-	"$ccontent" \
-	"$toid tag $tsize" \
-	"$tcontent" \
-	"deadbeef missing" \
-	" missing" >batch_output
+  printf "%s\0" \
+    "$boid blob $hello_size" \
+    "$hello_content" \
+    "$coid commit $csize" \
+    "$ccontent" \
+    "$toid tag $tsize" \
+    "$tcontent" \
+    "deadbeef missing" \
+    " missing" >batch_output
 
-    test_expect_success '--batch with multiple oids gives correct format' '
+  test_expect_success '--batch with multiple oids gives correct format' '
 	tr "\0" "\n" <batch_output >expect &&
 	echo_without_newline "$batch_input" >in &&
 	git cat-file --batch <in >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success '--batch, -z with multiple oids gives correct format' '
+  test_expect_success '--batch, -z with multiple oids gives correct format' '
 	echo_without_newline_nul "$batch_input" >in &&
 	tr "\0" "\n" <batch_output >expect &&
 	git cat-file --batch -z <in >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success '--batch, -Z with multiple oids gives correct format' '
+  test_expect_success '--batch, -Z with multiple oids gives correct format' '
 	echo_without_newline_nul "$batch_input" >in &&
 	git cat-file --batch -Z <in >actual &&
 	test_cmp batch_output actual
     '
 
-batch_check_input="$boid
+  batch_check_input="$boid
 $loid
 $coid
 $toid
@@ -483,41 +469,41 @@ deadbeef
 
 "
 
-    printf "%s\0" \
-	"$boid blob $hello_size" \
-	"$loid tree $lsize" \
-	"$coid commit $csize" \
-	"$toid tag $tsize" \
-	"deadbeef missing" \
-	" missing" >batch_check_output
+  printf "%s\0" \
+    "$boid blob $hello_size" \
+    "$loid tree $lsize" \
+    "$coid commit $csize" \
+    "$toid tag $tsize" \
+    "deadbeef missing" \
+    " missing" >batch_check_output
 
-    test_expect_success "--batch-check with multiple oids gives correct format" '
+  test_expect_success "--batch-check with multiple oids gives correct format" '
 	tr "\0" "\n" <batch_check_output >expect &&
 	echo_without_newline "$batch_check_input" >in &&
 	git cat-file --batch-check <in >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success "--batch-check, -z with multiple oids gives correct format" '
+  test_expect_success "--batch-check, -z with multiple oids gives correct format" '
 	tr "\0" "\n" <batch_check_output >expect &&
 	echo_without_newline_nul "$batch_check_input" >in &&
 	git cat-file --batch-check -z <in >actual &&
 	test_cmp expect actual
     '
 
-    test_expect_success "--batch-check, -Z with multiple oids gives correct format" '
+  test_expect_success "--batch-check, -Z with multiple oids gives correct format" '
 	echo_without_newline_nul "$batch_check_input" >in &&
 	git cat-file --batch-check -Z <in >actual &&
 	test_cmp batch_check_output actual
     '
 
-batch_command_multiple_info="info $boid
+  batch_command_multiple_info="info $boid
 info $loid
 info $coid
 info $toid
 info deadbeef"
 
-    test_expect_success '--batch-command with multiple info calls gives correct format' '
+  test_expect_success '--batch-command with multiple info calls gives correct format' '
 	cat >expect <<-EOF &&
 	$boid blob $hello_size
 	$loid tree $lsize
@@ -543,13 +529,13 @@ info deadbeef"
 	test_cmp expect_nul actual
     '
 
-batch_command_multiple_contents="contents $boid
+  batch_command_multiple_contents="contents $boid
 contents $coid
 contents $toid
 contents deadbeef
 flush"
 
-    test_expect_success '--batch-command with multiple command calls gives correct format' '
+  test_expect_success '--batch-command with multiple command calls gives correct format' '
 	printf "%s\0" \
 		"$boid blob $hello_size" \
 		"$hello_content" \
@@ -580,7 +566,6 @@ flush"
 
 batch_tests $hello_oid $tree_oid $tree_size $commit_oid $commit_size "$commit_content" $tag_oid $tag_size "$tag_content"
 batch_tests $hello_compat_oid $tree_compat_oid $tree_compat_size $commit_compat_oid $commit_compat_size "$commit_compat_content" $tag_compat_oid $tag_compat_size "$tag_compat_content"
-
 
 test_expect_success FUNNYNAMES 'setup with newline in input' '
 	touch -- "newline${LF}embedded" &&
@@ -677,17 +662,13 @@ test_expect_success 'setup bogus data' '
 	bogus_long_oid=$(echo_without_newline "$bogus_long_content" | git hash-object -t $bogus_long_type --literally -w --stdin)
 '
 
-for arg1 in '' --allow-unknown-type
-do
-	for arg2 in -s -t -p
-	do
-		if test "$arg1" = "--allow-unknown-type" && test "$arg2" = "-p"
-		then
-			continue
-		fi
+for arg1 in '' --allow-unknown-type; do
+  for arg2 in -s -t -p; do
+    if test "$arg1" = "--allow-unknown-type" && test "$arg2" = "-p"; then
+      continue
+    fi
 
-
-		test_expect_success "cat-file $arg1 $arg2 error on bogus short OID" '
+    test_expect_success "cat-file $arg1 $arg2 error on bogus short OID" '
 			cat >expect <<-\EOF &&
 			fatal: invalid object type
 			EOF
@@ -702,7 +683,7 @@ do
 			fi
 		'
 
-		test_expect_success "cat-file $arg1 $arg2 error on bogus full OID" '
+    test_expect_success "cat-file $arg1 $arg2 error on bogus full OID" '
 			if test "$arg2" = "-p"
 			then
 				cat >expect <<-EOF
@@ -726,7 +707,7 @@ do
 			fi
 		'
 
-		test_expect_success "cat-file $arg1 $arg2 error on missing short OID" '
+    test_expect_success "cat-file $arg1 $arg2 error on missing short OID" '
 			cat >expect.err <<-EOF &&
 			fatal: Not a valid object name $(test_oid deadbeef_short)
 			EOF
@@ -735,7 +716,7 @@ do
 			test_cmp expect.err err.actual
 		'
 
-		test_expect_success "cat-file $arg1 $arg2 error on missing full OID" '
+    test_expect_success "cat-file $arg1 $arg2 error on missing full OID" '
 			if test "$arg2" = "-p"
 			then
 				cat >expect.err <<-EOF
@@ -750,7 +731,7 @@ do
 			test_must_be_empty out &&
 			test_cmp expect.err err.actual
 		'
-	done
+  done
 done
 
 test_expect_success '-e is OK with a broken object without --allow-unknown-type' '
@@ -959,7 +940,6 @@ test_expect_success 'git cat-file --batch-check --follow-symlinks works for in-r
 	echo HEAD:link-to-dir/ind1 | git cat-file --batch-check --follow-symlinks >actual &&
 	test_cmp found actual
 '
-
 
 test_expect_success 'git cat-file --batch-check --follow-symlinks works for broken in-repo, same-dir links' '
 	echo dangling 25 >expect &&
@@ -1258,8 +1238,8 @@ test_expect_success 'cat-file --batch-check respects replace objects' '
 # Pull the entry for object with oid "$1" out of the output of
 # "cat-file --batch", including its object content (which requires
 # parsing and reading a set amount of bytes, hence perl).
-extract_batch_output () {
-    perl -ne '
+extract_batch_output() {
+  perl -ne '
 	BEGIN { $oid = shift }
 	if (/^$oid \S+ (\d+)$/) {
 	    print;

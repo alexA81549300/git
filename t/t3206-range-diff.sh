@@ -530,9 +530,8 @@ test_expect_success 'dual-coloring' '
 	test_cmp expect actual
 '
 
-for prev in topic main..topic
-do
-	test_expect_success "format-patch --range-diff=$prev" '
+for prev in topic main..topic; do
+  test_expect_success "format-patch --range-diff=$prev" '
 		test_when_finished "rm -f 000?-*" &&
 		git format-patch --cover-letter --range-diff=$prev \
 			main..unmodified >actual &&

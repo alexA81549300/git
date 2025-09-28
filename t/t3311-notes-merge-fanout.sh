@@ -7,47 +7,44 @@ test_description='Test notes merging at various fanout levels'
 
 . ./test-lib.sh
 
-verify_notes () {
-	notes_ref="$1"
-	commit="$2"
-	if test -f "expect_notes_$notes_ref"
-	then
-		git -c core.notesRef="refs/notes/$notes_ref" notes |
-			sort >"output_notes_$notes_ref" &&
-		test_cmp "expect_notes_$notes_ref" "output_notes_$notes_ref" ||
-			return 1
-	fi &&
-	git -c core.notesRef="refs/notes/$notes_ref" log --format="%H %s%n%N" \
-		"$commit" >"output_log_$notes_ref" &&
-	test_cmp "expect_log_$notes_ref" "output_log_$notes_ref"
+verify_notes() {
+  notes_ref="$1"
+  commit="$2"
+  if test -f "expect_notes_$notes_ref"; then
+    git -c core.notesRef="refs/notes/$notes_ref" notes \
+      | sort >"output_notes_$notes_ref" \
+      && test_cmp "expect_notes_$notes_ref" "output_notes_$notes_ref" \
+      || return 1
+  fi \
+    && git -c core.notesRef="refs/notes/$notes_ref" log --format="%H %s%n%N" \
+      "$commit" >"output_log_$notes_ref" \
+    && test_cmp "expect_log_$notes_ref" "output_log_$notes_ref"
 }
 
-verify_fanout () {
-	notes_ref="$1"
-	# Expect entire notes tree to have a fanout == 1
-	git rev-parse --quiet --verify "refs/notes/$notes_ref" >/dev/null &&
-	git ls-tree -r --name-only "refs/notes/$notes_ref" |
-	while read path
-	do
-		echo "$path" | grep "^../[0-9a-f]*$" || {
-			echo "Invalid path \"$path\"" &&
-			return 1;
-		}
-	done
+verify_fanout() {
+  notes_ref="$1"
+  # Expect entire notes tree to have a fanout == 1
+  git rev-parse --quiet --verify "refs/notes/$notes_ref" >/dev/null \
+    && git ls-tree -r --name-only "refs/notes/$notes_ref" \
+    | while read path; do
+      echo "$path" | grep "^../[0-9a-f]*$" || {
+        echo "Invalid path \"$path\"" \
+          && return 1
+      }
+    done
 }
 
-verify_no_fanout () {
-	notes_ref="$1"
-	# Expect entire notes tree to have a fanout == 0
-	git rev-parse --quiet --verify "refs/notes/$notes_ref" >/dev/null &&
-	git ls-tree -r --name-only "refs/notes/$notes_ref" |
-	while read path
-	do
-		echo "$path" | grep -v "^../.*" || {
-			echo "Invalid path \"$path\"" &&
-			return 1;
-		}
-	done
+verify_no_fanout() {
+  notes_ref="$1"
+  # Expect entire notes tree to have a fanout == 0
+  git rev-parse --quiet --verify "refs/notes/$notes_ref" >/dev/null \
+    && git ls-tree -r --name-only "refs/notes/$notes_ref" \
+    | while read path; do
+      echo "$path" | grep -v "^../.*" || {
+        echo "Invalid path \"$path\"" \
+          && return 1
+      }
+    done
 }
 
 # Set up a notes merge scenario with different kinds of conflicts

@@ -7,9 +7,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 check_oneline() {
-	echo "$1" | sed "s/Q/'/g" >expect &&
-	git log -1 --pretty=tformat:%s >actual &&
-	test_cmp expect actual
+  echo "$1" | sed "s/Q/'/g" >expect \
+    && git log -1 --pretty=tformat:%s >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'merge local branch' '

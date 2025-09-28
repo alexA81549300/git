@@ -4,17 +4,17 @@ test_description='update-index refresh tests related to racy timestamps'
 
 . ./test-lib.sh
 
-reset_files () {
-	echo content >file &&
-	echo content >other &&
-	test_set_magic_mtime file &&
-	test_set_magic_mtime other
+reset_files() {
+  echo content >file \
+    && echo content >other \
+    && test_set_magic_mtime file \
+    && test_set_magic_mtime other
 }
 
-update_assert_changed () {
-	test_set_magic_mtime .git/index &&
-	test_might_fail git update-index "$1" &&
-	! test_is_magic_mtime .git/index
+update_assert_changed() {
+  test_set_magic_mtime .git/index \
+    && test_might_fail git update-index "$1" \
+    && ! test_is_magic_mtime .git/index
 }
 
 test_expect_success 'setup' '

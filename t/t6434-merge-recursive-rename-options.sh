@@ -31,67 +31,67 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-get_expected_stages () {
-	git checkout rename -- $1-new &&
-	git ls-files --stage $1-new >expected-stages-undetected-$1 &&
-	sed "s/ 0	/ 2	/" <expected-stages-undetected-$1 \
-		>expected-stages-detected-$1 &&
-	git read-tree -u --reset HEAD
+get_expected_stages() {
+  git checkout rename -- $1-new \
+    && git ls-files --stage $1-new >expected-stages-undetected-$1 \
+    && sed "s/ 0	/ 2	/" <expected-stages-undetected-$1 \
+      >expected-stages-detected-$1 \
+    && git read-tree -u --reset HEAD
 }
 
-rename_detected () {
-	git ls-files --stage $1-old $1-new >stages-actual-$1 &&
-	test_cmp expected-stages-detected-$1 stages-actual-$1
+rename_detected() {
+  git ls-files --stage $1-old $1-new >stages-actual-$1 \
+    && test_cmp expected-stages-detected-$1 stages-actual-$1
 }
 
-rename_undetected () {
-	git ls-files --stage $1-old $1-new >stages-actual-$1 &&
-	test_cmp expected-stages-undetected-$1 stages-actual-$1
+rename_undetected() {
+  git ls-files --stage $1-old $1-new >stages-actual-$1 \
+    && test_cmp expected-stages-undetected-$1 stages-actual-$1
 }
 
-check_common () {
-	git ls-files --stage >stages-actual &&
-	test_line_count = 4 stages-actual
+check_common() {
+  git ls-files --stage >stages-actual \
+    && test_line_count = 4 stages-actual
 }
 
-check_threshold_0 () {
-	check_common &&
-	rename_detected 0 &&
-	rename_detected 1 &&
-	rename_detected 2 &&
-	rename_detected 3
+check_threshold_0() {
+  check_common \
+    && rename_detected 0 \
+    && rename_detected 1 \
+    && rename_detected 2 \
+    && rename_detected 3
 }
 
-check_threshold_1 () {
-	check_common &&
-	rename_undetected 0 &&
-	rename_detected 1 &&
-	rename_detected 2 &&
-	rename_detected 3
+check_threshold_1() {
+  check_common \
+    && rename_undetected 0 \
+    && rename_detected 1 \
+    && rename_detected 2 \
+    && rename_detected 3
 }
 
-check_threshold_2 () {
-	check_common &&
-	rename_undetected 0 &&
-	rename_undetected 1 &&
-	rename_detected 2 &&
-	rename_detected 3
+check_threshold_2() {
+  check_common \
+    && rename_undetected 0 \
+    && rename_undetected 1 \
+    && rename_detected 2 \
+    && rename_detected 3
 }
 
-check_exact_renames () {
-	check_common &&
-	rename_undetected 0 &&
-	rename_undetected 1 &&
-	rename_undetected 2 &&
-	rename_detected 3
+check_exact_renames() {
+  check_common \
+    && rename_undetected 0 \
+    && rename_undetected 1 \
+    && rename_undetected 2 \
+    && rename_detected 3
 }
 
-check_no_renames () {
-	check_common &&
-	rename_undetected 0 &&
-	rename_undetected 1 &&
-	rename_undetected 2 &&
-	rename_undetected 3
+check_no_renames() {
+  check_common \
+    && rename_undetected 0 \
+    && rename_undetected 1 \
+    && rename_undetected 2 \
+    && rename_undetected 3
 }
 
 test_expect_success 'setup repo' '

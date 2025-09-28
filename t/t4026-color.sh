@@ -8,15 +8,13 @@ test_description='Test diff/status color escape codes'
 . ./test-lib.sh
 
 ESC=$(printf '\033')
-color()
-{
-	actual=$(git config --get-color no.such.slot "$1") &&
-	test "$actual" = "${2:+$ESC}$2"
+color() {
+  actual=$(git config --get-color no.such.slot "$1") \
+    && test "$actual" = "${2:+$ESC}$2"
 }
 
-invalid_color()
-{
-	test_must_fail git config --get-color no.such.slot "$1"
+invalid_color() {
+  test_must_fail git config --get-color no.such.slot "$1"
 }
 
 test_expect_success 'reset' '

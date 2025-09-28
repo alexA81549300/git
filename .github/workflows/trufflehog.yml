@@ -1,0 +1,16 @@
+name: trufflehog
+on: [push, pull_request]
+permissions: { contents: read }
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Run trufflehog OSS
+        uses: trufflesecurity/trufflehog@v3.81.5
+        with:
+          path: .
+          base: ${{ github.event.pull_request.base.sha || '' }}
+          head: ${{ github.sha }}
+          extra_args: --fail --only-verified

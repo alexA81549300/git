@@ -175,10 +175,10 @@ test_expect_success 'setup ssh wrapper' '
 	>"$TRASH_DIRECTORY"/ssh-output
 '
 
-expect_ssh () {
-	test_when_finished '(cd "$TRASH_DIRECTORY" && rm -f ssh-expect && >ssh-output)' &&
-	echo "ssh: -o SendEnv=GIT_PROTOCOL myhost $1 '$PWD/ssh_parent'" >"$TRASH_DIRECTORY/ssh-expect" &&
-	(cd "$TRASH_DIRECTORY" && test_cmp ssh-expect ssh-output)
+expect_ssh() {
+  test_when_finished '(cd "$TRASH_DIRECTORY" && rm -f ssh-expect && >ssh-output)' \
+    && echo "ssh: -o SendEnv=GIT_PROTOCOL myhost $1 '$PWD/ssh_parent'" >"$TRASH_DIRECTORY/ssh-expect" \
+    && (cd "$TRASH_DIRECTORY" && test_cmp ssh-expect ssh-output)
 }
 
 test_expect_success 'create repo to be served by ssh:// transport' '

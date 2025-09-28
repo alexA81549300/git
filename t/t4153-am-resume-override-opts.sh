@@ -4,8 +4,8 @@ test_description='git-am command-line options override saved options'
 
 . ./test-lib.sh
 
-format_patch () {
-	git format-patch --stdout -1 "$1" >"$1".eml
+format_patch() {
+  git format-patch --stdout -1 "$1" >"$1".eml
 }
 
 test_expect_success 'setup' '

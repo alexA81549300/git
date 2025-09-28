@@ -5,15 +5,15 @@ test_description='submodule --cached, --quiet etc. output'
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-t3100.sh
 
-setup_sub () {
-	local d="$1" &&
-	shift &&
-	git $@ clone . "$d" &&
-	git $@ submodule add ./"$d"
+setup_sub() {
+  local d="$1" \
+    && shift \
+    && git $@ clone . "$d" \
+    && git $@ submodule add ./"$d"
 }
 
-normalize_status () {
-	sed -e 's/-g[0-9a-f]*/-gHASH/'
+normalize_status() {
+  sed -e 's/-g[0-9a-f]*/-gHASH/'
 }
 
 test_expect_success 'setup' '
@@ -62,9 +62,8 @@ test_expect_success 'setup' '
 	done
 '
 
-for opts in "" "status"
-do
-	test_expect_success "git submodule $opts" '
+for opts in "" "status"; do
+  test_expect_success "git submodule $opts" '
 		sed -e "s/^>//" >expect <<-EOF &&
 		> $(test_oid B) S (B)
 		>+$(test_oid A) S.C (A)
@@ -79,9 +78,8 @@ do
 done
 
 for opts in \
-	"status --recursive"
-do
-	test_expect_success "git submodule $opts" '
+  "status --recursive"; do
+  test_expect_success "git submodule $opts" '
 		sed -e "s/^>//" >expect <<-EOF &&
 		> $(test_oid B) S (B)
 		>+$(test_oid A) S.C (A)
@@ -101,22 +99,20 @@ do
 done
 
 for opts in \
-	"--quiet" \
-	"--quiet status" \
-	"status --quiet"
-do
-	test_expect_success "git submodule $opts" '
+  "--quiet" \
+  "--quiet status" \
+  "status --quiet"; do
+  test_expect_success "git submodule $opts" '
 		git submodule $opts >out &&
 		test_must_be_empty out
 	'
 done
 
 for opts in \
-	"--cached" \
-	"--cached status" \
-	"status --cached"
-do
-	test_expect_success "git submodule $opts" '
+  "--cached" \
+  "--cached status" \
+  "status --cached"; do
+  test_expect_success "git submodule $opts" '
 		sed -e "s/^>//" >expect <<-EOF &&
 		> $(test_oid B) S (B)
 		>+$(test_oid B) S.C (B)
@@ -131,23 +127,21 @@ do
 done
 
 for opts in \
-	"--cached --quiet" \
-	"--cached --quiet status" \
-	"--cached status --quiet" \
-	"--quiet status --cached" \
-	"status --cached --quiet"
-do
-	test_expect_success "git submodule $opts" '
+  "--cached --quiet" \
+  "--cached --quiet status" \
+  "--cached status --quiet" \
+  "--quiet status --cached" \
+  "status --cached --quiet"; do
+  test_expect_success "git submodule $opts" '
 		git submodule $opts >out &&
 		test_must_be_empty out
 	'
 done
 
 for opts in \
-	"status --cached --recursive" \
-	"--cached status --recursive"
-do
-	test_expect_success "git submodule $opts" '
+  "status --cached --recursive" \
+  "--cached status --recursive"; do
+  test_expect_success "git submodule $opts" '
 		sed -e "s/^>//" >expect <<-EOF &&
 		> $(test_oid B) S (B)
 		>+$(test_oid B) S.C (B)

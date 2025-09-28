@@ -8,14 +8,14 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 has_cr() {
-	tr '\015' Q <"$1" | grep Q >/dev/null
+  tr '\015' Q <"$1" | grep Q >/dev/null
 }
 
 # add or remove CRs to disk file in-place
 # usage: munge_cr <append|remove> <file>
-munge_cr () {
-	"${1}_cr" <"$2" >tmp &&
-	mv tmp "$2"
+munge_cr() {
+  "${1}_cr" <"$2" >tmp \
+    && mv tmp "$2"
 }
 
 test_expect_success setup '
@@ -91,13 +91,11 @@ test_expect_success 'safecrlf: print warning only once' '
 	test_line_count = 1 err.warnings
 '
 
-
 test_expect_success 'safecrlf: git diff demotes safecrlf=true to warn' '
 	git config core.autocrlf input &&
 	git config core.safecrlf true &&
 	git diff HEAD
 '
-
 
 test_expect_success 'safecrlf: no warning with safecrlf=false' '
 	git config core.autocrlf input &&
@@ -107,7 +105,6 @@ test_expect_success 'safecrlf: no warning with safecrlf=false' '
 	git add allcrlf 2>err &&
 	test_must_be_empty err
 '
-
 
 test_expect_success 'switch off autocrlf, safecrlf, reset HEAD' '
 	git config core.autocrlf false &&
@@ -371,8 +368,8 @@ test_expect_success 'files are clean after checkout' '
 	git diff --exit-code
 '
 
-cr_to_Q_no_NL () {
-    tr '\015' Q | tr -d '\012'
+cr_to_Q_no_NL() {
+  tr '\015' Q | tr -d '\012'
 }
 
 test_expect_success 'LF only file gets CRLF with autocrlf' '

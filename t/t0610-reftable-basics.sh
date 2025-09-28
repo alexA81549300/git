@@ -77,28 +77,27 @@ test_expect_success 'init: reinitializing reftable with files backend fails' '
 	test_cmp expect repo/.git/HEAD
 '
 
-test_expect_perms () {
-	local perms="$1" &&
-	local file="$2" &&
-	local actual="$(ls -l "$file")" &&
-
-	case "$actual" in
-	$perms*)
-		: happy
-		;;
-	*)
-		echo "$(basename $2) is not $perms but $actual"
-		false
-		;;
-	esac
+test_expect_perms() {
+  local perms="$1" \
+    && local file="$2" \
+    && local actual="$(ls -l "$file")" \
+    && case "$actual" in
+      $perms*)
+        : happy
+        ;;
+      *)
+        echo "$(basename $2) is not $perms but $actual"
+        false
+        ;;
+    esac
 }
 
-test_expect_reftable_perms () {
-	local umask="$1"
-	local shared="$2"
-	local expect="$3"
+test_expect_reftable_perms() {
+  local umask="$1"
+  local shared="$2"
+  local expect="$3"
 
-	test_expect_success POSIXPERM "init: honors --shared=$shared with umask $umask" '
+  test_expect_success POSIXPERM "init: honors --shared=$shared with umask $umask" '
 		test_when_finished "rm -rf repo" &&
 		(
 			umask $umask &&
@@ -112,7 +111,7 @@ test_expect_reftable_perms () {
 		done
 	'
 
-	test_expect_success POSIXPERM "pack-refs: honors --shared=$shared with umask $umask" '
+  test_expect_success POSIXPERM "pack-refs: honors --shared=$shared with umask $umask" '
 		test_when_finished "rm -rf repo" &&
 		(
 			umask $umask &&
@@ -361,19 +360,18 @@ test_expect_success 'ref transaction: alternating table sizes are compacted' '
 	test_line_count = 2 repo/.git/reftable/tables.list
 '
 
-check_fsync_events () {
-	local trace="$1" &&
-	shift &&
-
-	cat >expect &&
-	sed -n \
-		-e '/^{"event":"counter",.*"category":"fsync",/ {
+check_fsync_events() {
+  local trace="$1" \
+    && shift \
+    && cat >expect \
+    && sed -n \
+      -e '/^{"event":"counter",.*"category":"fsync",/ {
 			s/.*"category":"fsync",//;
 			s/}$//;
 			p;
 		}' \
-		<"$trace" >actual &&
-	test_cmp expect actual
+      <"$trace" >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success 'ref transaction: writes are synced' '
@@ -516,9 +514,8 @@ test_expect_success 'pack-refs: compaction raises locking errors' '
 	test_cmp expect err
 '
 
-for command in pack-refs gc "maintenance run --task=pack-refs"
-do
-test_expect_success "$command: auto compaction" '
+for command in pack-refs gc "maintenance run --task=pack-refs"; do
+  test_expect_success "$command: auto compaction" '
 	test_when_finished "rm -rf repo" &&
 	git init repo &&
 	(

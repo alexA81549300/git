@@ -17,13 +17,13 @@ test_expect_success setup '
 	git add fileA.t fileB.t fileC.t fileD.t
 '
 
-restore_checkpoint () {
-	git reset --soft checkpoint
+restore_checkpoint() {
+  git reset --soft checkpoint
 }
 
-verify_expect () {
-	git diff-tree --no-commit-id --name-status -r HEAD >actual &&
-	test_cmp expect actual
+verify_expect() {
+  git diff-tree --no-commit-id --name-status -r HEAD >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success '--pathspec-from-file from stdin' '

@@ -11,15 +11,15 @@ test_description='Test diff of symlinks.
 . "$TEST_DIRECTORY"/lib-diff.sh
 
 # Print the short OID of a symlink with the given name.
-symlink_oid () {
-	local oid="$(printf "%s" "$1" | git hash-object --stdin)" &&
-	git rev-parse --short "$oid"
+symlink_oid() {
+  local oid="$(printf "%s" "$1" | git hash-object --stdin)" \
+    && git rev-parse --short "$oid"
 }
 
 # Print the short OID of the given file.
-short_oid () {
-	local oid="$(git hash-object "$1")" &&
-	git rev-parse --short "$oid"
+short_oid() {
+  local oid="$(git hash-object "$1")" \
+    && git rev-parse --short "$oid"
 }
 
 test_expect_success 'diff new symlink and file' '
@@ -53,7 +53,7 @@ test_expect_success 'diff new symlink and file' '
 	compare_diff_patch expected current
 '
 
-test_expect_success 'diff unchanged symlink and file'  '
+test_expect_success 'diff unchanged symlink and file' '
 	tree=$(git write-tree) &&
 	git update-index frotz nitfol &&
 	test -z "$(git diff-index --name-only $tree)"

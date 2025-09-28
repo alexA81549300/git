@@ -16,30 +16,29 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-check_describe () {
-	indir= &&
-	outcome=success &&
-	while test $# != 0
-	do
-		case "$1" in
-		-C)
-			indir="$2"
-			shift
-			;;
-		--expect-failure)
-			outcome=failure
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done &&
-	indir=${indir:+"$indir"/} &&
-	expect="$1"
-	shift
-	describe_opts="$@"
-	test_expect_${outcome} "describe $describe_opts" '
+check_describe() {
+  indir= \
+    && outcome=success \
+    && while test $# != 0; do
+      case "$1" in
+        -C)
+          indir="$2"
+          shift
+          ;;
+        --expect-failure)
+          outcome=failure
+          ;;
+        *)
+          break
+          ;;
+      esac
+      shift
+    done \
+    && indir=${indir:+"$indir"/} \
+    && expect="$1"
+  shift
+  describe_opts="$@"
+  test_expect_${outcome} "describe $describe_opts" '
 		git ${indir:+ -C "$indir"} describe $describe_opts >raw &&
 		sed -e "s/-g[0-9a-f]*\$/-gHASH/" <raw >actual &&
 		echo "$expect" >expect &&

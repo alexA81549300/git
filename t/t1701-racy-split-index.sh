@@ -23,16 +23,15 @@ test_expect_success 'setup' '
 	echo "+cached content" >expect
 '
 
-check_cached_diff () {
-	git diff-index --patch --cached $EMPTY_TREE racy-file >diff &&
-	tail -1 diff >actual &&
-	test_cmp expect actual
+check_cached_diff() {
+  git diff-index --patch --cached $EMPTY_TREE racy-file >diff \
+    && tail -1 diff >actual \
+    && test_cmp expect actual
 }
 
 trials="0 1 2 3 4"
-for trial in $trials
-do
-	test_expect_success "split the index while adding a racily clean file #$trial" '
+for trial in $trials; do
+  test_expect_success "split the index while adding a racily clean file #$trial" '
 		rm -f .git/index .git/sharedindex.* &&
 
 		# The next three commands must be run within the same
@@ -55,9 +54,8 @@ do
 	'
 done
 
-for trial in $trials
-do
-	test_expect_success "add a racily clean file to an already split index #$trial" '
+for trial in $trials; do
+  test_expect_success "add a racily clean file to an already split index #$trial" '
 		rm -f .git/index .git/sharedindex.* &&
 
 		git update-index --split-index &&
@@ -81,9 +79,8 @@ do
 	'
 done
 
-for trial in $trials
-do
-	test_expect_success "split the index when the index contains a racily clean cache entry #$trial" '
+for trial in $trials; do
+  test_expect_success "split the index when the index contains a racily clean cache entry #$trial" '
 		rm -f .git/index .git/sharedindex.* &&
 
 		# The next three commands must be run within the same
@@ -112,9 +109,8 @@ do
 	'
 done
 
-for trial in $trials
-do
-	test_expect_success "update the split index when it contains a new racily clean cache entry #$trial" '
+for trial in $trials; do
+  test_expect_success "update the split index when it contains a new racily clean cache entry #$trial" '
 		rm -f .git/index .git/sharedindex.* &&
 
 		git update-index --split-index &&
@@ -146,9 +142,8 @@ do
 	'
 done
 
-for trial in $trials
-do
-	test_expect_success "update the split index when a racily clean cache entry is stored only in the shared index #$trial" '
+for trial in $trials; do
+  test_expect_success "update the split index when a racily clean cache entry is stored only in the shared index #$trial" '
 		rm -f .git/index .git/sharedindex.* &&
 
 		# The next three commands must be run within the same
@@ -178,9 +173,8 @@ do
 	'
 done
 
-for trial in $trials
-do
-	test_expect_success "update the split index after unpack trees() copied a racily clean cache entry from the shared index #$trial" '
+for trial in $trials; do
+  test_expect_success "update the split index after unpack trees() copied a racily clean cache entry from the shared index #$trial" '
 		rm -f .git/index .git/sharedindex.* &&
 
 		# The next three commands must be run within the same

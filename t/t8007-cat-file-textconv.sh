@@ -44,7 +44,6 @@ test_expect_success 'usage: <rev>:<bad path>' '
 	test_cmp expect actual
 '
 
-
 test_expect_success 'usage: <rev> with no <path>' '
 	cat >expect <<-\EOF &&
 	fatal: <object>:<path> required, only <object> '\''HEAD'\'' given
@@ -52,7 +51,6 @@ test_expect_success 'usage: <rev> with no <path>' '
 	test_must_fail git cat-file --textconv HEAD 2>actual &&
 	test_cmp expect actual
 '
-
 
 test_expect_success 'usage: <bad rev>:<good (in HEAD) path>' '
 	cat >expect <<-\EOF &&
@@ -114,7 +112,6 @@ test_expect_success 'cat-file without --textconv (symlink)' '
 	git cat-file blob :symlink.bin >result &&
 	test_cmp expected result
 '
-
 
 test_expect_success 'cat-file --textconv on index (symlink)' '
 	git cat-file --textconv :symlink.bin >result &&

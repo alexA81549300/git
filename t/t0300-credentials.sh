@@ -956,11 +956,11 @@ test_expect_success 'credential system refuses to work with missing protocol' '
 '
 
 # usage: check_host_and_path <url> <expected-host> <expected-path>
-check_host_and_path () {
-	# we always parse the path component, but we need this to make sure it
-	# is passed to the helper
-	test_config credential.useHTTPPath true &&
-	check fill "verbatim user pass" <<-EOF
+check_host_and_path() {
+  # we always parse the path component, but we need this to make sure it
+  # is passed to the helper
+  test_config credential.useHTTPPath true \
+    && check fill "verbatim user pass" <<-EOF
 	url=$1
 	--
 	protocol=https

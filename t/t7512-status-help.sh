@@ -25,7 +25,6 @@ test_expect_success 'prepare for conflicts' '
 	test_commit on_conflicts main.txt on_conflicts
 '
 
-
 test_expect_success 'status when conflicts unresolved' '
 	test_must_fail git merge main &&
 	cat >expected <<\EOF &&
@@ -43,7 +42,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status when conflicts resolved before commit' '
 	git reset --hard conflicts &&
@@ -64,7 +62,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'prepare for rebase conflicts' '
 	git reset --hard main &&
 	git checkout -b rebase_conflicts &&
@@ -72,7 +69,6 @@ test_expect_success 'prepare for rebase conflicts' '
 	test_commit two_rebase main.txt two &&
 	test_commit three_rebase main.txt three
 '
-
 
 test_expect_success 'status when rebase --apply in progress before resolving conflicts' '
 	test_when_finished "git rebase --abort" &&
@@ -96,7 +92,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status when rebase --apply in progress before rebase --continue' '
 	git reset --hard rebase_conflicts &&
 	test_when_finished "git rebase --abort" &&
@@ -119,7 +114,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'prepare for rebase_i_conflicts' '
 	git reset --hard main &&
 	git checkout -b rebase_i_conflicts &&
@@ -129,7 +123,6 @@ test_expect_success 'prepare for rebase_i_conflicts' '
 	git checkout rebase_i_conflicts_second &&
 	test_commit one_second main.txt one_second
 '
-
 
 test_expect_success 'status during rebase -i when conflicts unresolved' '
 	test_when_finished "git rebase --abort" &&
@@ -157,7 +150,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status during rebase -i after resolving conflicts' '
 	git reset --hard rebase_i_conflicts_second &&
 	test_when_finished "git rebase --abort" &&
@@ -182,7 +174,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status when rebasing -i in edit mode' '
 	git reset --hard main &&
@@ -212,7 +203,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status when splitting a commit' '
 	git reset --hard main &&
@@ -252,7 +242,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status after editing the last commit with --amend during a rebase -i' '
 	git reset --hard main &&
 	git checkout -b amend_last &&
@@ -285,7 +274,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'prepare for several edits' '
 	git reset --hard main &&
 	git checkout -b several_edits &&
@@ -294,7 +282,6 @@ test_expect_success 'prepare for several edits' '
 	test_commit three_edits main.txt three &&
 	test_commit four_edits main.txt four
 '
-
 
 test_expect_success 'status: (continue first edit) second edit' '
 	FAKE_LINES="edit 1 edit 2 3" &&
@@ -323,7 +310,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status: (continue first edit) second edit and split' '
 	git reset --hard several_edits &&
@@ -359,7 +345,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status: (continue first edit) second edit and amend' '
 	git reset --hard several_edits &&
 	FAKE_LINES="edit 1 edit 2 3" &&
@@ -390,7 +375,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status: (amend first edit) second edit' '
 	git reset --hard several_edits &&
 	FAKE_LINES="edit 1 edit 2 3" &&
@@ -420,7 +404,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status: (amend first edit) second edit and split' '
 	git reset --hard several_edits &&
@@ -457,7 +440,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status: (amend first edit) second edit and amend' '
 	git reset --hard several_edits &&
 	FAKE_LINES="edit 1 edit 2 3" &&
@@ -488,7 +470,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status: (split first edit) second edit' '
 	git reset --hard several_edits &&
@@ -521,7 +502,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status: (split first edit) second edit and split' '
 	git reset --hard several_edits &&
@@ -560,7 +540,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status: (split first edit) second edit and amend' '
 	git reset --hard several_edits &&
 	FAKE_LINES="edit 1 edit 2 3" &&
@@ -594,7 +573,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'prepare am_session' '
 	git reset --hard main &&
 	git checkout -b am_session &&
@@ -602,7 +580,6 @@ test_expect_success 'prepare am_session' '
 	test_commit two_am two.txt "two" &&
 	test_commit three_am three.txt "three"
 '
-
 
 test_expect_success 'status in an am session: file already exists' '
 	git checkout -b am_already_exists &&
@@ -621,7 +598,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status in an am session: file does not exist' '
 	git reset --hard am_session &&
@@ -643,7 +619,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status in an am session: empty patch' '
 	git reset --hard am_session &&
@@ -668,7 +643,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status when bisecting' '
 	git reset --hard main &&
 	git checkout -b bisect &&
@@ -690,7 +664,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status when bisecting while rebasing' '
 	git reset --hard main &&
@@ -719,7 +692,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'status when rebase --apply conflicts with statushints disabled' '
 	git reset --hard main &&
 	git checkout -b statushints_disabled &&
@@ -744,7 +716,6 @@ EOF
 	test_cmp expected actual
 '
 
-
 test_expect_success 'prepare for cherry-pick conflicts' '
 	git reset --hard main &&
 	git checkout -b cherry_branch &&
@@ -755,7 +726,6 @@ test_expect_success 'prepare for cherry-pick conflicts' '
 	git checkout cherry_branch &&
 	test_commit three_cherries main.txt three
 '
-
 
 test_expect_success 'status when cherry-picking before resolving conflicts' '
 	test_when_finished "git cherry-pick --abort" &&
@@ -777,7 +747,6 @@ EOF
 	git status --untracked-files=no >actual &&
 	test_cmp expected actual
 '
-
 
 test_expect_success 'status when cherry-picking after resolving conflicts' '
 	git reset --hard cherry_branch &&

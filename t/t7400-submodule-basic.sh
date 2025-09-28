@@ -35,9 +35,8 @@ test_expect_success 'submodule usage: status --' '
 	test_expect_code 1 git submodule --end-of-options
 '
 
-for opt in '--quiet' '--cached'
-do
-	test_expect_success "submodule usage: status $opt" '
+for opt in '--quiet' '--cached'; do
+  test_expect_success "submodule usage: status $opt" '
 		git submodule $opt &&
 		git submodule status $opt &&
 		git submodule $opt status
@@ -138,22 +137,21 @@ test_expect_success 'setup - repository to add submodules to' '
 submodurl=$(pwd -P)
 
 listbranches() {
-	git for-each-ref --format='%(refname)' 'refs/heads/*'
+  git for-each-ref --format='%(refname)' 'refs/heads/*'
 }
 
 inspect() {
-	dir=$1 &&
-	dotdot="${2:-..}" &&
-
-	(
-		cd "$dir" &&
-		listbranches >"$dotdot/heads" &&
-		{ git symbolic-ref HEAD || :; } >"$dotdot/head" &&
-		git rev-parse HEAD >"$dotdot/head-sha1" &&
-		git update-index --refresh &&
-		git diff-files --exit-code &&
-		git clean -n -d -x >"$dotdot/untracked"
-	)
+  dir=$1 \
+    && dotdot="${2:-..}" \
+    && (
+      cd "$dir" \
+        && listbranches >"$dotdot/heads" \
+        && { git symbolic-ref HEAD || :; } >"$dotdot/head" \
+        && git rev-parse HEAD >"$dotdot/head-sha1" \
+        && git update-index --refresh \
+        && git diff-files --exit-code \
+        && git clean -n -d -x >"$dotdot/untracked"
+    )
 }
 
 test_expect_success 'submodule add' '
@@ -483,9 +481,9 @@ test_expect_success 'status should still be "missing" after initializing' '
 	grep "^-$rev1" lines
 '
 
-test_failure_with_unknown_submodule () {
-	test_must_fail git submodule $1 no-such-submodule 2>output.err &&
-	test_grep "^error: .*no-such-submodule" output.err
+test_failure_with_unknown_submodule() {
+  test_must_fail git submodule $1 no-such-submodule 2>output.err \
+    && test_grep "^error: .*no-such-submodule" output.err
 }
 
 test_expect_success 'init should fail with unknown submodule' '

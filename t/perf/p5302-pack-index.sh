@@ -27,23 +27,22 @@ test_expect_success 'set up thread-counting tests' '
 '
 
 test_perf 'index-pack 0 threads' --prereq PERF_EXTRA \
-	--setup 'rm -rf repo.git && git init --bare repo.git' '
+  --setup 'rm -rf repo.git && git init --bare repo.git' '
 	GIT_DIR=repo.git git index-pack --threads=1 --stdin < $PACK
 '
 
-for t in $threads
-do
-	THREADS=$t
-	export THREADS
-	test_perf "index-pack $t threads" --prereq PERF_EXTRA \
-		--setup 'rm -rf repo.git && git init --bare repo.git' '
+for t in $threads; do
+  THREADS=$t
+  export THREADS
+  test_perf "index-pack $t threads" --prereq PERF_EXTRA \
+    --setup 'rm -rf repo.git && git init --bare repo.git' '
 		GIT_DIR=repo.git GIT_FORCE_THREADS=1 \
 		git index-pack --threads=$THREADS --stdin <$PACK
 	'
 done
 
 test_perf 'index-pack default number of threads' \
-	--setup 'rm -rf repo.git && git init --bare repo.git' '
+  --setup 'rm -rf repo.git && git init --bare repo.git' '
 	GIT_DIR=repo.git git index-pack --stdin < $PACK
 '
 

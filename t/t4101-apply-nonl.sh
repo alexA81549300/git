@@ -11,15 +11,27 @@ test_description='git apply should handle files with incomplete lines.
 
 # setup
 
-(echo a; echo b) >frotz.0
-(echo a; echo b; echo c) >frotz.1
-(echo a; echo b | tr -d '\012') >frotz.2
-(echo a; echo c; echo b | tr -d '\012') >frotz.3
+(
+  echo a
+  echo b
+) >frotz.0
+(
+  echo a
+  echo b
+  echo c
+) >frotz.1
+(
+  echo a
+  echo b | tr -d '\012'
+) >frotz.2
+(
+  echo a
+  echo c
+  echo b | tr -d '\012'
+) >frotz.3
 
-for i in 0 1 2 3
-do
-  for j in 0 1 2 3
-  do
+for i in 0 1 2 3; do
+  for j in 0 1 2 3; do
     test $i -eq $j && continue
     cat frotz.$i >frotz
     test_expect_success "apply diff between $i and $j" '

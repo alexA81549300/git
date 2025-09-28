@@ -6,28 +6,28 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 . ./test-lib.sh
 
-check_config () {
-	printf "%s\n" "$2" "$3" >"expect.$1" &&
-	{
-		git config "branch.$1.remote" && git config "branch.$1.merge"
-	} >"actual.$1" &&
-	test_cmp "expect.$1" "actual.$1"
+check_config() {
+  printf "%s\n" "$2" "$3" >"expect.$1" \
+    && {
+      git config "branch.$1.remote" && git config "branch.$1.merge"
+    } >"actual.$1" \
+    && test_cmp "expect.$1" "actual.$1"
 }
 
-check_config_missing () {
-	test_expect_code 1 git config "branch.$1.remote" &&
-	test_expect_code 1 git config "branch.$1.merge"
+check_config_missing() {
+  test_expect_code 1 git config "branch.$1.remote" \
+    && test_expect_code 1 git config "branch.$1.merge"
 }
 
-clear_config () {
-	for branch in "$@"; do
-		test_might_fail git config --unset-all "branch.$branch.remote"
-		test_might_fail git config --unset-all "branch.$branch.merge"
-	done
+clear_config() {
+  for branch in "$@"; do
+    test_might_fail git config --unset-all "branch.$branch.remote"
+    test_might_fail git config --unset-all "branch.$branch.merge"
+  done
 }
 
-ensure_fresh_upstream () {
-	rm -rf parent && git init --bare parent
+ensure_fresh_upstream() {
+  rm -rf parent && git init --bare parent
 }
 
 test_expect_success 'setup bare parent fetch' '

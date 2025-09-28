@@ -17,10 +17,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 test_have_prereq SED_STRIPS_CR && SED_OPTIONS=-b
-if test_have_prereq GREP_STRIPS_CR
-then
-	GREP_OPTIONS=-U
-	export GREP_OPTIONS
+if test_have_prereq GREP_STRIPS_CR; then
+  GREP_OPTIONS=-U
+  export GREP_OPTIONS
 fi
 
 test_expect_success 'setup' '

@@ -7,23 +7,23 @@ test_description='commit and log output encodings'
 
 . ./test-lib.sh
 
-if ! test_have_prereq ICONV
-then
-	skip_all='skipping commit i18n tests; iconv not available'
-	test_done
+if ! test_have_prereq ICONV; then
+  skip_all='skipping commit i18n tests; iconv not available'
+  test_done
 fi
 
-compare_with () {
-	git show -s $1 | sed -e '1,/^$/d' -e 's/^    //' >current &&
-	case "$3" in
-	'')
-		test_cmp "$2" current ;;
-	?*)
-		iconv -f "$3" -t UTF-8 >current.utf8 <current &&
-		iconv -f "$3" -t UTF-8 >expect.utf8 <"$2" &&
-		test_cmp expect.utf8 current.utf8
-		;;
-	esac
+compare_with() {
+  git show -s $1 | sed -e '1,/^$/d' -e 's/^    //' >current \
+    && case "$3" in
+      '')
+        test_cmp "$2" current
+        ;;
+      ?*)
+        iconv -f "$3" -t UTF-8 >current.utf8 <current \
+          && iconv -f "$3" -t UTF-8 >expect.utf8 <"$2" \
+          && test_cmp expect.utf8 current.utf8
+        ;;
+    esac
 }
 
 test_expect_success setup '
@@ -82,9 +82,8 @@ test_expect_success 'UTF-8 non-characters refused' '
 	test_grep "did not conform" "$HOME"/stderr
 '
 
-for H in ISO8859-1 eucJP ISO-2022-JP
-do
-	test_expect_success "$H setup" '
+for H in ISO8859-1 eucJP ISO-2022-JP; do
+  test_expect_success "$H setup" '
 		git config i18n.commitencoding $H &&
 		git checkout -b $H C0 &&
 		echo $H >F &&
@@ -92,9 +91,8 @@ do
 	'
 done
 
-for H in ISO8859-1 eucJP ISO-2022-JP
-do
-	test_expect_success "check encoding header for $H" '
+for H in ISO8859-1 eucJP ISO-2022-JP; do
+  test_expect_success "check encoding header for $H" '
 		E=$(git cat-file commit '$H' | sed -ne "s/^encoding //p") &&
 		test "z$E" = "z'$H'"
 	'
@@ -116,9 +114,8 @@ test_expect_success 'ISO8859-1 should be shown in UTF-8 now' '
 	compare_with ISO8859-1 "$TEST_DIRECTORY"/t3900/1-UTF-8.txt
 '
 
-for H in eucJP ISO-2022-JP
-do
-	test_expect_success "$H should be shown in UTF-8 now" '
+for H in eucJP ISO-2022-JP; do
+  test_expect_success "$H should be shown in UTF-8 now" '
 		compare_with '$H' "$TEST_DIRECTORY"/t3900/2-UTF-8.txt
 	'
 done
@@ -134,9 +131,8 @@ test_expect_success 'config to add customization' '
 	fi
 '
 
-for H in ISO8859-1 eucJP ISO-2022-JP
-do
-	test_expect_success "$H should be shown in itself now" '
+for H in ISO8859-1 eucJP ISO-2022-JP; do
+  test_expect_success "$H should be shown in itself now" '
 		git config i18n.commitencoding '$H' &&
 		compare_with '$H' "$TEST_DIRECTORY"/t3900/'$H'.txt
 	'
@@ -150,41 +146,36 @@ test_expect_success 'ISO8859-1 should be shown in UTF-8 now' '
 	compare_with ISO8859-1 "$TEST_DIRECTORY"/t3900/1-UTF-8.txt
 '
 
-for H in eucJP ISO-2022-JP
-do
-	test_expect_success "$H should be shown in UTF-8 now" '
+for H in eucJP ISO-2022-JP; do
+  test_expect_success "$H should be shown in UTF-8 now" '
 		compare_with '$H' "$TEST_DIRECTORY"/t3900/2-UTF-8.txt
 	'
 done
 
-for J in eucJP ISO-2022-JP
-do
-	if test "$J" = ISO-2022-JP
-	then
-		ICONV=$J
-	else
-		ICONV=
-	fi
-	git config i18n.logoutputencoding $J
-	for H in eucJP ISO-2022-JP
-	do
-		test_expect_success "$H should be shown in $J now" '
+for J in eucJP ISO-2022-JP; do
+  if test "$J" = ISO-2022-JP; then
+    ICONV=$J
+  else
+    ICONV=
+  fi
+  git config i18n.logoutputencoding $J
+  for H in eucJP ISO-2022-JP; do
+    test_expect_success "$H should be shown in $J now" '
 			compare_with '$H' "$TEST_DIRECTORY"/t3900/'$J'.txt $ICONV
 		'
-	done
+  done
 done
 
-for H in ISO8859-1 eucJP ISO-2022-JP
-do
-	test_expect_success "No conversion with $H" '
+for H in ISO8859-1 eucJP ISO-2022-JP; do
+  test_expect_success "No conversion with $H" '
 		compare_with "--encoding=none '$H'" "$TEST_DIRECTORY"/t3900/'$H'.txt
 	'
 done
 
-test_commit_autosquash_flags () {
-	H=$1
-	flag=$2
-	test_expect_success "commit --$flag with $H encoding" '
+test_commit_autosquash_flags() {
+  H=$1
+  flag=$2
+  test_expect_success "commit --$flag with $H encoding" '
 		git config i18n.commitencoding $H &&
 		git checkout -b $H-$flag C0 &&
 		echo $H >>F &&
@@ -210,12 +201,12 @@ test_commit_autosquash_flags eucJP fixup
 
 test_commit_autosquash_flags ISO-2022-JP squash
 
-test_commit_autosquash_multi_encoding () {
-	flag=$1
-	old=$2
-	new=$3
-	msg=$4
-	test_expect_success "commit --$flag into $old from $new" '
+test_commit_autosquash_multi_encoding() {
+  flag=$1
+  old=$2
+  new=$3
+  msg=$4
+  test_expect_success "commit --$flag into $old from $new" '
 		git checkout -b $flag-$old-$new C0 &&
 		git config i18n.commitencoding $old &&
 		echo $old >>F &&

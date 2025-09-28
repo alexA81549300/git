@@ -31,47 +31,42 @@ test_expect_success setup '
 	git revert HEAD
 '
 
-test_incidental_dir_removal () {
-	test_when_finished "git reset --hard" &&
-
-	git checkout foo/bar/baz^{commit} &&
-	test_path_is_dir foo/bar &&
-
-	(
-		cd foo &&
-		"$@" &&
-
-		# Make sure foo still exists, and commands needing it work
-		test-tool getcwd &&
-		git status --porcelain
-	) &&
-	test_path_is_missing foo/bar/baz &&
-	test_path_is_missing foo/bar &&
-
-	test_path_is_dir foo
+test_incidental_dir_removal() {
+  test_when_finished "git reset --hard" \
+    && git checkout foo/bar/baz^{commit} \
+    && test_path_is_dir foo/bar \
+    && (
+      cd foo \
+        && "$@" \
+        &&
+        # Make sure foo still exists, and commands needing it work
+        test-tool getcwd \
+        && git status --porcelain
+    ) \
+    && test_path_is_missing foo/bar/baz \
+    && test_path_is_missing foo/bar \
+    && test_path_is_dir foo
 }
 
-test_required_dir_removal () {
-	git checkout df_conflict^{commit} &&
-	test_when_finished "git clean -fdx" &&
-
-	(
-		cd dirORfile &&
-
-		# Ensure command refuses to run
-		test_must_fail "$@" 2>../error &&
-		grep "Refusing to remove.*current working directory" ../error &&
-
-		# ...and that the index and working tree are left clean
-		git diff --exit-code HEAD &&
-
-		# Ensure that getcwd and git status do not error out (which
-		# they might if the current working directory had been removed)
-		test-tool getcwd &&
-		git status --porcelain
-	) &&
-
-	test_path_is_dir dirORfile
+test_required_dir_removal() {
+  git checkout df_conflict^{commit} \
+    && test_when_finished "git clean -fdx" \
+    && (
+      cd dirORfile \
+        &&
+        # Ensure command refuses to run
+        test_must_fail "$@" 2>../error \
+        && grep "Refusing to remove.*current working directory" ../error \
+        &&
+        # ...and that the index and working tree are left clean
+        git diff --exit-code HEAD \
+        &&
+        # Ensure that getcwd and git status do not error out (which
+        # they might if the current working directory had been removed)
+        test-tool getcwd \
+        && git status --porcelain
+    ) \
+    && test_path_is_dir dirORfile
 }
 
 test_expect_success 'checkout does not clean cwd incidentally' '
@@ -156,26 +151,23 @@ test_expect_success 'apply does not remove cwd incidentally' '
 	test_incidental_dir_removal git apply ../patch
 '
 
-test_incidental_untracked_dir_removal () {
-	test_when_finished "git reset --hard" &&
-
-	git checkout foo/bar/baz^{commit} &&
-	mkdir -p untracked &&
-	mkdir empty
-	>untracked/random &&
-
-	(
-		cd untracked &&
-		"$@" &&
-
-		# Make sure untracked still exists, and commands needing it work
-		test-tool getcwd &&
-		git status --porcelain
-	) &&
-	test_path_is_missing empty &&
-	test_path_is_missing untracked/random &&
-
-	test_path_is_dir untracked
+test_incidental_untracked_dir_removal() {
+  test_when_finished "git reset --hard" \
+    && git checkout foo/bar/baz^{commit} \
+    && mkdir -p untracked \
+    && mkdir empty
+  >untracked/random \
+    && (
+      cd untracked \
+        && "$@" \
+        &&
+        # Make sure untracked still exists, and commands needing it work
+        test-tool getcwd \
+        && git status --porcelain
+    ) \
+    && test_path_is_missing empty \
+    && test_path_is_missing untracked/random \
+    && test_path_is_dir untracked
 }
 
 test_expect_success 'clean does not remove cwd incidentally' '
@@ -233,31 +225,26 @@ test_expect_success 'git version continues working from a deleted dir' '
 	)
 '
 
-test_submodule_removal () {
-	path_status=$1 &&
-	shift &&
+test_submodule_removal() {
+  path_status=$1 \
+    && shift \
+    && test_status=
+  test "$path_status" = dir && test_status=test_must_fail
 
-	test_status=
-	test "$path_status" = dir && test_status=test_must_fail
-
-	test_when_finished "git reset --hard HEAD~1" &&
-	test_when_finished "rm -rf .git/modules/my_submodule" &&
-
-	git checkout foo/bar/baz &&
-
-	git init my_submodule &&
-	touch my_submodule/file &&
-	git -C my_submodule add file &&
-	git -C my_submodule commit -m "initial commit" &&
-	git submodule add ./my_submodule &&
-	git commit -m "Add the submodule" &&
-
-	(
-		cd my_submodule &&
-		$test_status "$@"
-	) &&
-
-	test_path_is_${path_status} my_submodule
+  test_when_finished "git reset --hard HEAD~1" \
+    && test_when_finished "rm -rf .git/modules/my_submodule" \
+    && git checkout foo/bar/baz \
+    && git init my_submodule \
+    && touch my_submodule/file \
+    && git -C my_submodule add file \
+    && git -C my_submodule commit -m "initial commit" \
+    && git submodule add ./my_submodule \
+    && git commit -m "Add the submodule" \
+    && (
+      cd my_submodule \
+        && $test_status "$@"
+    ) \
+    && test_path_is_${path_status} my_submodule
 }
 
 test_expect_success 'rm -r with -C leaves submodule if cwd inside' '

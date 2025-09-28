@@ -7,8 +7,8 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 . ./test-lib.sh
 
 repo_is_hardlinked() {
-	find "$1/objects" -type f -links 1 >output &&
-	test_line_count = 0 output
+  find "$1/objects" -type f -links 1 >output \
+    && test_line_count = 0 output
 }
 
 test_expect_success 'preparing origin repository' '

@@ -65,10 +65,10 @@ test_expect_success '--no-verify with no hook (merge)' '
 	test_path_is_missing actual_hooks
 '
 
-setup_success_hook () {
-	test_when_finished "rm -f actual_hooks expected_hooks" &&
-	echo "$1" >expected_hooks &&
-	test_hook "$1" <<-EOF
+setup_success_hook() {
+  test_when_finished "rm -f actual_hooks expected_hooks" \
+    && echo "$1" >expected_hooks \
+    && test_hook "$1" <<-EOF
 	echo $1 >>actual_hooks
 	EOF
 }
@@ -121,9 +121,9 @@ test_expect_success '--no-verify with succeeding hook (merge)' '
 	test_path_is_missing actual_hooks
 '
 
-setup_failing_hook () {
-	test_when_finished "rm -f actual_hooks" &&
-	test_hook "$1" <<-EOF
+setup_failing_hook() {
+  test_when_finished "rm -f actual_hooks" \
+    && test_hook "$1" <<-EOF
 	echo $1-failing-hook >>actual_hooks
 	exit 1
 	EOF
@@ -167,15 +167,13 @@ test_expect_success '--no-verify with failing hook (merge)' '
 	test_path_is_missing actual_hooks
 '
 
-setup_non_exec_hook () {
-	test_when_finished "rm -f actual_hooks" &&
-	test_hook "$1" <<-\EOF &&
+setup_non_exec_hook() {
+  test_when_finished "rm -f actual_hooks" \
+    && test_hook "$1" <<-\EOF && test_hook --disable "$1"
 	echo non-exec >>actual_hooks
 	exit 1
 	EOF
-	test_hook --disable "$1"
 }
-
 
 test_expect_success POSIXPERM 'with non-executable hook' '
 	setup_non_exec_hook "pre-commit" &&
@@ -211,10 +209,10 @@ test_expect_success POSIXPERM '--no-verify with non-executable hook (merge)' '
 	test_path_is_missing actual_hooks
 '
 
-setup_require_prefix_hook () {
-	test_when_finished "rm -f expected_hooks" &&
-	echo require-prefix >expected_hooks &&
-	test_hook pre-commit <<-\EOF
+setup_require_prefix_hook() {
+  test_when_finished "rm -f expected_hooks" \
+    && echo require-prefix >expected_hooks \
+    && test_hook pre-commit <<-\EOF
 	echo require-prefix >>actual_hooks
 	test $GIT_PREFIX = "success/"
 	EOF
@@ -247,16 +245,15 @@ test_expect_success 'with failing hook requiring GIT_PREFIX' '
 	test_cmp expected_hooks actual_hooks
 '
 
-setup_require_author_hook () {
-	test_when_finished "rm -f expected_hooks actual_hooks" &&
-	echo check-author >expected_hooks &&
-	test_hook pre-commit <<-\EOF
+setup_require_author_hook() {
+  test_when_finished "rm -f expected_hooks actual_hooks" \
+    && echo check-author >expected_hooks \
+    && test_hook pre-commit <<-\EOF
 	echo check-author >>actual_hooks
 	test "$GIT_AUTHOR_NAME" = "New Author" &&
 	test "$GIT_AUTHOR_EMAIL" = "newauthor@example.com"
 	EOF
 }
-
 
 test_expect_success 'check the author in hook' '
 	setup_require_author_hook &&

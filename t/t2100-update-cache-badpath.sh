@@ -26,36 +26,33 @@ All of the attempts should fail.
 
 mkdir path2 path3
 date >path0
-if test_have_prereq SYMLINKS
-then
-	ln -s xyzzy path1
+if test_have_prereq SYMLINKS; then
+  ln -s xyzzy path1
 else
-	date > path1
+  date >path1
 fi
 date >path2/file2
 date >path3/file3
 
 test_expect_success \
-    'git update-index --add to add various paths.' \
-    'git update-index --add -- path0 path1 path2/file2 path3/file3'
+  'git update-index --add to add various paths.' \
+  'git update-index --add -- path0 path1 path2/file2 path3/file3'
 
 rm -fr path?
 
 mkdir path0 path1
 date >path2
-if test_have_prereq SYMLINKS
-then
-	ln -s frotz path3
+if test_have_prereq SYMLINKS; then
+  ln -s frotz path3
 else
-	date > path3
+  date >path3
 fi
 date >path0/file0
 date >path1/file1
 
-for p in path0/file0 path1/file1 path2 path3
-do
-	test_expect_success \
-	    "git update-index to add conflicting path $p should fail." \
-	    "test_must_fail git update-index --add -- $p"
+for p in path0/file0 path1/file1 path2 path3; do
+  test_expect_success \
+    "git update-index to add conflicting path $p should fail." \
+    "test_must_fail git update-index --add -- $p"
 done
 test_done

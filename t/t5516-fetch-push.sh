@@ -23,54 +23,46 @@ TEST_CREATE_REPO_NO_TEMPLATE=1
 
 D=$(pwd)
 
-mk_empty () {
-	repo_name="$1"
-	test_when_finished "rm -rf \"$repo_name\"" &&
-	test_path_is_missing "$repo_name" &&
-	git init --template= "$repo_name" &&
-	mkdir "$repo_name"/.git/hooks &&
-	git -C "$repo_name" config receive.denyCurrentBranch warn
+mk_empty() {
+  repo_name="$1"
+  test_when_finished "rm -rf \"$repo_name\"" \
+    && test_path_is_missing "$repo_name" \
+    && git init --template= "$repo_name" \
+    && mkdir "$repo_name"/.git/hooks \
+    && git -C "$repo_name" config receive.denyCurrentBranch warn
 }
 
-mk_test () {
-	repo_name="$1"
-	shift
+mk_test() {
+  repo_name="$1"
+  shift
 
-	mk_empty "$repo_name" &&
-	(
-		for ref in "$@"
-		do
-			git push "$repo_name" $the_first_commit:refs/$ref ||
-			exit
-		done &&
-		cd "$repo_name" &&
-		for ref in "$@"
-		do
-			echo "$the_first_commit" >expect &&
-			git show-ref -s --verify refs/$ref >actual &&
-			test_cmp expect actual ||
-			exit
-		done &&
-		git fsck --full
-	)
+  mk_empty "$repo_name" \
+    && (
+      for ref in "$@"; do
+        git push "$repo_name" $the_first_commit:refs/$ref \
+          || exit
+      done \
+        && cd "$repo_name" \
+        && for ref in "$@"; do
+          echo "$the_first_commit" >expect \
+            && git show-ref -s --verify refs/$ref >actual \
+            && test_cmp expect actual \
+            || exit
+        done \
+        && git fsck --full
+    )
 }
 
 mk_test_with_hooks() {
-	repo_name=$1
-	mk_test "$@" &&
-	test_hook -C "$repo_name" pre-receive <<-'EOF' &&
+  repo_name=$1
+  mk_test "$@" \
+    && test_hook -C "$repo_name" pre-receive <<-'EOF' && test_hook -C "$repo_name" update <<-'EOF' && test_hook -C "$repo_name" post-receive <<-'EOF' && test_hook -C "$repo_name" post-update <<-'EOF'
 	cat - >>pre-receive.actual
 	EOF
-
-	test_hook -C "$repo_name" update <<-'EOF' &&
 	printf "%s %s %s\n" "$@" >>update.actual
 	EOF
-
-	test_hook -C "$repo_name" post-receive <<-'EOF' &&
 	cat - >>post-receive.actual
 	EOF
-
-	test_hook -C "$repo_name" post-update <<-'EOF'
 	for ref in "$@"
 	do
 		printf "%s\n" "$ref" >>post-update.actual
@@ -79,29 +71,28 @@ mk_test_with_hooks() {
 }
 
 mk_child() {
-	test_when_finished "rm -rf \"$2\"" &&
-	git clone --template= "$1" "$2"
+  test_when_finished "rm -rf \"$2\"" \
+    && git clone --template= "$1" "$2"
 }
 
-check_push_result () {
-	test $# -ge 3 ||
-	BUG "check_push_result requires at least 3 parameters"
+check_push_result() {
+  test $# -ge 3 \
+    || BUG "check_push_result requires at least 3 parameters"
 
-	repo_name="$1"
-	shift
+  repo_name="$1"
+  shift
 
-	(
-		cd "$repo_name" &&
-		echo "$1" >expect &&
-		shift &&
-		for ref in "$@"
-		do
-			git show-ref -s --verify refs/$ref >actual &&
-			test_cmp expect actual ||
-			exit
-		done &&
-		git fsck --full
-	)
+  (
+    cd "$repo_name" \
+      && echo "$1" >expect \
+      && shift \
+      && for ref in "$@"; do
+        git show-ref -s --verify refs/$ref >actual \
+          && test_cmp expect actual \
+          || exit
+      done \
+      && git fsck --full
+  )
 }
 
 test_expect_success setup '
@@ -120,15 +111,13 @@ test_expect_success setup '
 
 '
 
-for cmd in push fetch
-do
-	for opt in ipv4 ipv6
-	do
-		test_expect_success "reject 'git $cmd --no-$opt'" '
+for cmd in push fetch; do
+  for opt in ipv4 ipv6; do
+    test_expect_success "reject 'git $cmd --no-$opt'" '
 			test_must_fail git $cmd --no-$opt 2>err &&
 			grep "unknown option .no-$opt" err
 		'
-	done
+  done
 done
 
 test_expect_success 'fetch without wildcard' '
@@ -189,10 +178,10 @@ test_expect_success 'fetch with pushInsteadOf (should not rewrite)' '
 	)
 '
 
-grep_wrote () {
-	object_count=$1
-	file_name=$2
-	grep 'write_pack_file/wrote.*"value":"'$1'"' $2
+grep_wrote() {
+  object_count=$1
+  file_name=$2
+  grep 'write_pack_file/wrote.*"value":"'$1'"' $2
 }
 
 test_expect_success 'push without negotiation' '
@@ -509,17 +498,16 @@ test_expect_success 'push ref expression with non-existent, incomplete dest' '
 
 '
 
-for head in HEAD @
-do
+for head in HEAD @; do
 
-	test_expect_success "push with $head" '
+  test_expect_success "push with $head" '
 		mk_test testrepo heads/main &&
 		git checkout main &&
 		git push testrepo $head &&
 		check_push_result testrepo $the_commit heads/main
 	'
 
-	test_expect_success "push with $head nonexisting at remote" '
+  test_expect_success "push with $head nonexisting at remote" '
 		mk_test testrepo heads/main &&
 		git checkout -b local main &&
 		test_when_finished "git checkout main; git branch -D local" &&
@@ -527,7 +515,7 @@ do
 		check_push_result testrepo $the_commit heads/local
 	'
 
-	test_expect_success "push with +$head" '
+  test_expect_success "push with +$head" '
 		mk_test testrepo heads/main &&
 		git checkout -b local main &&
 		test_when_finished "git checkout main; git branch -D local" &&
@@ -545,7 +533,7 @@ do
 		check_push_result testrepo $the_first_commit heads/local
 	'
 
-	test_expect_success "push $head with non-existent, incomplete dest" '
+  test_expect_success "push $head with non-existent, incomplete dest" '
 		mk_test testrepo &&
 		git checkout main &&
 		git push testrepo $head:branch &&
@@ -553,7 +541,7 @@ do
 
 	'
 
-	test_expect_success "push with config remote.*.push = $head" '
+  test_expect_success "push with config remote.*.push = $head" '
 		mk_test testrepo heads/local &&
 		git checkout main &&
 		git branch -f local $the_commit &&
@@ -1088,11 +1076,11 @@ test_expect_success 'push into aliased refs (inconsistent)' '
 	)
 '
 
-test_force_push_tag () {
-	tag_type_description=$1
-	tag_args=$2
+test_force_push_tag() {
+  tag_type_description=$1
+  tag_args=$2
 
-	test_expect_success "force pushing required to update $tag_type_description" "
+  test_expect_success "force pushing required to update $tag_type_description" "
 		mk_test testrepo heads/main &&
 		mk_child testrepo child1 &&
 		mk_child testrepo child2 &&
@@ -1134,11 +1122,11 @@ test_force_push_tag () {
 test_force_push_tag "lightweight tag" "-f"
 test_force_push_tag "annotated tag" "-f -a -m'tag message'"
 
-test_force_fetch_tag () {
-	tag_type_description=$1
-	tag_args=$2
+test_force_fetch_tag() {
+  tag_type_description=$1
+  tag_args=$2
 
-	test_expect_success "fetch will not clobber an existing $tag_type_description without --force" "
+  test_expect_success "fetch will not clobber an existing $tag_type_description without --force" "
 		mk_test testrepo heads/main &&
 		mk_child testrepo child1 &&
 		mk_child testrepo child2 &&
@@ -1224,9 +1212,8 @@ test_expect_success 'push --prune refspec' '
 	! check_push_result testrepo $the_first_commit tmp/foo tmp/bar
 '
 
-for configsection in transfer receive
-do
-	test_expect_success "push to update a ref hidden by $configsection.hiderefs" '
+for configsection in transfer receive; do
+  test_expect_success "push to update a ref hidden by $configsection.hiderefs" '
 		mk_test testrepo heads/main hidden/one hidden/two hidden/three &&
 		(
 			cd testrepo &&
@@ -1316,9 +1303,8 @@ test_expect_success 'fetch exact SHA1 in protocol v2' '
 	git -C child fetch -v ../testrepo $the_commit:refs/heads/copy
 '
 
-for configallowtipsha1inwant in true false
-do
-	test_expect_success "shallow fetch reachable SHA1 (but not a ref), allowtipsha1inwant=$configallowtipsha1inwant" '
+for configallowtipsha1inwant in true false; do
+  test_expect_success "shallow fetch reachable SHA1 (but not a ref), allowtipsha1inwant=$configallowtipsha1inwant" '
 		mk_empty testrepo &&
 		(
 			cd testrepo &&
@@ -1340,7 +1326,7 @@ do
 		)
 	'
 
-	test_expect_success "deny fetch unreachable SHA1, allowtipsha1inwant=$configallowtipsha1inwant" '
+  test_expect_success "deny fetch unreachable SHA1, allowtipsha1inwant=$configallowtipsha1inwant" '
 		mk_empty testrepo &&
 		(
 			cd testrepo &&

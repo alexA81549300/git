@@ -59,30 +59,27 @@ test_expect_success setup '
 	# done
 '
 
-for with in with without
-do
-	case "$with" in
-	with) u= ;;
-	without) u=--unidiff-zero ;;
-	esac
-	for kind in add-a add-z insert-a mod-a mod-z del-a del-z
-	do
-		test_expect_success "apply $kind-patch $with context" '
+for with in with without; do
+  case "$with" in
+    with) u= ;;
+    without) u=--unidiff-zero ;;
+  esac
+  for kind in add-a add-z insert-a mod-a mod-z del-a del-z; do
+    test_expect_success "apply $kind-patch $with context" '
 			cat original >victim &&
 			git update-index victim &&
 			git apply --index $u "$kind-patch.$with" &&
 			test_cmp "$kind-expect" victim
 		'
-	done
+  done
 done
 
-for kind in add-a add-z insert-a mod-a mod-z del-a del-z
-do
-	rm -f $kind-ng.without
-	sed	-e "s/^diff --git /diff /" \
-		-e '/^index /d' \
-		<$kind-patch.without >$kind-ng.without
-	test_expect_success "apply non-git $kind-patch without context" '
+for kind in add-a add-z insert-a mod-a mod-z del-a del-z; do
+  rm -f $kind-ng.without
+  sed -e "s/^diff --git /diff /" \
+    -e '/^index /d' \
+    <$kind-patch.without >$kind-ng.without
+  test_expect_success "apply non-git $kind-patch without context" '
 		cat original >victim &&
 		git update-index victim &&
 		git apply --unidiff-zero --index "$kind-ng.without" &&

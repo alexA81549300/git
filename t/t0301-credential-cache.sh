@@ -6,31 +6,30 @@ test_description='credential-cache tests'
 . "$TEST_DIRECTORY"/lib-credential.sh
 
 test -z "$NO_UNIX_SOCKETS" || {
-	skip_all='skipping credential-cache tests, unix sockets not available'
-	test_done
+  skip_all='skipping credential-cache tests, unix sockets not available'
+  test_done
 }
-if test_have_prereq MINGW
-then
-	service_running=$(sc query afunix | grep "4  RUNNING")
-	test -z "$service_running" || {
-		skip_all='skipping credential-cache tests, unix sockets not available'
-		test_done
-	}
+if test_have_prereq MINGW; then
+  service_running=$(sc query afunix | grep "4  RUNNING")
+  test -z "$service_running" || {
+    skip_all='skipping credential-cache tests, unix sockets not available'
+    test_done
+  }
 fi
 
 uname_s=$(uname -s)
 case $uname_s in
-*MINGW*)
-	test_path_is_socket () {
-		# `test -S` cannot detect Win10's Unix sockets
-		test_path_exists "$1"
-	}
-	;;
-*)
-	test_path_is_socket () {
-		test -S "$1"
-	}
-	;;
+  *MINGW*)
+    test_path_is_socket() {
+      # `test -S` cannot detect Win10's Unix sockets
+      test_path_exists "$1"
+    }
+    ;;
+  *)
+    test_path_is_socket() {
+      test -S "$1"
+    }
+    ;;
 esac
 
 # don't leave a stale daemon running

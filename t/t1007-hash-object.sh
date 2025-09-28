@@ -5,17 +5,17 @@ test_description="git hash-object"
 . ./test-lib.sh
 
 echo_without_newline() {
-	printf '%s' "$*"
+  printf '%s' "$*"
 }
 
 test_blob_does_not_exist() {
-	test_expect_success 'blob does not exist in database' "
+  test_expect_success 'blob does not exist in database' "
 		test_must_fail git cat-file blob $1
 	"
 }
 
 test_blob_exists() {
-	test_expect_success 'blob exists in database' "
+  test_expect_success 'blob exists in database' "
 		git cat-file blob $1
 	"
 }
@@ -24,21 +24,21 @@ hello_content="Hello World"
 example_content="This is an example"
 
 setup_repo() {
-	echo_without_newline "$hello_content" > hello
-	echo_without_newline "$example_content" > example
+  echo_without_newline "$hello_content" >hello
+  echo_without_newline "$example_content" >example
 }
 
 test_repo=test
 push_repo() {
-	test_create_repo $test_repo
-	cd $test_repo
+  test_create_repo $test_repo
+  cd $test_repo
 
-	setup_repo
+  setup_repo
 }
 
 pop_repo() {
-	cd ..
-	rm -rf $test_repo
+  cd ..
+  rm -rf $test_repo
 }
 
 test_expect_success 'setup' '
@@ -165,15 +165,15 @@ test_expect_success 'check that --no-filters option works with --stdin-paths' '
 pop_repo
 
 for args in "-w --stdin" "--stdin -w"; do
-	push_repo
+  push_repo
 
-	test_expect_success "hash from stdin and write to database ($args)" '
+  test_expect_success "hash from stdin and write to database ($args)" '
 		test "$(test_oid example)" = $(git hash-object $args < example)
 	'
 
-	test_blob_exists "$(test_oid example)"
+  test_blob_exists "$(test_oid example)"
 
-	pop_repo
+  pop_repo
 done
 
 filenames="hello
@@ -187,16 +187,16 @@ test_expect_success "hash two files with names on stdin" '
 '
 
 for args in "-w --stdin-paths" "--stdin-paths -w"; do
-	push_repo
+  push_repo
 
-	test_expect_success "hash two files with names on stdin and write to database ($args)" '
+  test_expect_success "hash two files with names on stdin and write to database ($args)" '
 		test "$oids" = "$(echo_without_newline "$filenames" | git hash-object $args)"
 	'
 
-	test_blob_exists "$(test_oid hello)"
-	test_blob_exists "$(test_oid example)"
+  test_blob_exists "$(test_oid hello)"
+  test_blob_exists "$(test_oid example)"
 
-	pop_repo
+  pop_repo
 done
 
 test_expect_success 'too-short tree' '

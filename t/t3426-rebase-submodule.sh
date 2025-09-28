@@ -6,39 +6,39 @@ test_description='rebase can handle submodules'
 . "$TEST_DIRECTORY"/lib-submodule-update.sh
 . "$TEST_DIRECTORY"/lib-rebase.sh
 
-git_rebase () {
-	git status -su >expect &&
-	ls -1pR * >>expect &&
-	git checkout -b ours HEAD &&
-	echo x >>file1 &&
-	git add file1 &&
-	git commit -m add_x &&
-	git revert HEAD &&
-	git status -su >actual &&
-	ls -1pR * >>actual &&
-	test_cmp expect actual &&
-	may_only_be_test_must_fail "$2" &&
-	$2 git rebase "$1"
+git_rebase() {
+  git status -su >expect \
+    && ls -1pR * >>expect \
+    && git checkout -b ours HEAD \
+    && echo x >>file1 \
+    && git add file1 \
+    && git commit -m add_x \
+    && git revert HEAD \
+    && git status -su >actual \
+    && ls -1pR * >>actual \
+    && test_cmp expect actual \
+    && may_only_be_test_must_fail "$2" \
+    && $2 git rebase "$1"
 }
 
 test_submodule_switch_func "git_rebase"
 
-git_rebase_interactive () {
-	git status -su >expect &&
-	ls -1pR * >>expect &&
-	git checkout -b ours HEAD &&
-	echo x >>file1 &&
-	git add file1 &&
-	git commit -m add_x &&
-	git revert HEAD &&
-	git status -su >actual &&
-	ls -1pR * >>actual &&
-	test_cmp expect actual &&
-	set_fake_editor &&
-	mkdir .git/info &&
-	echo "fake-editor.sh" >.git/info/exclude &&
-	may_only_be_test_must_fail "$2" &&
-	$2 git rebase -i "$1"
+git_rebase_interactive() {
+  git status -su >expect \
+    && ls -1pR * >>expect \
+    && git checkout -b ours HEAD \
+    && echo x >>file1 \
+    && git add file1 \
+    && git commit -m add_x \
+    && git revert HEAD \
+    && git status -su >actual \
+    && ls -1pR * >>actual \
+    && test_cmp expect actual \
+    && set_fake_editor \
+    && mkdir .git/info \
+    && echo "fake-editor.sh" >.git/info/exclude \
+    && may_only_be_test_must_fail "$2" \
+    && $2 git rebase -i "$1"
 }
 
 test_submodule_switch_func "git_rebase_interactive"

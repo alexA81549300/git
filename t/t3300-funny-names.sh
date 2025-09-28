@@ -13,13 +13,12 @@ tree, index, and tree objects.
 
 HT='	'
 
-test_have_prereq MINGW ||
-echo 2>/dev/null > "Name with an${HT}HT"
-if ! test -f "Name with an${HT}HT"
-then
-	# since FAT/NTFS does not allow tabs in filenames, skip this test
-	skip_all='Your filesystem does not allow tabs in filenames'
-	test_done
+test_have_prereq MINGW \
+  || echo 2>/dev/null >"Name with an${HT}HT"
+if ! test -f "Name with an${HT}HT"; then
+  # since FAT/NTFS does not allow tabs in filenames, skip this test
+  skip_all='Your filesystem does not allow tabs in filenames'
+  test_done
 fi
 
 p0='no-funny'

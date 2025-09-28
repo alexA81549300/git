@@ -53,9 +53,8 @@ test_expect_success 'git hook run: stdout and stderr both write to our stderr' '
 	test_must_be_empty stdout.actual
 '
 
-for code in 1 2 128 129
-do
-	test_expect_success "git hook run: exit code $code is passed along" '
+for code in 1 2 128 129; do
+  test_expect_success "git hook run: exit code $code is passed along" '
 		test_hook test-hook <<-EOF &&
 		exit $code
 		EOF
@@ -120,26 +119,21 @@ test_expect_success 'git -c core.hooksPath=<PATH> hook run' '
 	test_cmp expect actual
 '
 
-test_hook_tty () {
-	cat >expect <<-\EOF
+test_hook_tty() {
+  cat >expect <<-\EOF
 	STDOUT TTY
 	STDERR TTY
 	EOF
 
-	test_when_finished "rm -rf repo" &&
-	git init repo &&
-
-	test_commit -C repo A &&
-	test_commit -C repo B &&
-	git -C repo reset --soft HEAD^ &&
-
-	test_hook -C repo pre-commit <<-EOF &&
+  test_when_finished "rm -rf repo" \
+    && git init repo \
+    && test_commit -C repo A \
+    && test_commit -C repo B \
+    && git -C repo reset --soft HEAD^ \
+    && test_hook -C repo pre-commit <<-EOF && test_terminal git -C repo "$@" && test_cmp expect repo/actual
 	test -t 1 && echo STDOUT TTY >>actual || echo STDOUT NO TTY >>actual &&
 	test -t 2 && echo STDERR TTY >>actual || echo STDERR NO TTY >>actual
 	EOF
-
-	test_terminal git -C repo "$@" &&
-	test_cmp expect repo/actual
 }
 
 test_expect_success TTY 'git hook run: stdout and stderr are connected to a TTY' '

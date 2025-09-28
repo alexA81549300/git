@@ -9,9 +9,9 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 
 number_of_commits=100
 
-start_note_commit () {
-	test_tick &&
-	cat <<INPUT_END
+start_note_commit() {
+  test_tick \
+    && cat <<INPUT_END
 commit refs/notes/commits
 committer $GIT_COMMITTER_NAME <$GIT_COMMITTER_EMAIL> $GIT_COMMITTER_DATE
 data <<COMMIT
@@ -24,15 +24,15 @@ INPUT_END
 
 }
 
-verify_notes () {
-	git log | grep "^    " > output &&
-	i=$number_of_commits &&
-	while [ $i -gt 0 ]; do
-		echo "    commit #$i" &&
-		echo "    note for commit #$i" &&
-		i=$(($i-1));
-	done > expect &&
-	test_cmp expect output
+verify_notes() {
+  git log | grep "^    " >output \
+    && i=$number_of_commits \
+    && while [ $i -gt 0 ]; do
+      echo "    commit #$i" \
+        && echo "    note for commit #$i" \
+        && i=$(($i - 1))
+    done >expect \
+    && test_cmp expect output
 }
 
 test_expect_success "setup: create a couple of commits" '

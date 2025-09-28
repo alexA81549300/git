@@ -1,18 +1,16 @@
 : Included from t1000-read-tree-m-3way.sh and others
 # Original tree.
 mkdir Z
-for a in N D M
-do
-	for b in N D M
-	do
-		p=$a$b
-	echo This is $p from the original tree. >$p
-	echo This is Z/$p from the original tree. >Z/$p
-	test_expect_success "adding test file $p and Z/$p" '
+for a in N D M; do
+  for b in N D M; do
+    p=$a$b
+    echo This is $p from the original tree. >$p
+    echo This is Z/$p from the original tree. >Z/$p
+    test_expect_success "adding test file $p and Z/$p" '
 	    git update-index --add $p &&
 	    git update-index --add Z/$p
     '
-    done
+  done
 done
 echo This is SS from the original tree. >SS
 test_expect_success 'adding test file SS' '
@@ -49,18 +47,16 @@ test_expect_success 'change in branch A (removal)' '
 	git update-index --remove $to_remove
 '
 
-for p in M? Z/M?
-do
-	echo This is modified $p in the branch A. >$p
-	test_expect_success 'change in branch A (modification)' '
+for p in M? Z/M?; do
+  echo This is modified $p in the branch A. >$p
+  test_expect_success 'change in branch A (modification)' '
 		git update-index $p
 	'
 done
 
-for p in AN AA Z/AN Z/AA
-do
-	echo This is added $p in the branch A. >$p
-	test_expect_success 'change in branch A (addition)' '
+for p in AN AA Z/AN Z/AA; do
+  echo This is added $p in the branch A. >$p
+  test_expect_success 'change in branch A (addition)' '
 		git update-index --add $p
 	'
 done
@@ -105,18 +101,16 @@ test_expect_success 'change in branch B (removal)' '
 	git update-index --remove $to_remove
 '
 
-for p in ?M Z/?M
-do
-	echo This is modified $p in the branch B. >$p
-	test_expect_success 'change in branch B (modification)' '
+for p in ?M Z/?M; do
+  echo This is modified $p in the branch B. >$p
+  test_expect_success 'change in branch B (modification)' '
 		git update-index $p
 	'
 done
 
-for p in NA AA Z/NA Z/AA
-do
-	echo This is added $p in the branch B. >$p
-	test_expect_success 'change in branch B (addition)' '
+for p in NA AA Z/NA Z/AA; do
+  echo This is added $p in the branch B. >$p
+  test_expect_success 'change in branch B (addition)' '
 		git update-index --add $p
 	'
 done

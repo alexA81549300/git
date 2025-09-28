@@ -11,13 +11,13 @@ Tests for template, signoff, squash and -F functions.'
 
 . "$TEST_DIRECTORY"/lib-rebase.sh
 
-commit_msg_is () {
-	expect=commit_msg_is.expect
-	actual=commit_msg_is.actual
+commit_msg_is() {
+  expect=commit_msg_is.expect
+  actual=commit_msg_is.actual
 
-	printf "%s" "$(git log --pretty=format:%s%b -1)" >"$actual" &&
-	printf "%s" "$1" >"$expect" &&
-	test_cmp "$expect" "$actual"
+  printf "%s" "$(git log --pretty=format:%s%b -1)" >"$actual" \
+    && printf "%s" "$1" >"$expect" \
+    && test_cmp "$expect" "$actual"
 }
 
 # A sanity check to see if commit is working at all.
@@ -168,7 +168,7 @@ test_expect_success 'using alternate GIT_INDEX_FILE (2)' '
 	cmp .git/index saved-index >/dev/null
 '
 
-cat > expect << EOF
+cat >expect <<EOF
 zort
 
 Signed-off-by: C O Mitter <committer@example.com>
@@ -251,21 +251,15 @@ test_expect_success 'commit -C empty respects --allow-empty-message' '
 	commit_msg_is ""
 '
 
-commit_for_rebase_autosquash_setup () {
-	echo "first content line" >>foo &&
-	git add foo &&
-	cat >log <<EOF &&
+commit_for_rebase_autosquash_setup() {
+  echo "first content line" >>foo \
+    && git add foo \
+    && cat >log <<EOF && git commit -F log && echo "second content line" >>foo && git add foo && git commit -m "intermediate commit" && echo "third content line" >>foo && git add foo
 target message subject line
 
 target message body line 1
 target message body line 2
 EOF
-	git commit -F log &&
-	echo "second content line" >>foo &&
-	git add foo &&
-	git commit -m "intermediate commit" &&
-	echo "third content line" >>foo &&
-	git add foo
 }
 
 test_expect_success 'commit --fixup provides correct one-line commit message' '
@@ -288,9 +282,9 @@ test_expect_success 'commit --fixup --edit' '
 extra"
 '
 
-get_commit_msg () {
-	rev="$1" &&
-	git log -1 --pretty=format:"%B" "$rev"
+get_commit_msg() {
+  rev="$1" \
+    && git log -1 --pretty=format:"%B" "$rev"
 }
 
 test_expect_success 'commit --fixup=amend: creates amend! commit' '
@@ -419,8 +413,8 @@ test_expect_success 'amend! commit allows empty commit msg body with --allow-emp
 	test_cmp expected actual
 '
 
-test_fixup_reword_opt () {
-	test_expect_success "--fixup=reword: incompatible with $1" "
+test_fixup_reword_opt() {
+  test_expect_success "--fixup=reword: incompatible with $1" "
 		echo 'fatal: reword option of '\''--fixup'\'' and' \
 			''\''--patch/--interactive/--all/--include/--only'\' \
 			'cannot be used together' >expect &&
@@ -429,9 +423,8 @@ test_fixup_reword_opt () {
 	"
 }
 
-for opt in --all --include --only --interactive --patch
-do
-	test_fixup_reword_opt $opt
+for opt in --all --include --only --interactive --patch; do
+  test_fixup_reword_opt $opt
 done
 
 test_expect_success '--fixup=reword: give error with pathsec' '

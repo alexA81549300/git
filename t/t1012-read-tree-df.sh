@@ -5,36 +5,35 @@ test_description='read-tree D/F conflict corner cases'
 . ./test-lib.sh
 . "$TEST_DIRECTORY"/lib-read-tree.sh
 
-maketree () {
-	(
-		rm -f .git/index .git/index.lock &&
-		git clean -d -f -f -q -x &&
-		name="$1" &&
-		shift &&
-		for it
-		do
-			path=$(expr "$it" : '\([^:]*\)') &&
-			mkdir -p $(dirname "$path") &&
-			echo "$it" >"$path" &&
-			git update-index --add "$path" || exit
-		done &&
-		git tag "$name" $(git write-tree)
-	)
+maketree() {
+  (
+    rm -f .git/index .git/index.lock \
+      && git clean -d -f -f -q -x \
+      && name="$1" \
+      && shift \
+      && for it; do
+        path=$(expr "$it" : '\([^:]*\)') \
+          && mkdir -p $(dirname "$path") \
+          && echo "$it" >"$path" \
+          && git update-index --add "$path" || exit
+      done \
+      && git tag "$name" $(git write-tree)
+  )
 }
 
-settree () {
-	rm -f .git/index .git/index.lock &&
-	git clean -d -f -f -q -x &&
-	git read-tree "$1" &&
-	git checkout-index -f -q -u -a &&
-	git update-index --refresh
+settree() {
+  rm -f .git/index .git/index.lock \
+    && git clean -d -f -f -q -x \
+    && git read-tree "$1" \
+    && git checkout-index -f -q -u -a \
+    && git update-index --refresh
 }
 
-checkindex () {
-	git ls-files -s |
-	sed "s|^[0-7][0-7]* $OID_REGEX \([0-3]\)	|\1 |" >current &&
-	cat >expect &&
-	test_cmp expect current
+checkindex() {
+  git ls-files -s \
+    | sed "s|^[0-7][0-7]* $OID_REGEX \([0-3]\)	|\1 |" >current \
+    && cat >expect \
+    && test_cmp expect current
 }
 
 test_expect_success setup '

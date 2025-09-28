@@ -14,15 +14,14 @@ test_size 'paths at head' '
 	test-tool name-hash <path-list >name-hashes
 '
 
-for version in 1 2
-do
-	test_size "distinct hash value: v$version" '
+for version in 1 2; do
+  test_size "distinct hash value: v$version" '
 		awk "{ print \$$version; }" <name-hashes | sort | \
 			uniq -c >name-hash-count &&
 		wc -l <name-hash-count
 	'
 
-	test_size "maximum multiplicity: v$version" '
+  test_size "maximum multiplicity: v$version" '
 		sort -nr <name-hash-count | head -n 1 |	\
 			awk "{ print \$1; }"
 	'

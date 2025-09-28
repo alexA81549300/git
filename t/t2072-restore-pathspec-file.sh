@@ -29,13 +29,13 @@ test_expect_success setup '
 	git tag checkpoint
 '
 
-restore_checkpoint () {
-	git reset --hard checkpoint
+restore_checkpoint() {
+  git reset --hard checkpoint
 }
 
-verify_expect () {
-	git status --porcelain --untracked-files=no -- dir1 fileA.t fileB.t fileC.t fileD.t >actual &&
-	test_cmp expect actual
+verify_expect() {
+  git status --porcelain --untracked-files=no -- dir1 fileA.t fileB.t fileC.t fileD.t >actual \
+    && test_cmp expect actual
 }
 
 test_expect_success '--pathspec-from-file from stdin' '

@@ -20,17 +20,17 @@ export GIT_TEST_DEFAULT_INITIAL_BRANCH_NAME
 GIT_FORCE_UNTRACKED_CACHE=true
 export GIT_FORCE_UNTRACKED_CACHE
 
-sync_mtime () {
-	find . -type d -exec ls -ld {} + >/dev/null
+sync_mtime() {
+  find . -type d -exec ls -ld {} + >/dev/null
 }
 
 avoid_racy() {
-	sleep 1
+  sleep 1
 }
 
 status_is_clean() {
-	git status --porcelain >../status.actual &&
-	test_must_be_empty ../status.actual
+  git status --porcelain >../status.actual \
+    && test_must_be_empty ../status.actual
 }
 
 # Ignore_Untracked_Cache, abbreviated to 3 letters because then people can
@@ -38,38 +38,37 @@ status_is_clean() {
 #    iuc status --porcelain >expect &&
 #    git status --porcelain >actual &&
 #    test_cmp expect actual
-iuc () {
-	git ls-files -s >../current-index-entries
-	git ls-files -t | sed -ne s/^S.//p >../current-sparse-entries
+iuc() {
+  git ls-files -s >../current-index-entries
+  git ls-files -t | sed -ne s/^S.//p >../current-sparse-entries
 
-	GIT_INDEX_FILE=.git/tmp_index
-	export GIT_INDEX_FILE
-	git update-index --index-info <../current-index-entries
-	git update-index --skip-worktree $(cat ../current-sparse-entries)
+  GIT_INDEX_FILE=.git/tmp_index
+  export GIT_INDEX_FILE
+  git update-index --index-info <../current-index-entries
+  git update-index --skip-worktree $(cat ../current-sparse-entries)
 
-	git -c core.untrackedCache=false "$@"
-	ret=$?
+  git -c core.untrackedCache=false "$@"
+  ret=$?
 
-	rm ../current-index-entries
-	rm $GIT_INDEX_FILE
-	unset GIT_INDEX_FILE
+  rm ../current-index-entries
+  rm $GIT_INDEX_FILE
+  unset GIT_INDEX_FILE
 
-	return $ret
+  return $ret
 }
 
-get_relevant_traces () {
-	# From the GIT_TRACE2_PERF data of the form
-	#    $TIME $FILE:$LINE | d0 | main | data | r1 | ? | ? | read_directo | $RELEVANT_STAT
-	# extract the $RELEVANT_STAT fields.  We don't care about region_enter
-	# or region_leave, or stats for things outside read_directory.
-	INPUT_FILE=$1
-	OUTPUT_FILE=$2
-	grep data.*read_directo $INPUT_FILE |
-	    cut -d "|" -f 9 |
-	    grep -v visited \
-	    >"$OUTPUT_FILE"
+get_relevant_traces() {
+  # From the GIT_TRACE2_PERF data of the form
+  #    $TIME $FILE:$LINE | d0 | main | data | r1 | ? | ? | read_directo | $RELEVANT_STAT
+  # extract the $RELEVANT_STAT fields.  We don't care about region_enter
+  # or region_leave, or stats for things outside read_directory.
+  INPUT_FILE=$1
+  OUTPUT_FILE=$2
+  grep data.*read_directo $INPUT_FILE \
+    | cut -d "|" -f 9 \
+    | grep -v visited \
+      >"$OUTPUT_FILE"
 }
-
 
 test_lazy_prereq UNTRACKED_CACHE '
 	{ git update-index --test-untracked-cache; ret=$?; } &&
@@ -77,8 +76,8 @@ test_lazy_prereq UNTRACKED_CACHE '
 '
 
 if ! test_have_prereq UNTRACKED_CACHE; then
-	skip_all='This system does not support untracked cache'
-	test_done
+  skip_all='This system does not support untracked cache'
+  test_done
 fi
 
 test_expect_success 'core.untrackedCache is unset' '
@@ -120,32 +119,7 @@ EOF
 	test_cmp ../expect-empty ../actual
 '
 
-cat >../status.expect <<EOF &&
-A  done/one
-A  one
-A  two
-?? dthree/
-?? dtwo/
-?? three
-EOF
-
-cat >../dump.expect <<EOF &&
-info/exclude $EMPTY_BLOB
-core.excludesfile $ZERO_OID
-exclude_per_dir .gitignore
-flags 00000006
-/ $ZERO_OID recurse valid
-dthree/
-dtwo/
-three
-/done/ $ZERO_OID recurse valid
-/dthree/ $ZERO_OID recurse check_only valid
-three
-/dtwo/ $ZERO_OID recurse check_only valid
-two
-EOF
-
-test_expect_success 'status first time (empty cache)' '
+cat >../status.expect <<EOF && cat >../dump.expect <<EOF && test_expect_success 'status first time (empty cache)' '
 	: >../trace.output &&
 	GIT_TRACE2_PERF="$TRASH_DIRECTORY/trace.output" \
 	git status --porcelain >../actual &&
@@ -162,7 +136,27 @@ test_expect_success 'status first time (empty cache)' '
 EOF
 	test_cmp ../trace.expect ../trace.relevant
 '
-
+A  done/one
+A  one
+A  two
+?? dthree/
+?? dtwo/
+?? three
+EOF
+info/exclude $EMPTY_BLOB
+core.excludesfile $ZERO_OID
+exclude_per_dir .gitignore
+flags 00000006
+/ $ZERO_OID recurse valid
+dthree/
+dtwo/
+three
+/done/ $ZERO_OID recurse valid
+/dthree/ $ZERO_OID recurse check_only valid
+three
+/dtwo/ $ZERO_OID recurse check_only valid
+two
+EOF
 test_expect_success 'untracked cache after first status' '
 	test-tool dump-untracked-cache >../actual &&
 	test_cmp ../dump.expect ../actual
@@ -199,12 +193,11 @@ A  two
 ?? dtwo/two
 ?? three
 EOF
-
-# Bypassing the untracked cache here is not desirable from an
-# end-user perspective, but is expected in the current design.
-# The untracked cache data stored for a -unormal run cannot be
-# correctly used in a -uall run - it would yield incorrect output.
-test_expect_success 'untracked cache is bypassed with -uall' '
+  # Bypassing the untracked cache here is not desirable from an
+  # end-user perspective, but is expected in the current design.
+  # The untracked cache data stored for a -unormal run cannot be
+  # correctly used in a -uall run - it would yield incorrect output.
+  test_expect_success 'untracked cache is bypassed with -uall' '
 	: >../trace.output &&
 	GIT_TRACE2_PERF="$TRASH_DIRECTORY/trace.output" \
 	git status -uall --porcelain >../actual &&
@@ -242,7 +235,10 @@ EOF
 	test_cmp ../trace.expect ../trace.relevant
 '
 
-cat >../dump_uall.expect <<EOF &&
+cat >../dump_uall.expect <<EOF && test_expect_success 'if -uall was configured, untracked cache is populated' '
+	test-tool dump-untracked-cache >../actual &&
+	test_cmp ../dump_uall.expect ../actual
+'
 info/exclude $EMPTY_BLOB
 core.excludesfile $ZERO_OID
 exclude_per_dir .gitignore
@@ -255,12 +251,6 @@ three
 /dtwo/ $ZERO_OID recurse valid
 two
 EOF
-
-test_expect_success 'if -uall was configured, untracked cache is populated' '
-	test-tool dump-untracked-cache >../actual &&
-	test_cmp ../dump_uall.expect ../actual
-'
-
 test_expect_success 'if -uall is configured, untracked cache is used by default' '
 	test_config status.showuntrackedfiles all &&
 	: >../trace.output &&

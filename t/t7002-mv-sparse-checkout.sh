@@ -4,16 +4,16 @@ test_description='git mv in sparse working trees'
 
 . ./test-lib.sh
 
-setup_sparse_checkout () {
-	mkdir folder1 &&
-	touch folder1/file1 &&
-	git add folder1 &&
-	git sparse-checkout set --cone sub
+setup_sparse_checkout() {
+  mkdir folder1 \
+    && touch folder1/file1 \
+    && git add folder1 \
+    && git sparse-checkout set --cone sub
 }
 
-cleanup_sparse_checkout () {
-	git sparse-checkout disable &&
-	git reset --hard
+cleanup_sparse_checkout() {
+  git sparse-checkout disable \
+    && git reset --hard
 }
 
 test_expect_success 'setup' "
