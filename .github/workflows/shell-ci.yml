@@ -1,13 +1,22 @@
 name: shell-ci
-on: [push, pull_request]
+on:
+  pull_request:
+    paths:
+      - '**.sh'
+      - 'scripts/**'
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Shell lint
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y shellcheck shfmt
-          find . -type f -name "*.sh" -print0 | xargs -0 -r shellcheck -x
-          find . -type f -name "*.sh" -print0 | xargs -0 -r shfmt -d
+      - run: sudo apt-get update -y && sudo apt-get install -y shellcheck
+      - uses: reviewdog/action-shellcheck@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          path: .
+          pattern: '**/*.sh'
+          level: warning

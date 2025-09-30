@@ -1,0 +1,45 @@
+name: max-report
+on:
+  workflow_run:
+    workflows: ["CI","shell-ci","guard","mirror","codeql","trufflehog"]
+    types: [completed]
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  pull-requests: write
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const owner=context.repo.owner, repo=context.repo.repo;
+            const run=context.payload.workflow_run;
+            const sha=run.head_sha, branch=run.head_branch;
+            const checks=await github.rest.checks.listForRef({owner,repo,ref:sha,per_page:100});
+            const rows=checks.data.check_runs.map(cr=>{
+              const s=cr.status, c=cr.conclusion;
+              const e=c==='success'?'✅':c==='failure'?'❌':s!=='completed'?'⏳':'⚠️';
+              return `| ${e} | [${cr.name}](${cr.html_url}) | ${s} | ${c??''} |`;
+            }).join('\n');
+            const hdr=`### MAX Report for \`${branch}\` @ \`${sha.slice(0,7)}\`
+            |  | check | status | conclusion |
+            |--|-------|--------|------------|
+            ${rows || '| ℹ️ | No check runs found | – | – |'}
+            `;
+            const prs=await github.rest.repos.listPullRequestsAssociatedWithCommit({owner,repo,commit_sha:sha});
+            const marker='<!-- MAX-REPORT-STICKY -->';
+            async function upsertPRComment(pr){
+              const {data:comments}=await github.rest.issues.listComments({owner,repo,issue_number:pr.number,per_page:100});
+              const prev=comments.find(c=>c.body&&c.body.includes(marker));
+              const body=`${marker}\n${hdr}\n_Last updated by **max-report** from **${run.name}** run #${run.run_number}._`;
+              if(prev){ await github.rest.issues.updateComment({owner,repo,comment_id:prev.id,body}); }
+              else    { await github.rest.issues.createComment({owner,repo,issue_number:pr.number,body}); }
+            }
+            if(prs.data.length){ for(const pr of prs.data) await upsertPRComment(pr); }
+            else{
+              await github.rest.repos.createCommitComment({owner,repo,commit_sha:sha,body:`${hdr}\n(Commit summary – no open PR)`});
+            }
+            core.summary.addRaw(hdr).write();

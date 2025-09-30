@@ -1,0 +1,15 @@
+name: security-gates
+on:
+  push:
+  pull_request:
+jobs:
+  codeql:
+    if: ${{ github.repository_visibility == 'public' || vars.ALLOW_SECURITY_SCANS == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Gate placeholder (CodeQL job lives in its own workflow if enabled)"
+  trufflehog:
+    if: ${{ github.repository_visibility == 'public' || vars.ALLOW_SECURITY_SCANS == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Gate placeholder (TruffleHog job lives in its own workflow if enabled)"
