@@ -6,7 +6,11 @@ name: check-whitespace
 # Exit with failure upon white-space issues.
 
 on:
-  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+
+# Avoid unnecessary builds. Unlike the main CI jobs, these are not
+# ci-configurable (but could be).
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

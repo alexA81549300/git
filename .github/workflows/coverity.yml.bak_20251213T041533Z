@@ -20,7 +20,8 @@ name: Coverity
 # set the repository variable `COVERITY_PROJECT`.
 
 on:
-  workflow_dispatch:
+  push:
+
 defaults:
   run:
     shell: bash

@@ -1,6 +1,9 @@
 name: shell-ci
 on:
-  workflow_dispatch:
+  pull_request:
+    paths:
+      - '**.sh'
+      - 'scripts/**'
 permissions:
   contents: read
   pull-requests: write

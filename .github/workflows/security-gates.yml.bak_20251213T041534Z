@@ -1,6 +1,7 @@
 name: security-gates
 on:
-  workflow_dispatch:
+  push:
+  pull_request:
 jobs:
   codeql:
     if: ${{ github.repository_visibility == 'public' || vars.ALLOW_SECURITY_SCANS == 'true' }}

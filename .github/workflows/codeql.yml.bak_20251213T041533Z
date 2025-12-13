@@ -1,6 +1,11 @@
 name: codeql
 on:
-  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: "27 2 * * 1"
 jobs:
   analyze:
     permissions:

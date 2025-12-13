@@ -1,6 +1,8 @@
 name: max-report
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["CI","shell-ci","guard","mirror","codeql","trufflehog"]
+    types: [completed]
 permissions:
   actions: read
   checks: read

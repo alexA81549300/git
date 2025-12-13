@@ -1,6 +1,5 @@
 name: trufflehog
-on:
-  workflow_dispatch:
+on: [push, pull_request]
 permissions: { contents: read }
 jobs:
   scan:

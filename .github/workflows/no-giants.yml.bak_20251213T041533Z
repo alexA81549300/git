@@ -1,6 +1,5 @@
 name: no-giants
-on:
-  workflow_dispatch:
+on: [push, pull_request]
 jobs:
   size-guard:
     runs-on: ubuntu-latest
