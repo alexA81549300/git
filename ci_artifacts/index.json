@@ -1,0 +1,135 @@
+{
+  "generated_utc": "2025-12-13T07:46:02.935045Z",
+  "items": [
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4149190057,
+        "name": "failed-tests-osx-meson",
+        "size_in_bytes": 2526241
+      },
+      "created_at": "2025-09-30T23:40:18Z",
+      "expires_at": "2025-12-29T22:57:05Z",
+      "zip": "ci_artifacts/repo_level/failed-tests-osx-meson__4149190057.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    },
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4149151376,
+        "name": "failed-tests-osx-reftable",
+        "size_in_bytes": 2551185
+      },
+      "created_at": "2025-09-30T23:33:15Z",
+      "expires_at": "2025-12-29T22:57:05Z",
+      "zip": "ci_artifacts/repo_level/failed-tests-osx-reftable__4149151376.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    },
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4149137762,
+        "name": "failed-tests-osx-clang",
+        "size_in_bytes": 2512373
+      },
+      "created_at": "2025-09-30T23:30:43Z",
+      "expires_at": "2025-12-29T22:57:05Z",
+      "zip": "ci_artifacts/repo_level/failed-tests-osx-clang__4149137762.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    },
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4148997231,
+        "name": "windows-meson-artifacts",
+        "size_in_bytes": 178634909
+      },
+      "created_at": "2025-09-30T23:05:05Z",
+      "expires_at": "2025-12-29T22:57:05Z",
+      "zip": "ci_artifacts/repo_level/windows-meson-artifacts__4148997231.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    },
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4148980696,
+        "name": "windows-artifacts",
+        "size_in_bytes": 175600108
+      },
+      "created_at": "2025-09-30T23:02:03Z",
+      "expires_at": "2025-12-29T22:57:05Z",
+      "zip": "ci_artifacts/repo_level/windows-artifacts__4148980696.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    },
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4127069984,
+        "name": "failed-tests-osx-reftable",
+        "size_in_bytes": 2578330
+      },
+      "created_at": "2025-09-28T21:58:19Z",
+      "expires_at": "2025-12-27T21:20:42Z",
+      "zip": "ci_artifacts/repo_level/failed-tests-osx-reftable__4127069984.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    },
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4127068502,
+        "name": "failed-tests-osx-clang",
+        "size_in_bytes": 2531074
+      },
+      "created_at": "2025-09-28T21:57:39Z",
+      "expires_at": "2025-12-27T21:20:42Z",
+      "zip": "ci_artifacts/repo_level/failed-tests-osx-clang__4127068502.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    },
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4127066849,
+        "name": "failed-tests-osx-meson",
+        "size_in_bytes": 2541625
+      },
+      "created_at": "2025-09-28T21:56:54Z",
+      "expires_at": "2025-12-27T21:20:42Z",
+      "zip": "ci_artifacts/repo_level/failed-tests-osx-meson__4127066849.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    },
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4127008195,
+        "name": "windows-meson-artifacts",
+        "size_in_bytes": 178636415
+      },
+      "created_at": "2025-09-28T21:34:14Z",
+      "expires_at": "2025-12-27T21:20:42Z",
+      "zip": "ci_artifacts/repo_level/windows-meson-artifacts__4127008195.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    },
+    {
+      "repo": "alexA81549300/git",
+      "artifact": {
+        "id": 4126995577,
+        "name": "windows-artifacts",
+        "size_in_bytes": 175598286
+      },
+      "created_at": "2025-09-28T21:30:07Z",
+      "expires_at": "2025-12-27T21:20:42Z",
+      "zip": "ci_artifacts/repo_level/windows-artifacts__4126995577.zip",
+      "path": "ci_artifacts/repo_level",
+      "mode": "repo_level"
+    }
+  ]
+}
