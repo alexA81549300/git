@@ -1,0 +1,49 @@
+name: Hermes Organ Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      hermes_reason:
+        description: Hermes manual reason
+        required: false
+        default: manual
+  repository_dispatch:
+    types:
+      - hermes-organ-work
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: hermes-organ-worker-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  organ-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hermes organ context
+        run: |
+          echo "repo=${{ github.repository }}"
+          echo "event=${{ github.event_name }}"
+          echo "Hermes local/.mesh remains authority."
+          echo "GitHub is worker surface only."
+
+      - name: Checkout metadata surface
+        uses: actions/checkout@v4
+
+      - name: Verify organ capsule exists
+        run: |
+          set -Eeuo pipefail
+          test -f .hermes/organ_fill/README.md
+          echo "organ capsule present"
+
+      - name: Print safe worker instruction
+        run: |
+          set -Eeuo pipefail
+          echo "Allowed: metadata summaries, issue comments, review notes."
+          echo "Forbidden: raw .mesh, secrets, dumps, prompts, archives, runtime truth claims."
+          sed -n '1,120p' .hermes/organ_fill/README.md
