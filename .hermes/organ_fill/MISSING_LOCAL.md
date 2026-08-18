@@ -1,13 +1,22 @@
-# Hermes missing local proof: git
+# Hermes local-proof frontier: git
 
 ## proof_policy
-Missing proof is not proof of absence.
+Missing proof is not proof of absence, and proof from another repository is not proof for this repository.
 
-## current_best_reference
-hermes_local_best_of_all_extract_latest.tsv REPO	LOCAL_GIT_SURFACE	hermes-termux	/data/data/com.termux/files/home/hermes-termux	ca263483de5b	NA	branch=main dirty=1 readme=NO agents=YES	confirmed	hermes-termux	do_not_treat_github_as_runtime_truth	classify_dirty_and_bind_existing
+## proven_now
+- GitHub identity: `alexA81549300/git`
+- fork parent/source: `git/git`
+- repo_class: `REFERENCE_MIRROR`
+- runtime_relation: `REFERENCE_ONLY`
+- authority_class: `NO_RUNTIME_AUTHORITY`
 
-## needed
-- local receipt label
-- DNA event class
-- repo/runtime relation
-- authority/quorum status
+## corrected_misbinding
+The prior file carried a `hermes-termux` local receipt row. It is rejected as cross-repo role custody and is not current proof for `git`.
+
+## still_unknown_typed
+- whether a current local `git` checkout/seat exists in Hermes storage
+- whether MasterPack currently consumes this mirror as a learning/reference source
+- whether this repo belonged to any exact historical donor set
+- whether any historical vendor/submodule relation existed for `git`
+
+None of these unknowns grant runtime or canon authority.
