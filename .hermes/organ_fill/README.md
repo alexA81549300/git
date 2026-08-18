@@ -1,21 +1,22 @@
 # Hermes GitHub organ fill: git
 
-GitHub is worker surface. Local Hermes/.mesh is primary truth.
-This is metadata-only. It must not include raw .mesh, secrets, dumps, prompts, archives, payloads, or runtime claims.
+GitHub is a worker/reference surface. Local Hermes/.mesh is primary runtime truth.
+This directory is metadata-only and must not contain raw .mesh, secrets, dumps, prompts, archives, payloads, or runtime claims.
 
-## selected_existing_best_reference
-- best_source: /data/data/com.termux/files/home/.mesh/truth/hermes_local_best_of_all_extract_latest.tsv
-- match_count: 88
-- best_label:  REPO LOCAL_GIT_SURFACE hermes-termux /data/data/com.termux/files/home/hermes-termux ca263483de5b NA branch=main dirty=1 readme=NO agents=YES confirmed hermes-termux do_not_treat_github_as_runtime_truth classify_dirty_an
+## current_repo_specific_evidence
+- repo: `alexA81549300/git`
+- GitHub reports `fork=true`
+- parent/source: `git/git`
+- upstream semantics: Git source-code mirror / publish-oriented source repository
 
-## what_to_upload_to_this_repo
-- A short README/issue comment explaining this organ role.
-- The selected local receipt label above.
-- A worker instruction saying local Hermes remains authority.
-- A TODO asking Hermes Private AI to provide only sanitized summaries.
+## current_classification
+- repo_class: `REFERENCE_MIRROR`
+- runtime_relation: `REFERENCE_ONLY`
+- authority_class: `NO_RUNTIME_AUTHORITY`
+- historical_vendor_or_donor_role: `UNKNOWN_TYPED`
 
-## forbidden
-- NO_RAW_MESH_NO_SECRETS_NO_PAYLOADS_NO_DUMPS_NO_PROMPTS_NO_ARCHIVES_NO_RUNTIME_CLAIMS
+## corrected_false_reference
+The earlier generated body selected a `hermes-termux` local receipt row. That row describes another repository and is therefore invalid as `git` role custody. It is preserved in Git history, not repeated as current evidence.
 
-## safe_worker_comment
-This repo should be filled by reference from existing local Hermes proof. Use the selected label only as a pointer. Do not copy raw local files. Do not claim runtime truth. Do not merge, push, rename, delete, reset, prune, or rebuild.
+## safe_worker_rule
+Workers may inspect reference/upstream identity, compare sanitized metadata, and request repo-specific Hermes lineage. They must not rewrite upstream Git source as part of Hermes role closure and must not infer runtime/canon authority from GitHub state.

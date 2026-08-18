@@ -1,10 +1,23 @@
 # Hermes organ role: git
 
-GitHub is worker surface. Local Hermes/.mesh is primary truth.
+GitHub is a worker/reference surface. Local Hermes/.mesh remains primary runtime truth.
 
-## derived_from_existing_best
-hermes_local_best_of_all_extract_latest.tsv REPO	LOCAL_GIT_SURFACE	hermes-termux	/data/data/com.termux/files/home/hermes-termux	ca263483de5b	NA	branch=main dirty=1 readme=NO agents=YES	confirmed	hermes-termux	do_not_treat_github_as_runtime_truth	classify_dirty_and_bind_existing
+## identity_evidence
+- repo: `alexA81549300/git`
+- github_identity: `fork=true`
+- upstream_parent: `git/git`
+- upstream_semantics: Git source-code mirror / publish-oriented upstream
+
+## classification
+- repo_class: `REFERENCE_MIRROR`
+- role_status: `PROVEN_CURRENT_GITHUB_IDENTITY`
+- runtime_relation: `REFERENCE_ONLY`
+- authority_class: `NO_RUNTIME_AUTHORITY`
+- historical_vendor_role: `UNKNOWN_TYPED`
+- historical_donor_role: `UNKNOWN_TYPED`
+
+## custody_correction
+The previous `organ_fill` body was misbound: it selected a local `hermes-termux` receipt label as if it described this repository. That cross-repo provenance is not valid role evidence for `git` and must not be reused.
 
 ## role_rule
-This role must be derived from local Hermes truth, receipts, quorum, artifacts, and DNA.
-Do not invent a stronger role than local evidence supports.
+Preserve the upstream Git source body. Do not infer Hermes runtime membership, donor status, vendor status, or canon authority from ownership, visibility, repository name, or fork status. Any stronger Hermes relation requires repo-specific local receipts/DNA/lineage.
