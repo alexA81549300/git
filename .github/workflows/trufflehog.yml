@@ -14,4 +14,5 @@ jobs:
           path: .
           base: ${{ github.event.pull_request.base.sha || '' }}
           head: ${{ github.sha }}
-          extra_args: --fail --only-verified
+          version: '3.94.3'
+          extra_args: --results=verified
